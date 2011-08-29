@@ -1,21 +1,21 @@
 from zope.interface import Attribute
 from zope.interface import Interface
 
-class ITimespan(Interface):
+class ITimeSlot(Interface):
     """A timeslot that may refer to one or many time ranges."""
 
     start = Attribute("Datetime start of the timeslot.")
     end = Attribute("Datetime end of the timeslot")
     group = Attribute("Key of other timeslots that belong to this timeslot")
     resource = Attribute("Resource the timeslot is referring to")
-    permission = Attribute("Defines the permission needed to see the timespan")
+    permission = Attribute("Defines the permission needed to see the timeslot")
 
 
-class IAvailableSpan(ITimespan):
+class IAvailableSlot(ITimeSlot):
     """An available timeslot."""
 
 
-class IReservedSpan(ITimespan):
+class IReservedSlot(ITimeSlot):
     """A reserved timeslot."""
 
 
@@ -42,5 +42,5 @@ class IReservationManager(Interface):
     def register(callback):
         """Registers the IReservationCallback object"""
 
-    def request(timespan):
-        """Requests the resource at timespan and returns a reservation id."""
+    def request(timeslot):
+        """Requests the resource at timeslot and returns a reservation id."""
