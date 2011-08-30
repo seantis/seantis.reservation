@@ -1,5 +1,10 @@
 import raster
 
+class TimeSlot(object):
+    def __init__(self, start, end):
+        self.start = start
+        self.end = end
+
 class TimeSpan(object):
 
     def __init__(self, start, end):
@@ -8,6 +13,8 @@ class TimeSpan(object):
         self.end = end
 
     def overlaps(self, start, end):
+        start, end = raster.rasterize_span(start, end, self.raster)
+
         if self.start <= start and start <= self.end:
             return True
         
@@ -16,12 +23,17 @@ class TimeSpan(object):
 
         return False
 
-    def xslots(self):
-        for slot in raster.span_iterate(self.start, self.end, self.raster):
-            yield slot
+    def slots(self, start=None, end=None):
+        start = start or self.start
+        start = start < self.start and self.start or start
+        end = end or self.end
+        end = end > self.end and self.end or end
 
-    def slots(self):
-        return list(self.xslots())
+        slots = []
+        for start, end in raster.iterate_span(start, end, self.raster):
+            slots.append(TimeSlot(start, end))
+        
+        return slots
 
     def get_start(self):
         return self._start

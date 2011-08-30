@@ -18,7 +18,7 @@ class IDefinedTimeSpan(ITimeSpan):
     resource = Attribute("Resource the timespan is referring to")
     permission = Attribute("Defines the permission needed to see the timespan")
 
-class ITimeSlot(ITimespan):
+class ITimeSlot(ITimeSpan):
     """A slot within a timespan."""
     definition = Attribute("Defined Timespan belonging to the timeslot")
 

@@ -20,7 +20,7 @@ def rasterize_end(date, raster):
 def rasterize_span(start, end, raster):
     return rasterize_start(start, raster), rasterize_end(end, raster)
 
-def span_iterate(start, end, raster):
+def iterate_span(start, end, raster):
     start, end = rasterize_span(start, end, raster)
 
     step = start
