@@ -30,9 +30,8 @@ class Scheduler(object):
 
         to_reserve = []
         for request in timespans:
-            for d in self.defined_in_range(span.start, span.end):
-                for slot in d.slots(request.start, request.end):
-                    to_reserve.append(slot)
+            for d in self.defined_in_range(request.start, request.end):
+                to_reserve.extend(d.slots(request.start, request.end))
         
         for slot in to_reserve:
             key = '%s%s' % (self.resid, slot.start)
