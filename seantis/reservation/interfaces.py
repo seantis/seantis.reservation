@@ -1,22 +1,31 @@
 from zope.interface import Attribute
 from zope.interface import Interface
 
-class ITimeSpan(Interface):
-    """A timespan that may refer to one or many time ranges."""
+class ITimeRaster(Interface):
+    """Defines how a timespan is divided."""
+    rasterlength = Attribute("Minutes by which the time is divided")
+
+class ITimeSpan(ITimeRaster):
+    """A timespan ."""
 
     start = Attribute("Datetime start of the timespan.")
     end = Attribute("Datetime end of the timespan")
-    group = Attribute("Key of other timespans that belong to this timespan")
+
+class IDefinedTimeSpan(ITimeSpan):
+    """A defined timespan."""
+
+    group = Attribute("Timespans with the same group belong to each other")
     resource = Attribute("Resource the timespan is referring to")
     permission = Attribute("Defines the permission needed to see the timespan")
 
-
-class IAvailableSlot(ITimeSpan):
-    """An available timespan."""
-
+class ITimeSlot(ITimespan):
+    """A slot within a timespan."""
+    definition = Attribute("Defined Timespan belonging to the timeslot")
 
 class IReservedSlot(ITimeSpan):
     """A reserved timespan."""
+    reservation = Attribute("Reservation belonging to the timeslot")
+
 
 
 class IReservable(Interface):
