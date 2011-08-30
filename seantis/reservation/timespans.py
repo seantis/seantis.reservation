@@ -1,22 +1,11 @@
-from zope.interface import implements
-
-from interfaces import ITimeSpan
-from interfaces import IAvailableSpan
-from interfaces import IReservedSpan
+import raster
 
 class TimeSpan(object):
-    implements(ITimeSpan)
 
-    def __init__(self, start, end, resource=None, group=None):
+    def __init__(self, start, end):
+        self.raster = 5
         self.start = start
         self.end = end
-        self.resource = resource
-        self.group = group
-
-    def __repr__(self):
-        classname = self.__class__.__name__
-        return '%s(%s, %s, %s, %s)' \
-                % (classname, self.start, self.end, self.resource, self.group)
 
     def overlaps(self, start, end):
         if self.start <= start and start <= self.end:
@@ -27,10 +16,32 @@ class TimeSpan(object):
 
         return False
 
+    def xslots(self):
+        for slot in raster.span_iterate(self.start, self.end, self.raster):
+            yield slot
 
-class AvailableSpan(TimeSpan):
-    implements(IAvailableSpan)
+    def slots(self):
+        return list(self.xslots())
 
+    def get_start(self):
+        return self._start
 
-class ReservedSpan(TimeSpan):
-    implements(IReservedSpan)
+    def set_start(self, start):
+        self._start = raster.rasterize_start(start, self.raster)
+    
+    start = property(get_start, set_start)
+
+    def get_end(self):
+        return self._end
+
+    def set_end(self, end):
+        self._end = raster.rasterize_end(end, self.raster)
+
+    end = property(get_end, set_end)
+
+class DefinedTimeSpan(TimeSpan):
+
+    def __init__(self, start, end, resource, group):
+        super(DefinedTimeSpan, self).__init__(start, end)
+        self.resource = resource
+        self.group
