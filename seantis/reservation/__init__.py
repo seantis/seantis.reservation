@@ -1,3 +1,2 @@
-# -*- extra stuff goes here -*-
-
-
+from sqlalchemy.ext import declarative
+ORMBase = declarative.declarative_base()

@@ -1,58 +1,60 @@
-from seantis.reservation.timespans import TimeSpan
+from z3c.saconfig import Session
+from sqlalchemy import _and
+
+from seantis.reservation.models import DefinedTimeSpan
+from seantis.reservation.models import ReservedTimeSlot
 
 class Scheduler(object):
 
-    def __init__(self, reservable):
-        self.resid = reservable.uid()
-        self.defined = []
-        self.reserved = {}
+    def __init__(self, resource_uuid):
+        self.resource = resource_uuid
 
-    def define(self, start, end):
-        if self.defined_in_range(start, end):
-            return False
+    def define(self, start, end, group=None, raster=15):
+        # TODO add locking here
 
-        self.defined.append(TimeSpan(start, end))
-        return True
+        # Make sure that this span does not overlap another
+        if self.any_defined_in_range(start, end):
+            return None
+
+        span = DefinedTimeSpan()
+        span.start = start
+        span.end = end
+        span.resource = self.resource
+        span.group = self.group
+
+        Session.add(span)
+
+        return span
+
+    def any_defined_in_range(self, start, end):
+        for defined in self.defined_in_range(start, end):
+            return True
+
+        return False
 
     def defined_in_range(self, start, end):
-        defined = []
+        query = Session.query(DefinedTimeSpan).filter(
+            _and(
+                DefinedTimeSpan.start>=start,
+                DefinedTimeSpan.end<=end
+            )
+        )
 
-        for span in self.defined:
+        for span in query:
             if span.overlaps(start, end):
-                defined.append(span)
+                yield span
 
-        return defined
+    def reserve(self, dates):
+        slots_to_reserve = []
+        for start, end in dates:
+            for span in self.defined_in_range(start, end):
+                for slot_start, slot_end in span.possible_dates(start, end):
+                    slot = ReservedTimeSlot()
+                    slot.start = slot_start
+                    slot.end = slot_end
+                    slot.defined_timespan = span
+                    slot.resource = slot.resource
 
-    def reserve(self, timespans):
-        defined = []
-        for span in timespans:
-            defined.extend(self.defined_in_range(span.start, span.end))
-
-        to_reserve = []
-        for request in timespans:
-            for d in self.defined_in_range(request.start, request.end):
-                to_reserve.extend(d.slots(request.start, request.end))
+                    slots_to_reserve.append(slot)
         
-        for slot in to_reserve:
-            key = '%s%s' % (self.resid, slot.start)
-            if key in self.reserved:
-                raise KeyError
-            
-            self.reserved[key] = slot
-
-def test():
-    from seantis.reservation.timespans import TimeSpan
-    from datetime import datetime
-    
-    class Resource(object):
-        def uid(self):
-            return 1
-
-    sc = Scheduler(Resource())
-    start = datetime(2011, 1, 1, 15, 0)
-    end = datetime(2011, 1, 1, 15, 59)
-    sc.define(start, end)
-
-    span = TimeSpan(start, end)
-    sc.reserve((span, ))
-    return sc
+        Session.add_all(slots_to_reserve)
