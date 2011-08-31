@@ -1,7 +1,9 @@
 from datetime import timedelta
 
+VALID_RASTER_VALUES = (5, 10, 15, 30, 60)
+
 def is_valid_raster(raster):
-    return raster in (5, 10, 15, 30, 60)
+    return raster in VALID_RASTER_VALUES
 
 def rasterize_start(date, raster):
     assert(is_valid_raster(raster))
