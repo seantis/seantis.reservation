@@ -9,23 +9,29 @@ class Scheduler(object):
     def __init__(self, resource_uuid):
         self.resource = resource_uuid
 
-    def define(self, start, end, group=None, raster=15):
+    def define(self, dates, group=None, raster=15):
         # TODO add locking here
 
         # Make sure that this span does not overlap another
-        if self.any_defined_in_range(start, end):
-            return None
+        for start, end in dates:
+            if self.any_defined_in_range(start, end):
+                return None
 
-        span = DefinedTimeSpan()
-        span.raster = raster
-        span.start = start
-        span.end = end
-        span.group = group
-        span.resource = self.resource
+        defines = []
 
-        Session.add(span)
+        for start, end in dates:
+            span = DefinedTimeSpan()
+            span.raster = raster
+            span.start = start
+            span.end = end
+            span.group = group
+            span.resource = self.resource
 
-        return span
+            defines.append(span)
+
+        Session.add_all(defines)
+
+        return defines
 
     def any_defined_in_range(self, start, end):
         for defined in self.defined_in_range(start, end):
@@ -47,6 +53,8 @@ class Scheduler(object):
                 )
             ),
         )
+
+        query = query.filter(DefinedTimeSpan.resource == self.resource)
 
         for result in query:
             yield result
