@@ -13,8 +13,11 @@ def rasterize_start(date, raster):
     return date - delta
 
 def rasterize_end(date, raster):
-    date = rasterize_start(date, raster)
-    delta = timedelta(microseconds=-1, minutes=raster)
+    if date.minute % raster:
+        date = rasterize_start(date, raster)
+        delta = timedelta(microseconds=-1, minutes=raster)
+    else:
+        delta = timedelta(microseconds=-1)
     return date + delta
 
 def rasterize_span(start, end, raster):

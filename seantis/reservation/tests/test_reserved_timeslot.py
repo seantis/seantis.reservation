@@ -2,7 +2,7 @@ from datetime import datetime
 from uuid import uuid4 as uuid
 
 from z3c.saconfig import Session
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import FlushError
 
 from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation.models import DefinedTimeSpan
@@ -35,4 +35,4 @@ class TestReservedTimeSlot(IntegrationTestCase):
         anotherslot.defined_timespan = span
 
         Session.add(anotherslot)
-        self.assertRaises(IntegrityError, Session.flush)
+        self.assertRaises(FlushError, Session.flush)

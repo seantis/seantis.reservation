@@ -1,5 +1,5 @@
 from z3c.saconfig import Session
-from sqlalchemy import _and
+from sqlalchemy.sql import and_, or_
 
 from seantis.reservation.models import DefinedTimeSpan
 from seantis.reservation.models import ReservedTimeSlot
@@ -17,10 +17,11 @@ class Scheduler(object):
             return None
 
         span = DefinedTimeSpan()
+        span.raster = raster
         span.start = start
         span.end = end
+        span.group = group
         span.resource = self.resource
-        span.group = self.group
 
         Session.add(span)
 
@@ -33,16 +34,22 @@ class Scheduler(object):
         return False
 
     def defined_in_range(self, start, end):
+        # Query version of DefinedTimeSpan.overlaps
         query = Session.query(DefinedTimeSpan).filter(
-            _and(
-                DefinedTimeSpan.start>=start,
-                DefinedTimeSpan.end<=end
-            )
+            or_(
+                and_(
+                    DefinedTimeSpan._start <= start,
+                    start <= DefinedTimeSpan._end
+                ),
+                and_(
+                    start <= DefinedTimeSpan._start,
+                    DefinedTimeSpan._start <= end
+                )
+            ),
         )
 
-        for span in query:
-            if span.overlaps(start, end):
-                yield span
+        for result in query:
+            yield result
 
     def reserve(self, dates):
         slots_to_reserve = []
@@ -53,8 +60,9 @@ class Scheduler(object):
                     slot.start = slot_start
                     slot.end = slot_end
                     slot.defined_timespan = span
-                    slot.resource = slot.resource
+                    slot.resource = self.resource
 
                     slots_to_reserve.append(slot)
         
         Session.add_all(slots_to_reserve)
+        return slots_to_reserve
