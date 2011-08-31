@@ -25,8 +25,8 @@ setup(name='seantis.reservation',
       zip_safe=False,
       install_requires=[
           'setuptools',
-          'zope.sqlalchemy'
-          # -*- Extra requirements: -*-
+          'z3c.saconfig',
+          'psycopg2',
       ],
       entry_points="""
       # -*- Entry points: -*-
