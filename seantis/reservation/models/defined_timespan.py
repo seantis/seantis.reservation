@@ -48,7 +48,8 @@ class DefinedTimeSpan(ORMBase):
 
     def set_raster(self, raster):
         # the raster can only be set once!
-        self._raster = not self._raster and raster or self._raster
+        assert(not self._raster)
+        self._raster = raster
 
     raster = property(get_raster, set_raster)
 
@@ -69,6 +70,10 @@ class DefinedTimeSpan(ORMBase):
     end = property(get_end, set_end)
 
     def overlaps(self, start, end):
+        """ Returns true if the current timespan overlaps with the given
+        start and end date.
+
+        """
         start, end = rasterize_span(start, end, self.raster)
 
         if self.start <= start and start <= self.end:
@@ -80,6 +85,7 @@ class DefinedTimeSpan(ORMBase):
         return False
 
     def open_dates(self, start=None, end=None):
+        """ Returns the slots which are not yet reserved."""
         reserved = [slot.start for slot in self.reserved_slots.all()]
         open_dates = []
         for start, end in self.possible_dates(start, end):
@@ -89,6 +95,10 @@ class DefinedTimeSpan(ORMBase):
         return open_dates
 
     def possible_dates(self, start=None, end=None):
+        """ Returns the slots which exist with this timespan. Does not
+        account for slots which are already reserved.
+
+        """
         start = start or self.start
         start = start < self.start and self.start or start
 
