@@ -6,10 +6,10 @@ from sqlalchemy.exc import FlushError
 
 from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation.models import DefinedTimeSpan
-from seantis.reservation.models import ReservedTimeSlot
+from seantis.reservation.models import ReservedSlot
 
 
-class TestReservedTimeSlot(IntegrationTestCase):
+class TestReservedSlot(IntegrationTestCase):
 
     def test_simple_add(self):
 
@@ -18,7 +18,7 @@ class TestReservedTimeSlot(IntegrationTestCase):
         span.start = datetime(2011, 1, 1, 15)
         span.end = datetime(2011, 1, 1, 15, 59)
 
-        slot = ReservedTimeSlot(resource=span.resource)
+        slot = ReservedSlot(resource=span.resource)
         slot.start = span.start
         slot.end = span.end
         slot.defined_timespan = span
@@ -29,7 +29,7 @@ class TestReservedTimeSlot(IntegrationTestCase):
         self.assertEqual(span.reserved_slots.count(), 1)
 
         # Ensure that the same slot cannot be doubly used
-        anotherslot = ReservedTimeSlot(resource=span.resource)
+        anotherslot = ReservedSlot(resource=span.resource)
         anotherslot.start = span.start
         anotherslot.end = span.end
         anotherslot.defined_timespan = span

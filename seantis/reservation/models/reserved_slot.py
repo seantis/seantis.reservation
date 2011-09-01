@@ -8,9 +8,9 @@ from seantis.reservation import ORMBase
 from seantis.reservation.models import customtypes
 from seantis.reservation.models.defined_timespan import DefinedTimeSpan
 
-class ReservedTimeSlot(ORMBase):
+class ReservedSlot(ORMBase):
 
-    __tablename__ = 'reserved_timeslot'
+    __tablename__ = 'reserved_slot'
 
     resource = Column(
         customtypes.GUID(),

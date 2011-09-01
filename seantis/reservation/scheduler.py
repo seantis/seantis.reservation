@@ -2,7 +2,7 @@ from z3c.saconfig import Session
 from sqlalchemy.sql import and_, or_
 
 from seantis.reservation.models import DefinedTimeSpan
-from seantis.reservation.models import ReservedTimeSlot
+from seantis.reservation.models import ReservedSlot
 from seantis.reservation.error import DefinitionConflict
 
 class Scheduler(object):
@@ -66,7 +66,7 @@ class Scheduler(object):
         for start, end in dates:
             for span in self.defined_in_range(start, end):
                 for slot_start, slot_end in span.possible_dates(start, end):
-                    slot = ReservedTimeSlot()
+                    slot = ReservedSlot()
                     slot.start = slot_start
                     slot.end = slot_end
                     slot.defined_timespan = span
