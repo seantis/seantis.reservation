@@ -26,7 +26,8 @@ class TestScheduler(IntegrationTestCase):
 
         start = datetime(2011, 1, 1, 15)
         end = datetime(2011, 1, 1, 16)
-        span = sc.define(((start, end),), raster=15)[0]
+        group, spans = sc.define(((start, end),), raster=15)
+        span = spans[0]
 
         possible_dates = list(span.possible_dates())
 
@@ -46,6 +47,12 @@ class TestScheduler(IntegrationTestCase):
 
         reserved_slots = list(sc.reserved_slots(reservation))
         self.assertEqual(slots, reserved_slots)
+
+        # remove the reservation
+        sc.remove_reservation(reservation)
+
+        remaining = span.open_dates()
+        self.assertEqual(len(remaining), 4)
 
     def test_define_overlap(self):
         sc1 = Scheduler(uuid())

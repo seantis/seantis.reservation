@@ -34,8 +34,8 @@ class DefinedTimeSpan(ORMBase):
     )
 
     group = Column(
-        types.Unicode(140),
-        nullable=True
+        customtypes.GUID(),
+        nullable=False
     )
 
     _raster = Column(

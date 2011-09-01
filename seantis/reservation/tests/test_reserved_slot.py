@@ -17,6 +17,7 @@ class TestReservedSlot(IntegrationTestCase):
         span = DefinedTimeSpan(raster=15, resource=uuid())
         span.start = datetime(2011, 1, 1, 15)
         span.end = datetime(2011, 1, 1, 15, 59)
+        span.group = uuid()
 
         reservation = uuid()
 

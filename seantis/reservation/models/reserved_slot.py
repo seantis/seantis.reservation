@@ -10,7 +10,7 @@ from seantis.reservation.models.defined_timespan import DefinedTimeSpan
 
 class ReservedSlot(ORMBase):
 
-    __tablename__ = 'reserved_slot'
+    __tablename__ = 'reserved_timeslot'
 
     resource = Column(
         customtypes.GUID(),
@@ -40,4 +40,9 @@ class ReservedSlot(ORMBase):
     defined_timespan = relation(DefinedTimeSpan,
         primaryjoin=DefinedTimeSpan.id==timespan_id,
         backref=backref('reserved_slots', lazy='dynamic', cascade='all')
+    )
+
+    reservation = Column(
+        customtypes.GUID(),
+        nullable = False
     )

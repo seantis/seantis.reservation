@@ -1,3 +1,4 @@
+from uuid import uuid4 as uuid
 from z3c.saconfig import Session
 from sqlalchemy.sql import and_, or_
 
@@ -10,7 +11,7 @@ class Scheduler(object):
     def __init__(self, resource_uuid):
         self.resource = resource_uuid
 
-    def define(self, dates, group=None, raster=15):
+    def define(self, dates, group=uuid(), raster=15):
         # TODO add locking here
 
         # Make sure that this span does not overlap another
@@ -20,10 +21,8 @@ class Scheduler(object):
                 raise DefinitionConflict(start, end, existing)
 
         defines = []
-
         for start, end in dates:
-            span = DefinedTimeSpan()
-            span.raster = raster
+            span = DefinedTimeSpan(raster=raster)
             span.start = start
             span.end = end
             span.group = group
@@ -33,7 +32,7 @@ class Scheduler(object):
 
         Session.add_all(defines)
 
-        return defines
+        return group, defines
 
     def any_defined_in_range(self, start, end):
         for defined in self.defined_in_range(start, end):
@@ -62,6 +61,7 @@ class Scheduler(object):
             yield result
 
     def reserve(self, dates):
+        reservation = uuid()
         slots_to_reserve = []
         for start, end in dates:
             for span in self.defined_in_range(start, end):
@@ -71,8 +71,31 @@ class Scheduler(object):
                     slot.end = slot_end
                     slot.defined_timespan = span
                     slot.resource = self.resource
+                    slot.reservation = reservation
 
                     slots_to_reserve.append(slot)
         
         Session.add_all(slots_to_reserve)
-        return slots_to_reserve
+        return reservation, slots_to_reserve
+
+    def reserved_slots(self, reservation):
+        query = Session.query(ReservedSlot).filter(
+            ReservedSlot.reservation == reservation
+        )
+
+        for result in query:
+            yield result
+
+    def remove_reservation(self, reservation):
+        query = Session.query(ReservedSlot).filter(
+            ReservedSlot.reservation == reservation
+        )
+
+        query.delete()
+
+    def remove_definition(self, group):
+        query = Session.query(DefinedTimeSpan).filter(
+            DefinedTimeSpan.group == group
+        )
+
+        query.delete()
