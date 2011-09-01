@@ -4,6 +4,7 @@ from datetime import timedelta
 
 from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation.scheduler import Scheduler
+from seantis.reservation.error import DefinitionConflict
 
 class TestScheduler(IntegrationTestCase):
 
@@ -50,6 +51,6 @@ class TestScheduler(IntegrationTestCase):
         start = datetime(2011, 1, 1, 15, 0)
         end = datetime(2011, 1, 1, 16, 0)
         
-        self.assertTrue(sc1.define(((start, end),), raster=15) != None)
-        self.assertTrue(sc2.define(((start, end),), raster=15) != None)
-        self.assertTrue(sc1.define(((start, end),), raster=15) == None)
+        sc1.define(((start, end),), raster=15)
+        sc2.define(((start, end),), raster=15)
+        self.assertRaises(DefinitionConflict, sc1.define, ((start, end),), raster=15)

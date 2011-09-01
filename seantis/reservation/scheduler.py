@@ -3,6 +3,7 @@ from sqlalchemy.sql import and_, or_
 
 from seantis.reservation.models import DefinedTimeSpan
 from seantis.reservation.models import ReservedTimeSlot
+from seantis.reservation.error import DefinitionConflict
 
 class Scheduler(object):
 
@@ -14,8 +15,9 @@ class Scheduler(object):
 
         # Make sure that this span does not overlap another
         for start, end in dates:
-            if self.any_defined_in_range(start, end):
-                return None
+            existing = self.any_defined_in_range(start, end)
+            if existing:
+                raise DefinitionConflict(start, end, existing)
 
         defines = []
 
@@ -35,9 +37,9 @@ class Scheduler(object):
 
     def any_defined_in_range(self, start, end):
         for defined in self.defined_in_range(start, end):
-            return True
+            return defined
 
-        return False
+        return None
 
     def defined_in_range(self, start, end):
         # Query version of DefinedTimeSpan.overlaps
