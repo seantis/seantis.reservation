@@ -18,10 +18,13 @@ class TestReservedSlot(IntegrationTestCase):
         span.start = datetime(2011, 1, 1, 15)
         span.end = datetime(2011, 1, 1, 15, 59)
 
+        reservation = uuid()
+
         slot = ReservedSlot(resource=span.resource)
         slot.start = span.start
         slot.end = span.end
         slot.defined_timespan = span
+        slot.reservation = reservation
 
         Session.add(span)
         Session.add(slot)
@@ -33,6 +36,7 @@ class TestReservedSlot(IntegrationTestCase):
         anotherslot.start = span.start
         anotherslot.end = span.end
         anotherslot.defined_timespan = span
+        anotherslot.reservation = reservation
 
         Session.add(anotherslot)
         self.assertRaises(FlushError, Session.flush)

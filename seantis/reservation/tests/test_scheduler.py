@@ -35,7 +35,7 @@ class TestScheduler(IntegrationTestCase):
 
         # reserve half of the slots
         time = (datetime(2011, 1, 1, 15), datetime(2011, 1, 1, 15, 30))
-        slots = sc.reserve((time,))
+        reservation, slots = sc.reserve((time,))
 
         self.assertEqual(len(slots), 2)
 
@@ -43,6 +43,9 @@ class TestScheduler(IntegrationTestCase):
         remaining = span.open_dates()
         self.assertEqual(len(remaining), 2)
         self.assertEqual(remaining, possible_dates[2:])
+
+        reserved_slots = list(sc.reserved_slots(reservation))
+        self.assertEqual(slots, reserved_slots)
 
     def test_define_overlap(self):
         sc1 = Scheduler(uuid())
