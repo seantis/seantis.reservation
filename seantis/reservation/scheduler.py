@@ -7,12 +7,19 @@ from seantis.reservation.models import ReservedSlot
 from seantis.reservation.error import DefinitionConflict
 
 class Scheduler(object):
+    """Used to manage the definitions and reservations of a resource."""
 
     def __init__(self, resource_uuid):
         self.resource = resource_uuid
 
     def define(self, dates, group=uuid(), raster=15):
-        # TODO add locking here
+        """Defines a list of dates with the given group and raster. Raises
+        a DefinitionConflict exception if any date conflicts with an existing
+        definition. 
+
+        """
+
+        # TODO add locking here (one resource - one scheduler)
 
         # Make sure that this span does not overlap another
         for start, end in dates:
@@ -20,6 +27,7 @@ class Scheduler(object):
             if existing:
                 raise DefinitionConflict(start, end, existing)
 
+        # Define the timespans
         defines = []
         for start, end in dates:
             span = DefinedTimeSpan(raster=raster)
@@ -35,12 +43,14 @@ class Scheduler(object):
         return group, defines
 
     def any_defined_in_range(self, start, end):
+        """Returns the first defined timespan in the range or None."""
         for defined in self.defined_in_range(start, end):
             return defined
 
         return None
 
     def defined_in_range(self, start, end):
+        """Yields a list of defined timespans for the current resource."""
         # Query version of DefinedTimeSpan.overlaps
         query = Session.query(DefinedTimeSpan).filter(
             or_(
@@ -61,6 +71,9 @@ class Scheduler(object):
             yield result
 
     def reserve(self, dates):
+        """Tries to reserve a list of dates (tuples). If these dates are already
+        reserved then the sqlalchemy commit/flash will fail (possibly later).
+        """
         reservation = uuid()
         slots_to_reserve = []
         for start, end in dates:
@@ -79,6 +92,7 @@ class Scheduler(object):
         return reservation, slots_to_reserve
 
     def reserved_slots(self, reservation):
+        """Returns all reserved slots of the given reservation."""
         query = Session.query(ReservedSlot).filter(
             ReservedSlot.reservation == reservation
         )
