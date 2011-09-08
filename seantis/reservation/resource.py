@@ -38,7 +38,4 @@ class View(grok.View):
     grok.context(IResourceBase)
     grok.require('zope2.View')
     
-    #template = grok.PageTemplateFile('templates/resource.pt')
-
-    def render(self, **kwargs):
-        return 'Hello World'
+    template = grok.PageTemplateFile('templates/resource.pt')
