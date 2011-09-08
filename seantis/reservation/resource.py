@@ -1,10 +1,20 @@
 from five import grok
 from plone.directives import form
 from plone.dexterity.content import Container
+from zope import schema
+
+from seantis.reservation import _
 
 class IResourceBase(form.Schema):
-    pass
 
+    title = schema.TextLine(
+            title=_(u'Name')
+        )
+
+    description = schema.Text(
+            title=_(u'Description'),
+            required=False
+        )
 
 class IResource(IResourceBase):
     pass
