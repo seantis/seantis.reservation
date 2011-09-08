@@ -27,7 +27,8 @@ setup(name='seantis.reservation',
           'setuptools',
           'z3c.saconfig',
           'psycopg2',
-          'plone.app.testing'
+          'plone.app.testing',
+          'plone.app.dexterity [grok]',
       ],
       entry_points="""
       # -*- Entry points: -*-
