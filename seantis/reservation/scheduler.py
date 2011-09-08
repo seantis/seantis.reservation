@@ -52,7 +52,7 @@ class Scheduler(object):
         return None
 
     def available_in_range(self, start, end):
-        """Yields a list of available timespans for the current resource."""
+        """Yields a list of availables for the current resource."""
         
         # Query version of DefinedTimeSpan.overlaps
         query = Session.query(Available).filter(
