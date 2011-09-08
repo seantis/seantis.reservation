@@ -41,7 +41,7 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(len(slots), 2)
 
         # check the remaining slots
-        remaining = available.slots()
+        remaining = available.free_slots()
         self.assertEqual(len(remaining), 2)
         self.assertEqual(remaining, possible_dates[2:])
 
@@ -51,7 +51,7 @@ class TestScheduler(IntegrationTestCase):
         # remove the reservation
         sc.remove_reservation(reservation)
 
-        remaining = available.slots()
+        remaining = available.free_slots()
         self.assertEqual(len(remaining), 4)
 
     def test_available_overlap(self):

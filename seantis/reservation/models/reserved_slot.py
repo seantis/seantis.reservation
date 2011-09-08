@@ -9,8 +9,9 @@ from seantis.reservation.models import customtypes
 from seantis.reservation.models.available import Available
 
 class ReservedSlot(ORMBase):
+    """Describes a slot within an Available time which is reserved."""
 
-    __tablename__ = 'reserved_timeslot'
+    __tablename__ = 'reserved_slot'
 
     resource = Column(
         customtypes.GUID(),

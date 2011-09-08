@@ -9,6 +9,26 @@ from seantis.reservation.raster import rasterize_end
 from seantis.reservation.raster import iterate_span
 
 class Available(ORMBase):
+    """Describes a timespan within which one or many timeslots can be reserved.
+    
+    It does not actually define a time in which a resource is free, but a time
+    in which a reservation can generally be used. This is opposed to times that
+    weren't made available and can therefore never be reserved.
+
+    An Available timespan is divided into slots that snap to a raster of minutes.
+    These slots help dealing with overlapping times.
+
+    Furthermore, an instance of Available has two kinds of slots. Free slots and
+    reserved slots. Combined they form all_slots.
+
+    Other possible names that weren't used for various reasons are
+        - ResourceTimes
+        - Bookable
+        - DefinedTimeSpans
+        - Present
+        - Time
+
+    """
 
     __tablename__ = 'availables'
 
@@ -61,7 +81,7 @@ class Available(ORMBase):
 
         return False
 
-    def slots(self, start=None, end=None):
+    def free_slots(self, start=None, end=None):
         """ Returns the slots which are not yet reserved."""
         reserved = [slot.start for slot in self.reserved_slots.all()]
         slots = []
