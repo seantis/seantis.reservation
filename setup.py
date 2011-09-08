@@ -24,11 +24,17 @@ setup(name='seantis.reservation',
       include_package_data=True,
       zip_safe=False,
       install_requires=[
+          'Plone',
           'setuptools',
           'z3c.saconfig',
           'psycopg2',
+          'collective.autopermission',
+          'collective.testcaselayer',
           'plone.app.testing',
           'plone.app.dexterity [grok]',
+          'plone.behavior',
+          'plone.directives.form',
+          'plone.app.referenceablebehavior'
       ],
       entry_points="""
       # -*- Entry points: -*-

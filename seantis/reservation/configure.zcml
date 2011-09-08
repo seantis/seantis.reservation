@@ -1,10 +1,33 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:five="http://namespaces.zope.org/five"
+    xmlns:grok="http://namespaces.zope.org/grok"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+
     xmlns:i18n="http://namespaces.zope.org/i18n"
-    i18n_domain="seantis.reservation">
+    i18n_domain="seantis.reservation"
+    >
 
+<!-- ZCML of this package fails in Zope 2.13 for strange reason 
 
-  <!-- -*- extra stuff goes here -*- -->
-  
+For more information see
+http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc16027017f?pli=1
+
+-->
+<exclude package="zope.contentprovider" /> 
+
+<i18n:registerTranslations directory="locales" />
+
+<includeDependencies package="." />
+
+<grok:grok package="." />
+
+<genericsetup:registerProfile
+    name="default"
+    title="seantis.reservation"
+    directory="profiles/default"
+    description="Installs the seantis.reservation package"
+    provides="Products.GenericSetup.interfaces.EXTENSION"
+/>
+
 </configure>
