@@ -1,8 +1,10 @@
 from five import grok
 from plone.directives import form
 from plone.dexterity.content import Container
+from plone.uuid.interfaces import IUUID
 from zope import schema
 
+from seantis.reservation import Scheduler
 from seantis.reservation import _
 
 class IResourceBase(form.Schema):
@@ -16,12 +18,21 @@ class IResourceBase(form.Schema):
             required=False
         )
 
+
 class IResource(IResourceBase):
     pass
 
 
 class Resource(Container):
-    pass
+
+    @property
+    def uuid(self):
+        return IUUID(self)
+
+    @property
+    def scheduler(self):
+        return Scheduler(self.uuid)
+
 
 class View(grok.View):
     grok.context(IResourceBase)
