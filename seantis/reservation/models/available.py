@@ -8,50 +8,17 @@ from seantis.reservation.raster import rasterize_start
 from seantis.reservation.raster import rasterize_end
 from seantis.reservation.raster import iterate_span
 
-class DefinedTimeSpan(ORMBase):
+class Available(ORMBase):
 
-    __tablename__ = 'defined_timespan'
+    __tablename__ = 'availables'
 
-    id = Column(
-        types.Integer(),
-        primary_key=True,
-        autoincrement=True
-    )
+    id = Column(types.Integer(), primary_key=True, autoincrement=True)
+    resource = Column(customtypes.GUID(), nullable=False)
+    group = Column(customtypes.GUID(), nullable=False)
 
-    resource = Column(
-        customtypes.GUID(),
-        nullable=False,
-    )
-
-    _start = Column(
-        types.DateTime(),
-        nullable=False,
-    )
-
-    _end = Column(
-        types.DateTime(),
-        nullable=False
-    )
-
-    group = Column(
-        customtypes.GUID(),
-        nullable=False
-    )
-
-    _raster = Column(
-        types.Integer(),
-        nullable=False
-    )
-
-    def get_raster(self):
-        return self._raster
-
-    def set_raster(self, raster):
-        # the raster can only be set once!
-        assert(not self._raster)
-        self._raster = raster
-
-    raster = property(get_raster, set_raster)
+    _start = Column(types.DateTime(), nullable=False)
+    _end = Column(types.DateTime(), nullable=False)
+    _raster = Column(types.Integer(), nullable=False)
 
     def get_start(self):
         return self._start
@@ -69,6 +36,16 @@ class DefinedTimeSpan(ORMBase):
 
     end = property(get_end, set_end)
 
+    def get_raster(self):
+        return self._raster
+
+    def set_raster(self, raster):
+        # the raster can only be set once!
+        assert(not self._raster)
+        self._raster = raster
+
+    raster = property(get_raster, set_raster)
+
     def overlaps(self, start, end):
         """ Returns true if the current timespan overlaps with the given
         start and end date.
@@ -84,17 +61,17 @@ class DefinedTimeSpan(ORMBase):
 
         return False
 
-    def open_dates(self, start=None, end=None):
+    def slots(self, start=None, end=None):
         """ Returns the slots which are not yet reserved."""
         reserved = [slot.start for slot in self.reserved_slots.all()]
-        open_dates = []
-        for start, end in self.possible_dates(start, end):
+        slots = []
+        for start, end in self.all_slots(start, end):
             if not start in reserved:
-                open_dates.append((start, end))
+                slots.append((start, end))
         
-        return open_dates
+        return slots
 
-    def possible_dates(self, start=None, end=None):
+    def all_slots(self, start=None, end=None):
         """ Returns the slots which exist with this timespan. Does not
         account for slots which are already reserved.
 

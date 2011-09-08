@@ -2,9 +2,9 @@ from uuid import uuid4 as uuid
 from z3c.saconfig import Session
 from sqlalchemy.sql import and_, or_
 
-from seantis.reservation.models import DefinedTimeSpan
+from seantis.reservation.models import Available
 from seantis.reservation.models import ReservedSlot
-from seantis.reservation.error import DefinitionConflict
+from seantis.reservation.error import OverlappingAvailable
 
 class Scheduler(object):
     """Used to manage the definitions and reservations of a resource."""
@@ -12,10 +12,10 @@ class Scheduler(object):
     def __init__(self, resource_uuid):
         self.resource = resource_uuid
 
-    def define(self, dates, group=uuid(), raster=15):
-        """Defines a list of dates with the given group and raster. Raises
-        a DefinitionConflict exception if any date conflicts with an existing
-        definition. 
+    def make_available(self, dates, group=uuid(), raster=15):
+        """Makes a list of dates available with the given group and raster. 
+        Raises a OverlappingAvailable exception if any date conflicts with an 
+        existing definition. 
 
         """
 
@@ -23,72 +23,78 @@ class Scheduler(object):
 
         # Make sure that this span does not overlap another
         for start, end in dates:
-            existing = self.any_defined_in_range(start, end)
+            existing = self.any_available_in_range(start, end)
+            
             if existing:
-                raise DefinitionConflict(start, end, existing)
+                raise OverlappingAvailable(start, end, existing)
 
-        # Define the timespans
-        defines = []
+        # Create the availabilities
+        availables = []
+
         for start, end in dates:
-            span = DefinedTimeSpan(raster=raster)
-            span.start = start
-            span.end = end
-            span.group = group
-            span.resource = self.resource
+            available = Available(raster=raster)
+            available.start = start
+            available.end = end
+            available.group = group
+            available.resource = self.resource
 
-            defines.append(span)
+            availables.append(available)
 
-        Session.add_all(defines)
+        Session.add_all(availables)
 
-        return group, defines
+        return group, availables
 
-    def any_defined_in_range(self, start, end):
-        """Returns the first defined timespan in the range or None."""
-        for defined in self.defined_in_range(start, end):
-            return defined
+    def any_available_in_range(self, start, end):
+        """Returns the first available timespan in the range or None."""
+        for available in self.available_in_range(start, end):
+            return available
 
         return None
 
-    def defined_in_range(self, start, end):
-        """Yields a list of defined timespans for the current resource."""
+    def available_in_range(self, start, end):
+        """Yields a list of available timespans for the current resource."""
+        
         # Query version of DefinedTimeSpan.overlaps
-        query = Session.query(DefinedTimeSpan).filter(
+        query = Session.query(Available).filter(
             or_(
                 and_(
-                    DefinedTimeSpan._start <= start,
-                    start <= DefinedTimeSpan._end
+                    Available._start <= start,
+                    start <= Available._end
                 ),
                 and_(
-                    start <= DefinedTimeSpan._start,
-                    DefinedTimeSpan._start <= end
+                    start <= Available._start,
+                    Available._start <= end
                 )
             ),
         )
 
-        query = query.filter(DefinedTimeSpan.resource == self.resource)
+        query = query.filter(Available.resource == self.resource)
 
         for result in query:
             yield result
 
     def reserve(self, dates):
         """Tries to reserve a list of dates (tuples). If these dates are already
-        reserved then the sqlalchemy commit/flash will fail (possibly later).
+        reserved then the sqlalchemy commit/flash will fail.
+
         """
         reservation = uuid()
         slots_to_reserve = []
+
         for start, end in dates:
-            for span in self.defined_in_range(start, end):
-                for slot_start, slot_end in span.possible_dates(start, end):
+            for available in self.available_in_range(start, end):
+                for slot_start, slot_end in available.all_slots(start, end):
                     slot = ReservedSlot()
                     slot.start = slot_start
                     slot.end = slot_end
-                    slot.defined_timespan = span
+                    slot.available = available
                     slot.resource = self.resource
                     slot.reservation = reservation
 
                     slots_to_reserve.append(slot)
         
         Session.add_all(slots_to_reserve)
+
         return reservation, slots_to_reserve
 
     def reserved_slots(self, reservation):
@@ -108,8 +114,8 @@ class Scheduler(object):
         query.delete()
 
     def remove_definition(self, group):
-        query = Session.query(DefinedTimeSpan).filter(
-            DefinedTimeSpan.group == group
+        query = Session.query(Available).filter(
+            Available.group == group
         )
 
         query.delete()

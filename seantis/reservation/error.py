@@ -1,7 +1,7 @@
 class ReservationError(Exception):
     pass
 
-class DefinitionConflict(ReservationError):
+class OverlappingAvailable(ReservationError):
 
     def __init__(self, start, end, existing):
         self.start = start

@@ -1,2 +1,2 @@
-from defined_timespan import DefinedTimeSpan
+from available import Available
 from reserved_slot import ReservedSlot

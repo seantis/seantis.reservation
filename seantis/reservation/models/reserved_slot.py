@@ -6,7 +6,7 @@ from sqlalchemy.orm import backref
 
 from seantis.reservation import ORMBase
 from seantis.reservation.models import customtypes
-from seantis.reservation.models.defined_timespan import DefinedTimeSpan
+from seantis.reservation.models.available import Available
 
 class ReservedSlot(ORMBase):
 
@@ -31,14 +31,14 @@ class ReservedSlot(ORMBase):
         nullable=False
     )
 
-    timespan_id = Column(
+    available_id = Column(
         types.Integer(), 
-        ForeignKey('defined_timespan.id'),
+        ForeignKey(Available.id),
         nullable=False
     )
 
-    defined_timespan = relation(DefinedTimeSpan,
-        primaryjoin=DefinedTimeSpan.id==timespan_id,
+    available = relation(Available,
+        primaryjoin=Available.id==available_id,
         backref=backref('reserved_slots', lazy='dynamic', cascade='all')
     )
 
