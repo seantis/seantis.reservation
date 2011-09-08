@@ -1,3 +1,5 @@
+import json
+
 from five import grok
 from plone.directives import form
 from plone.dexterity.content import Container
@@ -39,3 +41,31 @@ class View(grok.View):
     grok.require('zope2.View')
     
     template = grok.PageTemplateFile('templates/resource.pt')
+
+    calendar_id = 'seantis-reservation-calendar'
+
+    @property
+    def calendar_js(self):
+        template = """
+        <script type="text/javascript">
+            (function($) {
+                $(document).ready(function() {
+                    $('#%s').fullCalendar(%s);
+                });
+            })( jQuery );
+        </script>
+        """
+
+        eventurl = self.context.absolute_url_path() + '/slots'
+        options = json.dumps(dict(events=eventurl))
+
+        return template % (self.calendar_id, options)
+
+class Slots(grok.View):
+    grok.context(IResourceBase)
+    grok.require('zope2.View')
+    grok.name('slots')
+
+    def render(self, **kwargs):
+        pass
+        

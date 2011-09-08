@@ -11,6 +11,10 @@
 
 <body>
 
+<metal:block metal:fill-slot="javascript_head_slot">
+    <tal:block tal:replace="structure view/calendar_js" />
+</metal:block>
+
 <metal:main fill-slot="main">
     <tal:main-macro metal:define-macro="main">
 
@@ -22,7 +26,8 @@
         <div class="documentContent">
           <p tal:content="context/description" />
 
-          
+          <div tal:attributes="id view/calendar_id"></div>
+
         </div>
 
         <div tal:replace="structure provider:plone.belowcontentbody" />
