@@ -7,3 +7,6 @@ class OverlappingAllocation(ReservationError):
         self.start = start
         self.end = end
         self.existing = existing
+
+class ResourceLocked(ReservationError):
+    pass

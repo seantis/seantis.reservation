@@ -1,10 +1,13 @@
 from uuid import uuid4 as uuid
 from z3c.saconfig import Session
 from sqlalchemy.sql import and_, or_
+from zope.component import getUtility
 
+from seantis.reservation.lock import IResourceLock
 from seantis.reservation.models import Allocation
 from seantis.reservation.models import ReservedSlot
 from seantis.reservation.error import OverlappingAllocation
+from seantis.reservation.error import ResourceLocked
 
 class Scheduler(object):
     """Used to manage the definitions and reservations of a resource."""
@@ -18,6 +21,20 @@ class Scheduler(object):
         existing allocation. 
 
         """
+
+        # TODO use decorator for locked functions
+
+        lock = getUtility(IResourceLock)
+        try:
+            if not lock.acquire(self.resource):
+                raise ResourceLocked
+
+            return self._allocate(dates, group, raster)
+        finally:
+            lock.release(self.resource)
+
+
+    def _allocate(self, dates, group, raster):
         group = group or uuid()
         
         # TODO add locking here (one resource - one scheduler)
