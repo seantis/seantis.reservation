@@ -59,9 +59,16 @@ class View(grok.View):
         """
 
         eventurl = self.context.absolute_url_path() + '/slots'
-        options = json.dumps(dict(events=eventurl))
 
-        return template % (self.calendar_id, options)
+        options = {}
+        options['header'] = {
+            'left':'prev, next today',
+            'right':'month, basicWeek, basicDay'
+        }
+        options['defaultView'] = 'basicWeek'
+        options['events'] = eventurl
+
+        return template % (self.calendar_id, json.dumps(options))
 
 class Slots(grok.View):
     grok.context(IResourceBase)

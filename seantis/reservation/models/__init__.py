@@ -1,2 +1,2 @@
-from available import Available
+from allocation import Allocation
 from reserved_slot import ReservedSlot

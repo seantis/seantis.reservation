@@ -2,9 +2,9 @@ from uuid import uuid4 as uuid
 from z3c.saconfig import Session
 from sqlalchemy.sql import and_, or_
 
-from seantis.reservation.models import Available
+from seantis.reservation.models import Allocation
 from seantis.reservation.models import ReservedSlot
-from seantis.reservation.error import OverlappingAvailable
+from seantis.reservation.error import OverlappingAllocation
 
 class Scheduler(object):
     """Used to manage the definitions and reservations of a resource."""
@@ -12,10 +12,10 @@ class Scheduler(object):
     def __init__(self, resource_uuid):
         self.resource = resource_uuid
 
-    def make_available(self, dates, group=uuid(), raster=15):
+    def allocate(self, dates, group=uuid(), raster=15):
         """Makes a list of dates available with the given group and raster. 
-        Raises a OverlappingAvailable exception if any date conflicts with an 
-        existing definition. 
+        Raises a OverlappingAllocation exception if any date conflicts with an 
+        existing allocation. 
 
         """
 
@@ -23,52 +23,52 @@ class Scheduler(object):
 
         # Make sure that this span does not overlap another
         for start, end in dates:
-            existing = self.any_available_in_range(start, end)
+            existing = self.any_allocations_in_range(start, end)
             
             if existing:
-                raise OverlappingAvailable(start, end, existing)
+                raise OverlappingAllocation(start, end, existing)
 
         # Create the availabilities
-        availables = []
+        allocations = []
 
         for start, end in dates:
-            available = Available(raster=raster)
-            available.start = start
-            available.end = end
-            available.group = group
-            available.resource = self.resource
+            allocation = Allocation(raster=raster)
+            allocation.start = start
+            allocation.end = end
+            allocation.group = group
+            allocation.resource = self.resource
 
-            availables.append(available)
+            allocations.append(allocation)
 
-        Session.add_all(availables)
+        Session.add_all(allocations)
 
-        return group, availables
+        return group, allocations
 
-    def any_available_in_range(self, start, end):
-        """Returns the first available timespan in the range or None."""
-        for available in self.available_in_range(start, end):
-            return available
+    def any_allocations_in_range(self, start, end):
+        """Returns the first allocated timespan in the range or None."""
+        for allocation in self.allocations_in_range(start, end):
+            return allocation
 
         return None
 
-    def available_in_range(self, start, end):
-        """Yields a list of availables for the current resource."""
+    def allocations_in_range(self, start, end):
+        """Yields a list of allocations for the current resource."""
         
         # Query version of DefinedTimeSpan.overlaps
-        query = Session.query(Available).filter(
+        query = Session.query(Allocation).filter(
             or_(
                 and_(
-                    Available._start <= start,
-                    start <= Available._end
+                    Allocation._start <= start,
+                    start <= Allocation._end
                 ),
                 and_(
-                    start <= Available._start,
-                    Available._start <= end
+                    start <= Allocation._start,
+                    Allocation._start <= end
                 )
             ),
         )
 
-        query = query.filter(Available.resource == self.resource)
+        query = query.filter(Allocation.resource == self.resource)
 
         for result in query:
             yield result
@@ -82,12 +82,12 @@ class Scheduler(object):
         slots_to_reserve = []
 
         for start, end in dates:
-            for available in self.available_in_range(start, end):
-                for slot_start, slot_end in available.all_slots(start, end):
+            for allocation in self.allocations_in_range(start, end):
+                for slot_start, slot_end in allocation.all_slots(start, end):
                     slot = ReservedSlot()
                     slot.start = slot_start
                     slot.end = slot_end
-                    slot.available = available
+                    slot.allocation = allocation
                     slot.resource = self.resource
                     slot.reservation = reservation
 
@@ -113,9 +113,9 @@ class Scheduler(object):
 
         query.delete()
 
-    def remove_definition(self, group):
-        query = Session.query(Available).filter(
-            Available.group == group
+    def remove_allocation(self, group):
+        query = Session.query(Allocation).filter(
+            Allocation.group == group
         )
 
         query.delete()

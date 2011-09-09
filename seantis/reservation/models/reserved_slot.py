@@ -6,10 +6,10 @@ from sqlalchemy.orm import backref
 
 from seantis.reservation import ORMBase
 from seantis.reservation.models import customtypes
-from seantis.reservation.models.available import Available
+from seantis.reservation.models.allocation import Allocation
 
 class ReservedSlot(ORMBase):
-    """Describes a slot within an Available time which is reserved."""
+    """Describes a reserved slot within an allocated timespan."""
 
     __tablename__ = 'reserved_slots'
 
@@ -32,14 +32,14 @@ class ReservedSlot(ORMBase):
         nullable=False
     )
 
-    available_id = Column(
+    allocation_id = Column(
         types.Integer(), 
-        ForeignKey(Available.id),
+        ForeignKey(Allocation.id),
         nullable=False
     )
 
-    available = relation(Available,
-        primaryjoin=Available.id==available_id,
+    allocation = relation(Allocation,
+        primaryjoin=Allocation.id==allocation_id,
         backref=backref('reserved_slots', lazy='dynamic', cascade='all')
     )
 
