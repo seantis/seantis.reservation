@@ -8,6 +8,8 @@ from seantis.reservation.raster import rasterize_start
 from seantis.reservation.raster import rasterize_end
 from seantis.reservation.raster import iterate_span
 
+
+
 class Allocation(ORMBase):
     """Describes a timespan within which one or many timeslots can be reserved.
 
@@ -87,3 +89,22 @@ class Allocation(ORMBase):
 
         for start, end in iterate_span(start, end, self.raster):
             yield start, end
+
+    @property
+    def occupation_rate(self):
+        """Returns the occupation rate in percent (integer)."""
+
+        total = sum(1 for s in self.all_slots())
+        reserved = self.reserved_slots.count()
+
+        if total == reserved:
+            return 100
+
+        if reserved == 0:
+            return 0
+
+        # Can't think of a reason why this should happen..
+        assert(total > 0)
+
+        # ..but if it does I prefer an assertion to a division through zero
+        return int(float(reserved) / float(total) * 100)

@@ -100,20 +100,37 @@ class Slots(grok.View):
             return json.dumps(slots)
 
         scheduler = self.context.scheduler
+        translate = lambda txt: utils.translate(self.context, self.request, txt)
 
         for allocation in scheduler.allocations_in_range(start, end):
-            for start, end in allocation.free_slots():
+            rate = allocation.occupation_rate
 
-                # add the microsecond which is substracted on creation
-                # for nicer displaying
-                end += timedelta(microseconds=1)
-                slots.append(
-                    dict(
-                        start=start.isoformat(),
-                        end=end.isoformat(),
-                        title='',
-                        allDay=False
-                    )
+            # TODO move colors to css
+
+            if rate == 100:
+                title = translate(_(u'Occupied'))
+                color = '#a1291e' #redish
+            elif rate == 0:
+                title = translate(_(u'Free'))
+                color = '#379a00' #greenish
+            else:
+                title = translate(_(u'%i%% Occupied')) % rate
+                color = '#e99623' #orangeish
+
+            start, end = allocation.start, allocation.end
+
+            # add the microsecond which is substracted on creation
+            # for nicer displaying
+            end += timedelta(microseconds=1)
+            slots.append(
+                dict(
+                    start=start.isoformat(),
+                    end=end.isoformat(),
+                    title=title,
+                    allDay=False,
+                    backgroundColor=color,
+                    borderColor=color
                 )
+            )
             
         return json.dumps(slots)
