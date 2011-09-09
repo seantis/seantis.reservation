@@ -1,4 +1,5 @@
 import json
+
 from datetime import datetime
 from datetime import timedelta
 
@@ -105,9 +106,13 @@ class Slots(grok.View):
 
         scheduler = self.context.scheduler
         translate = lambda txt: utils.translate(self.context, self.request, txt)
+        baseurl = self.context.absolute_url_path() + '/reserve?start=%s&end=%s'
 
         for allocation in scheduler.allocations_in_range(start, end):
+            start, end = allocation.start, allocation.end
+
             rate = allocation.occupation_rate
+            url = baseurl % (start.isoformat(), end.isoformat())
 
             # TODO move colors to css
 
@@ -121,8 +126,6 @@ class Slots(grok.View):
                 title = translate(_(u'%i%% Occupied')) % rate
                 color = '#e99623' #orangeish
 
-            start, end = allocation.start, allocation.end
-
             # add the microsecond which is substracted on creation
             # for nicer displaying
             end += timedelta(microseconds=1)
@@ -133,7 +136,8 @@ class Slots(grok.View):
                     title=title,
                     allDay=False,
                     backgroundColor=color,
-                    borderColor=color
+                    borderColor=color,
+                    url=url
                 )
             )
             

@@ -9,7 +9,6 @@ from seantis.reservation.raster import rasterize_end
 from seantis.reservation.raster import iterate_span
 
 
-
 class Allocation(ORMBase):
     """Describes a timespan within which one or many timeslots can be reserved.
 
