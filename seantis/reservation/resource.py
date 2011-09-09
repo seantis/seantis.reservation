@@ -63,9 +63,9 @@ class View(grok.View):
         options = {}
         options['header'] = {
             'left':'prev, next today',
-            'right':'month, basicWeek, basicDay'
+            'right':'month, agendaWeek, agendaDay'
         }
-        options['defaultView'] = 'basicWeek'
+        options['defaultView'] = 'agendaWeek'
         options['events'] = eventurl
 
         return template % (self.calendar_id, json.dumps(options))
@@ -97,15 +97,20 @@ class Slots(grok.View):
         if not all((start, end)):
             return json.dumps(slots)
 
-        scheduler = self.context.scheduler
+        request = self.request
+        context = self.context
+        scheduler = context.scheduler
 
-        for available in scheduler.available_in_range(start, end):
-            for slot in available.free_slots():
+
+        for allocation in scheduler.allocations_in_range(start, end):
+            for start, end in allocation.free_slots():
+
                 slots.append(
                     dict(
-                        start=slot.start,
-                        end=slot.end,
-                        title = utils.translate(_(u'Available'))
+                        start=start.isoformat(),
+                        end=end.isoformat(),
+                        title=start.strftime('%H:%M'),
+                        allDay=False
                     )
                 )
             

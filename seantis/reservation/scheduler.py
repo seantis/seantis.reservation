@@ -12,13 +12,14 @@ class Scheduler(object):
     def __init__(self, resource_uuid):
         self.resource = resource_uuid
 
-    def allocate(self, dates, group=uuid(), raster=15):
+    def allocate(self, dates, group=None, raster=15):
         """Makes a list of dates available with the given group and raster. 
         Raises a OverlappingAllocation exception if any date conflicts with an 
         existing allocation. 
 
         """
-
+        group = group or uuid()
+        
         # TODO add locking here (one resource - one scheduler)
 
         # Make sure that this span does not overlap another
