@@ -21,7 +21,7 @@ class TestAllocation(IntegrationTestCase):
         self.assertEqual(Session.query(Allocation).count(), 1)
 
         # Test failing add
-        allocation = allocation(raster=15)
+        allocation = Allocation(raster=15)
 
         Session.add(allocation)
         self.assertRaises(IntegrityError, Session.flush)
