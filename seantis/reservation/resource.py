@@ -67,7 +67,11 @@ class View(grok.View):
             'right':'month, agendaWeek, agendaDay'
         }
         options['defaultView'] = 'agendaWeek'
-        options['timeFormat'] = 'H:mm{ - H:mm}'
+        options['timeFormat'] = 'HH:mm{ - HH:mm}'
+        options['axisFormat'] = 'HH:mm{ - HH:mm}'
+        options['columnFormat'] = 'dddd d.M'
+        options['allDaySlot'] = False
+        options['firstDay'] = 1
         options['events'] = eventurl
 
         return template % (self.calendar_id, json.dumps(options))
