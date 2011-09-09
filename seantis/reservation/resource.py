@@ -1,5 +1,6 @@
 import json
 from datetime import datetime
+from datetime import timedelta
 
 from five import grok
 from plone.directives import form
@@ -66,6 +67,7 @@ class View(grok.View):
             'right':'month, agendaWeek, agendaDay'
         }
         options['defaultView'] = 'agendaWeek'
+        options['timeFormat'] = 'H:mm{ - H:mm}'
         options['events'] = eventurl
 
         return template % (self.calendar_id, json.dumps(options))
@@ -97,19 +99,19 @@ class Slots(grok.View):
         if not all((start, end)):
             return json.dumps(slots)
 
-        request = self.request
-        context = self.context
-        scheduler = context.scheduler
-
+        scheduler = self.context.scheduler
 
         for allocation in scheduler.allocations_in_range(start, end):
             for start, end in allocation.free_slots():
 
+                # add the microsecond which is substracted on creation
+                # for nicer displaying
+                end += timedelta(microseconds=1)
                 slots.append(
                     dict(
                         start=start.isoformat(),
                         end=end.isoformat(),
-                        title=start.strftime('%H:%M'),
+                        title='',
                         allDay=False
                     )
                 )
