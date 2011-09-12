@@ -4,7 +4,7 @@ from sqlalchemy.sql import and_, or_
 
 from seantis.reservation.models import Allocation
 from seantis.reservation.models import ReservedSlot
-from seantis.reservation.error import OverlappingAllocation
+from seantis.reservation.error import OverlappingAllocationError
 from seantis.reservation.lock import resource_locked
 
 class Scheduler(object):
@@ -24,7 +24,7 @@ class Scheduler(object):
             existing = self.any_allocations_in_range(start, end)
             
             if existing:
-                raise OverlappingAllocation(start, end, existing)
+                raise OverlappingAllocationError(start, end, existing)
 
         # Create the availabilities
         allocations = []

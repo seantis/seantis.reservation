@@ -5,7 +5,7 @@ from zope.interface import Interface
 from zope.interface import implements
 from zope.component import getUtility
 
-from seantis.reservation.error import ResourceLocked
+from seantis.reservation.error import ResourceLockedError
 
 _lock = Lock()
 
@@ -16,7 +16,7 @@ def resource_locked(fn):
         lock = getUtility(IResourceLock)
         try:
             if not lock.acquire(self.resource):
-                raise ResourceLocked
+                raise ResourceLockedError
 
             return fn(self, *args, **kwargs)
         finally:
@@ -26,14 +26,14 @@ def resource_locked(fn):
 
 class IResourceLock(Interface):
 
-    def acquire(self, resource_id):
-        """Tries to acquire a lock with the given resource id. If the resource
+    def acquire(self, resource):
+        """Tries to acquire a lock with the given resource. If the resource
         is already locked False is returned. If successful, True is returned.
 
         """
 
-    def release(self, resource_id):
-        """Releases the lock of the given resource id.
+    def release(self, resource):
+        """Releases the lock of the given resource.
 
         """
 
@@ -41,27 +41,27 @@ class ResourceLock(grok.GlobalUtility):
     implements(IResourceLock)
 
     def __init__(self):
-        self.locks = {}
+        self._locks = {}
 
-    def acquire(self, resource_id):
+    def acquire(self, resource):
         _lock.acquire()
 
         try:
-            if resource_id in self.locks:
+            if resource in self._locks:
                 return False
             else:
-                self.locks[resource_id] = None
+                self._locks[resource] = None
                 return True
 
         finally:
             _lock.release()
 
-    def release(self, resource_id):
+    def release(self, resource):
         _lock.acquire()
 
         try:
-            if resource_id in self.locks:
-                del self.locks[resource_id]
+            if resource in self._locks:
+                del self._locks[resource]
         
         finally:
             _lock.release()

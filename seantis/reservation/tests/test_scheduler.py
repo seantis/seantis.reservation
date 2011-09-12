@@ -4,7 +4,7 @@ from datetime import timedelta
 
 from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation.scheduler import Scheduler
-from seantis.reservation.error import OverlappingAllocation
+from seantis.reservation.error import OverlappingAllocationError
 
 class TestScheduler(IntegrationTestCase):
 
@@ -64,6 +64,6 @@ class TestScheduler(IntegrationTestCase):
         sc1.allocate(((start, end),), raster=15)
         sc2.allocate(((start, end),), raster=15)
         
-        self.assertRaises(OverlappingAllocation, 
+        self.assertRaises(OverlappingAllocationError, 
                 sc1.allocate, ((start, end),), raster=15
             )
