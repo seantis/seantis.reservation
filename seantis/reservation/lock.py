@@ -1,5 +1,7 @@
 from threading import Lock
 
+from z3c.saconfig import Session
+
 from five import grok
 from zope.interface import Interface
 from zope.interface import implements
@@ -9,16 +11,26 @@ from seantis.reservation.error import ResourceLockedError
 
 _lock = Lock()
 
-def resource_locked(fn):
+def resource_transaction(fn):
+    """Decorator for resource locking. Locks a class function on any class
+    which has a resource property and commits the sqlalchemy transaction
+    at the end.
+
+    """
     def locker(self, *args, **kwargs):
         assert (hasattr(self, 'resource'))
         
         lock = getUtility(IResourceLock)
+
         try:
             if not lock.acquire(self.resource):
                 raise ResourceLockedError
 
             return fn(self, *args, **kwargs)
+        except:
+            raise
+        else:
+            Session.commit()
         finally:
             lock.release(self.resource)
 
@@ -38,6 +50,10 @@ class IResourceLock(Interface):
         """
 
 class ResourceLock(grok.GlobalUtility):
+    """Locks a resource (any hashable type) in a global utility using a
+    low level thread lock and a dictionary.
+
+    """
     implements(IResourceLock)
 
     def __init__(self):

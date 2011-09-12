@@ -1,12 +1,11 @@
 from threading import Lock
 from threading import Thread
-from time import sleep
 
 from zope.component import getUtility
 
 from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation.lock import IResourceLock
-from seantis.reservation.lock import resource_locked
+from seantis.reservation.lock import resource_transaction
 from seantis.reservation.error import ResourceLockedError
 
 class TestLock(IntegrationTestCase):
@@ -39,7 +38,7 @@ class Mock(object):
     def __init__(self, resource):
         self.resource = resource
 
-    @resource_locked
+    @resource_transaction
     def wait(self):
         try:
             _lock.acquire()

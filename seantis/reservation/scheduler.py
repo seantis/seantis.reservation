@@ -5,7 +5,7 @@ from sqlalchemy.sql import and_, or_
 from seantis.reservation.models import Allocation
 from seantis.reservation.models import ReservedSlot
 from seantis.reservation.error import OverlappingAllocationError
-from seantis.reservation.lock import resource_locked
+from seantis.reservation.lock import resource_transaction
 
 class Scheduler(object):
     """Used to manage the definitions and reservations of a resource."""
@@ -13,11 +13,9 @@ class Scheduler(object):
     def __init__(self, resource_uuid):
         self.resource = resource_uuid
 
-    @resource_locked
+    @resource_transaction
     def allocate(self, dates, group=None, raster=15):
         group = group or uuid()
-        
-        # TODO add locking here (one resource - one scheduler)
 
         # Make sure that this span does not overlap another
         for start, end in dates:
@@ -26,7 +24,7 @@ class Scheduler(object):
             if existing:
                 raise OverlappingAllocationError(start, end, existing)
 
-        # Create the availabilities
+        # Prepare the allocations
         allocations = []
 
         for start, end in dates:
@@ -111,7 +109,7 @@ class Scheduler(object):
 
         query.delete()
 
-    @resource_locked
+    @resource_transaction
     def remove_allocation(self, group):
         query = Session.query(Allocation).filter(
             Allocation.group == group
