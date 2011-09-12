@@ -1,4 +1,5 @@
 import json
+import time
 
 from datetime import datetime
 from datetime import timedelta
@@ -110,9 +111,7 @@ class Slots(grok.View):
 
         for allocation in scheduler.allocations_in_range(start, end):
             start, end = allocation.start, allocation.end
-
             rate = allocation.occupation_rate
-            url = baseurl % (start.isoformat(), end.isoformat())
 
             # TODO move colors to css
 
@@ -129,6 +128,12 @@ class Slots(grok.View):
             # add the microsecond which is substracted on creation
             # for nicer displaying
             end += timedelta(microseconds=1)
+        
+            url = baseurl % (
+                time.mktime(start.timetuple()),
+                time.mktime(end.timetuple()),
+                )
+            
             slots.append(
                 dict(
                     start=start.isoformat(),

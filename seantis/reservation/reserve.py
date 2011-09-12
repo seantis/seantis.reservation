@@ -15,13 +15,11 @@ from seantis.reservation.raster import rasterize_start
 class IAllocateForm(Interface):
 
     start = schema.Datetime(
-        title=_(u'From'),
-        default=rasterize_start(datetime.today(), 60)
+        title=_(u'From')
         )
 
     end = schema.Datetime(
-        title=_(u'To'),
-        default=rasterize_start(datetime.today(), 60) + timedelta(minutes=60)
+        title=_(u'To')
         )
 
 class AllocateForm(form.Form):
@@ -35,6 +33,29 @@ class AllocateForm(form.Form):
     description = _(u'Reserve available dates on the resource')
 
     ignoreContext = True
+
+    def update(self, **kwargs):
+        try:
+            start = self.request.get('start')
+            if start:
+                start = datetime.fromtimestamp(float(start))
+            else:
+                start = rasterize_start(datetime.now(), 60)
+
+            end = self.request.get('end')
+            if end:
+                end = datetime.fromtimestamp(float(end))
+            else:
+                start += timedelta(minutes=60)
+
+            self.fields['start'].field.default = start
+            self.fields['end'].field.default = end
+        
+        except TypeError:
+            pass
+            
+        finally:
+            super(AllocateForm, self).update(**kwargs)
 
     @button.buttonAndHandler(_(u'Reserve'))
     def reserve(self, action):
