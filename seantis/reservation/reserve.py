@@ -12,7 +12,7 @@ from seantis.reservation import _
 from seantis.reservation import resource
 from seantis.reservation.raster import rasterize_start
 
-class IAllocateForm(Interface):
+class IReserveForm(Interface):
 
     start = schema.Datetime(
         title=_(u'From')
@@ -22,12 +22,12 @@ class IAllocateForm(Interface):
         title=_(u'To')
         )
 
-class AllocateForm(form.Form):
+class ReserveForm(form.Form):
     grok.context(resource.IResource)
     grok.name('reserve')
     grok.require('cmf.ManagePortal')
 
-    fields = field.Fields(IAllocateForm)
+    fields = field.Fields(IReserveForm)
 
     label = _(u'Resource reservation')
     description = _(u'Reserve available dates on the resource')
@@ -53,9 +53,9 @@ class AllocateForm(form.Form):
         
         except TypeError:
             pass
-            
+
         finally:
-            super(AllocateForm, self).update(**kwargs)
+            super(ReserveForm, self).update(**kwargs)
 
     @button.buttonAndHandler(_(u'Reserve'))
     def reserve(self, action):
