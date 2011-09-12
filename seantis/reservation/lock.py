@@ -3,8 +3,26 @@ from threading import Lock
 from five import grok
 from zope.interface import Interface
 from zope.interface import implements
+from zope.component import getUtility
+
+from seantis.reservation.error import ResourceLocked
 
 _lock = Lock()
+
+def resource_locked(fn):
+    def locker(self, *args, **kwargs):
+        assert (hasattr(self, 'resource'))
+        
+        lock = getUtility(IResourceLock)
+        try:
+            if not lock.acquire(self.resource):
+                raise ResourceLocked
+
+            return fn(self, *args, **kwargs)
+        finally:
+            lock.release(self.resource)
+
+    return locker
 
 class IResourceLock(Interface):
 
