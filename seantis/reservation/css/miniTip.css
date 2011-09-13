@@ -1,0 +1,77 @@
+/*! miniTip CSS - v1.4.2 */
+
+#miniTip {
+    /* main styles for tooltip */
+    background-color: #205c90;
+    border: 1px solid #13345f;
+    color: white;
+    font-size: .7em;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    /* end editing style */
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 99999;
+}
+
+#miniTip a, #miniTip a:visited, #miniTip a:active {
+    color: white;
+}
+
+#miniTip a:hover {
+    text-decoration: underline;
+}
+
+/* title bar style */
+#miniTip_t {
+    background-color: #163c6d;
+    padding: 4px 6px;
+}
+
+/* main content style */
+#miniTip_c { padding: 4px 8px }
+
+
+/* arrow holder, no need to edit */
+#miniTip_a {
+    width: 0;
+    height: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* arrow pointing down, change border-top color to change color of the arrow */
+#miniTip .n {
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid #eae4b4;
+    border-bottom: 0;
+}
+
+/* arrow pointing up, change border-bottom color to change color of the arrow */
+#miniTip .s {
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid #eae4b4;
+    border-top: 0;
+}
+
+/* arrow pointing left, change border-right color to change color of the arrow */
+#miniTip .e {
+    border-bottom: 8px solid transparent;
+    border-top: 8px solid transparent;
+    border-right: 8px solid #eae4b4;
+    border-left: 0;
+}
+
+/* arrow pointing right, change border-left color to change color of the arrow */
+#miniTip .w {
+    border-bottom: 8px solid transparent;
+    border-top: 8px solid transparent;
+    border-left: 8px solid #eae4b4;
+    border-right: 0;
+}

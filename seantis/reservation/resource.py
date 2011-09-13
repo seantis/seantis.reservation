@@ -75,8 +75,15 @@ class View(grok.View):
         options['allDaySlot'] = False
         options['firstDay'] = 1
         options['events'] = eventurl
+        options['eventRender'] = 'seantis.eventRender'
 
-        return template % (self.calendar_id, json.dumps(options))
+        options = json.dumps(options)
+        options = options.replace(
+                '"seantis.eventRender"', 
+                'seantis.eventRender'
+            )
+
+        return template % (self.calendar_id, options)
 
 class Slots(grok.View):
     grok.context(IResourceBase)
