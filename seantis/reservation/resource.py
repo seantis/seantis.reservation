@@ -14,6 +14,9 @@ from seantis.reservation import utils
 from seantis.reservation import Scheduler
 from seantis.reservation import _
 
+# TODO ensure that the first/last hour of the day
+# does not collide with existing allocations
+
 class IResourceBase(form.Schema):
 
     title = schema.TextLine(
@@ -25,6 +28,15 @@ class IResourceBase(form.Schema):
             required=False
         )
 
+    first_hour = schema.Int(
+            title=_(u'First hour of the day'),
+            default=0
+        )
+
+    last_hour = schema.Int(
+            title=_(u'Last hour of the day'),
+            default=24
+        )
 
 class IResource(IResourceBase):
     pass
@@ -76,6 +88,8 @@ class View(grok.View):
         options['firstDay'] = 1
         options['events'] = eventurl
         options['eventRender'] = 'seantis.eventRender'
+        options['minTime'] = self.context.first_hour
+        options['maxTime'] = self.context.last_hour
 
         options = json.dumps(options)
         options = options.replace(
