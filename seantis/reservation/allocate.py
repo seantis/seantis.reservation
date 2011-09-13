@@ -1,17 +1,32 @@
+from datetime import date
 from datetime import datetime
 from datetime import timedelta
+from dateutil import rrule
 
 from five import grok
-from zope import schema
-from zope.interface import Interface
 from plone.directives import form
 from z3c.form import field
 from z3c.form import button
+from zope import schema
+from zope.schema.vocabulary import SimpleVocabulary
+from zope.schema.vocabulary import SimpleTerm
+from zope.interface import Interface
 
 from seantis.reservation import _
 from seantis.reservation import resource
 from seantis.reservation.raster import rasterize_start
 from seantis.reservation.raster import VALID_RASTER_VALUES
+
+frequencies = SimpleVocabulary(
+        [SimpleTerm(value=rrule.DAILY, title=_(u'Daily')),
+         SimpleTerm(value=rrule.WEEKLY, title=_(u'Weekly')),
+         SimpleTerm(value=rrule.MONTHLY, title=_(u'Monthly')),
+         SimpleTerm(value=rrule.YEARLY, title=_(u'Yearly'))
+        ]
+    )
+
+#TODO add validation for dates (start < end..)
+#     make defaults dynamic
 
 class IAllocateForm(Interface):
 
@@ -30,6 +45,21 @@ class IAllocateForm(Interface):
         values=VALID_RASTER_VALUES,
         default=60
         )
+
+    recurring = schema.Bool(
+        title=_(u'Recurring'),
+        default=False
+        )
+
+    frequency = schema.Choice(
+        title=_(u'Frequency'),
+        vocabulary=frequencies
+        )
+
+    recurrence_end = schema.Date(
+        title=_(u'Until'),
+        default=date.today() + timedelta(days=365)
+    )
 
 
 class AllocateForm(form.Form):
@@ -51,11 +81,21 @@ class AllocateForm(form.Form):
             self.status = self.formErrorsMessage
             return
 
-        start = data['start']
-        end = data['end']
-        raster = data['raster']
+        start, end = data['start'], data['end']
 
-        scheduler = self.context.scheduler
-        scheduler.allocate(((start, end),), raster=raster)
+        dates = []
+        if not data['recurring']:
+            dates.append((start, end))
+        else:
+            rule = rrule.rrule(
+                    data['frequency'], 
+                    dtstart=start, 
+                    until=data['recurrence_end']
+                )
+        
+            delta = end - start
+            for date in rule:
+                dates.append((date, date+delta))
 
+        self.context.scheduler.allocate(dates, raster=data['raster'])
         self.request.response.redirect(self.context.absolute_url())
