@@ -3,7 +3,7 @@ from datetime import timedelta
 
 from five import grok
 from zope import schema
-from zope.interface import Interface
+from zope import interface
 from plone.directives import form
 from z3c.form import field
 from z3c.form import button
@@ -12,7 +12,9 @@ from seantis.reservation import _
 from seantis.reservation import resource
 from seantis.reservation.raster import rasterize_start
 
-class IReserveForm(Interface):
+#TODO make defaults dynamic
+
+class IReservation(interface.Interface):
 
     start = schema.Datetime(
         title=_(u'From'),
@@ -24,12 +26,17 @@ class IReserveForm(Interface):
         default=rasterize_start(datetime.today(), 60) + timedelta(minutes=60)
         )
 
-class ReserveForm(form.Form):
+    @interface.invariant
+    def isValidDateRange(Allocation):
+        if Allocation.start >= Allocation.end:
+            raise interface.Invalid(_(u'End date before start date'))
+
+class ReservationForm(form.Form):
     grok.context(resource.IResource)
     grok.name('reserve')
     grok.require('cmf.ManagePortal')
 
-    fields = field.Fields(IReserveForm)
+    fields = field.Fields(IReservation)
 
     label = _(u'Resource reservation')
     description = _(u'Reserve available dates on the resource')
@@ -50,7 +57,7 @@ class ReserveForm(form.Form):
         except TypeError:
             pass
 
-        super(ReserveForm, self).update(**kwargs)
+        super(ReservationForm, self).update(**kwargs)
 
     @button.buttonAndHandler(_(u'Reserve'))
     def reserve(self, action):

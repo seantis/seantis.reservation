@@ -10,7 +10,7 @@ from z3c.form import button
 from zope import schema
 from zope.schema.vocabulary import SimpleVocabulary
 from zope.schema.vocabulary import SimpleTerm
-from zope.interface import Interface
+from zope import interface
 
 from seantis.reservation import _
 from seantis.reservation import resource
@@ -25,10 +25,9 @@ frequencies = SimpleVocabulary(
         ]
     )
 
-#TODO add validation for dates (start < end..)
-#     make defaults dynamic
+#TODO make defaults dynamic
 
-class IAllocateForm(Interface):
+class IAllocation(interface.Interface):
 
     start = schema.Datetime(
         title=_(u'From'),
@@ -61,13 +60,18 @@ class IAllocateForm(Interface):
         default=date.today() + timedelta(days=365)
     )
 
+    @interface.invariant
+    def isValidDateRange(Allocation):
+        if Allocation.start >= Allocation.end:
+            raise interface.Invalid(_(u'End date before start date'))
 
-class AllocateForm(form.Form):
+
+class AllocationForm(form.Form):
     grok.context(resource.IResource)
     grok.name('allocate')
     grok.require('cmf.ManagePortal')
 
-    fields = field.Fields(IAllocateForm)
+    fields = field.Fields(IAllocation)
 
     label = _(u'Resource allocation')
     description = _(u'Allocate available dates on the resource')
@@ -88,7 +92,7 @@ class AllocateForm(form.Form):
         except TypeError:
             pass
 
-        super(AllocateForm, self).update(**kwargs)
+        super(AllocationForm, self).update(**kwargs)
 
     @button.buttonAndHandler(_(u'Allocate'))
     def allocate(self, action):
