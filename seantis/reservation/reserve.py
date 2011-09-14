@@ -15,11 +15,13 @@ from seantis.reservation.raster import rasterize_start
 class IReserveForm(Interface):
 
     start = schema.Datetime(
-        title=_(u'From')
+        title=_(u'From'),
+        default=rasterize_start(datetime.now(), 60)
         )
 
     end = schema.Datetime(
-        title=_(u'To')
+        title=_(u'To'),
+        default=rasterize_start(datetime.today(), 60) + timedelta(minutes=60)
         )
 
 class ReserveForm(form.Form):
@@ -37,25 +39,18 @@ class ReserveForm(form.Form):
     def update(self, **kwargs):
         try:
             start = self.request.get('start')
-            if start:
-                start = datetime.fromtimestamp(float(start))
-            else:
-                start = rasterize_start(datetime.now(), 60)
-
+            start = start and datetime.fromtimestamp(float(start)) or None
             end = self.request.get('end')
-            if end:
-                end = datetime.fromtimestamp(float(end))
-            else:
-                start += timedelta(minutes=60)
+            end = end and datetime.fromtimestamp(float(end)) or None
 
-            self.fields['start'].field.default = start
-            self.fields['end'].field.default = end
+            if start and end:
+                self.fields['start'].field.default = start
+                self.fields['end'].field.default = end
         
         except TypeError:
             pass
 
-        finally:
-            super(ReserveForm, self).update(**kwargs)
+        super(ReserveForm, self).update(**kwargs)
 
     @button.buttonAndHandler(_(u'Reserve'))
     def reserve(self, action):

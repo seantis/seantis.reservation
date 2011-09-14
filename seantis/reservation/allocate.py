@@ -74,6 +74,22 @@ class AllocateForm(form.Form):
 
     ignoreContext = True
 
+    def update(self, **kwargs):
+        try:
+            start = self.request.get('start')
+            start = start and datetime.fromtimestamp(float(start)) or None
+            end = self.request.get('end')
+            end = end and datetime.fromtimestamp(float(end)) or None 
+
+            if start and end:
+                self.fields['start'].field.default = start
+                self.fields['end'].field.default = end
+            
+        except TypeError:
+            pass
+
+        super(AllocateForm, self).update(**kwargs)
+
     @button.buttonAndHandler(_(u'Allocate'))
     def allocate(self, action):
         data, errors = self.extractData()
