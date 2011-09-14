@@ -7,7 +7,8 @@ seantis.calendar.form_overlay = function(element) {
         filter: '#content>*',
         formselector: 'form',
         noform: function() {
-            $(seantis.calendar.id).fullCalendar('refetchEvents');
+            var calendar = $(seantis.calendar.id);
+            calendar.fullCalendar('refetchEvents');
             return 'close';
         }
     });
@@ -27,6 +28,19 @@ seantis.calendar.form_overlay = function(element) {
             seantis.calendar.form_overlay(element);
         };
 
+        var eventAdd = function(start, end, allDay) {
+            if (allDay) return;
+
+            var url = seantis.calendar.allocateurl;
+            url += '?start=' + start.getTime() / 1000;
+            url += '&end=' + end.getTime() / 1000;
+
+            var link = $('<a href="' + url + '"></a>');
+            seantis.calendar.form_overlay(link);
+
+            link.click();
+        };
+
         var options = {
             header: {
                 left: 'prev, next today',
@@ -38,7 +52,10 @@ seantis.calendar.form_overlay = function(element) {
             columnFormat: 'dddd d.M',
             allDaySlot: false,
             firstDay: 1,
-            eventRender: eventRender
+            eventRender: eventRender,
+            selectable: true,
+            selectHelper: true,
+            select: eventAdd
         };
 
         $.extend(options, seantis.calendar.options);

@@ -70,17 +70,20 @@ class View(grok.View):
             
             seantis.calendar.id = '#%s';
             seantis.calendar.options = %s;
+            seantis.calendar.allocateurl = '%s';
         </script>
         """
 
-        eventurl = self.context.absolute_url_path() + '/slots'
+        contexturl = self.context.absolute_url_path()
+        allocateurl = contexturl + '/allocate'
+        eventurl = contexturl + '/slots'
 
         options = {}
         options['events'] = eventurl
         options['minTime'] = self.context.first_hour
         options['maxTime'] = self.context.last_hour
 
-        return template % (self.calendar_id, options)
+        return template % (self.calendar_id, options, allocateurl)
 
 class Slots(grok.View):
     grok.context(IResourceBase)

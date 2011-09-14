@@ -56,5 +56,9 @@ seantis.locale.dictionary = {
     'reserve' : [
         'Reserve',
         'Reservieren'
-    ]
+    ],
+    'free' : [
+        'Free',
+        'Frei'
+    ],
 };
