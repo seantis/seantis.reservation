@@ -9,6 +9,7 @@ seantis.contextmenu = function(element, content) {
         anchor: 'e',
         event: 'hover',
         aHide: false,
+        fadeIn: 100,
         render: function(element) {
             seantis.calendar.form_overlay($('a', element));
         }
