@@ -7,13 +7,10 @@ seantis.pad = function (val, len) {
         return val;
 };
 
-seantis.eventRender = function(event, element) {
-    var reserve = '<a href="' + event.url + '">'
-    reserve += seantis.locale('reserve') + '</a>';
-
+seantis.contextmenu = function(element, content) {
     element.miniTip({
         title: '',
-        content: reserve,
+        content: content,
         anchor: 'e',
         event: 'hover',
         aHide: false

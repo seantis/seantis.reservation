@@ -7,6 +7,8 @@
 
         <javascript id="++resource++seantis.reservation.js/context.js" cacheable="True" compression="safe" cookable="True" enabled="True" expression="python:object.portal_type == 'seantis.reservation.resource'" inline="False" insert-after="jquery.js"/>      
 
-        <javascript id="++resource++seantis.reservation.js/locale.js" cacheable="True" compression="safe" cookable="True" enabled="True" expression="python:object.portal_type == 'seantis.reservation.resource'" inline="False" insert-after="jquery.js"/>          
+        <javascript id="++resource++seantis.reservation.js/locale.js" cacheable="True" compression="safe" cookable="True" enabled="True" expression="python:object.portal_type == 'seantis.reservation.resource'" inline="False" insert-after="jquery.js"/>   
+        
+        <javascript id="++resource++seantis.reservation.js/calendar.js" cacheable="True" compression="safe" cookable="True" enabled="True" expression="python:object.portal_type == 'seantis.reservation.resource'" inline="False" insert-after="jquery.js"/>       
 
 </object>

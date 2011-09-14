@@ -62,41 +62,23 @@ class View(grok.View):
     calendar_id = 'seantis-reservation-calendar'
 
     @property
-    def calendar_js(self):
+    def calendar_options(self):
         template = """
         <script type="text/javascript">
-            (function($) {
-                $(document).ready(function() {
-                    $('#%s').fullCalendar(%s);
-                });
-                $('.fc-view-agendaWeek > div > div').css('overflow-y', 'hidden'); $('.fc-agenda-gutter').css('width', 0);
-            })( jQuery );
+            if (!this.seantis) this.seantis = {};
+
+            seantis.calendar = {}
+            seantis.calendar.id = '#%s';
+            seantis.calendar.options = %s;
         </script>
         """
 
         eventurl = self.context.absolute_url_path() + '/slots'
 
         options = {}
-        options['header'] = {
-            'left':'prev, next today',
-            'right':'month, agendaWeek, agendaDay'
-        }
-        options['defaultView'] = 'agendaWeek'
-        options['timeFormat'] = 'HH:mm{ - HH:mm}'
-        options['axisFormat'] = 'HH:mm{ - HH:mm}'
-        options['columnFormat'] = 'dddd d.M'
-        options['allDaySlot'] = False
-        options['firstDay'] = 1
         options['events'] = eventurl
-        options['eventRender'] = 'seantis.eventRender'
         options['minTime'] = self.context.first_hour
         options['maxTime'] = self.context.last_hour
-
-        options = json.dumps(options)
-        options = options.replace(
-                '"seantis.eventRender"', 
-                'seantis.eventRender'
-            )
 
         return template % (self.calendar_id, options)
 

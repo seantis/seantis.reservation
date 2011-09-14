@@ -12,7 +12,7 @@
 <body>
 
 <metal:block metal:fill-slot="javascript_head_slot">
-    <tal:block tal:replace="structure view/calendar_js" />
+    <tal:block tal:replace="structure view/calendar_options" />
 </metal:block>
 
 <metal:main fill-slot="main">

@@ -1,34 +1,38 @@
 if (!this.seantis) this.seantis = {};
 
 seantis.locale = function(text) {
-    var lang = seantis.locale.language();
-    if (typeof seantis.locale.dictionary[text] === 'undefined') {
+    var locale = seantis.locale;
+
+    var lang = locale.language();
+    if (typeof locale.dictionary[text] === 'undefined') {
         console.log(text + ' is untranslated');
         return text;
     }
         
-    var ix = seantis.locale.ix(lang);
+    var ix = locale.ix(lang);
     if (ix < 0) {
         console.log('language ' + lang + ' is not supported');
         return text;
     }
 
-    return seantis.locale.dictionary[text][ix];
+    return locale.dictionary[text][ix];
 };
 
 seantis.locale._language = null;
 seantis.locale.language = function() {
-    if (seantis.locale._language !== null) {
-        return seantis.locale._language;
+    var locale = seantis.locale;
+
+    if (locale._language !== null) {
+        return locale._language;
     }
 
     var lang = $('html').attr('lang') || $('body').attr('lang');
     if (!lang) {
-        seantis.locale._languge = 'en';
+        locale._languge = 'en';
     } else {
-        seantis.locale._language = lang;
+        locale._language = lang;
     }    
-    return seantis.locale._language;
+    return locale._language;
 };
 
 seantis.locale.ix = function(language) {
@@ -52,5 +56,5 @@ seantis.locale.dictionary = {
     'reserve' : [
         'Reserve',
         'Reservieren'
-    ],
+    ]
 };
