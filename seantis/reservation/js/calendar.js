@@ -1,6 +1,8 @@
 if (!this.seantis) this.seantis = {};
 if (!this.seantis.calendar) this.seantis.calendar = {};
 
+// Adds a plone overlay to a form view.
+// Submitting the form will forche the calendar to refetch the events
 seantis.calendar.form_overlay = function(element) {
     element.prepOverlay({
         subtype: 'ajax',
@@ -19,6 +21,7 @@ seantis.calendar.form_overlay = function(element) {
         if (!seantis || !seantis.calendar || !seantis.calendar.id)
             return;
 
+        // Prepares the contextmenu for the event and adds the form overlay
         var eventRender = function(event, element) {
             var reserve = '<a class="seantis-reservation-reserve" ';
             reserve += 'href="' + event.url + '">';
@@ -28,6 +31,8 @@ seantis.calendar.form_overlay = function(element) {
             seantis.calendar.form_overlay(element);
         };
 
+        // Called when a selection on the calendar is made
+        // TODO do not execute if the permissions are insufficient
         var eventAdd = function(start, end, allDay) {
             if (allDay) return;
 
@@ -58,6 +63,7 @@ seantis.calendar.form_overlay = function(element) {
             select: eventAdd
         };
 
+        // Merge the options with the ones defined by the resource view
         $.extend(options, seantis.calendar.options);
 
         $(seantis.calendar.id).fullCalendar(options);

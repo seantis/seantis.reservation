@@ -1,12 +1,7 @@
 if (!this.seantis) this.seantis = {};
 
-seantis.pad = function (val, len) {
-    val = String(val);
-    len = len || 2;
-    while (val.length < len) val = "0" + val;
-        return val;
-};
-
+// Adds the contextmenu to the element and adds plone overlays to all
+// links in the content
 seantis.contextmenu = function(element, content) {
     element.miniTip({
         title: '',
