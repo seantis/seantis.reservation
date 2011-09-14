@@ -2,8 +2,8 @@
 
 #miniTip {
     /* main styles for tooltip */
-    background-color: #205c90;
-    border: 1px solid #13345f;
+    background-color: #0a64a4;
+    border: 1px solid #0a64a4;
     color: white;
     font-size: .7em;
     -webkit-border-radius: 3px;
@@ -15,6 +15,9 @@
     top: 0;
     left: 0;
     z-index: 99999;
+    -webkit-box-shadow: 3px 3px 7px rgba(50, 50, 50, 0.42);
+    -moz-box-shadow:    3px 3px 7px rgba(50, 50, 50, 0.42);
+    box-shadow:         3px 3px 7px rgba(50, 50, 50, 0.42);
 }
 
 #miniTip a, #miniTip a:visited, #miniTip a:active {
@@ -48,7 +51,7 @@
 #miniTip .n {
     border-left: 8px solid transparent;
     border-right: 8px solid transparent;
-    border-top: 8px solid #eae4b4;
+    border-top: 8px solid #0a64a4;
     border-bottom: 0;
 }
 
@@ -56,7 +59,7 @@
 #miniTip .s {
     border-left: 8px solid transparent;
     border-right: 8px solid transparent;
-    border-bottom: 8px solid #eae4b4;
+    border-bottom: 8px solid #0a64a4;
     border-top: 0;
 }
 
@@ -64,7 +67,7 @@
 #miniTip .e {
     border-bottom: 8px solid transparent;
     border-top: 8px solid transparent;
-    border-right: 8px solid #eae4b4;
+    border-right: 8px solid #0a64a4;
     border-left: 0;
 }
 
@@ -72,6 +75,6 @@
 #miniTip .w {
     border-bottom: 8px solid transparent;
     border-top: 8px solid transparent;
-    border-left: 8px solid #eae4b4;
+    border-left: 8px solid #0a64a4;
     border-right: 0;
 }
