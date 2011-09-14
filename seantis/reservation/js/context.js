@@ -13,6 +13,9 @@ seantis.contextmenu = function(element, content) {
         content: content,
         anchor: 'e',
         event: 'hover',
-        aHide: false
-    });
+        aHide: false,
+        render: function(element) {
+            seantis.calendar.form_overlay($('a', element));
+        }
+    });  
 };

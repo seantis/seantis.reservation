@@ -66,8 +66,8 @@ class View(grok.View):
         template = """
         <script type="text/javascript">
             if (!this.seantis) this.seantis = {};
-
-            seantis.calendar = {}
+            if (!this.seantis) this.seantis.calendar = {};
+            
             seantis.calendar.id = '#%s';
             seantis.calendar.options = %s;
         </script>
