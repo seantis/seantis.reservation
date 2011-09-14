@@ -3140,6 +3140,9 @@ function AgendaView(element, calendar, viewName) {
 			height - headHeight,   // when scrollbars
 			slotTable.height() + allDayHeight + 1 // when no scrollbars. +1 for bottom border
 		);
+
+		bodyHeight += 12; //Can't get the scrollbar to disappear without this
+		//TODO look into this
 		
 		dayBodyFirstCellStretcher
 			.height(bodyHeight - vsides(dayBodyFirstCell));

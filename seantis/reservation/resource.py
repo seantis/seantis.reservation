@@ -69,6 +69,7 @@ class View(grok.View):
                 $(document).ready(function() {
                     $('#%s').fullCalendar(%s);
                 });
+                $('.fc-view-agendaWeek > div > div').css('overflow-y', 'hidden'); $('.fc-agenda-gutter').css('width', 0);
             })( jQuery );
         </script>
         """
