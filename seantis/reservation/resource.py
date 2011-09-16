@@ -9,13 +9,12 @@ from plone.directives import form
 from plone.dexterity.content import Container
 from plone.uuid.interfaces import IUUID
 from zope import schema
+from zope import interface
 
 from seantis.reservation import utils
 from seantis.reservation import Scheduler
 from seantis.reservation import _
 
-# TODO ensure that the first/last hour of the day
-# does not collide with existing allocations
 
 class IResourceBase(form.Schema):
 
@@ -37,6 +36,23 @@ class IResourceBase(form.Schema):
             title=_(u'Last hour of the day'),
             default=24
         )
+
+    @interface.invariant
+    def isValidFirstLastHour(Resource):
+        in_valid_range = lambda h: 0 <= h and h <= 24
+        first_hour, last_hour = Resource.first_hour, Resource.last_hour
+        
+        if not in_valid_range(first_hour):
+            raise interface.Invalid(_(u'Invalid first hour'))
+
+        if not in_valid_range(last_hour):
+            raise interface.Invalid(_(u'Invalid last hour'))
+
+        if last_hour <= first_hour:
+            raise interface.Invalid(
+                    _(u'First hour must be smaller than last hour')
+                )
+                     
 
 class IResource(IResourceBase):
     pass
