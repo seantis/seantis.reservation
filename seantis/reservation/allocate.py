@@ -7,11 +7,15 @@ from five import grok
 from plone.directives import form
 from z3c.form import field
 from z3c.form import button
+from z3c.form import interfaces
 from zope import schema
 from zope.schema.vocabulary import SimpleVocabulary
 from zope.schema.vocabulary import SimpleTerm
 from zope import interface
 
+from z3c.saconfig import Session
+
+from seantis.reservation.models import Allocation
 from seantis.reservation import _
 from seantis.reservation import resource
 from seantis.reservation.raster import rasterize_start
@@ -28,6 +32,11 @@ frequencies = SimpleVocabulary(
 #TODO make defaults dynamic
 
 class IAllocation(interface.Interface):
+
+    id = schema.Int(
+        title=_(u'Id'),
+        default=-1
+        )
 
     start = schema.Datetime(
         title=_(u'From'),
@@ -94,6 +103,10 @@ class AllocationForm(form.Form):
 
         super(AllocationForm, self).update(**kwargs)
 
+    def updateWidgets(self):
+        super(AllocationForm, self).updateWidgets()
+        self.widgets['id'].mode = interfaces.HIDDEN_MODE
+
     @button.buttonAndHandler(_(u'Allocate'))
     def allocate(self, action):
         data, errors = self.extractData()
@@ -118,4 +131,65 @@ class AllocationForm(form.Form):
                 dates.append((date, date+delta))
 
         self.context.scheduler.allocate(dates, raster=data['raster'])
+        self.request.response.redirect(self.context.absolute_url())
+
+
+class AllocationEditForm(form.Form):
+    grok.context(resource.IResource)
+    grok.name('allocation_edit')
+    grok.require('cmf.ManagePortal')
+
+    fields = field.Fields(IAllocation).select('id', 'start', 'end')
+
+    label = _(u'Edit resource allocation')
+    description = _(u'Edit an existing allocation')
+
+    ignoreContext = True
+
+    def update(self, **kwargs):
+        try:
+            id = self.request.get('id', -1)
+
+            if id < 0:
+                raise TypeError
+
+            start = self.request.get('start')
+            start = start and datetime.fromtimestamp(float(start)) or None
+            end = self.request.get('end')
+            end = end and datetime.fromtimestamp(float(end)) or None 
+
+            if start and end:
+                self.fields['start'].field.default = start
+                self.fields['end'].field.default = end
+            else:
+                query = Session.query(Allocation)
+                allocation = query.filter(Allocation.id == id).one()
+                self.fields['start'].field.default = allocation.start
+                self.fields['end'].field.default = allocation.end \
+                                                 + timedelta(microseconds=1)
+
+            self.fields['id'].field.default = int(id)
+        
+        except TypeError:
+            pass
+
+        super(AllocationEditForm, self).update(**kwargs)
+
+    def updateWidgets(self):
+        super(AllocationEditForm, self).updateWidgets()
+        self.widgets['id'].mode = interfaces.HIDDEN_MODE
+
+    @button.buttonAndHandler(_(u'Edit'))
+    def edit(self, action):
+        data, errors = self.extractData()
+        if errors:
+            self.status = self.formErrorMessage
+            return
+
+        self.context.scheduler.move_allocation(
+                data['id'], 
+                data['start'],
+                data['end']
+            )
+
         self.request.response.redirect(self.context.absolute_url())

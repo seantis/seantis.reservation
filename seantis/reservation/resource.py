@@ -132,6 +132,7 @@ class Slots(grok.View):
         scheduler = self.context.scheduler
         translate = lambda txt: utils.translate(self.context, self.request, txt)
         baseurl = self.context.absolute_url_path() + '/reserve?start=%s&end=%s'
+        editurl = self.context.absolute_url_path() + '/allocation_edit?id=%i'
 
         for allocation in scheduler.allocations_in_range(start, end):
             start, end = allocation.start, allocation.end
@@ -157,6 +158,10 @@ class Slots(grok.View):
                 time.mktime(start.timetuple()),
                 time.mktime(end.timetuple()),
                 )
+
+            edit = editurl % (
+                allocation.id
+                )
             
             slots.append(
                 dict(
@@ -167,10 +172,8 @@ class Slots(grok.View):
                     backgroundColor=color,
                     borderColor=color,
                     url=url,
-                    allocation = dict(
-                        id=allocation.id,
-                        group=allocation.group
-                    )
+                    editurl=edit,
+                    allocation = allocation.id
                 )
             )
             

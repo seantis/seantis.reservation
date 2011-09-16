@@ -61,4 +61,8 @@ seantis.locale.dictionary = {
         'Free',
         'Frei'
     ],
+    'edit' : [
+        'Edit',
+        'Bearbeiten'
+    ]
 };

@@ -23,11 +23,15 @@ seantis.calendar.form_overlay = function(element) {
 
         // Prepares the contextmenu for the event and adds the form overlay
         var eventRender = function(event, element) {
-            var reserve = '<a class="seantis-reservation-reserve" ';
+            var reserve = '<p><a class="seantis-reservation-reserve" ';
             reserve += 'href="' + event.url + '">';
-            reserve += seantis.locale('reserve') + '</a>';
+            reserve += seantis.locale('reserve') + '</a></p>';
 
-            seantis.contextmenu(element, reserve);
+            var edit = '<p><a class="seantis-reservation-edit" ';
+            edit += 'href="' + event.editurl + '">';
+            edit += seantis.locale('edit') + '</a></p>';
+
+            seantis.contextmenu(element, reserve + edit);
             seantis.calendar.form_overlay(element);
         };
 
