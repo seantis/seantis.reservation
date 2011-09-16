@@ -65,6 +65,14 @@ class Allocation(ORMBase):
 
         return False
 
+    def contains(self, start, end):
+        """ Returns true if the current timespan contains the given start
+        and end date.
+
+        """
+        start, end = rasterize_span(start, end, self.raster)
+        return self.start <= start and end <= self.end
+
     def free_slots(self, start=None, end=None):
         """ Returns the slots which are not yet reserved."""
         reserved = [slot.start for slot in self.reserved_slots.all()]

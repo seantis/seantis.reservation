@@ -5,6 +5,7 @@ from datetime import timedelta
 from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation.scheduler import Scheduler
 from seantis.reservation.error import OverlappingAllocationError
+from seantis.reservation.error import AffectedReservationError
 
 class TestScheduler(IntegrationTestCase):
 
@@ -48,11 +49,33 @@ class TestScheduler(IntegrationTestCase):
         reserved_slots = list(sc.reserved_slots(reservation))
         self.assertEqual(slots, reserved_slots)
 
+        # try to illegally move the slot
+        movefn = lambda: sc.move_allocation(
+                allocation.id, 
+                datetime(2011, 1, 1, 15, 30),
+                datetime(2011, 1, 1, 16)
+            )
+        self.assertRaises(AffectedReservationError, movefn)
+
+        remaining = allocation.free_slots()
+        self.assertEqual(len(remaining), 2)
+
+        # actually move the slot
+        sc.move_allocation(
+                allocation.id,
+                datetime(2011, 1, 1, 15),
+                datetime(2011, 1, 1, 15, 30)
+            )
+
+        # there should be fewer slots now
+        remaining = allocation.free_slots()
+        self.assertEqual(len(remaining), 0)
+
         # remove the reservation
         sc.remove_reservation(reservation)
 
         remaining = allocation.free_slots()
-        self.assertEqual(len(remaining), 4)
+        self.assertEqual(len(remaining), 2)
 
     def test_allocation_overlap(self):
         sc1 = Scheduler(uuid())

@@ -25,3 +25,26 @@ class TestAllocation(IntegrationTestCase):
 
         Session.add(allocation)
         self.assertRaises(IntegrityError, Session.flush)
+
+    def test_date_functions(self):
+        allocation = Allocation(raster=60, resource=uuid())
+        allocation.start = datetime(2011, 1, 1, 12, 30)
+        allocation.end = datetime(2011, 1, 1, 14, 00)
+
+        self.assertEqual(allocation.start.hour, 12)
+        self.assertEqual(allocation.start.minute, 0)
+
+        self.assertEqual(allocation.end.hour, 13)
+        self.assertEqual(allocation.end.minute, 59)
+
+        start = datetime(2011, 1, 1, 11, 00)
+        end = datetime(2011, 1, 1, 12, 05)
+
+        self.assertTrue(allocation.overlaps(start, end))
+        self.assertFalse(allocation.contains(start, end))
+
+        start = datetime(2011, 1, 1, 13, 00)
+        end = datetime(2011, 1, 1, 15, 00)
+        
+        self.assertTrue(allocation.overlaps(start, end))
+        self.assertFalse(allocation.contains(start, end))

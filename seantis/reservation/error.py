@@ -10,3 +10,8 @@ class OverlappingAllocationError(ReservationError):
 
 class ResourceLockedError(ReservationError):
     pass
+
+class AffectedReservationError(ReservationError):
+
+    def __init__(self, existing):
+        self.existing = existing

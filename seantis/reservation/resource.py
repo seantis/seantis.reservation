@@ -101,6 +101,7 @@ class View(grok.View):
 
         return template % (self.calendar_id, options, allocateurl)
 
+
 class Slots(grok.View):
     grok.context(IResourceBase)
     grok.require('zope2.View')
@@ -165,7 +166,11 @@ class Slots(grok.View):
                     allDay=False,
                     backgroundColor=color,
                     borderColor=color,
-                    url=url
+                    url=url,
+                    allocation = dict(
+                        id=allocation.id,
+                        group=allocation.group
+                    )
                 )
             )
             

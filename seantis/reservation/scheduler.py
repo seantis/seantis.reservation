@@ -5,6 +5,7 @@ from sqlalchemy.sql import and_, or_
 from seantis.reservation.models import Allocation
 from seantis.reservation.models import ReservedSlot
 from seantis.reservation.error import OverlappingAllocationError
+from seantis.reservation.error import AffectedReservationError
 from seantis.reservation.lock import resource_transaction
 
 class Scheduler(object):
@@ -39,6 +40,25 @@ class Scheduler(object):
         Session.add_all(allocations)
 
         return group, allocations
+
+    @resource_transaction
+    def move_allocation(self, id, new_start, new_end):
+        # Find allocation
+        query = Session.query(Allocation)
+        query = query.filter(Allocation.id==id)
+        allocation = query.one() # throws exception if not found
+
+        # Simulate the new allocation
+        new = Allocation(start=new_start, end=new_end, raster=allocation.raster)
+
+        # Ensure that no existing reservation would be affected
+        for reservation in allocation.reserved_slots:
+            if not new.contains(reservation.start, reservation.end):
+                raise AffectedReservationError(reservation)
+
+        # Change the actual allocation
+        allocation.start = new_start
+        allocation.end = new_end
 
     def any_allocations_in_range(self, start, end):
         """Returns the first allocated timespan in the range or None."""
@@ -110,9 +130,16 @@ class Scheduler(object):
         query.delete()
 
     @resource_transaction
-    def remove_allocation(self, group):
-        query = Session.query(Allocation).filter(
-            Allocation.group == group
-        )
+    def remove_allocation(self, allocation_id=None, group=None):
+        assert(allocation_id or group)
+
+        if allocation_id:
+            query = Session.query(Allocation).filter(
+                Allocation.id == allocation_id
+            )
+        elif group:
+            query = Session.query(Allocation).filter(
+                Allocation.group == group
+            )
 
         query.delete()
