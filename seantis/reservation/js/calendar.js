@@ -8,10 +8,12 @@ seantis.calendar.form_overlay = function(element) {
         subtype: 'ajax',
         filter: '#content>*',
         formselector: 'form',
-        noform: function() {
-            var calendar = $(seantis.calendar.id);
-            calendar.fullCalendar('refetchEvents');
-            return 'close';
+        noform: 'close',
+        config: {
+            onClose: function() {
+                var calendar = $(seantis.calendar.id);
+                calendar.fullCalendar('refetchEvents');    
+            }
         }
     });
 };
