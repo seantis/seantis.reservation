@@ -7,6 +7,7 @@ from seantis.reservation.models import ReservedSlot
 from seantis.reservation.error import OverlappingAllocationError
 from seantis.reservation.error import AffectedReservationError
 from seantis.reservation.lock import resource_transaction
+from seantis.reservation.raster import rasterize_span
 
 class Scheduler(object):
     """Used to manage the definitions and reservations of a resource."""
@@ -20,6 +21,7 @@ class Scheduler(object):
 
         # Make sure that this span does not overlap another
         for start, end in dates:
+            start, end = rasterize_span(start, end, raster)
             existing = self.any_allocations_in_range(start, end)
             
             if existing:
@@ -50,9 +52,9 @@ class Scheduler(object):
         new = Allocation(start=new_start, end=new_end, raster=allocation.raster)
 
         # Ensure that the new span does not overlap an existing one
-        for existing in self.allocations_in_range(new_start, new_end):
+        for existing in self.allocations_in_range(new.start, new.end):
             if existing.id != allocation.id:
-                raise OverlappingAllocationError(new_start, new_end, existing)
+                raise OverlappingAllocationError(new.start, new.end, existing)
 
         # Ensure that no existing reservation would be affected
         for reservation in allocation.reserved_slots:

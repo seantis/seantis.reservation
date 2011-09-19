@@ -21,18 +21,54 @@ seantis.calendar.form_overlay = function(element) {
         if (!seantis || !seantis.calendar || !seantis.calendar.id)
             return;
 
+        var show_overlay = function(url) {
+            var link = $('<a href="' + url + '"></a>');
+            seantis.calendar.form_overlay(link);
+            
+            link.click();  
+        };
+
         // Prepares the contextmenu for the event and adds the form overlay
         var eventRender = function(event, element) {
-            var reserve = '<p><a class="seantis-reservation-reserve" ';
+            var menuitems = [];
+
+            var reserve = '<a class="seantis-reservation-reserve" ';
             reserve += 'href="' + event.url + '">';
-            reserve += seantis.locale('reserve') + '</a></p>';
+            reserve += seantis.locale('reserve') + '</a>';
+            menuitems.push(reserve);
 
-            var edit = '<p><a class="seantis-reservation-edit" ';
+            var edit = '<a class="seantis-reservation-edit" ';
             edit += 'href="' + event.editurl + '">';
-            edit += seantis.locale('edit') + '</a></p>';
+            edit += seantis.locale('edit') + '</a>';
+            menuitems.push(edit);
 
-            seantis.contextmenu(element, reserve + edit);
+            var menuhtml = '';
+            for (var i=0; i<menuitems.length; i++) {
+                menuhtml += '<p>' + menuitems[i] + '</p>';
+            }
+
+            seantis.contextmenu(element, menuhtml);
             seantis.calendar.form_overlay(element);
+        };
+
+        var moveEvent = function(event) {
+            var url = event.editurl;
+            url += '&start=' + event.start.getTime() / 1000;
+            url += '&end=' + event.end.getTime() / 1000;
+            
+            show_overlay(url);
+        };
+
+        var eventResize = function(
+            event, dayDelta, minuteDelta, revertFunc, jsEvent, ui, view) {
+            
+            moveEvent(event);
+        };
+
+        var eventDrop = function(
+            event, dayDelta, minuteDelta, allDay, revertFunc, jsEvent, ui, view) {
+            
+            moveEvent(event);
         };
 
         // Called when a selection on the calendar is made
@@ -44,10 +80,7 @@ seantis.calendar.form_overlay = function(element) {
             url += '?start=' + start.getTime() / 1000;
             url += '&end=' + end.getTime() / 1000;
 
-            var link = $('<a href="' + url + '"></a>');
-            seantis.calendar.form_overlay(link);
-
-            link.click();
+            show_overlay(url);
         };
 
         var options = {
@@ -61,10 +94,13 @@ seantis.calendar.form_overlay = function(element) {
             columnFormat: 'dddd d.M',
             allDaySlot: false,
             firstDay: 1,
-            eventRender: eventRender,
             selectable: true,
             selectHelper: true,
-            select: eventAdd
+            select: eventAdd,
+            editable: true,
+            eventRender: eventRender,
+            eventResize: eventResize,
+            eventDrop: eventDrop
         };
 
         // Merge the options with the ones defined by the resource view

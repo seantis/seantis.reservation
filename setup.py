@@ -34,7 +34,8 @@ setup(name='seantis.reservation',
           'plone.app.dexterity [grok]',
           'plone.behavior',
           'plone.directives.form',
-          'plone.app.referenceablebehavior'
+          'plone.app.referenceablebehavior',
+          'collective.js.jqueryui'
       ],
       entry_points="""
       # -*- Entry points: -*-
