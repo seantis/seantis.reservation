@@ -17,6 +17,7 @@ from z3c.saconfig import Session
 
 from seantis.reservation.models import Allocation
 from seantis.reservation import _
+from seantis.reservation import utils
 from seantis.reservation import resource
 from seantis.reservation.raster import rasterize_start
 from seantis.reservation.raster import VALID_RASTER_VALUES
@@ -74,6 +75,15 @@ class IAllocation(interface.Interface):
         if Allocation.start >= Allocation.end:
             raise interface.Invalid(_(u'End date before start date'))
 
+def from_timestamp(fn):
+    def converter(self, *args, **kwargs):
+        try:
+            date = fn(self, *args, **kwargs)
+            return date and datetime.fromtimestamp(float(date)) or None
+        except TypeError:
+            return None
+
+    return converter
 
 class AllocationForm(form.Form):
     grok.context(resource.IResource)
@@ -87,19 +97,21 @@ class AllocationForm(form.Form):
 
     ignoreContext = True
 
-    def update(self, **kwargs):
-        try:
-            start = self.request.get('start')
-            start = start and datetime.fromtimestamp(float(start)) or None
-            end = self.request.get('end')
-            end = end and datetime.fromtimestamp(float(end)) or None 
+    @property
+    @from_timestamp
+    def start(self):
+        return self.request.get('start')
 
-            if start and end:
-                self.fields['start'].field.default = start
-                self.fields['end'].field.default = end
-            
-        except TypeError:
-            pass
+    @property
+    @from_timestamp
+    def end(self):
+        return self.request.get('end')
+
+    def update(self, **kwargs):
+        start, end = self.start, self.end
+        if start and end:
+            self.fields['start'].field.default = start
+            self.fields['end'].field.default = end
 
         super(AllocationForm, self).update(**kwargs)
 
@@ -146,32 +158,37 @@ class AllocationEditForm(form.Form):
 
     ignoreContext = True
 
+    @property
+    def id(self):
+        return int(self.request.get('id', 0))
+
+    @property
+    @from_timestamp
+    def start(self):
+        return self.request.get('start', None)
+
+    @property
+    @from_timestamp
+    def end(self):
+        return self.request.get('end', None)
+
     def update(self, **kwargs):
-        try:
-            id = self.request.get('id', -1)
+        id, start, end = self.id, self.start, self.end
 
-            if id < 0:
-                raise TypeError
-
-            start = self.request.get('start')
-            start = start and datetime.fromtimestamp(float(start)) or None
-            end = self.request.get('end')
-            end = end and datetime.fromtimestamp(float(end)) or None 
-
-            if start and end:
-                self.fields['start'].field.default = start
-                self.fields['end'].field.default = end
-            else:
-                query = Session.query(Allocation)
-                allocation = query.filter(Allocation.id == id).one()
-                self.fields['start'].field.default = allocation.start
-                self.fields['end'].field.default = allocation.end \
-                                                 + timedelta(microseconds=1)
-
-            self.fields['id'].field.default = int(id)
-        
-        except TypeError:
-            pass
+        if not id:
+            self.status = utils.translate(
+                    self.context, 
+                    self.request, _(u'Invalid arguments')
+                )
+        else:
+            if not all((start, end)):
+                allocation = self.context.scheduler.allocation_by_id(id)
+                start = allocation.start
+                end = allocation.end + timedelta(microseconds=1)
+            
+            self.fields['id'].field.default = id
+            self.fields['start'].field.default = start
+            self.fields['end'].field.default = end
 
         super(AllocationEditForm, self).update(**kwargs)
 
@@ -185,6 +202,9 @@ class AllocationEditForm(form.Form):
         if errors:
             self.status = self.formErrorMessage
             return
+
+        # TODO since we can't trust the id here there should be another check
+        # to make sure the user has the right to work with it. 
 
         self.context.scheduler.move_allocation(
                 data['id'], 

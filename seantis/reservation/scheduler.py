@@ -44,9 +44,7 @@ class Scheduler(object):
     @resource_transaction
     def move_allocation(self, id, new_start, new_end):
         # Find allocation
-        query = Session.query(Allocation)
-        query = query.filter(Allocation.id==id)
-        allocation = query.one() # throws exception if not found
+        allocation = self.allocation_by_id(id)
 
         # Simulate the new allocation
         new = Allocation(start=new_start, end=new_end, raster=allocation.raster)
@@ -59,6 +57,29 @@ class Scheduler(object):
         # Change the actual allocation
         allocation.start = new_start
         allocation.end = new_end
+
+    @resource_transaction
+    def remove_allocation(self, id=None, group=None):
+        assert(id or group)
+
+        if id:
+            query = Session.query(Allocation).filter(
+                Allocation.id == id
+            )
+        elif group:
+            query = Session.query(Allocation).filter(
+                Allocation.group == group
+            )
+
+        query.delete()
+
+    def allocation_by_id(self, id):
+        query = Session.query(Allocation)
+        query = query.filter(and_(
+                Allocation.resource == self.resource,
+                Allocation.id == id
+            ))
+        return query.one()
 
     def any_allocations_in_range(self, start, end):
         """Returns the first allocated timespan in the range or None."""
@@ -126,20 +147,5 @@ class Scheduler(object):
         query = Session.query(ReservedSlot).filter(
             ReservedSlot.reservation == reservation
         )
-
-        query.delete()
-
-    @resource_transaction
-    def remove_allocation(self, allocation_id=None, group=None):
-        assert(allocation_id or group)
-
-        if allocation_id:
-            query = Session.query(Allocation).filter(
-                Allocation.id == allocation_id
-            )
-        elif group:
-            query = Session.query(Allocation).filter(
-                Allocation.group == group
-            )
 
         query.delete()
