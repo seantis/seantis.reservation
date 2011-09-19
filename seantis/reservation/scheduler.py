@@ -49,6 +49,11 @@ class Scheduler(object):
         # Simulate the new allocation
         new = Allocation(start=new_start, end=new_end, raster=allocation.raster)
 
+        # Ensure that the new span does not overlap an existing one
+        for existing in self.allocations_in_range(new_start, new_end):
+            if existing.id != allocation.id:
+                raise OverlappingAllocationError(new_start, new_end, existing)
+
         # Ensure that no existing reservation would be affected
         for reservation in allocation.reserved_slots:
             if not new.contains(reservation.start, reservation.end):
