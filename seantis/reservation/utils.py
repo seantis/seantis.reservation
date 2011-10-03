@@ -1,6 +1,9 @@
 from Acquisition import aq_inner
 from zope.component import getMultiAdapter
 from zope import i18n
+from zope import interface
+
+from z3c.form.interfaces import ActionExecutionError
 
 def get_current_language(context, request):
     """Returns the current language"""
@@ -11,3 +14,6 @@ def get_current_language(context, request):
 def translate(context, request, text):
     lang = get_current_language(context, request)
     return i18n.translate(text, target_language=lang)
+
+def form_error(msg):
+    raise ActionExecutionError(interface.Invalid(msg))

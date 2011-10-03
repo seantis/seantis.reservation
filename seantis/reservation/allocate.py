@@ -15,8 +15,8 @@ from zope import interface
 
 from z3c.saconfig import Session
 
-from seantis.reservation.models import Allocation
 from seantis.reservation import _
+from seantis.reservation import error
 from seantis.reservation import utils
 from seantis.reservation import resource
 from seantis.reservation.raster import rasterize_start
@@ -85,6 +85,29 @@ def from_timestamp(fn):
 
     return converter
 
+def handle_action(callback=None):
+    try:
+        if callback and callback() or True:
+            Session.flush()
+    except (error.OverlappingAllocationError,
+            error.AffectedReservationError,
+            error.ResourceLockedError), e:
+        handle_exception(e)
+
+def handle_exception(ex):
+    msg = None
+    if type(ex) == error.OverlappingAllocationError:
+        msg = _(u'A conflicting allocation exists for the requested time period.')
+    if type(ex) == error.AffectedReservationError:
+        msg = _(u'An existing reservation would be affected by the requested change')
+    if type(ex) == error.ResourceLockedError:
+        msg = _(u'The resource is being edited by someone else. Please try again.')
+
+    if not msg:
+        raise NotImplementedError
+
+    utils.form_error(msg)
+
 class AllocationForm(form.Form):
     grok.context(resource.IResource)
     grok.name('allocate')
@@ -93,7 +116,6 @@ class AllocationForm(form.Form):
     fields = field.Fields(IAllocation)
 
     label = _(u'Resource allocation')
-    description = _(u'Allocate available dates on the resource')
 
     ignoreContext = True
 
@@ -142,7 +164,10 @@ class AllocationForm(form.Form):
             for date in rule:
                 dates.append((date, date+delta))
 
-        self.context.scheduler.allocate(dates, raster=data['raster'])
+        scheduler = self.context.scheduler
+        action = lambda: scheduler.allocate(dates, raster=data['raster'])
+        handle_action(callback=action)
+
         self.request.response.redirect(self.context.absolute_url())
 
 
@@ -154,7 +179,6 @@ class AllocationEditForm(form.Form):
     fields = field.Fields(IAllocation).select('id', 'start', 'end')
 
     label = _(u'Edit resource allocation')
-    description = _(u'Edit an existing allocation')
 
     ignoreContext = True
 
@@ -206,10 +230,10 @@ class AllocationEditForm(form.Form):
         # TODO since we can't trust the id here there should be another check
         # to make sure the user has the right to work with it. 
 
-        self.context.scheduler.move_allocation(
-                data['id'], 
-                data['start'],
-                data['end']
-            )
+        scheduler = self.context.scheduler
+        args = (data['id'], data['start'], data['end'])
+        action = lambda: scheduler.move_allocation(*args)
+        
+        handle_action(callback=action)
 
         self.request.response.redirect(self.context.absolute_url())
