@@ -1,6 +1,7 @@
 from uuid import uuid4 as uuid
 from z3c.saconfig import Session
 from sqlalchemy.sql import and_, or_
+from sqlalchemy import func
 
 from seantis.reservation.models import Allocation
 from seantis.reservation.models import ReservedSlot
@@ -116,6 +117,23 @@ class Scheduler(object):
 
         for result in query:
             yield result
+
+    def occupation_rate(self):
+        """Goes through all allocations and sums up the occupation rate."""
+
+        query = Session.query(Allocation)
+        query = query.filter(Allocation.resource == self.resource)
+        
+        count, occupation = 0, 0.0
+        for allocation in query:
+            count += 1
+            occupation += allocation.occupation_rate
+
+        if not count:
+            return 0.0
+
+        return occupation / float(count)
+
 
     def reserve(self, dates):
         """Tries to reserve a list of dates (tuples). If these dates are already

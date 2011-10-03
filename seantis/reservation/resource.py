@@ -68,7 +68,6 @@ class Resource(Container):
     def scheduler(self):
         return Scheduler(self.uuid)
 
-
 class View(grok.View):
     grok.context(IResourceBase)
     grok.require('zope2.View')
@@ -136,7 +135,7 @@ class Slots(grok.View):
 
         for allocation in scheduler.allocations_in_range(start, end):
             start, end = allocation.start, allocation.end
-            rate = allocation.occupation_rate
+            rate = int(allocation.occupation_rate)
 
             # TODO move colors to css
 

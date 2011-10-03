@@ -114,4 +114,4 @@ class Allocation(ORMBase):
         assert(total > 0)
 
         # ..but if it does I prefer an assertion to a division through zero
-        return int(float(reserved) / float(total) * 100)
+        return float(reserved) / float(total) * 100.0
