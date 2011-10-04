@@ -44,6 +44,13 @@ seantis.calendar.form_overlay = function(element) {
             edit += seantis.locale('edit') + '</a>';
             menuitems.push(edit);
 
+            if (event.groupurl) {
+                var group = '<a class="seantis-reservation-group" ';
+                group += 'href="' + event.groupurl + '">';
+                group += seantis.locale('group') + '</a>';
+                menuitems.push(group);
+            }
+
             var menuhtml = '';
             for (var i=0; i<menuitems.length; i++) {
                 menuhtml += '<p>' + menuitems[i] + '</p>';

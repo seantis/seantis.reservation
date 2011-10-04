@@ -1,12 +1,19 @@
+from datetime import timedelta
+
+
 from sqlalchemy import types
 from sqlalchemy.schema import Column
 
+from z3c.saconfig import Session
+
 from seantis.reservation import ORMBase
+from seantis.reservation import utils
 from seantis.reservation.models import customtypes
 from seantis.reservation.raster import rasterize_span
 from seantis.reservation.raster import rasterize_start
 from seantis.reservation.raster import rasterize_end
 from seantis.reservation.raster import iterate_span
+from seantis.reservation import _
 
 
 class Allocation(ORMBase):
@@ -18,7 +25,7 @@ class Allocation(ORMBase):
 
     id = Column(types.Integer(), primary_key=True, autoincrement=True)
     resource = Column(customtypes.GUID(), nullable=False)
-    group = Column(customtypes.GUID(), nullable=False)
+    group = Column(types.Unicode(100), nullable=False)
 
     _start = Column(types.DateTime(), nullable=False)
     _end = Column(types.DateTime(), nullable=False)
@@ -49,6 +56,37 @@ class Allocation(ORMBase):
         self._raster = raster
 
     raster = property(get_raster, set_raster)
+
+    @property
+    def display_start(self):
+        """Does nothing but to form a nice pair to display_end."""
+        return self.start
+
+    @property
+    def display_end(self):
+        """Returns the end plus one microsecond (nicer display)."""
+        return self.end + timedelta(microseconds=1)
+
+    @property
+    def event_color(self):
+        # TODO move colors to css
+        rate = self.occupation_rate
+        if rate == 100:
+            return '#a1291e' #redish
+        elif rate == 0:
+            return '#379a00' #greenish
+        else:
+            return '#e99623' #orangeish
+
+    def event_title(self, context, request):
+        translate = lambda txt: utils.translate(context, request, txt)
+        rate = self.occupation_rate
+        if rate == 100:
+            return translate(_(u'Occupied'))
+        elif rate == 0:
+            return translate(_(u'Free'))
+        else:
+            return translate(_(u'%i%% Occupied')) % rate
 
     def overlaps(self, start, end):
         """ Returns true if the current timespan overlaps with the given
@@ -115,3 +153,17 @@ class Allocation(ORMBase):
 
         # ..but if it does I prefer an assertion to a division through zero
         return float(reserved) / float(total) * 100.0
+
+    @property
+    def in_group(self):
+        """Returns true if the event is in any group."""
+
+        # If the group is a uuid, it's probably a single event
+        if utils.is_uuid(self.group):
+            return False
+
+        query = Session.query(Allocation)
+        query = query.filter(Allocation.resource == self.resource)
+        query = query.filter(Allocation.group == self.group)
+
+        return query.count() > 1

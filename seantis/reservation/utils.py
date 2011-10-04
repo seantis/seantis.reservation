@@ -1,3 +1,5 @@
+import re
+
 from Acquisition import aq_inner
 from zope.component import getMultiAdapter
 from zope import i18n
@@ -17,3 +19,10 @@ def translate(context, request, text):
 
 def form_error(msg):
     raise ActionExecutionError(interface.Invalid(msg))
+
+def is_uuid(text):
+    regex = re.compile(
+            '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}'
+        )
+
+    return re.match(regex, str(text))

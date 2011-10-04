@@ -70,6 +70,13 @@ class IAllocation(interface.Interface):
         default=date.today() + timedelta(days=365)
     )
 
+    recurrence_name = schema.Text(
+        title=_(u'Recurrence Name'),
+        default=u'',
+        max_length=100,
+        required=False
+    )
+
     @interface.invariant
     def isValidDateRange(Allocation):
         if Allocation.start >= Allocation.end:
@@ -153,7 +160,9 @@ class AllocationForm(form.Form):
         dates = []
         if not data['recurring']:
             dates.append((start, end))
+            group = None
         else:
+            group = data['recurrence_name']
             rule = rrule.rrule(
                     data['frequency'], 
                     dtstart=start, 
@@ -165,7 +174,9 @@ class AllocationForm(form.Form):
                 dates.append((date, date+delta))
 
         scheduler = self.context.scheduler
-        action = lambda: scheduler.allocate(dates, raster=data['raster'])
+        raster = data['raster']
+        action = lambda: scheduler.allocate(dates, raster=raster, group=group)
+        
         handle_action(callback=action)
 
         self.request.response.redirect(self.context.absolute_url())

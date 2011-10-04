@@ -64,5 +64,9 @@ seantis.locale.dictionary = {
     'edit' : [
         'Edit',
         'Bearbeiten'
+    ],
+    'group' : [
+        'Connected dates',
+        'Verknüpfte Daten'
     ]
 };

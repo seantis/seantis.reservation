@@ -1,8 +1,6 @@
 import json
 import time
-
 from datetime import datetime
-from datetime import timedelta
 
 from five import grok
 from plone.directives import form
@@ -11,7 +9,6 @@ from plone.uuid.interfaces import IUUID
 from zope import schema
 from zope import interface
 
-from seantis.reservation import utils
 from seantis.reservation import Scheduler
 from seantis.reservation import _
 
@@ -100,6 +97,35 @@ class View(grok.View):
 
         return template % (self.calendar_id, options, allocateurl)
 
+class GroupView(grok.View):
+    grok.context(IResourceBase)
+    grok.require('zope2.View')
+    grok.name('group')
+
+    group = None
+    template = grok.PageTemplateFile('templates/group.pt')
+
+    def update(self, **kwargs):
+        self.group = self.request.get('name', None)
+
+    def title(self):
+        return self.group
+
+    def allocations(self):
+        if not self.group:
+            return []
+
+        scheduler = self.context.scheduler
+        return scheduler.allocations_by_group(unicode(self.group))
+
+    def event_style(self, allocation):
+        #TODO remove the css from here
+        color = allocation.event_color
+        css = "width:180px; float:left; background-color:%s; border-color:%s;"
+        return css % (color, color)
+
+    def event_title(self, allocation):
+        return allocation.event_title(self.context, self.request)
 
 class Slots(grok.View):
     grok.context(IResourceBase)
@@ -129,49 +155,33 @@ class Slots(grok.View):
             return json.dumps(slots)
 
         scheduler = self.context.scheduler
-        translate = lambda txt: utils.translate(self.context, self.request, txt)
         baseurl = self.context.absolute_url_path() + '/reserve?start=%s&end=%s'
         editurl = self.context.absolute_url_path() + '/allocation_edit?id=%i'
+        groupurl = self.context.absolute_url_path() + '/group?name=%s'
 
         for allocation in scheduler.allocations_in_range(start, end):
-            start, end = allocation.start, allocation.end
-            rate = int(allocation.occupation_rate)
-
-            # TODO move colors to css
-
-            if rate == 100:
-                title = translate(_(u'Occupied'))
-                color = '#a1291e' #redish
-            elif rate == 0:
-                title = translate(_(u'Free'))
-                color = '#379a00' #greenish
-            else:
-                title = translate(_(u'%i%% Occupied')) % rate
-                color = '#e99623' #orangeish
-
-            # add the microsecond which is substracted on creation
-            # for nicer displaying
-            end += timedelta(microseconds=1)
+            start, end = allocation.display_start, allocation.display_end
         
             url = baseurl % (
-                time.mktime(start.timetuple()),
-                time.mktime(end.timetuple()),
+                    time.mktime(start.timetuple()),
+                    time.mktime(end.timetuple()),
                 )
 
-            edit = editurl % (
-                allocation.id
-                )
-            
+            edit = editurl % allocation.id
+
+            group = allocation.in_group and (groupurl % allocation.group) or None
+
             slots.append(
                 dict(
                     start=start.isoformat(),
                     end=end.isoformat(),
-                    title=title,
+                    title=allocation.event_title(self.context, self.request),
                     allDay=False,
-                    backgroundColor=color,
-                    borderColor=color,
+                    backgroundColor=allocation.event_color,
+                    borderColor=allocation.event_color,
                     url=url,
                     editurl=edit,
+                    groupurl=group,
                     allocation = allocation.id
                 )
             )
