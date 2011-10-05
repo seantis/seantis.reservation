@@ -10,7 +10,6 @@ if (!this.seantis.calendars) this.seantis.calendars = [];
         // Submitting the form will force the calendar to refetch the events
         for(var i=0; i< seantis.calendars.length; i++) {
             var calendarindex = i;
-
             seantis.calendars[calendarindex].form_overlay = function(element) {
                 element.prepOverlay({
                     subtype: 'ajax',
@@ -131,12 +130,54 @@ if (!this.seantis.calendars) this.seantis.calendars = [];
                 editable: true,
                 eventAfterRender: render,
                 eventResize: move,
-                eventDrop: move
+                eventDrop: move,
+                viewDisplay: function(view) {
+                    console.log(view);
+                }
             };
 
             // Merge the options with the ones defined by the resource view
             $.extend(options, seantis.calendars[i].options);
             $(seantis.calendars[i].id).fullCalendar(options);
+        }
+
+        var all_calendars = function(originid, fn, arg) {
+            for (var i=0; i<seantis.calendars.length; i++) {
+                if (seantis.calendars[i].id === originid)
+                    continue;
+                
+                $(seantis.calendars[i].id).fullCalendar( fn, arg );
+            }  
+        };
+
+        var get_all_calendars_fn = function(originid, fn, arg) {
+            var origin = originid;
+            var func = fn;
+            var argument = arg;
+            return function() {
+                all_calendars(origin, func, arg);  
+            };
+        };
+
+        // Hook up the button synchronization
+        for (var i=0; i<seantis.calendars.length; i++) {
+            var calendarid = seantis.calendars[i].id;
+
+            var calendar = $(calendarid);
+
+            var prev = $('.fc-button-prev', calendar);
+            var next = $('.fc-button-next', calendar);
+            var month = $('.fc-button-month', calendar);
+            var week = $('.fc-button-agendaWeek', calendar);
+            var day = $('.fc-button-agendaDay', calendar);
+
+            'month, agendaWeek, agendaDay'
+
+            next.click(get_all_calendars_fn(calendarid, 'next'));
+            prev.click(get_all_calendars_fn(calendarid, 'prev'));
+            month.click(get_all_calendars_fn(calendarid, 'changeView', 'month'));
+            week.click(get_all_calendars_fn(calendarid, 'changeView', 'agendaWeek'));
+            day.click(get_all_calendars_fn(calendarid, 'changeView', 'agendaDay'));
         }
     });
 })( jQuery );

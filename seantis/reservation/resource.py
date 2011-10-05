@@ -74,20 +74,42 @@ class View(grok.View):
     
     template = grok.PageTemplateFile('templates/resource.pt')
 
-    calendar_id = 'seantis-reservation-calendar'
+    calendar_id = 'seantis-reservation-calendar-%i'
 
-    def other_calendars(self):
+    def compare_to(self):
+        uids = self.request.get('compare_to')
+        if not hasattr(uids, '__iter__'):
+            uids = [uids]
+
+        return uids
+
+    def single_calendar(self):
+        return self.calendar_count() == 1
+
+    def resources(self):
         uids = self.request.get('compare_to')
         if not hasattr(uids, '__iter__'):
             uids = [uids]
         
+        yield self.context
+
         for uid in uids:
-            resource = utils.get_resource_by_uuid(uid)
+            resource = utils.get_resource_by_uuid(self.context, uid)
             if resource:
                 yield resource.getObject()
 
-    def calendar(self):
-        return self.context
+    def calendar_count(self):
+        return 1 + len(self.compare_to())
+
+    def calendar_ids(self, ix=None):
+        if ix != None:
+            return self.calendar_id % ix
+
+        ids = []
+        for i in range(0, self.calendar_count()):
+            ids.append(self.calendar_id % i)
+
+        return ids
 
     def javascript(self):
         template = """
@@ -98,12 +120,14 @@ class View(grok.View):
             %s
         </script>
         """
+        calendars = []
 
-        calendars = [self.calendar_options(self.calendar())]
+        for ix, resource in enumerate(self.resources()):
+            calendars.append(self.calendar_options(ix, resource))
 
         return template % '\n'.join(calendars)
 
-    def calendar_options(self, context):
+    def calendar_options(self, ix, context):
         template = """
         this.seantis.calendars.push({
             id:'#%s',
@@ -121,7 +145,7 @@ class View(grok.View):
         options['minTime'] = context.first_hour
         options['maxTime'] = context.last_hour
         
-        return template % (self.calendar_id, options, allocateurl)
+        return template % (self.calendar_ids(ix=ix), options, allocateurl)
 
 class GroupView(grok.View):
     grok.context(IResourceBase)

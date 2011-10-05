@@ -251,7 +251,7 @@ class AllocationEditForm(form.Form):
         # to make sure the user has the right to work with it. 
 
         scheduler = self.context.scheduler
-        args = (data['id'], data['start'], data['end'])
+        args = (data['id'], data['start'], data['end'], unicode(data['group']))
         action = lambda: scheduler.move_allocation(*args)
         
         handle_action(callback=action)

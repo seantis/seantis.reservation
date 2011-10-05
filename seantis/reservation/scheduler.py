@@ -17,7 +17,7 @@ class Scheduler(object):
 
     @resource_transaction
     def allocate(self, dates, group=None, raster=15):
-        group = group or str(uuid())
+        group = group or unicode(uuid())
 
         # Make sure that this span does not overlap another
         for start, end in dates:
@@ -44,7 +44,7 @@ class Scheduler(object):
         return group, allocations
 
     @resource_transaction
-    def move_allocation(self, id, new_start, new_end):
+    def move_allocation(self, id, new_start, new_end, group):
         # Find allocation
         allocation = self.allocation_by_id(id)
 
@@ -64,6 +64,7 @@ class Scheduler(object):
         # Change the actual allocation
         allocation.start = new_start
         allocation.end = new_end
+        allocation.group = group
 
     @resource_transaction
     def remove_allocation(self, id=None, group=None):
