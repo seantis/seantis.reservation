@@ -130,10 +130,7 @@ if (!this.seantis.calendars) this.seantis.calendars = [];
                 editable: true,
                 eventAfterRender: render,
                 eventResize: move,
-                eventDrop: move,
-                viewDisplay: function(view) {
-                    console.log(view);
-                }
+                eventDrop: move
             };
 
             // Merge the options with the ones defined by the resource view
