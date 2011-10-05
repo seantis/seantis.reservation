@@ -31,7 +31,7 @@ seantis.calendar.form_overlay = function(element) {
         };
 
         // Prepares the contextmenu for the event and adds the form overlay
-        var eventRender = function(event, element, view) {
+        var eventAfterRender = function(event, element, view) {
             var menuitems = [];
 
             var reserve = '<a class="seantis-reservation-reserve" ';
@@ -60,6 +60,8 @@ seantis.calendar.form_overlay = function(element) {
             seantis.calendar.form_overlay(element);
 
             var partitions = '';
+            var totalheight = $('.fc-event-bg', element).height();
+            
             for (i = 0; i<event.partitions.length; i++) {
                 var partition = event.partitions[i];
                 var reserved = partition[1];
@@ -123,9 +125,15 @@ seantis.calendar.form_overlay = function(element) {
             selectHelper: true,
             select: eventAdd,
             editable: true,
-            eventRender: eventRender,
+            eventAfterRender: eventAfterRender,
             eventResize: eventResize,
-            eventDrop: eventDrop
+            eventDrop: eventDrop,
+            eventResizeStart: function() {
+                $('.calendarOccupied').hide();
+            },
+            eventResizeEnd: function() {
+                $('.calendarOccupied').show();
+            }
         };
 
         // Merge the options with the ones defined by the resource view
