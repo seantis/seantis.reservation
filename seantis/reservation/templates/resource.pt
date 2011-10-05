@@ -15,6 +15,16 @@
     <tal:block tal:replace="structure view/calendar_options" />
 </metal:block>
 
+<metal:block metal:fill-slot="style_slot">
+  <style type="text/css">
+    .calendarOccupied {
+        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAOVBMVEXY2Nj////d7h7d7h7d7h7d7h7///////////////////////////////////////////////////+4yo5sAAAAQklEQVQoke3LqQ3AMADAQKP8b/cftjjAUgaI6cmEmHKprY+59seRSkAlopJQyagUVCoqDZWOykBlorJQ2aj48+Rafr0hD9knm0tJAAAAAElFTkSuQmCC) !important;
+        background-repeat: repeat;
+        border: solid #ccc 1px;
+    }
+  </style>
+</metal:block>
+
 <metal:main fill-slot="main">
     <tal:main-macro metal:define-macro="main">
 

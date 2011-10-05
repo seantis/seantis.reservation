@@ -90,3 +90,30 @@ class TestScheduler(IntegrationTestCase):
         self.assertRaises(OverlappingAllocationError, 
                 sc1.allocate, ((start, end),), raster=15
             )
+
+    def test_allocation_partition(self):
+        sc = Scheduler(uuid())
+        group, allocations = sc.allocate([
+                (
+                    datetime(2011, 1, 1, 8, 0), 
+                    datetime(2011, 1, 1, 10, 0)
+                )
+            ])
+
+        allocation = allocations[0]
+        partitions = allocation.occupation_partitions()
+        self.assertEqual(len(partitions), 1)
+        self.assertEqual(partitions[0][0], 100.0)
+        self.assertEqual(partitions[0][1], False)
+
+        start, end = datetime(2011, 1, 1, 8, 30), datetime(2011, 1, 1, 9, 00)
+        sc.reserve([(start, end)])
+
+        partitions = allocation.occupation_partitions()
+        self.assertEqual(len(partitions), 3)
+        self.assertEqual(partitions[0][0], 25.00)
+        self.assertEqual(partitions[0][1], False)
+        self.assertEqual(partitions[1][0], 25.00)
+        self.assertEqual(partitions[1][1], True)
+        self.assertEqual(partitions[2][0], 50.00)
+        self.assertEqual(partitions[2][1], False)

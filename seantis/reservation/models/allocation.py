@@ -1,5 +1,5 @@
 from datetime import timedelta
-
+from itertools import groupby
 
 from sqlalchemy import types
 from sqlalchemy.schema import Column
@@ -167,3 +167,50 @@ class Allocation(ORMBase):
         query = query.filter(Allocation.group == self.group)
 
         return query.count() > 1
+
+    def occupation_partitions(self):
+        """Partitions the space between start and end into blocks of either
+        free or reserved time. Each block has a percentage representing the
+        space the block occupies compared to the size of the whole allocation.
+
+        The blocks are ordered from start to end. Each block is an item with two
+        values. The first being the percentage, the second being true if the
+        block is reserved.
+
+        So given an allocation that goes from 8 to 9 and a reservation that goes
+        from 8:15 until 8:30 we get the following blocks:
+
+        [
+            (25%, False),
+            (25%, True),
+            (50%, False)
+        ]
+
+        This is useful to divide an allocation block into different divs on the
+        frontend, indicating to the user which parts of an allocation are reserved.
+
+        """
+        reserved = [r.start for r in self.reserved_slots.all()]
+        if (len(reserved) == 0):
+            return [(100.0, False)]
+
+        # Get the percentage one slot represents
+        slots = list(self.all_slots())
+        step = 100.0 / float(len(slots))
+
+        # Create an entry for each slot with either True or False
+        pieces = [s[0] in reserved for s in slots]
+            
+        # Group by the true/false values in the pieces and sum up the percentage
+        partitions = []
+        for flag, group in groupby(pieces, key=lambda p: p):
+            percentage = len(list(group)) * step
+            partitions.append([percentage, flag])
+        
+        # Make sure to get rid of floating point rounding errors
+        total = sum([p[0] for p in partitions])
+        diff = 100.0 - total
+
+        partitions[-1:][0][0] -= diff
+
+        return partitions

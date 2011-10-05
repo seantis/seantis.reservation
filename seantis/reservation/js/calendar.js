@@ -31,7 +31,7 @@ seantis.calendar.form_overlay = function(element) {
         };
 
         // Prepares the contextmenu for the event and adds the form overlay
-        var eventRender = function(event, element) {
+        var eventRender = function(event, element, view) {
             var menuitems = [];
 
             var reserve = '<a class="seantis-reservation-reserve" ';
