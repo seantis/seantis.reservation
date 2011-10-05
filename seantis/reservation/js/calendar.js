@@ -58,6 +58,22 @@ seantis.calendar.form_overlay = function(element) {
 
             seantis.contextmenu(element, menuhtml);
             seantis.calendar.form_overlay(element);
+
+            var partitions = '';
+            for (i = 0; i<event.partitions.length; i++) {
+                var partition = event.partitions[i];
+                var reserved = partition[1];
+                var percentage = partition[0];
+
+                if (reserved === false) {
+                    partitions += '<div style="height:' + percentage + '%"></div>';
+                } else {
+                    partitions += '<div style="height:' + percentage + '%" ';
+                    partitions += 'class="calendarOccupied"></div>';
+                }
+            }
+
+            $('.fc-event-bg', element).wrapInner(partitions);
         };
 
         var moveEvent = function(event) {

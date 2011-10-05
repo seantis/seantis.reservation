@@ -182,7 +182,8 @@ class Slots(grok.View):
                     url=url,
                     editurl=edit,
                     groupurl=group,
-                    allocation = allocation.id
+                    allocation = allocation.id,
+                    partitions = allocation.occupation_partitions()
                 )
             )
             
