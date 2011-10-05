@@ -1,14 +1,17 @@
 import json
 import time
 from datetime import datetime
+from uuid import uuid4 as uuid
 
 from five import grok
 from plone.directives import form
 from plone.dexterity.content import Container
 from plone.uuid.interfaces import IUUID
+from Products.CMFCore.utils import getToolByName
 from zope import schema
 from zope import interface
 
+from seantis.reservation import utils
 from seantis.reservation import Scheduler
 from seantis.reservation import _
 
@@ -73,28 +76,51 @@ class View(grok.View):
 
     calendar_id = 'seantis-reservation-calendar'
 
-    @property
-    def calendar_options(self):
+    def other_calendars(self):
+        uids = self.request.get('compare_to')
+        if not hasattr(uids, '__iter__'):
+            uids = [uids]
+        
+        for uid in uids:
+            resource = utils.get_resource_by_uuid(uid)
+            if resource:
+                yield resource.getObject()
+
+    def calendar(self):
+        return self.context
+
+    def javascript(self):
         template = """
         <script type="text/javascript">
             if (!this.seantis) this.seantis = {};
-            if (!this.seantis) this.seantis.calendar = {};
-            
-            seantis.calendar.id = '#%s';
-            seantis.calendar.options = %s;
-            seantis.calendar.allocateurl = '%s';
+            if (!this.seantis) this.seantis.calendars = [];
+
+            %s
         </script>
         """
 
-        contexturl = self.context.absolute_url_path()
+        calendars = [self.calendar_options(self.calendar())]
+
+        return template % '\n'.join(calendars)
+
+    def calendar_options(self, context):
+        template = """
+        this.seantis.calendars.push({
+            id:'#%s',
+            options:%s,
+            allocateurl:'%s',
+        })        
+        """
+
+        contexturl = context.absolute_url_path()
         allocateurl = contexturl + '/allocate'
         eventurl = contexturl + '/slots'
 
         options = {}
         options['events'] = eventurl
-        options['minTime'] = self.context.first_hour
-        options['maxTime'] = self.context.last_hour
-
+        options['minTime'] = context.first_hour
+        options['maxTime'] = context.last_hour
+        
         return template % (self.calendar_id, options, allocateurl)
 
 class GroupView(grok.View):
@@ -134,8 +160,6 @@ class Slots(grok.View):
 
     @property
     def range(self):
-        # TODO make sure that fullcalendar reports the time in utc
-
         start = self.request.get('start', None)
         end = self.request.get('end', None)
         
@@ -147,44 +171,53 @@ class Slots(grok.View):
 
         return start, end
 
-    def render(self, **kwargs):
-        slots = []
-        start, end = self.range
+    @property
+    def other_resource_id(self):
+        argument = self.request.get('compare_to', None)
+        return argument and uuid(argument) or None
 
-        if not all((start, end)):
-            return json.dumps(slots)
+    def events(self, resource):
+        scheduler = resource.scheduler
 
-        scheduler = self.context.scheduler
-        baseurl = self.context.absolute_url_path() + '/reserve?start=%s&end=%s'
-        editurl = self.context.absolute_url_path() + '/allocation_edit?id=%i'
-        groupurl = self.context.absolute_url_path() + '/group?name=%s'
+        base = resource.absolute_url_path()
+        reserve = '/reserve?start=%s&end=%s'
+        edit = '/edit-allocation?id=%i'
+        group = '/group?name=%s'
 
-        for allocation in scheduler.allocations_in_range(start, end):
-            start, end = allocation.display_start, allocation.display_end
+        events = []
+
+        for alloc in scheduler.allocations_in_range(*self.range):
+            start, end = alloc.display_start, alloc.display_end
+
+            startstamp = time.mktime(start.timetuple())
+            endstamp = time.mktime(end.timetuple())
+
+            reserveurl = base + reserve % (startstamp, endstamp)
+            editurl = base + edit % alloc.id
+            groupurl = alloc.in_group and (base + group % alloc.group) or None
+
+            events.append(dict(
+                allDay=False,
+                start=start.isoformat(),
+                end=end.isoformat(),
+                title=alloc.event_title(resource, self.request),
+                backgroundColor=alloc.event_color,
+                borderColor=alloc.event_color,
+                url=reserveurl,
+                editurl=editurl,
+                groupurl=groupurl,
+                allocation = alloc.id,
+                partitions = alloc.occupation_partitions()
+            ))
         
-            url = baseurl % (
-                    time.mktime(start.timetuple()),
-                    time.mktime(end.timetuple()),
-                )
+        return events
 
-            edit = editurl % allocation.id
+        
+    def render(self, **kwargs):
+        start, end = self.range
+        if not all((start, end)):
+            return json.dumps([])
 
-            group = allocation.in_group and (groupurl % allocation.group) or None
-
-            slots.append(
-                dict(
-                    start=start.isoformat(),
-                    end=end.isoformat(),
-                    title=allocation.event_title(self.context, self.request),
-                    allDay=False,
-                    backgroundColor=allocation.event_color,
-                    borderColor=allocation.event_color,
-                    url=url,
-                    editurl=edit,
-                    groupurl=group,
-                    allocation = allocation.id,
-                    partitions = allocation.occupation_partitions()
-                )
-            )
-            
-        return json.dumps(slots)
+        events = self.events(self.context)
+        
+        return json.dumps(events)

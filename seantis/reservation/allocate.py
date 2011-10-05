@@ -183,7 +183,7 @@ class AllocationForm(form.Form):
 
 class AllocationEditForm(form.Form):
     grok.context(resource.IResource)
-    grok.name('allocation_edit')
+    grok.name('edit-allocation')
     grok.require('cmf.ManagePortal')
 
     fields = field.Fields(IAllocation).select('id', 'start', 'end', 'group')
@@ -206,8 +206,12 @@ class AllocationEditForm(form.Form):
     def end(self):
         return self.request.get('end', None)
 
+    @property
+    def group(self):
+        return self.request.get('group', None)
+
     def update(self, **kwargs):
-        id, start, end = self.id, self.start, self.end
+        id, start, end, group = self.id, self.start, self.end, self.group
 
         if not id:
             self.status = utils.translate(
@@ -215,14 +219,20 @@ class AllocationEditForm(form.Form):
                     self.request, _(u'Invalid arguments')
                 )
         else:
+            allocation = self.context.scheduler.allocation_by_id(id)
+            group = allocation.group
+
             if not all((start, end)):
-                allocation = self.context.scheduler.allocation_by_id(id)
                 start = allocation.start
                 end = allocation.end + timedelta(microseconds=1)
+
+            if utils.is_uuid(group):
+                group = None
             
             self.fields['id'].field.default = id
             self.fields['start'].field.default = start
             self.fields['end'].field.default = end
+            self.fields['group'].field.default = group
 
         super(AllocationEditForm, self).update(**kwargs)
 

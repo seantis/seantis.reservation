@@ -1,37 +1,40 @@
 if (!this.seantis) this.seantis = {};
-if (!this.seantis.calendar) this.seantis.calendar = {};
-
-// Adds a plone overlay to a form view.
-// Submitting the form will forche the calendar to refetch the events
-seantis.calendar.form_overlay = function(element) {
-    element.prepOverlay({
-        subtype: 'ajax',
-        filter: '#content>*',
-        formselector: 'form',
-        noform: 'close',
-        config: {
-            onClose: function() {
-                var calendar = $(seantis.calendar.id);
-                calendar.fullCalendar('refetchEvents');    
-            }
-        }
-    });
-};
+if (!this.seantis.calendars) this.seantis.calendars = [];
 
 (function($) {
     $(document).ready(function() {
-        if (!seantis || !seantis.calendar || !seantis.calendar.id)
+        if (!seantis || !seantis.calendars.length)
             return;
 
-        var show_overlay = function(url) {
+        // Adds a plone overlay to a form view.
+        // Submitting the form will force the calendar to refetch the events
+        for(var i=0; i< seantis.calendars.length; i++) {
+            var calendarindex = i;
+
+            seantis.calendars[calendarindex].form_overlay = function(element) {
+                element.prepOverlay({
+                    subtype: 'ajax',
+                    filter: '#content>*',
+                    formselector: 'form',
+                    noform: 'close',
+                    config: {
+                        onClose: function() {
+                            var calendarid = seantis.calendars[calendarindex].id;
+                            $(calendarid).fullCalendar('refetchEvents');    
+                        }
+                    }
+                });
+            };
+        }
+
+        var show_overlay = function(url, calendarindex) {
             var link = $('<a href="' + url + '"></a>');
-            seantis.calendar.form_overlay(link);
-            
-            link.click();  
+            seantis.calendars[calendarindex].form_overlay(link);
+            link.click();
         };
 
         // Prepares the contextmenu for the event and adds the form overlay
-        var eventAfterRender = function(event, element, view) {
+        var renderEvent = function(event, element, calendarindex) {
             var menuitems = [];
 
             var reserve = '<a class="seantis-reservation-reserve" ';
@@ -56,8 +59,8 @@ seantis.calendar.form_overlay = function(element) {
                 menuhtml += '<p>' + menuitems[i] + '</p>';
             }
 
-            seantis.contextmenu(element, menuhtml);
-            seantis.calendar.form_overlay(element);
+            seantis.contextmenu(element, menuhtml, calendarindex);
+            seantis.calendars[calendarindex].form_overlay(element);
 
             var partitions = '';
             for (i = 0; i<event.partitions.length; i++) {
@@ -76,61 +79,64 @@ seantis.calendar.form_overlay = function(element) {
             $('.fc-event-bg', element).wrapInner(partitions);
         };
 
-        var moveEvent = function(event) {
+        var moveEvent = function(event, calendarindex) {
             var url = event.editurl;
             url += '&start=' + event.start.getTime() / 1000;
             url += '&end=' + event.end.getTime() / 1000;
             
-            show_overlay(url);
-        };
-
-        var eventResize = function(
-            event, dayDelta, minuteDelta, revertFunc, jsEvent, ui, view) {
-            
-            moveEvent(event);
-        };
-
-        var eventDrop = function(
-            event, dayDelta, minuteDelta, allDay, revertFunc, jsEvent, ui, view) {
-            
-            moveEvent(event);
+            show_overlay(url, calendarindex);
         };
 
         // Called when a selection on the calendar is made
         // TODO do not execute if the permissions are insufficient
-        var eventAdd = function(start, end, allDay) {
+        var eventAdd = function(start, end, allDay, calendarindex) {
             if (allDay) return;
 
-            var url = seantis.calendar.allocateurl;
+            var url = seantis.calendars[calendarindex].allocateurl;
             url += '?start=' + start.getTime() / 1000;
             url += '&end=' + end.getTime() / 1000;
 
-            show_overlay(url);
+            show_overlay(url, calendarindex);
         };
 
-        var options = {
-            header: {
-                left: 'prev, next today',
-                right: 'month, agendaWeek, agendaDay'
-            },
-            defaultView: 'agendaWeek',
-            timeFormat: 'HH:mm{ - HH:mm}',
-            axisFormat: 'HH:mm{ - HH:mm}',
-            columnFormat: 'dddd d.M',
-            allDaySlot: false,
-            firstDay: 1,
-            selectable: true,
-            selectHelper: true,
-            select: eventAdd,
-            editable: true,
-            eventAfterRender: eventAfterRender,
-            eventResize: eventResize,
-            eventDrop: eventDrop
-        };
+        for (var i=0; i<seantis.calendars.length; i++) {
+            var calendarindex = i;
 
-        // Merge the options with the ones defined by the resource view
-        $.extend(options, seantis.calendar.options);
+            var add = function(start, end, allDay) {
+                eventAdd(start, end, allDay, calendarindex);  
+            };
 
-        $(seantis.calendar.id).fullCalendar(options);
+            var move = function(event) {
+                moveEvent(event, calendarindex);
+            };
+
+            var render = function(event, element) {
+                renderEvent(event, element, calendarindex);
+            };
+
+            var options = {
+                header: {
+                    left: 'prev, next today',
+                    right: 'month, agendaWeek, agendaDay'
+                },
+                defaultView: 'agendaWeek',
+                timeFormat: 'HH:mm{ - HH:mm}',
+                axisFormat: 'HH:mm{ - HH:mm}',
+                columnFormat: 'dddd d.M',
+                allDaySlot: false,
+                firstDay: 1,
+                selectable: true,
+                selectHelper: true,
+                select: add,
+                editable: true,
+                eventAfterRender: render,
+                eventResize: move,
+                eventDrop: move
+            };
+
+            // Merge the options with the ones defined by the resource view
+            $.extend(options, seantis.calendars[i].options);
+            $(seantis.calendars[i].id).fullCalendar(options);
+        }
     });
 })( jQuery );

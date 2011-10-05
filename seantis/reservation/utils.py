@@ -4,6 +4,7 @@ from Acquisition import aq_inner
 from zope.component import getMultiAdapter
 from zope import i18n
 from zope import interface
+from Products.CMFCore.utils import getToolByName
 
 from z3c.form.interfaces import ActionExecutionError
 
@@ -26,3 +27,8 @@ def is_uuid(text):
         )
 
     return re.match(regex, str(text))
+
+def get_resource_by_uuid(context, uuid):
+    catalog = getToolByName(context, 'portal_catalog')
+    results = catalog(UID=uuid)
+    return len(results) == 1 and results[0] or None
