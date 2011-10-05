@@ -60,8 +60,6 @@ seantis.calendar.form_overlay = function(element) {
             seantis.calendar.form_overlay(element);
 
             var partitions = '';
-            var totalheight = $('.fc-event-bg', element).height();
-            
             for (i = 0; i<event.partitions.length; i++) {
                 var partition = event.partitions[i];
                 var reserved = partition[1];
@@ -127,13 +125,7 @@ seantis.calendar.form_overlay = function(element) {
             editable: true,
             eventAfterRender: eventAfterRender,
             eventResize: eventResize,
-            eventDrop: eventDrop,
-            eventResizeStart: function() {
-                $('.calendarOccupied').hide();
-            },
-            eventResizeEnd: function() {
-                $('.calendarOccupied').show();
-            }
+            eventDrop: eventDrop
         };
 
         // Merge the options with the ones defined by the resource view

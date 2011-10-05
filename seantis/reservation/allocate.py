@@ -70,8 +70,8 @@ class IAllocation(interface.Interface):
         default=date.today() + timedelta(days=365)
     )
 
-    recurrence_name = schema.Text(
-        title=_(u'Recurrence Name'),
+    group = schema.Text(
+        title=_(u'Group'),
         default=u'',
         max_length=100,
         required=False
@@ -156,13 +156,12 @@ class AllocationForm(form.Form):
             return
 
         start, end = data['start'], data['end']
+        group = data['group']
 
         dates = []
         if not data['recurring']:
             dates.append((start, end))
-            group = None
         else:
-            group = data['recurrence_name']
             rule = rrule.rrule(
                     data['frequency'], 
                     dtstart=start, 
@@ -187,7 +186,7 @@ class AllocationEditForm(form.Form):
     grok.name('allocation_edit')
     grok.require('cmf.ManagePortal')
 
-    fields = field.Fields(IAllocation).select('id', 'start', 'end')
+    fields = field.Fields(IAllocation).select('id', 'start', 'end', 'group')
 
     label = _(u'Edit resource allocation')
 
