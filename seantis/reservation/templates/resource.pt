@@ -37,19 +37,18 @@
           <p tal:content="context/description" />
 
           <tal:block tal:condition="python: view.single_calendar()">
-            <div tal:attributes="id python: view.calendar_ids(ix=0)"/>
+            <div tal:attributes="id python: view.calendar_ids(ix=0)"></div>
           </tal:block>
 
           <tal:block tal:repeat="calid view/calendar_ids" tal:condition="python: not view.single_calendar()">
             <div style="float:left; width:45%; margin-right:5%;" tal:attributes="id calid"></div>
             
             <tal:block condition="repeat/calid/odd">
-              <div style="clear: both">
+              <div style="clear: both"></div>
             </tal:block>
           </tal:block>
 
-          <div style="clear: both">
-        </div>
+          <div style="clear: both"></div>
 
         <div tal:replace="structure provider:plone.belowcontentbody" />
 

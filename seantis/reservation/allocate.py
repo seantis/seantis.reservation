@@ -232,7 +232,8 @@ class AllocationEditForm(form.Form):
             self.fields['id'].field.default = id
             self.fields['start'].field.default = start
             self.fields['end'].field.default = end
-            self.fields['group'].field.default = group
+            if group:
+                self.fields['group'].field.default = group
 
         super(AllocationEditForm, self).update(**kwargs)
 
