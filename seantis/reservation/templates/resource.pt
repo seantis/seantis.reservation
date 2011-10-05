@@ -36,7 +36,7 @@
         <div class="documentContent">
           <p tal:content="context/description" />
 
-          <tal:block tal:condition="view/single_calendar">
+          <tal:block tal:condition="python: view.single_calendar()">
             <div tal:attributes="id python: view.calendar_ids(ix=0)"/>
           </tal:block>
 

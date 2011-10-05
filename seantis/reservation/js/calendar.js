@@ -171,8 +171,6 @@ if (!this.seantis.calendars) this.seantis.calendars = [];
             var week = $('.fc-button-agendaWeek', calendar);
             var day = $('.fc-button-agendaDay', calendar);
 
-            'month, agendaWeek, agendaDay'
-
             next.click(get_all_calendars_fn(calendarid, 'next'));
             prev.click(get_all_calendars_fn(calendarid, 'prev'));
             month.click(get_all_calendars_fn(calendarid, 'changeView', 'month'));

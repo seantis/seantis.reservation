@@ -78,6 +78,9 @@ class View(grok.View):
 
     def compare_to(self):
         uids = self.request.get('compare_to')
+        if uids == None:
+            return []
+
         if not hasattr(uids, '__iter__'):
             uids = [uids]
 
@@ -122,12 +125,16 @@ class View(grok.View):
         """
         calendars = []
 
+        resources = list(self.resources())
+        min_hour = min([r.first_hour for r in resources])
+        max_hour = max([r.last_hour for r in resources])
+
         for ix, resource in enumerate(self.resources()):
-            calendars.append(self.calendar_options(ix, resource))
+            calendars.append(self.calendar_options(ix, resource, min_hour, max_hour))
 
         return template % '\n'.join(calendars)
 
-    def calendar_options(self, ix, context):
+    def calendar_options(self, ix, context, first_hour=None, last_hour=None):
         template = """
         this.seantis.calendars.push({
             id:'#%s',
@@ -142,8 +149,8 @@ class View(grok.View):
 
         options = {}
         options['events'] = eventurl
-        options['minTime'] = context.first_hour
-        options['maxTime'] = context.last_hour
+        options['minTime'] = first_hour or context.first_hour
+        options['maxTime'] = last_hour or context.last_hour
         
         return template % (self.calendar_ids(ix=ix), options, allocateurl)
 
