@@ -53,7 +53,8 @@ class TestScheduler(IntegrationTestCase):
         movefn = lambda: sc.move_allocation(
                 allocation.id, 
                 datetime(2011, 1, 1, 15, 30),
-                datetime(2011, 1, 1, 16)
+                datetime(2011, 1, 1, 16),
+                None
             )
         self.assertRaises(AffectedReservationError, movefn)
 
@@ -64,7 +65,8 @@ class TestScheduler(IntegrationTestCase):
         sc.move_allocation(
                 allocation.id,
                 datetime(2011, 1, 1, 15),
-                datetime(2011, 1, 1, 15, 30)
+                datetime(2011, 1, 1, 15, 30),
+                None
             )
 
         # there should be fewer slots now
