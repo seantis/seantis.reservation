@@ -3,37 +3,61 @@ if (!this.seantis.calendars) this.seantis.calendars = [];
 
 (function($) {
     $(document).ready(function() {
-        if (!seantis || !seantis.calendars.length)
+
+        if (!seantis.calendars.length)
             return;
 
-        // Adds a plone overlay to a form view.
-        // Submitting the form will force the calendar to refetch the events
-        for(var i=0; i< seantis.calendars.length; i++) {
-            var calendarindex = i;
-            seantis.calendars[calendarindex].form_overlay = function(element) {
-                element.prepOverlay({
-                    subtype: 'ajax',
-                    filter: '#content>*',
-                    formselector: 'form',
-                    noform: 'close',
-                    config: {
-                        onClose: function() {
-                            var calendarid = seantis.calendars[calendarindex].id;
-                            $(calendarid).fullCalendar('refetchEvents');    
-                        }
-                    }
-                });
-            };
-        }
+        // Adds commonly used functions to the calendars and provides an easy
+        // way to iterate over them. 
+        var foreachcalendar = function(callback) {
+            for (var i=0; i < seantis.calendars.length; i++) {
 
-        var show_overlay = function(url, calendarindex) {
-            var link = $('<a href="' + url + '"></a>');
-            seantis.calendars[calendarindex].form_overlay(link);
-            link.click();
+                var calendar = seantis.calendars[i];
+
+                // Add jquery element
+                if (typeof calendar.element === 'undefined') {
+                    calendar.element = $(calendar.id);
+                }
+
+                // Add index
+                if (typeof calendar.index == 'undefined') {
+                    calendar.index = i;
+                }
+
+                // Add form_overlay function which automatically refetches events
+                if (typeof calendar.form_overlay == 'undefined') {
+                    calendar.form_overlay = function(element) {
+                        var calendar = this;
+                        element.prepOverlay({
+                           subtype: 'ajax', filter:  '#content>*',
+                           formselector: 'form', noform: 'close',
+                           config: { 
+                                onClose: function() {
+                                    calendar.element.fullCalendar('refetchEvents');
+                                }
+                           } 
+                        });
+                    };
+                }
+
+                // Add show_overlay function
+                if (typeof calendar.show_overlay == 'undefined') {
+                    calendar.show_overlay = function(url) {
+                        var link = $('<a href="' + url + '"></a>');
+                        this.form_overlay(link);
+                        link.click();
+                    };
+                }
+
+                // Callback using the calendar object with the added functions
+                callback(seantis.calendars[i]);
+            }  
         };
 
-        // Prepares the contextmenu for the event and adds the form overlay
-        var renderEvent = function(event, element, calendarindex) {
+        var renderEvent = function(event, element, calendar) {
+
+            // Add contextmenu items
+
             var menuitems = [];
 
             var reserve = '<a class="seantis-reservation-reserve" ';
@@ -58,8 +82,10 @@ if (!this.seantis.calendars) this.seantis.calendars = [];
                 menuhtml += '<p>' + menuitems[i] + '</p>';
             }
 
-            seantis.contextmenu(element, menuhtml, calendarindex);
-            seantis.calendars[calendarindex].form_overlay(element);
+            seantis.contextmenu(element, menuhtml, calendar.index);
+            calendar.form_overlay(element);
+
+            // Add partitions
 
             var partitions = '';
             for (i = 0; i<event.partitions.length; i++) {
@@ -78,39 +104,42 @@ if (!this.seantis.calendars) this.seantis.calendars = [];
             $('.fc-event-bg', element).wrapInner(partitions);
         };
 
-        var moveEvent = function(event, calendarindex) {
+        // Called when an event is resized or moved
+        var moveEvent = function(event, calendar) {
             var url = event.editurl;
             url += '&start=' + event.start.getTime() / 1000;
             url += '&end=' + event.end.getTime() / 1000;
             
-            show_overlay(url, calendarindex);
+            calendar.show_overlay(url);
         };
 
         // Called when a selection on the calendar is made
-        // TODO do not execute if the permissions are insufficient
-        var eventAdd = function(start, end, allDay, calendarindex) {
+        var eventAdd = function(start, end, allDay, calendar) {
+
+            // TODO do not execute if the permissions are insufficient
             if (allDay) return;
 
-            var url = seantis.calendars[calendarindex].allocateurl;
+            var url = calendar.allocateurl;
             url += '?start=' + start.getTime() / 1000;
             url += '&end=' + end.getTime() / 1000;
 
-            show_overlay(url, calendarindex);
+            calendar.show_overlay(url);
         };
 
-        for (var i=0; i<seantis.calendars.length; i++) {
-            var calendarindex = i;
+        // Hookup the fullcalendar
+        foreachcalendar(function(cal) {
+            var calendar = cal;
 
             var add = function(start, end, allDay) {
-                eventAdd(start, end, allDay, calendarindex);  
+                eventAdd(start, end, allDay, calendar);  
             };
 
             var move = function(event) {
-                moveEvent(event, calendarindex);
+                moveEvent(event, calendar);
             };
 
             var render = function(event, element) {
-                renderEvent(event, element, calendarindex);
+                renderEvent(event, element, calendar);
             };
 
             var options = {
@@ -134,10 +163,12 @@ if (!this.seantis.calendars) this.seantis.calendars = [];
             };
 
             // Merge the options with the ones defined by the resource view
-            $.extend(options, seantis.calendars[i].options);
-            $(seantis.calendars[i].id).fullCalendar(options);
-        }
+            $.extend(options, calendar.options);
+            calendar.element.fullCalendar(options);
+        });
 
+        // Call all calendars with the given function and argument
+        // the calendar from which the event originats is not called
         var all_calendars = function(originid, fn, arg) {
             for (var i=0; i<seantis.calendars.length; i++) {
                 if (seantis.calendars[i].id === originid)
@@ -147,6 +178,7 @@ if (!this.seantis.calendars) this.seantis.calendars = [];
             }  
         };
 
+        // Generate the all calendars function
         var get_all_calendars_fn = function(originid, fn, arg) {
             var origin = originid;
             var func = fn;
@@ -157,22 +189,21 @@ if (!this.seantis.calendars) this.seantis.calendars = [];
         };
 
         // Hook up the button synchronization
-        for (var i=0; i<seantis.calendars.length; i++) {
-            var calendarid = seantis.calendars[i].id;
+        foreachcalendar(function(calendar) {
+            var id = calendar.id;
+            var element = calendar.element;
 
-            var calendar = $(calendarid);
+            var prev = $('.fc-button-prev', element);
+            var next = $('.fc-button-next', element);
+            var month = $('.fc-button-month', element);
+            var week = $('.fc-button-agendaWeek', element);
+            var day = $('.fc-button-agendaDay', element);
 
-            var prev = $('.fc-button-prev', calendar);
-            var next = $('.fc-button-next', calendar);
-            var month = $('.fc-button-month', calendar);
-            var week = $('.fc-button-agendaWeek', calendar);
-            var day = $('.fc-button-agendaDay', calendar);
-
-            next.click(get_all_calendars_fn(calendarid, 'next'));
-            prev.click(get_all_calendars_fn(calendarid, 'prev'));
-            month.click(get_all_calendars_fn(calendarid, 'changeView', 'month'));
-            week.click(get_all_calendars_fn(calendarid, 'changeView', 'agendaWeek'));
-            day.click(get_all_calendars_fn(calendarid, 'changeView', 'agendaDay'));
-        }
+            next.click(get_all_calendars_fn(id, 'next'));
+            prev.click(get_all_calendars_fn(id, 'prev'));
+            month.click(get_all_calendars_fn(id, 'changeView', 'month'));
+            week.click(get_all_calendars_fn(id, 'changeView', 'agendaWeek'));
+            day.click(get_all_calendars_fn(id, 'changeView', 'agendaDay'));
+        });
     });
 })( jQuery );

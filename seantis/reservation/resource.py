@@ -118,7 +118,7 @@ class View(grok.View):
         template = """
         <script type="text/javascript">
             if (!this.seantis) this.seantis = {};
-            if (!this.seantis) this.seantis.calendars = [];
+            if (!this.seantis.calendars) this.seantis.calendars = [];
 
             %s
         </script>
