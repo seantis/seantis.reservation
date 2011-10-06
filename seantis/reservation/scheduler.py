@@ -64,7 +64,7 @@ class Scheduler(object):
         # Change the actual allocation
         allocation.start = new_start
         allocation.end = new_end
-        allocation.group = group
+        allocation.group = group or unicode(uuid())
 
     @resource_transaction
     def remove_allocation(self, id=None, group=None):

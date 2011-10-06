@@ -49,12 +49,46 @@ if (!this.seantis.calendars) this.seantis.calendars = [];
                     };
                 }
 
+                // Add array which will hold the calendar's events
+                if (typeof calendar.groups == 'undefined') {
+                    calendar.groups = [];
+                }
+
+                if (typeof calendar.groups.add == 'undefined') {
+                    calendar.groups.add = function(group, element) {
+                        if (typeof group === 'undefined' || group === '')
+                            return;
+
+                        this.push({group:group, element:element});
+                    }
+                }
+
+                if (typeof calendar.groups.clear == 'undefined') {
+                    calendar.groups.clear = function() {
+                        this.length = 0;  
+                    };
+                }
+
+                if (typeof calendar.groups.find == 'undefined') {
+                    calendar.groups.find = function(group) {
+                        var elements = []
+                        for (var i=0; i < this.length; i++) {
+                            if (this[i].group === group) {
+                                elements.push(this[i].element);    
+                            }
+                        }  
+                        return elements;
+                    };
+                }
+
                 // Callback using the calendar object with the added functions
                 callback(seantis.calendars[i]);
             }  
         };
 
         var renderEvent = function(event, element, calendar) {
+            // Cache the events for later usage
+            calendar.groups.add(event.group, element);
 
             // Add contextmenu items
 
@@ -138,8 +172,26 @@ if (!this.seantis.calendars) this.seantis.calendars = [];
                 moveEvent(event, calendar);
             };
 
+            var prerender = function(event, element) {
+                if (calendar.groups.length > 0) {
+                    calendar.groups.clear();
+                }
+            }
+
             var render = function(event, element) {
                 renderEvent(event, element, calendar);
+            };
+
+            var loading = function(loading, view) {
+                if (loading == false)
+                    calendar.groups = [];
+            };
+
+            var mouseover = function(event) {
+                var elements = calendar.groups.find(event.group);
+                for (var i=0; i<elements.length; i++) {
+                    elements[i].toggleClass('groupSelection');      
+                }
             };
 
             var options = {
@@ -157,9 +209,13 @@ if (!this.seantis.calendars) this.seantis.calendars = [];
                 selectHelper: true,
                 select: add,
                 editable: true,
+                eventRender: prerender,
                 eventAfterRender: render,
                 eventResize: move,
-                eventDrop: move
+                eventDrop: move,
+                isLoading: loading,
+                eventMouseover: mouseover,
+                eventMouseout: mouseover
             };
 
             // Merge the options with the ones defined by the resource view
@@ -198,12 +254,14 @@ if (!this.seantis.calendars) this.seantis.calendars = [];
             var month = $('.fc-button-month', element);
             var week = $('.fc-button-agendaWeek', element);
             var day = $('.fc-button-agendaDay', element);
+            var today = $('.fc-button-today', element);
 
             next.click(get_all_calendars_fn(id, 'next'));
             prev.click(get_all_calendars_fn(id, 'prev'));
             month.click(get_all_calendars_fn(id, 'changeView', 'month'));
             week.click(get_all_calendars_fn(id, 'changeView', 'agendaWeek'));
             day.click(get_all_calendars_fn(id, 'changeView', 'agendaDay'));
+            today.click(get_all_calendars_fn(id, 'today'));
         });
     });
 })( jQuery );
