@@ -121,7 +121,6 @@ class AllocationForm(form.Form):
     grok.require('cmf.ManagePortal')
 
     fields = field.Fields(IAllocation)
-
     label = _(u'Resource allocation')
 
     ignoreContext = True
@@ -135,6 +134,10 @@ class AllocationForm(form.Form):
     @from_timestamp
     def end(self):
         return self.request.get('end')
+
+    @property
+    def group(self):
+        return self.request.get('group', None)
 
     def update(self, **kwargs):
         start, end = self.start, self.end
@@ -156,7 +159,6 @@ class AllocationForm(form.Form):
             return
 
         start, end = data['start'], data['end']
-        group = data['group']
 
         dates = []
         if not data['recurring']:
@@ -173,21 +175,20 @@ class AllocationForm(form.Form):
                 dates.append((date, date+delta))
 
         scheduler = self.context.scheduler
-        raster = data['raster']
+
+        group, raster = data['group'], data['raster']
         action = lambda: scheduler.allocate(dates, raster=raster, group=group)
         
         handle_action(callback=action)
 
         self.request.response.redirect(self.context.absolute_url())
 
-
-class AllocationEditForm(form.Form):
+class AllocationEditForm(AllocationForm):
     grok.context(resource.IResource)
     grok.name('edit-allocation')
     grok.require('cmf.ManagePortal')
 
     fields = field.Fields(IAllocation).select('id', 'start', 'end', 'group')
-
     label = _(u'Edit resource allocation')
 
     ignoreContext = True
@@ -197,31 +198,24 @@ class AllocationEditForm(form.Form):
         return int(self.request.get('id', 0))
 
     @property
-    @from_timestamp
-    def start(self):
-        return self.request.get('start', None)
-
-    @property
-    @from_timestamp
-    def end(self):
-        return self.request.get('end', None)
-
-    @property
-    def group(self):
-        return self.request.get('group', None)
+    def allocation(self):
+        if not self.id:
+            return None
+        else:
+            return self.context.scheduler.allocation_by_id(self.id)
 
     def update(self, **kwargs):
-        id, start, end, group = self.id, self.start, self.end, self.group
+        id = self.id
 
         if not id:
-            self.status = utils.translate(
-                    self.context, 
-                    self.request, _(u'Invalid arguments')
+            self.status = utils.translate(self.context, self.request, 
+                    _(u'Invalid arguments')
                 )
         else:
-            allocation = self.context.scheduler.allocation_by_id(id)
+            allocation = self.allocation
             group = allocation.group
 
+            start, end = self.start, self.end
             if not all((start, end)):
                 start = allocation.start
                 end = allocation.end + timedelta(microseconds=1)
@@ -232,14 +226,9 @@ class AllocationEditForm(form.Form):
             self.fields['id'].field.default = id
             self.fields['start'].field.default = start
             self.fields['end'].field.default = end
-            if group:
-                self.fields['group'].field.default = group
+            self.fields['group'].field.default = group and group or u''
 
         super(AllocationEditForm, self).update(**kwargs)
-
-    def updateWidgets(self):
-        super(AllocationEditForm, self).updateWidgets()
-        self.widgets['id'].mode = interfaces.HIDDEN_MODE
 
     @button.buttonAndHandler(_(u'Edit'))
     def edit(self, action):
@@ -252,7 +241,11 @@ class AllocationEditForm(form.Form):
         # to make sure the user has the right to work with it. 
 
         scheduler = self.context.scheduler
-        args = (data['id'], data['start'], data['end'], unicode(data['group']))
+
+        args = (data['id'], 
+                data['start'], 
+                data['end'], 
+                unicode(data['group'] or ''))
         action = lambda: scheduler.move_allocation(*args)
         
         handle_action(callback=action)
