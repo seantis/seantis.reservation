@@ -34,26 +34,28 @@
     <tal:main-macro metal:define-macro="main">
 
         <div tal:replace="structure provider:plone.abovecontenttitle" />
-        <h1 class="documentFirstHeading" tal:content="context/title" />
         <div tal:replace="structure provider:plone.belowcontenttitle" />
         <div tal:replace="structure provider:plone.abovecontentbody" />
 
         <div class="documentContent">
-          <p tal:content="context/description" />
+            <tal:block condition="python: view.calendar_count == 1" repeat="resource view/resources">
+                <h1 class="documentFirstHeading" tal:content="python: resource.parent().title + ' - ' + resource.title"></h1>
+                <p tal:content="resource/description" />
 
-          <tal:block tal:condition="python: view.single_calendar()">
-            <div tal:attributes="id python: view.calendar_ids(ix=0)"></div>
-          </tal:block>
-
-          <tal:block tal:repeat="calid view/calendar_ids" tal:condition="python: not view.single_calendar()">
-            <div style="float:left; width:45%; margin-right:5%;" tal:attributes="id calid"></div>
-            
-            <tal:block condition="repeat/calid/odd">
-              <div style="clear: both"></div>
+                <div tal:attributes="id resource/calendar_id"></div>
             </tal:block>
-          </tal:block>
 
-          <div style="clear: both"></div>
+            <tal:block tal:condition="python: view.calendar_count > 1" tal:repeat="resource view/resources">
+                <div style="float: left; width: 45%; margin-right: 5%;">
+                    <h1 class="documentFirstHeading" tal:content="python: resource.parent().title + ' - ' + resource.title"></h1>
+                    <p tal:content="resource/description" />
+                    <div tal:attributes="id resource/calendar_id"></div>
+                </div>
+
+                <div tal:condition="repeat/resource/odd" style="clear: both;"></div>
+                
+            </tal:block>
+        </div>
 
         <div tal:replace="structure provider:plone.belowcontentbody" />
 

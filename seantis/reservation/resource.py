@@ -7,7 +7,7 @@ from five import grok
 from plone.directives import form
 from plone.dexterity.content import Container
 from plone.uuid.interfaces import IUUID
-from Products.CMFCore.utils import getToolByName
+from plone.memoize import view
 from zope import schema
 from zope import interface
 
@@ -60,6 +60,9 @@ class IResource(IResourceBase):
 
 class Resource(Container):
 
+    def parent(self):
+        return self.aq_inner.aq_parent
+
     @property
     def uuid(self):
         return IUUID(self)
@@ -68,52 +71,30 @@ class Resource(Container):
     def scheduler(self):
         return Scheduler(self.uuid)
 
+
 class View(grok.View):
     grok.context(IResourceBase)
     grok.require('zope2.View')
     
     template = grok.PageTemplateFile('templates/resource.pt')
 
-    calendar_id = 'seantis-reservation-calendar-%i'
-
-    def compare_to(self):
-        uids = self.request.get('compare_to')
-        if uids == None:
-            return []
-
-        if not hasattr(uids, '__iter__'):
-            uids = [uids]
-
-        return uids
-
-    def single_calendar(self):
-        return self.calendar_count() == 1
-
+    @view.memoize
     def resources(self):
-        uids = self.request.get('compare_to')
+        uids = self.request.get('compare_to', [])
         if not hasattr(uids, '__iter__'):
             uids = [uids]
-        
-        yield self.context
 
+        resources = [self.context]
         for uid in uids:
             resource = utils.get_resource_by_uuid(self.context, uid)
-            if resource:
-                yield resource.getObject()
+            resources.append(resource.getObject())
 
-    def calendar_count(self):
-        return 1 + len(self.compare_to())
+        template = 'seantis-reservation-calendar-%i'
+        for ix, resource in enumerate(resources):
+            setattr(resource, 'calendar_id', template % ix)
 
-    def calendar_ids(self, ix=None):
-        if ix != None:
-            return self.calendar_id % ix
-
-        ids = []
-        for i in range(0, self.calendar_count()):
-            ids.append(self.calendar_id % i)
-
-        return ids
-
+        return resources
+        
     def javascript(self):
         template = """
         <script type="text/javascript">
@@ -123,18 +104,18 @@ class View(grok.View):
             %s
         </script>
         """
+
+        resources = self.resources()
+        min_h = min([r.first_hour for r in resources])
+        max_h = max([r.last_hour for r in resources])
+
         calendars = []
-
-        resources = list(self.resources())
-        min_hour = min([r.first_hour for r in resources])
-        max_hour = max([r.last_hour for r in resources])
-
         for ix, resource in enumerate(self.resources()):
-            calendars.append(self.calendar_options(ix, resource, min_hour, max_hour))
+            calendars.append(self.calendar_options(ix, resource, min_h, max_h))
 
         return template % '\n'.join(calendars)
 
-    def calendar_options(self, ix, context, first_hour=None, last_hour=None):
+    def calendar_options(self, ix, resource, first_hour=None, last_hour=None):
         template = """
         this.seantis.calendars.push({
             id:'#%s',
@@ -142,17 +123,20 @@ class View(grok.View):
             allocateurl:'%s',
         })        
         """
-
-        contexturl = context.absolute_url_path()
-        allocateurl = contexturl + '/allocate'
-        eventurl = contexturl + '/slots'
+        baseurl = resource.absolute_url_path()
+        allocateurl = baseurl + '/allocate'
+        eventurl = baseurl + '/slots'
 
         options = {}
         options['events'] = eventurl
-        options['minTime'] = first_hour or context.first_hour
-        options['maxTime'] = last_hour or context.last_hour
+        options['minTime'] = first_hour or resource.first_hour
+        options['maxTime'] = last_hour or resource.last_hour
         
-        return template % (self.calendar_ids(ix=ix), options, allocateurl)
+        return template % (resource.calendar_id, options, allocateurl)
+
+    @property
+    def calendar_count(self):
+        return len(self.resources())
 
 class GroupView(grok.View):
     grok.context(IResourceBase)
