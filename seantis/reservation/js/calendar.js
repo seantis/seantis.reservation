@@ -94,6 +94,8 @@ if (!this.seantis.calendars) this.seantis.calendars = [];
 
             var menuitems = [];
 
+            menuitems.push('<div>Entry</div>');
+
             var reserve = '<a class="seantis-reservation-reserve" ';
             reserve += 'href="' + event.url + '">';
             reserve += seantis.locale('reserve') + '</a>';
@@ -105,15 +107,17 @@ if (!this.seantis.calendars) this.seantis.calendars = [];
             menuitems.push(edit);
 
             if (event.groupurl) {
+                menuitems.push('<div>Group</div>');
+
                 var group = '<a class="seantis-reservation-group" ';
                 group += 'href="' + event.groupurl + '">';
-                group += seantis.locale('group') + '</a>';
+                group += seantis.locale('showgroup') + '</a>';
                 menuitems.push(group);
             }
 
             var menuhtml = '';
             for (var i=0; i<menuitems.length; i++) {
-                menuhtml += '<p>' + menuitems[i] + '</p>';
+                menuhtml += menuitems[i];
             }
 
             seantis.contextmenu(element, menuhtml, calendar.index);

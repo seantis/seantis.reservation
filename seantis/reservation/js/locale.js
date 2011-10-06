@@ -65,8 +65,8 @@ seantis.locale.dictionary = {
         'Edit',
         'Bearbeiten'
     ],
-    'group' : [
-        'Group',
-        'Gruppe'
+    'showgroup' : [
+        'List',
+        'Auflisten'
     ]
 };

@@ -27,6 +27,47 @@
       -moz-box-shadow: 0px 0px 4px 4px #6DADF2;
       box-shadow: 0px 0px 4px 4px #6DADF2; 
     }
+
+    #miniTip_c {
+        padding: 0;
+    }
+
+    #miniTip_c div {
+        background-color: #1d4f90;
+        padding: 2px 0px;
+        padding-left: 10px;
+        -webkit-border-radius: 3px;
+        -moz-border-radius: 3px;
+        border-radius: 3px;
+    }
+
+    /* main content style */
+    #miniTip_c a { 
+        padding-bottom: 2px;
+        padding-top: 2px;
+        display: block;
+        padding-left: 24px;
+    }
+
+    #miniTip_c a:hover {
+        background-color: #0d7dcd;
+        text-decoration: none;
+        -webkit-border-radius: 3px;
+        -moz-border-radius: 3px;
+        border-radius: 3px;
+    }
+
+    #miniTip_c a:hover:before {
+        content: '▶ ';
+        margin-left: -14px;
+        margin-right: 0px;
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+
+    #miniTip_c {
+        width: 100px;
+    }
   </style>
 </metal:block>
 
