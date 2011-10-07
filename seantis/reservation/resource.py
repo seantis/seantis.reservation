@@ -1,5 +1,6 @@
 import json
 import time
+from urllib import quote
 from datetime import datetime
 from uuid import uuid4 as uuid
 
@@ -147,7 +148,7 @@ class GroupView(grok.View):
     template = grok.PageTemplateFile('templates/group.pt')
 
     def update(self, **kwargs):
-        self.group = self.request.get('name', None)
+        self.group = self.request.get('name', u'').decode('utf-8')
 
     def title(self):
         return self.group
@@ -196,12 +197,13 @@ class Slots(grok.View):
 
         base = resource.absolute_url_path()
         reserve = '/reserve?start=%s&end=%s'
-        edit = '/edit-allocation?id=%i'
+        edit = '/edit-allocation?id=%s'
         group = '/group?name=%s'
-        remove = '/remove-allocation?id=%i'
+        remove = '/remove-allocation?id=%s'
         removegroup = '/remove-allocation?group=%s'
 
         events = []
+        urlquote = lambda fragment: quote(unicode(fragment).encode('utf-8'))
 
         for alloc in scheduler.allocations_in_range(*self.range):
             start, end = alloc.display_start, alloc.display_end
@@ -214,8 +216,8 @@ class Slots(grok.View):
             removeurl = base + remove % alloc.id
 
             if alloc.in_group:
-                groupurl = base + group % alloc.group
-                removegroupurl = base + removegroup % alloc.group
+                groupurl = base + group % urlquote(alloc.group)
+                removegroupurl = base + removegroup % urlquote(alloc.group)
             else:
                 groupurl = None
                 removegroupurl = None

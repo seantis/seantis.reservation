@@ -26,7 +26,7 @@ def is_uuid(text):
             '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}'
         )
 
-    return re.match(regex, str(text))
+    return re.match(regex, unicode(text))
 
 def get_resource_by_uuid(context, uuid):
     catalog = getToolByName(context, 'portal_catalog')

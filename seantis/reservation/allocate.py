@@ -138,7 +138,7 @@ class AllocationForm(form.Form):
 
     @property
     def group(self):
-        return self.request.get('group', None)
+        return unicode(self.request.get('group', '').decode('utf-8'))
 
     def update(self, **kwargs):
         start, end = self.start, self.end
@@ -269,7 +269,7 @@ class AllocationRemoveForm(form.Form):
     def group(self):
         if self.widgets and 'group' in self.widgets:
             return unicode(self.widgets['group'].value)
-        return unicode(self.request.get('group', ''))
+        return unicode(self.request.get('group', '').decode('utf-8'))
 
     @property
     def id(self):
