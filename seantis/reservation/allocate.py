@@ -12,8 +12,9 @@ from zope import schema
 from zope.schema.vocabulary import SimpleVocabulary
 from zope.schema.vocabulary import SimpleTerm
 from zope import interface
-
 from z3c.saconfig import Session
+from z3c.form.ptcompat import ViewPageTemplateFile
+from plone.memoize import view
 
 from seantis.reservation import _
 from seantis.reservation import error
@@ -67,7 +68,7 @@ class IAllocation(interface.Interface):
 
     recurrence_end = schema.Date(
         title=_(u'Until'),
-        default=date.today() + timedelta(days=365)
+        default=date.today() + timedelta(days=30)
     )
 
     group = schema.Text(
@@ -202,7 +203,7 @@ class AllocationEditForm(AllocationForm):
         if not self.id:
             return None
         else:
-            return self.context.scheduler.allocation_by_id(self.id)
+            return self.context.scheduler.get_allocation(self.id)
 
     def update(self, **kwargs):
         id = self.id
@@ -248,6 +249,87 @@ class AllocationEditForm(AllocationForm):
                 unicode(data['group'] or ''))
         action = lambda: scheduler.move_allocation(*args)
         
+        handle_action(callback=action)
+
+        self.request.response.redirect(self.context.absolute_url())
+
+class AllocationRemoveForm(form.Form):
+    grok.context(resource.IResource)
+    grok.name('remove-allocation')
+    grok.require('cmf.ManagePortal')
+
+    template = ViewPageTemplateFile('templates/remove_allocation.pt')
+
+    fields = field.Fields(IAllocation).select('id', 'group')
+    label = _(u'Remove resource allocation')
+
+    ignoreContext = True
+
+    @property
+    def group(self):
+        if self.widgets and 'group' in self.widgets:
+            return unicode(self.widgets['group'].value)
+        return unicode(self.request.get('group', ''))
+
+    @property
+    def id(self):
+        if self.widgets and 'id' in self.widgets:
+            return int(self.widgets['id'].value)
+        return int(self.request.get('id', 0))
+
+    @view.memoize
+    def allocations(self):
+        id, group = self.id, self.group
+        if not id and not group:
+            return []
+
+        scheduler = self.context.scheduler
+
+        return scheduler.query_allocations(id=id, group=group).all()
+
+    def redirect(self, url):
+        import pdb; pdb.set_trace()
+
+    def updateWidgets(self):
+        super(AllocationRemoveForm, self).updateWidgets()
+        self.widgets['id'].mode = interfaces.HIDDEN_MODE
+        self.widgets['group'].mode = interfaces.HIDDEN_MODE
+        self.widgets.hasRequiredFields = False
+
+    def update(self, **kwargs):
+        if self.id or self.group:
+            self.fields['id'].field.default = self.id
+            self.fields['group'].field.default = self.group
+        super(AllocationRemoveForm, self).update(**kwargs)
+
+    def event_style(self, allocation):
+        #TODO remove the css from here, deduplicate (resource.py)
+        color = allocation.event_color
+        css = "width:180px; float:left; background-color:%s; border-color:%s;"
+        return css % (color, color)
+
+    def event_title(self, allocation):
+        return allocation.event_title(self.context, self.request)
+
+    @button.buttonAndHandler(_(u'Delete'))
+    def delete(self, action):
+        data, errors = self.extractData()
+        if errors:
+            self.status = self.formErrorMessage
+            return
+
+        # TODO since we can't trust the id here there should be another check
+        # to make sure the user has the right to work with it. 
+
+        id = data['id']
+        group = data['group']
+
+        assert(id or group)
+        assert(not (id and group))
+
+        scheduler = self.context.scheduler
+
+        action = lambda: scheduler.remove_allocation(id=id, group=group)
         handle_action(callback=action)
 
         self.request.response.redirect(self.context.absolute_url())

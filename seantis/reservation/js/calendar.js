@@ -106,6 +106,11 @@ if (!this.seantis.calendars) this.seantis.calendars = [];
             edit += seantis.locale('edit') + '</a>';
             menuitems.push(edit);
 
+            var remove = '<a class="seantis-reservation-remove" ';
+            remove +='href="' + event.removeurl + '">';
+            remove += seantis.locale('remove') + '</a>';
+            menuitems.push(remove);
+
             if (event.groupurl) {
                 menuitems.push('<div>Group</div>');
 
@@ -113,6 +118,11 @@ if (!this.seantis.calendars) this.seantis.calendars = [];
                 group += 'href="' + event.groupurl + '">';
                 group += seantis.locale('showgroup') + '</a>';
                 menuitems.push(group);
+
+                var removegroup = '<a class="seantis-reservation-removegroup" ';
+                removegroup += 'href="' + event.removegroupurl + '">';
+                removegroup += seantis.locale('removegroup') + '</a>';
+                menuitems.push(removegroup);
             }
 
             var menuhtml = '';

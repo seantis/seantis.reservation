@@ -46,7 +46,7 @@ class Scheduler(object):
     @resource_transaction
     def move_allocation(self, id, new_start, new_end, group):
         # Find allocation
-        allocation = self.allocation_by_id(id)
+        allocation = self.get_allocation(id)
 
         # Simulate the new allocation
         new = Allocation(start=new_start, end=new_end, raster=allocation.raster)
@@ -66,28 +66,37 @@ class Scheduler(object):
         allocation.end = new_end
         allocation.group = group or unicode(uuid())
 
-    @resource_transaction
-    def remove_allocation(self, id=None, group=None):
+    def get_allocation(self, id):
+        return self.query_allocations(id=id).one()
+
+    def get_allocations(self, group):
+        return self.query_allocations(group=group).all()
+
+    def query_allocations(self, id=None, group=None):
         assert(id or group)
 
         if id:
-            query = Session.query(Allocation).filter(
-                Allocation.id == id
-            )
+            query = Session.query(Allocation).filter(and_(
+                Allocation.id == id,
+                Allocation.resource == self.resource
+            ))
         elif group:
-            query = Session.query(Allocation).filter(
-                Allocation.group == group
-            )
+            query = Session.query(Allocation).filter(and_(
+                Allocation.group == group,
+                Allocation.resource == self.resource
+            ))
+
+        return query
+
+    @resource_transaction
+    def remove_allocation(self, id=None, group=None):
+        query = self.query_allocations(id=id, group=group)
+
+        for allocation in query:
+            if allocation.reserved_slots.count() > 0:
+                raise AffectedReservationError(allocation.reserved_slots.first())
 
         query.delete()
-
-    def allocation_by_id(self, id):
-        query = Session.query(Allocation)
-        query = query.filter(and_(
-                Allocation.resource == self.resource,
-                Allocation.id == id
-            ))
-        return query.one()
 
     def any_allocations_in_range(self, start, end):
         """Returns the first allocated timespan in the range or None."""
@@ -171,15 +180,16 @@ class Scheduler(object):
     def reserved_slots(self, reservation):
         """Returns all reserved slots of the given reservation."""
         query = Session.query(ReservedSlot).filter(
-            ReservedSlot.reservation == reservation
-        )
+                ReservedSlot.reservation == reservation
+            )
 
         for result in query:
             yield result
 
     def remove_reservation(self, reservation):
-        query = Session.query(ReservedSlot).filter(
-            ReservedSlot.reservation == reservation
-        )
+        query = Session.query(ReservedSlot).filter(and_(
+                ReservedSlot.reservation == reservation,
+                ReservedSlot.resource == self.resource
+            ))
 
         query.delete()

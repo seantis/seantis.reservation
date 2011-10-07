@@ -198,6 +198,8 @@ class Slots(grok.View):
         reserve = '/reserve?start=%s&end=%s'
         edit = '/edit-allocation?id=%i'
         group = '/group?name=%s'
+        remove = '/remove-allocation?id=%i'
+        removegroup = '/remove-allocation?group=%s'
 
         events = []
 
@@ -209,7 +211,14 @@ class Slots(grok.View):
 
             reserveurl = base + reserve % (startstamp, endstamp)
             editurl = base + edit % alloc.id
-            groupurl = alloc.in_group and (base + group % alloc.group) or None
+            removeurl = base + remove % alloc.id
+
+            if alloc.in_group:
+                groupurl = base + group % alloc.group
+                removegroupurl = base + removegroup % alloc.group
+            else:
+                groupurl = None
+                removegroupurl = None
 
             events.append(dict(
                 allDay=False,
@@ -221,6 +230,8 @@ class Slots(grok.View):
                 url=reserveurl,
                 editurl=editurl,
                 groupurl=groupurl,
+                removeurl=removeurl,
+                removegroupurl=removegroupurl,
                 allocation = alloc.id,
                 partitions = alloc.occupation_partitions(),
                 group = alloc.group
