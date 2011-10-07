@@ -3,7 +3,7 @@ from uuid import uuid4 as uuid
 from datetime import timedelta
 
 from seantis.reservation.tests import IntegrationTestCase
-from seantis.reservation.scheduler import Scheduler
+from seantis.reservation.db import Scheduler
 from seantis.reservation.error import OverlappingAllocationError
 from seantis.reservation.error import AffectedReservationError
 

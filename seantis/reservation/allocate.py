@@ -285,10 +285,7 @@ class AllocationRemoveForm(form.Form):
 
         scheduler = self.context.scheduler
 
-        return scheduler.query_allocations(id=id, group=group).all()
-
-    def redirect(self, url):
-        import pdb; pdb.set_trace()
+        return scheduler.allocations(id=id, group=group).all()
 
     def updateWidgets(self):
         super(AllocationRemoveForm, self).updateWidgets()

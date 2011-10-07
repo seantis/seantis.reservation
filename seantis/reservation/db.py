@@ -9,6 +9,21 @@ from seantis.reservation.error import AffectedReservationError
 from seantis.reservation.lock import resource_transaction
 from seantis.reservation.raster import rasterize_span
 
+def all_allocations_in_range(start, end):
+    # Query version of DefinedTimeSpan.overlaps
+    return Session.query(Allocation).filter(
+        or_(
+            and_(
+                Allocation._start <= start,
+                start <= Allocation._end
+            ),
+            and_(
+                start <= Allocation._start,
+                Allocation._start <= end
+            )
+        ),
+    )
+
 class Scheduler(object):
     """Used to manage the definitions and reservations of a resource."""
 
@@ -67,14 +82,12 @@ class Scheduler(object):
         allocation.group = group or unicode(uuid())
 
     def get_allocation(self, id):
-        return self.query_allocations(id=id).one()
+        return self.allocations(id=id).one()
 
     def get_allocations(self, group):
-        return self.query_allocations(group=group).all()
+        return self.allocations(group=group).all()
 
-    def query_allocations(self, id=None, group=None):
-        assert(id or group)
-
+    def allocations(self, id=None, group=None):
         if id:
             query = Session.query(Allocation).filter(and_(
                 Allocation.id == id,
@@ -85,12 +98,16 @@ class Scheduler(object):
                 Allocation.group == group,
                 Allocation.resource == self.resource
             ))
+        else:
+            query = Session.query(Allocation).filter(
+                Allocation.resource == self.resource
+            )
 
         return query
 
     @resource_transaction
     def remove_allocation(self, id=None, group=None):
-        query = self.query_allocations(id=id, group=group)
+        query = self.allocations(id=id, group=group)
 
         for allocation in query:
             if allocation.reserved_slots.count() > 0:
@@ -108,20 +125,7 @@ class Scheduler(object):
     def allocations_in_range(self, start, end):
         """Yields a list of allocations for the current resource."""
         
-        # Query version of DefinedTimeSpan.overlaps
-        query = Session.query(Allocation).filter(
-            or_(
-                and_(
-                    Allocation._start <= start,
-                    start <= Allocation._end
-                ),
-                and_(
-                    start <= Allocation._start,
-                    Allocation._start <= end
-                )
-            ),
-        )
-
+        query = all_allocations_in_range(start, end)
         query = query.filter(Allocation.resource == self.resource)
 
         for result in query:

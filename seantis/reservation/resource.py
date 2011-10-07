@@ -13,9 +13,8 @@ from zope import schema
 from zope import interface
 
 from seantis.reservation import utils
-from seantis.reservation import Scheduler
+from seantis.reservation.db import Scheduler
 from seantis.reservation import _
-
 
 class IResourceBase(form.Schema):
 
