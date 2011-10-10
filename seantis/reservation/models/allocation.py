@@ -116,22 +116,22 @@ class Allocation(ORMBase):
 
     @property
     def occupation_rate(self):
-        """Returns the occupation rate in percent (integer)."""
+        """Returns the occupation rate in percent."""
 
         total = sum(1 for s in self.all_slots())
         count = self.reserved_slots.count()
 
         if total == count:
-            return 100
+            return 0.0
 
         if count == 0:
-            return 0.0
+            return 100.0
 
         # Can't think of a reason why this should happen..
         assert(total > 0)
 
         # ..but if it does I prefer an assertion to a division through zero
-        return float(count) / float(total) * 100.0
+        return 100.0 - (float(count) / float(total) * 100.0)
 
     @property
     def in_group(self):

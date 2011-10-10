@@ -36,17 +36,17 @@ def get_resource_by_uuid(context, uuid):
 
 def event_color(occupation_rate):
     # TODO move colors to css
-    if occupation_rate == 100:
+    if occupation_rate == 0:
         return '#a1291e' #redish
-    elif occupation_rate == 0:
+    elif occupation_rate == 100:
         return '#379a00' #greenish
     else:
         return '#e99623' #orangeish
 
 def event_title(context, request, occupation_rate):
-    if occupation_rate == 100:
+    if occupation_rate == 0:
         return translate(context, request, _(u'Occupied'))
-    elif occupation_rate == 0:
+    elif occupation_rate == 100:
         return translate(context, request, _(u'Free'))
     else:
-        return translate(context, request, _(u'%i%% Occupied')) % occupation_rate
+        return translate(context, request, _(u'%i%% Free')) % occupation_rate
