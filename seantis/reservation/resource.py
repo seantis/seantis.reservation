@@ -2,7 +2,6 @@ import json
 import time
 from urllib import quote
 from datetime import datetime
-from uuid import uuid4 as uuid
 
 from five import grok
 from plone.directives import form
@@ -132,7 +131,7 @@ class View(grok.View):
         options['minTime'] = first_hour or resource.first_hour
         options['maxTime'] = last_hour or resource.last_hour
         
-        return template % (resource.calendar_id, options, allocateurl)
+        return template % (resource.calendar_id, json.dumps(options), allocateurl)
 
     @property
     def calendar_count(self):
@@ -161,17 +160,15 @@ class GroupView(grok.View):
 
     def event_style(self, allocation):
         #TODO remove the css from here
-        color = allocation.event_color
+        color = utils.event_color(allocation.occupation_rate)
         css = "width:180px; float:left; background-color:%s; border-color:%s;"
         return css % (color, color)
 
     def event_title(self, allocation):
-        return allocation.event_title(self.context, self.request)
+        occupation_rate = allocation.occupation_rate
+        return utils.event_title(self.context, self.request, occupation_rate)
 
-class Slots(grok.View):
-    grok.context(IResourceBase)
-    grok.require('zope2.View')
-    grok.name('slots')
+class CalendarRequest(object):
 
     @property
     def range(self):
@@ -186,12 +183,28 @@ class Slots(grok.View):
 
         return start, end
 
-    @property
-    def other_resource_id(self):
-        argument = self.request.get('compare_to', None)
-        return argument and uuid(argument) or None
+    def render(self, **kwargs):
+        start, end = self.range
+        if not all((start, end)):
+            return json.dumps([])
 
-    def events(self, resource):
+        events = self.events()
+        
+        return json.dumps(events)
+
+    def events(self):
+        raise NotImplementedError
+
+class Slots(grok.View, CalendarRequest):
+    grok.context(IResourceBase)
+    grok.require('zope2.View')
+    grok.name('slots')
+
+    def render(self):
+        return CalendarRequest.render(self)
+
+    def events(self):
+        resource = self.context
         scheduler = resource.scheduler
 
         base = resource.absolute_url_path()
@@ -221,13 +234,17 @@ class Slots(grok.View):
                 groupurl = None
                 removegroupurl = None
 
+            occupation_rate = alloc.occupation_rate
+            color = utils.event_color(occupation_rate)
+            title = utils.event_title(resource, self.request, occupation_rate)
+
             events.append(dict(
                 allDay=False,
                 start=start.isoformat(),
                 end=end.isoformat(),
-                title=alloc.event_title(resource, self.request),
-                backgroundColor=alloc.event_color,
-                borderColor=alloc.event_color,
+                title=title,
+                backgroundColor=color, 
+                borderColor=color,
                 url=reserveurl,
                 editurl=editurl,
                 groupurl=groupurl,
@@ -239,13 +256,3 @@ class Slots(grok.View):
             ))
         
         return events
-
-        
-    def render(self, **kwargs):
-        start, end = self.range
-        if not all((start, end)):
-            return json.dumps([])
-
-        events = self.events(self.context)
-        
-        return json.dumps(events)

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <object name="portal_css" meta_type="Stylesheets Registry">
     
-    <stylesheet title="" cacheable="True" compression="safe" cookable="True" enabled="1" expression="python:object.portal_type == 'seantis.reservation.resource'" id="++resource++seantis.reservation.css/fullcalendar.css" media="screen" rel="stylesheet" rendering="import"/>
+    <stylesheet title="" cacheable="True" compression="safe" cookable="True" enabled="1" expression="" id="++resource++seantis.reservation.css/fullcalendar.css" media="screen" rel="stylesheet" rendering="import"/>
 
     <stylesheet title="" cacheable="True" compression="safe" cookable="True" enabled="1" expression="python:object.portal_type == 'seantis.reservation.resource'" id="++resource++seantis.reservation.css/miniTip.css" media="screen" rel="stylesheet" rendering="import"/>
     

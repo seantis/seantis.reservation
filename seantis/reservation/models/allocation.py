@@ -67,27 +67,6 @@ class Allocation(ORMBase):
         """Returns the end plus one microsecond (nicer display)."""
         return self.end + timedelta(microseconds=1)
 
-    @property
-    def event_color(self):
-        # TODO move colors to css
-        rate = self.occupation_rate
-        if rate == 100:
-            return '#a1291e' #redish
-        elif rate == 0:
-            return '#379a00' #greenish
-        else:
-            return '#e99623' #orangeish
-
-    def event_title(self, context, request):
-        translate = lambda txt: utils.translate(context, request, txt)
-        rate = self.occupation_rate
-        if rate == 100:
-            return translate(_(u'Occupied'))
-        elif rate == 0:
-            return translate(_(u'Free'))
-        else:
-            return translate(_(u'%i%% Occupied')) % rate
-
     def overlaps(self, start, end):
         """ Returns true if the current timespan overlaps with the given
         start and end date.
@@ -140,19 +119,19 @@ class Allocation(ORMBase):
         """Returns the occupation rate in percent (integer)."""
 
         total = sum(1 for s in self.all_slots())
-        reserved = self.reserved_slots.count()
+        count = self.reserved_slots.count()
 
-        if total == reserved:
+        if total == count:
             return 100
 
-        if reserved == 0:
-            return 0
+        if count == 0:
+            return 0.0
 
         # Can't think of a reason why this should happen..
         assert(total > 0)
 
         # ..but if it does I prefer an assertion to a division through zero
-        return float(reserved) / float(total) * 100.0
+        return float(count) / float(total) * 100.0
 
     @property
     def in_group(self):

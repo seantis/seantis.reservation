@@ -131,21 +131,24 @@ class Scheduler(object):
         for result in query:
             yield result
 
-    def occupation_rate(self):
+    def occupation_rate(self, start=None, end=None):
         """Goes through all allocations and sums up the occupation rate."""
 
-        query = Session.query(Allocation)
-        query = query.filter(Allocation.resource == self.resource)
-        
+        if all((start, end)):
+            query = self.allocations_in_range(start, end)
+        else:
+            query = Session.query(Allocation)
+            query = query.filter(Allocation.resource == self.resource)
+
         count, occupation = 0, 0.0
         for allocation in query:
             count += 1
             occupation += allocation.occupation_rate
-
+            
         if not count:
-            return 0.0
+            return 0, 0.0
 
-        return occupation / float(count)
+        return count, occupation / float(count)
 
     def allocations_by_group(self, group):
         """Yields a list of all allocations with the given group."""
