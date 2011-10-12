@@ -2,7 +2,7 @@ if (!this.seantis) this.seantis = {};
 
 // Adds the contextmenu to the element and adds plone overlays to all
 // links in the content
-seantis.contextmenu = function(element, event, calendar) {
+seantis.contextmenu = function(event, element, calendar) {
     element.miniTip({
         title: '',
         content: seantis.contextmenu.build(event),
@@ -11,7 +11,7 @@ seantis.contextmenu = function(element, event, calendar) {
         aHide: false,
         fadeIn: 100,
         render: function(element) {
-            calendar.form_overlay($('a', element));
+            calendar.overlay_init($('a', element));
         }
     });  
 };

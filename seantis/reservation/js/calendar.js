@@ -35,9 +35,8 @@ seantis.calendars.defaults = {
                     return _.pluck(_.filter(this, key), 'element');
                 };
 
-
                 // Sets a calendar event up with a form overlay
-                calendar.form_overlay = function(element) {
+                calendar.overlay_init = function(element, onclose) {
                     var calendar = this;
                     element.prepOverlay({
                         subtype: 'ajax', 
@@ -46,23 +45,34 @@ seantis.calendars.defaults = {
                         noform: 'close',
                         config: { 
                             onClose: function() {
+                                calendar.is_resizing = false;
+                                calendar.is_moving = false;
                                 calendar.element.fullCalendar('refetchEvents');
                             }
                         } 
                     });
                 };
 
+                calendar.is_resizing = false;
+                calendar.is_moving = false;
+
                 // Shows the previously set form overlay
-                calendar.show_overlay = function(url) {
+                calendar.overlay_show = function(url) {
                     var link = $('<a href="' + url + '"></a>');
-                    this.form_overlay(link);
+                    this.overlay_init(link);
                     link.click();
                 };
+
             });
         };
 
-        var renderPartitions = function(event, element) {
+        var renderPartitions = function(event, element, calendar) {
             
+            // if the event is being moved, don't render the partitions
+            if (event.is_moving) {
+                return;
+            }
+
             var free = _.template('<div style="height:<%= height %>%"></div>');
             var used = _.template('<div style="height:<%= height %>%" class="calendarOccupied"></div>');
 
@@ -76,23 +86,34 @@ seantis.calendars.defaults = {
                 }
             });
 
+            // lock the height during resizing
+            var height = element.height();
+            if (event.is_resizing) {
+                height = _.isUndefined(event.height) ? height : event.height;
+            } else {
+                event.height = height;
+            }
+
+            partitions = '<div style="height:' + height + 'px;">' + partitions + '</div>';
+
             $('.fc-event-bg', element).wrapInner(partitions);
         };
 
         var renderEvent = function(event, element, calendar) {
-
             // Don't perform the following operations immediatly, but 
             // only once the ui thread is idle
-
             _.defer(function() {
                 // Cache the element with the group for later usage
                 calendar.groups.add(event.group, element);
 
                 // Prepare the menu
-                seantis.contextmenu(element, event, calendar);
+                seantis.contextmenu(event, element, calendar);
 
                 // Add partitions
-                renderPartitions(event, element);
+                renderPartitions(event, element, calendar);
+
+                // Init overlay for the click on the event
+                calendar.overlay_init(element);
             });
         };
 
@@ -102,7 +123,7 @@ seantis.calendars.defaults = {
             url += '&start=' + event.start.getTime() / 1000;
             url += '&end=' + event.end.getTime() / 1000;
             
-            calendar.show_overlay(url);
+            calendar.overlay_show(url);
         };
 
         // Called when a selection on the calendar is made
@@ -112,7 +133,7 @@ seantis.calendars.defaults = {
                 url += '?start=' + start.getTime() / 1000;
                 url += '&end=' + end.getTime() / 1000;
 
-                calendar.show_overlay(url);
+                calendar.overlay_show(url);
             };
         };
 
@@ -143,12 +164,19 @@ seantis.calendars.defaults = {
                 calendar.groups.clear();
             };
 
+            var highlight_group = function(event, highlight) {
+                _.each(calendar.groups.find(event.group), function(el) {
+                    el.toggleClass('groupSelection', highlight);  
+                });
+            }
+
             var mouseover = function(event) {
-                var elements = calendar.groups.find(event.group);
-                for (var i=0; i<elements.length; i++) {
-                    elements[i].toggleClass('groupSelection');      
-                }
+                highlight_group(event, true);
             };
+
+            var mouseout = function(event) {
+               highlight_group(event, false);
+            }
 
             var options = {
                 header: {
@@ -167,7 +195,11 @@ seantis.calendars.defaults = {
                 eventDrop: move,
                 isLoading: loading,
                 eventMouseover: mouseover,
-                eventMouseout: mouseover
+                eventMouseout: mouseout,
+                //the following flags are never reset, because new event objects
+                //are created if the resizing or dropping is successful
+                eventResizeStart: function(event) { event.is_resizing = true; },
+                eventDragStart: function(event) { event.is_moving = true; }
             };
 
             // Merge the options with the ones defined by the resource view as 
