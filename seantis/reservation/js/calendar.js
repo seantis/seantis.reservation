@@ -1,155 +1,99 @@
 if (!this.seantis) this.seantis = {};
 if (!this.seantis.calendars) this.seantis.calendars = [];
 
+seantis.calendars.defaults = {
+    timeFormat: 'HH:mm{ - HH:mm}',
+    axisFormat: 'HH:mm{ - HH:mm}',
+    columnFormat: 'dddd d.M',
+    firstDay: 1,
+};
+
 (function($) {
     $(document).ready(function() {
-
         if (!seantis.calendars.length)
             return;
 
-        // Adds commonly used functions to the calendars and provides an easy
-        // way to iterate over them. 
-        var foreachcalendar = function(callback) {
-            for (var i=0; i < seantis.calendars.length; i++) {
+        seantis.calendars.init = function() {
+            _.each(seantis.calendars, function(calendar, index) {
+                calendar.element = $(calendar.id);
+                calendar.index = index;
+                calendar.groups = [];
 
-                var calendar = seantis.calendars[i];
+                calendar.groups.add = function(group, element) {
+                    if (_.isUndefined(group) || _.isEmpty(group))
+                        return;
 
-                // Add jquery element
-                if (typeof calendar.element === 'undefined') {
-                    calendar.element = $(calendar.id);
-                }
+                    this.push({group:group, element:element});
+                };
 
-                // Add index
-                if (typeof calendar.index == 'undefined') {
-                    calendar.index = i;
-                }
+                calendar.groups.clear = function() {
+                    this.length = 0;  
+                };
 
-                // Add form_overlay function which automatically refetches events
-                if (typeof calendar.form_overlay == 'undefined') {
-                    calendar.form_overlay = function(element) {
-                        var calendar = this;
-                        element.prepOverlay({
-                           subtype: 'ajax', filter:  '#content>*',
-                           formselector: 'form', noform: 'close',
-                           config: { 
-                                onClose: function() {
-                                    calendar.element.fullCalendar('refetchEvents');
-                                }
-                           } 
-                        });
-                    };
-                }
+                calendar.groups.find = function(group) {
+                    var key = function(value) { return value.group == group; };
+                    return _.pluck(_.filter(this, key), 'element');
+                };
 
-                // Add show_overlay function
-                if (typeof calendar.show_overlay == 'undefined') {
-                    calendar.show_overlay = function(url) {
-                        var link = $('<a href="' + url + '"></a>');
-                        this.form_overlay(link);
-                        link.click();
-                    };
-                }
 
-                // Add array which will hold the calendar's events
-                if (typeof calendar.groups == 'undefined') {
-                    calendar.groups = [];
-                }
-
-                if (typeof calendar.groups.add == 'undefined') {
-                    calendar.groups.add = function(group, element) {
-                        if (typeof group === 'undefined' || group === '')
-                            return;
-
-                        this.push({group:group, element:element});
-                    }
-                }
-
-                if (typeof calendar.groups.clear == 'undefined') {
-                    calendar.groups.clear = function() {
-                        this.length = 0;  
-                    };
-                }
-
-                if (typeof calendar.groups.find == 'undefined') {
-                    calendar.groups.find = function(group) {
-                        var elements = []
-                        for (var i=0; i < this.length; i++) {
-                            if (this[i].group === group) {
-                                elements.push(this[i].element);    
+                // Sets a calendar event up with a form overlay
+                calendar.form_overlay = function(element) {
+                    var calendar = this;
+                    element.prepOverlay({
+                        subtype: 'ajax', 
+                        filter:  '#content>*',
+                        formselector: 'form', 
+                        noform: 'close',
+                        config: { 
+                            onClose: function() {
+                                calendar.element.fullCalendar('refetchEvents');
                             }
-                        }  
-                        return elements;
-                    };
-                }
+                        } 
+                    });
+                };
 
-                // Callback using the calendar object with the added functions
-                callback(seantis.calendars[i]);
-            }  
+                // Shows the previously set form overlay
+                calendar.show_overlay = function(url) {
+                    var link = $('<a href="' + url + '"></a>');
+                    this.form_overlay(link);
+                    link.click();
+                };
+            });
+        };
+
+        var renderPartitions = function(event, element) {
+            
+            var free = _.template('<div style="height:<%= height %>%"></div>');
+            var used = _.template('<div style="height:<%= height %>%" class="calendarOccupied"></div>');
+
+            var partitions = '';
+            _.each(event.partitions, function(partition) {
+                var reserved = partition[1];
+                if (reserved === false) {
+                    partitions += free({height: partition[0]});
+                } else {
+                    partitions += used({height: partition[0]});
+                }
+            });
+
+            $('.fc-event-bg', element).wrapInner(partitions);
         };
 
         var renderEvent = function(event, element, calendar) {
-            // Cache the events for later usage
-            calendar.groups.add(event.group, element);
 
-            // Add contextmenu items
+            // Don't perform the following operations immediatly, but 
+            // only once the ui thread is idle
 
-            var menuitems = [];
+            _.defer(function() {
+                // Cache the element with the group for later usage
+                calendar.groups.add(event.group, element);
 
-            menuitems.push('<div>Entry</div>');
+                // Prepare the menu
+                seantis.contextmenu(element, event, calendar);
 
-            var reserve = '<a class="seantis-reservation-reserve" ';
-            reserve += 'href="' + event.url + '">';
-            reserve += seantis.locale('reserve') + '</a>';
-            menuitems.push(reserve);
-
-            var edit = '<a class="seantis-reservation-edit" ';
-            edit += 'href="' + event.editurl + '">';
-            edit += seantis.locale('edit') + '</a>';
-            menuitems.push(edit);
-
-            var remove = '<a class="seantis-reservation-remove" ';
-            remove +='href="' + event.removeurl + '">';
-            remove += seantis.locale('remove') + '</a>';
-            menuitems.push(remove);
-
-            if (event.groupurl) {
-                menuitems.push('<div>Group</div>');
-
-                var group = '<a class="seantis-reservation-group" ';
-                group += 'href="' + event.groupurl + '">';
-                group += seantis.locale('showgroup') + '</a>';
-                menuitems.push(group);
-
-                var removegroup = '<a class="seantis-reservation-removegroup" ';
-                removegroup += 'href="' + event.removegroupurl + '">';
-                removegroup += seantis.locale('removegroup') + '</a>';
-                menuitems.push(removegroup);
-            }
-
-            var menuhtml = '';
-            for (var i=0; i<menuitems.length; i++) {
-                menuhtml += menuitems[i];
-            }
-
-            seantis.contextmenu(element, menuhtml, calendar.index);
-            calendar.form_overlay(element);
-
-            // Add partitions
-
-            var partitions = '';
-            for (i = 0; i<event.partitions.length; i++) {
-                var partition = event.partitions[i];
-                var reserved = partition[1];
-                var percentage = partition[0];
-
-                if (reserved === false) {
-                    partitions += '<div style="height:' + percentage + '%"></div>';
-                } else {
-                    partitions += '<div style="height:' + percentage + '%" ';
-                    partitions += 'class="calendarOccupied"></div>';
-                }
-            }
-
-            $('.fc-event-bg', element).wrapInner(partitions);
+                // Add partitions
+                renderPartitions(event, element);
+            });
         };
 
         // Called when an event is resized or moved
@@ -163,19 +107,20 @@ if (!this.seantis.calendars) this.seantis.calendars = [];
 
         // Called when a selection on the calendar is made
         var eventAdd = function(start, end, allDay, calendar) {
+            if (!allDay) {
+                var url = calendar.allocateurl;
+                url += '?start=' + start.getTime() / 1000;
+                url += '&end=' + end.getTime() / 1000;
 
-            // TODO do not execute if the permissions are insufficient
-            if (allDay) return;
-
-            var url = calendar.allocateurl;
-            url += '?start=' + start.getTime() / 1000;
-            url += '&end=' + end.getTime() / 1000;
-
-            calendar.show_overlay(url);
+                calendar.show_overlay(url);
+            };
         };
 
+        // Setup the supporting structure
+        seantis.calendars.init();
+
         // Hookup the fullcalendar
-        foreachcalendar(function(cal) {
+        _.each(seantis.calendars, function(cal) {
             var calendar = cal;
 
             var add = function(start, end, allDay) {
@@ -187,18 +132,15 @@ if (!this.seantis.calendars) this.seantis.calendars = [];
             };
 
             var prerender = function(event, element) {
-                if (calendar.groups.length > 0) {
-                    calendar.groups.clear();
-                }
-            }
+                calendar.groups.clear();
+            };
 
             var render = function(event, element) {
                 renderEvent(event, element, calendar);
             };
 
             var loading = function(loading, view) {
-                if (loading == false)
-                    calendar.groups = [];
+                calendar.groups.clear();
             };
 
             var mouseover = function(event) {
@@ -214,11 +156,7 @@ if (!this.seantis.calendars) this.seantis.calendars = [];
                     right: 'month, agendaWeek, agendaDay'
                 },
                 defaultView: 'agendaWeek',
-                timeFormat: 'HH:mm{ - HH:mm}',
-                axisFormat: 'HH:mm{ - HH:mm}',
-                columnFormat: 'dddd d.M',
                 allDaySlot: false,
-                firstDay: 1,
                 selectable: true,
                 selectHelper: true,
                 select: add,
@@ -232,7 +170,9 @@ if (!this.seantis.calendars) this.seantis.calendars = [];
                 eventMouseout: mouseover
             };
 
-            // Merge the options with the ones defined by the resource view
+            // Merge the options with the ones defined by the resource view as 
+            // well as with the defaults
+            $.extend(options, seantis.calendars.defaults);
             $.extend(options, calendar.options);
             calendar.element.fullCalendar(options);
         });
@@ -240,26 +180,21 @@ if (!this.seantis.calendars) this.seantis.calendars = [];
         // Call all calendars with the given function and argument
         // the calendar from which the event originats is not called
         var all_calendars = function(originid, fn, arg) {
-            for (var i=0; i<seantis.calendars.length; i++) {
-                if (seantis.calendars[i].id === originid)
-                    continue;
-                
-                $(seantis.calendars[i].id).fullCalendar( fn, arg );
-            }  
+            _.each(seantis.calendars, function(calendar) {
+                if (calendar.id !== originid)
+                    calendar.element.fullCalendar(fn, arg); 
+            });
         };
 
         // Generate the all calendars function
         var get_all_calendars_fn = function(originid, fn, arg) {
-            var origin = originid;
-            var func = fn;
-            var argument = arg;
             return function() {
-                all_calendars(origin, func, arg);  
+                all_calendars(originid, fn, arg);  
             };
         };
 
         // Hook up the button synchronization
-        foreachcalendar(function(calendar) {
+        _.each(seantis.calendars, function(calendar) {
             var id = calendar.id;
             var element = calendar.element;
 

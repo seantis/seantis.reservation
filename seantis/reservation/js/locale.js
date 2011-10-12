@@ -76,5 +76,13 @@ seantis.locale.dictionary = {
     'removegroup' : [
         'Remove',
         'Löschen'
+    ],
+    'entry' : [
+        'Entry',
+        'Eintrag'
+    ],
+    'group' : [
+        'Group',
+        'Gruppe'
     ]
 };
