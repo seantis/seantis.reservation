@@ -83,6 +83,11 @@ class IAllocation(interface.Interface):
         if Allocation.start >= Allocation.end:
             raise interface.Invalid(_(u'End date before start date'))
 
+    @interface.invariant
+    def isValidGroup(Allocation):
+        if Allocation.recurring and not Allocation.group:
+            raise interface.Invalid(_(u'Recurring allocations require a group'))
+
 def from_timestamp(fn):
     def converter(self, *args, **kwargs):
         try:
