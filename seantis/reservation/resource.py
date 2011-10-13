@@ -158,11 +158,8 @@ class GroupView(grok.View):
         scheduler = self.context.scheduler
         return scheduler.allocations_by_group(unicode(self.group))
 
-    def event_style(self, allocation):
-        #TODO remove the css from here
-        color = utils.event_color(allocation.availability)
-        css = "width:180px; float:left; background-color:%s; border-color:%s;"
-        return css % (color, color)
+    def event_class(self, allocation):
+        return utils.event_class(allocation.availability)
 
     def event_title(self, allocation):
         availability = allocation.availability
@@ -235,7 +232,6 @@ class Slots(grok.View, CalendarRequest):
                 removegroupurl = None
 
             availability = alloc.availability
-            color = utils.event_color(availability)
             title = utils.event_title(resource, self.request, availability)
 
             events.append(dict(
@@ -243,8 +239,7 @@ class Slots(grok.View, CalendarRequest):
                 start=start.isoformat(),
                 end=end.isoformat(),
                 title=title,
-                backgroundColor=color, 
-                borderColor=color,
+                className=utils.event_class(availability),
                 url=reserveurl,
                 editurl=editurl,
                 groupurl=groupurl,

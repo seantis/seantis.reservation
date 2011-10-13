@@ -34,14 +34,13 @@ def get_resource_by_uuid(context, uuid):
     results = catalog(UID=uuid)
     return len(results) == 1 and results[0] or None
 
-def event_color(availability):
-    # TODO move colors to css
+def event_class(availability):
     if availability == 0:
-        return '#a1291e' #redish
+        return 'event-unavailable'
     elif availability == 100:
-        return '#379a00' #greenish
+        return 'event-available'
     else:
-        return '#e99623' #orangeish
+        return 'event-partly-available'
 
 def event_title(context, request, availability):
     if availability == 0:

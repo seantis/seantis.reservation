@@ -299,11 +299,8 @@ class AllocationRemoveForm(form.Form):
             self.fields['group'].field.default = self.group
         super(AllocationRemoveForm, self).update(**kwargs)
 
-    def event_style(self, allocation):
-        #TODO remove the css from here, deduplicate (utils.py)
-        color = utils.event_color(allocation.availability)
-        css = "width:180px; float:left; background-color:%s; border-color:%s;"
-        return css % (color, color)
+    def event_class(self, allocation):
+        return utils.event_class(allocation.availability)
 
     def event_title(self, allocation):
         availability = allocation.availability

@@ -15,7 +15,7 @@
          <div tal:repeat="alloc view/allocations">
 
           <div style="float: left; width:75px; margin-bottom: 10px;" tal:content="python: alloc.display_start.strftime('%d.%m.%Y')"></div>
-            <div class="fc-event fc-event-inner fc-event-skin groupEvent" tal:attributes="style python: view.event_style(alloc)">
+            <div tal:attributes="class python: 'fc-event fc-event-inner fc-event-skin groupEvent ' + view.event_class(alloc)">
               <div style="text-align: center;">
               <span class="fc-event-time">
                 <tal:block tal:content="python: alloc.display_start.strftime('%H:%M')" />
