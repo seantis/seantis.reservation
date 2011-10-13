@@ -15,62 +15,6 @@
     <tal:block tal:replace="structure view/javascript" />
 </metal:block>
 
-<metal:block metal:fill-slot="style_slot">
-  <style type="text/css">
-    .calendarOccupied {
-        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAOVBMVEXY2Nj////d7h7d7h7d7h7d7h7///////////////////////////////////////////////////+4yo5sAAAAQklEQVQoke3LqQ3AMADAQKP8b/cftjjAUgaI6cmEmHKprY+59seRSkAlopJQyagUVCoqDZWOykBlorJQ2aj48+Rafr0hD9knm0tJAAAAAElFTkSuQmCC) !important;
-        background-repeat: repeat;
-        border: solid #ccc 1px;
-    }
-    .groupSelection {
-      -webkit-box-shadow: 0px 0px 4px 4px #6DADF2;
-      -moz-box-shadow: 0px 0px 4px 4px #6DADF2;
-      box-shadow: 0px 0px 4px 4px #6DADF2; 
-    }
-
-    #miniTip_c {
-        padding: 0;
-    }
-
-    #miniTip_c div {
-        background-color: #1d4f90;
-        padding: 2px 0px;
-        padding-left: 10px;
-        -webkit-border-radius: 3px;
-        -moz-border-radius: 3px;
-        border-radius: 3px;
-    }
-
-    /* main content style */
-    #miniTip_c a { 
-        padding-bottom: 2px;
-        padding-top: 2px;
-        display: block;
-        padding-left: 24px;
-    }
-
-    #miniTip_c a:hover {
-        background-color: #0d7dcd;
-        text-decoration: none;
-        -webkit-border-radius: 3px;
-        -moz-border-radius: 3px;
-        border-radius: 3px;
-    }
-
-    #miniTip_c a:hover:before {
-        content: '▶ ';
-        margin-left: -14px;
-        margin-right: 0px;
-        padding-left: 0px;
-        padding-right: 0px;
-    }
-
-    #miniTip_c {
-        width: 100px;
-    }
-  </style>
-</metal:block>
-
 <metal:main fill-slot="main">
     <tal:main-macro metal:define-macro="main">
 

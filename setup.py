@@ -36,7 +36,8 @@ setup(name='seantis.reservation',
           'plone.directives.form',
           'plone.app.referenceablebehavior',
           'collective.js.jqueryui',
-          'collective.js.underscore'
+          'collective.js.underscore',
+          'collective.js.fullcalendar'
       ],
       entry_points="""
       # -*- Entry points: -*-
