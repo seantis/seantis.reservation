@@ -160,13 +160,13 @@ class GroupView(grok.View):
 
     def event_style(self, allocation):
         #TODO remove the css from here
-        color = utils.event_color(allocation.occupation_rate)
+        color = utils.event_color(allocation.availability)
         css = "width:180px; float:left; background-color:%s; border-color:%s;"
         return css % (color, color)
 
     def event_title(self, allocation):
-        occupation_rate = allocation.occupation_rate
-        return utils.event_title(self.context, self.request, occupation_rate)
+        availability = allocation.availability
+        return utils.event_title(self.context, self.request, availability)
 
 class CalendarRequest(object):
 
@@ -234,9 +234,9 @@ class Slots(grok.View, CalendarRequest):
                 groupurl = None
                 removegroupurl = None
 
-            occupation_rate = alloc.occupation_rate
-            color = utils.event_color(occupation_rate)
-            title = utils.event_title(resource, self.request, occupation_rate)
+            availability = alloc.availability
+            color = utils.event_color(availability)
+            title = utils.event_title(resource, self.request, availability)
 
             events.append(dict(
                 allDay=False,
@@ -251,7 +251,7 @@ class Slots(grok.View, CalendarRequest):
                 removeurl=removeurl,
                 removegroupurl=removegroupurl,
                 allocation = alloc.id,
-                partitions = alloc.occupation_partitions(),
+                partitions = alloc.availability_partitions(),
                 group = alloc.group
             ))
         

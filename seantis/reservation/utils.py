@@ -34,19 +34,19 @@ def get_resource_by_uuid(context, uuid):
     results = catalog(UID=uuid)
     return len(results) == 1 and results[0] or None
 
-def event_color(occupation_rate):
+def event_color(availability):
     # TODO move colors to css
-    if occupation_rate == 0:
+    if availability == 0:
         return '#a1291e' #redish
-    elif occupation_rate == 100:
+    elif availability == 100:
         return '#379a00' #greenish
     else:
         return '#e99623' #orangeish
 
-def event_title(context, request, occupation_rate):
-    if occupation_rate == 0:
+def event_title(context, request, availability):
+    if availability == 0:
         return translate(context, request, _(u'Occupied'))
-    elif occupation_rate == 100:
+    elif availability == 100:
         return translate(context, request, _(u'Free'))
     else:
-        return translate(context, request, _(u'%i%% Free')) % occupation_rate
+        return translate(context, request, _(u'%i%% Free')) % availability

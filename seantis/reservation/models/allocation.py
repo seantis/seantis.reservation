@@ -115,8 +115,8 @@ class Allocation(ORMBase):
             yield start, end
 
     @property
-    def occupation_rate(self):
-        """Returns the occupation rate in percent."""
+    def availability(self):
+        """Returns the availability in percent."""
 
         total = sum(1 for s in self.all_slots())
         count = self.reserved_slots.count()
@@ -147,7 +147,7 @@ class Allocation(ORMBase):
 
         return query.count() > 1
 
-    def occupation_partitions(self):
+    def availability_partitions(self):
         """Partitions the space between start and end into blocks of either
         free or reserved time. Each block has a percentage representing the
         space the block occupies compared to the size of the whole allocation.

@@ -103,7 +103,7 @@ class TestScheduler(IntegrationTestCase):
             ])
 
         allocation = allocations[0]
-        partitions = allocation.occupation_partitions()
+        partitions = allocation.availability_partitions()
         self.assertEqual(len(partitions), 1)
         self.assertEqual(partitions[0][0], 100.0)
         self.assertEqual(partitions[0][1], False)
@@ -111,7 +111,7 @@ class TestScheduler(IntegrationTestCase):
         start, end = datetime(2011, 1, 1, 8, 30), datetime(2011, 1, 1, 9, 00)
         sc.reserve([(start, end)])
 
-        partitions = allocation.occupation_partitions()
+        partitions = allocation.availability_partitions()
         self.assertEqual(len(partitions), 3)
         self.assertEqual(partitions[0][0], 25.00)
         self.assertEqual(partitions[0][1], False)

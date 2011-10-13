@@ -301,13 +301,13 @@ class AllocationRemoveForm(form.Form):
 
     def event_style(self, allocation):
         #TODO remove the css from here, deduplicate (utils.py)
-        color = utils.event_color(allocation.occupation_rate)
+        color = utils.event_color(allocation.availability)
         css = "width:180px; float:left; background-color:%s; border-color:%s;"
         return css % (color, color)
 
     def event_title(self, allocation):
-        occupation_rate = allocation.occupation_rate
-        return utils.event_title(self.context, self.request, occupation_rate)
+        availability = allocation.availability
+        return utils.event_title(self.context, self.request, availability)
 
     @button.buttonAndHandler(_(u'Delete'))
     def delete(self, action):
