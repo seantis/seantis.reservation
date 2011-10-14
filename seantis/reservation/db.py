@@ -10,6 +10,7 @@ from seantis.reservation.error import AffectedReservationError
 from seantis.reservation.lock import locked_call
 from seantis.reservation.raster import rasterize_span
 
+
 def all_allocations_in_range(start, end):
     # Query version of DefinedTimeSpan.overlaps
     return Session.query(Allocation).filter(
@@ -25,8 +26,10 @@ def all_allocations_in_range(start, end):
         ),
     )
 
+
 class Scheduler(object):
-    
+    """ Used to manage a resource as well as all connected mirrors. """
+
     def __init__(self, resource_uuid, quota=1):
         assert(0 <= quota)
 
@@ -40,21 +43,36 @@ class Scheduler(object):
 
             self.mirrors = [mirror(n) for n in xrange(1, quota)]
 
-    def master_execute(self, method, *args, **kwargs):
+    def execute_master(self, method, *args, **kwargs):
+        """ Execute a method on the master. """
         fn = getattr(self.master, method)
         return fn(*args, **kwargs)
 
-    def execute(self, method, *args, **kwargs):
-
-        result = self.master_execute(method, *args, **kwargs)
-
+    def execute_mirrors(self, method, *args, **kwargs):
+        """ Execute a method on all mirrors. """
         for mirror in self.mirrors:
             fn = getattr(mirror, method)
             fn(*args, **kwargs)
 
+    def execute_all(self, method, *args, **kwargs):
+        """ Execute a method on all mirrors as well as the master."""
+        result = self.execute_master(method, *args, **kwargs)
+        self.execute_mirrors(method, *args, **kwargs)
         return result
 
     def __getattr__(self, name):
+        """ Called when a method or argument is not found on this class. In that
+        case the scheduler tries to call the master resource scheduler and 
+        optionally the mirrors.
+
+        The call may be wrapped in a resource lock.
+
+        The decision to wrap or execute many calls is made based upon the
+        flags which are set by the decorators below.
+
+        Only callables are considered.
+
+        """
         attr = getattr(self.master, name)
 
         if not callable(attr):
@@ -63,7 +81,7 @@ class Scheduler(object):
         mirrored = hasattr(attr, '_mirrored')
         locked = hasattr(attr, '_locked')
 
-        execute = mirrored and self.execute or self.master_execute
+        execute = mirrored and self.execute_all or self.execute_master
         execute = locked and locked_call(execute, self.master.uuid) or execute
 
         def fn(*args, **kwargs):
@@ -73,13 +91,22 @@ class Scheduler(object):
 
 
 def mirrored(fn):
+    """ Decorator to signal to the scheduler that the function should be executed
+    on the master and all mirrors. 
+
+    """
     fn._mirrored = True
     return fn
 
 def mirrored_transaction(fn):
+    """ Signals to the scheduler that the call shall be mirrored and executed
+    within a resource transaction. 
+
+    """
     fn._mirrored = True
     fn._locked = True
     return fn
+
 
 class ResourceScheduler(object):
     """Used to manage the definitions and reservations of a resource."""

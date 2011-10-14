@@ -23,6 +23,7 @@ def resource_transaction(fn):
     return locker
 
 def locked_call(fn, uuid):
+    """Executes the given function wrapped in a resource lock."""
 
     def locker(*args, **kwargs):
         lock = getUtility(IResourceLock)

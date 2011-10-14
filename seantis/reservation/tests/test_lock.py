@@ -1,3 +1,5 @@
+from time import sleep
+
 from threading import Lock
 from threading import Thread
 
@@ -5,6 +7,7 @@ from zope.component import getUtility
 
 from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation.lock import IResourceLock
+from seantis.reservation.lock import locked_call
 from seantis.reservation.lock import resource_transaction
 from seantis.reservation.error import ResourceLockedError
 
@@ -50,6 +53,7 @@ class TestThreadedLock(IntegrationTestCase):
         mock = Mock('threaded')
 
         thread = Thread(target=mock.wait)
+        locked = locked_call(lambda: None, mock.uuid)
 
         try:
             # Acquire the threading.Lock
@@ -58,12 +62,16 @@ class TestThreadedLock(IntegrationTestCase):
             # Start the thread which will block until lock is released
             thread.start()
 
+            # Ensure that the thread gets there
+            sleep(0.01)
+
             # Ensure that while the thread is blocking an error is thrown
-            self.assertRaises(ResourceLockedError, mock.wait)
+            self.assertRaises(ResourceLockedError, locked)
+
         finally:
             # Release the lock and let the thread finish
             _lock.release()
             thread.join()
 
         # Call the locked function again, which should not throw an error now
-        mock.wait()
+        locked()
