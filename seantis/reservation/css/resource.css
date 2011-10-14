@@ -3,10 +3,15 @@
     background-repeat: repeat;
     border: solid #ccc 1px;
 }
+
 .groupSelection {
     -webkit-box-shadow: 0px 0px 4px 4px #6DADF2;
     -moz-box-shadow: 0px 0px 4px 4px #6DADF2;
     box-shadow: 0px 0px 4px 4px #6DADF2;
+}
+
+#content table {
+    margin-bottom: 0;
 }
 
 #miniTip_c {

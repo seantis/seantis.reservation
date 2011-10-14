@@ -2,7 +2,7 @@ if (!this.seantis) this.seantis = {};
 if (!this.seantis.recurrence) this.seantis.recurrence = {};
 
 seantis.recurrence.init = function() {
-    $ = jQuery;
+    var $ = jQuery;
 
     var recurring = $('#form-widgets-recurring-0');
     var frequency = $('#form-widgets-frequency');
