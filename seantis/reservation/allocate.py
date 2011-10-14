@@ -126,6 +126,8 @@ class AllocationForm(form.Form):
     grok.name('allocate')
     grok.require('cmf.ManagePortal')
 
+    template = ViewPageTemplateFile('templates/allocate.pt')
+
     fields = field.Fields(IAllocation)
     label = _(u'Resource allocation')
 
