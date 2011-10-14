@@ -36,6 +36,11 @@ class IResourceBase(form.Schema):
             default=24
         )
 
+    quota = schema.Int(
+            title=_(u'Quota'),
+            default=1
+        )
+
     @interface.invariant
     def isValidFirstLastHour(Resource):
         in_valid_range = lambda h: 0 <= h and h <= 24

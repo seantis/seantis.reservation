@@ -95,6 +95,7 @@ class TestScheduler(IntegrationTestCase):
 
     def test_allocation_partition(self):
         sc = Scheduler(uuid())
+        sc.test = 'asdf'
         group, allocations = sc.allocate([
                 (
                     datetime(2011, 1, 1, 8, 0), 

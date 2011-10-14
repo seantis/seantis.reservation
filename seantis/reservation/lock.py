@@ -18,33 +18,38 @@ def resource_transaction(fn):
 
     """
     def locker(self, *args, **kwargs):
-        assert (hasattr(self, 'resource'))
-        
+        return locked_call(fn, self.uuid)(self, *args, **kwargs)
+
+    return locker
+
+def locked_call(fn, uuid):
+
+    def locker(*args, **kwargs):
         lock = getUtility(IResourceLock)
 
         try:
-            if not lock.acquire(self.resource):
+            if not lock.acquire(uuid):
                 raise ResourceLockedError
 
-            return fn(self, *args, **kwargs)
+            return fn(*args, **kwargs)
         except:
             raise
         else:
             Session.commit()
         finally:
-            lock.release(self.resource)
+            lock.release(uuid)
 
     return locker
 
 class IResourceLock(Interface):
 
-    def acquire(self, resource):
+    def acquire(self, uuid):
         """Tries to acquire a lock with the given resource. If the resource
         is already locked False is returned. If successful, True is returned.
 
         """
 
-    def release(self, resource):
+    def release(self, uuid):
         """Releases the lock of the given resource.
 
         """
@@ -59,25 +64,25 @@ class ResourceLock(grok.GlobalUtility):
     def __init__(self):
         self._locks = {}
 
-    def acquire(self, resource):
+    def acquire(self, uuid):
         _lock.acquire()
 
         try:
-            if resource in self._locks:
+            if uuid in self._locks:
                 return False
             else:
-                self._locks[resource] = None
+                self._locks[uuid] = None
                 return True
 
         finally:
             _lock.release()
 
-    def release(self, resource):
+    def release(self, uuid):
         _lock.acquire()
 
         try:
-            if resource in self._locks:
-                del self._locks[resource]
+            if uuid in self._locks:
+                del self._locks[uuid]
         
         finally:
             _lock.release()

@@ -1,4 +1,5 @@
 from uuid import uuid4 as uuid
+from uuid import uuid5 as uuid_mirror
 from z3c.saconfig import Session
 from sqlalchemy.sql import and_, or_
 
@@ -6,7 +7,7 @@ from seantis.reservation.models import Allocation
 from seantis.reservation.models import ReservedSlot
 from seantis.reservation.error import OverlappingAllocationError
 from seantis.reservation.error import AffectedReservationError
-from seantis.reservation.lock import resource_transaction
+from seantis.reservation.lock import locked_call
 from seantis.reservation.raster import rasterize_span
 
 def all_allocations_in_range(start, end):
@@ -25,12 +26,68 @@ def all_allocations_in_range(start, end):
     )
 
 class Scheduler(object):
+    
+    def __init__(self, resource_uuid, quota=1):
+        assert(0 <= quota)
+
+        self.master = ResourceScheduler(resource_uuid)
+        self.mirrors = []
+
+        # get a scheduler for each mirror
+        if quota > 1:
+            scheduler = lambda uid: ResourceScheduler(uid)
+            mirror = lambda n: scheduler(uuid_mirror(self.master.uuid, str(n)))
+
+            self.mirrors = [mirror(n) for n in xrange(1, quota)]
+
+    def master_execute(self, method, *args, **kwargs):
+        fn = getattr(self.master, method)
+        return fn(*args, **kwargs)
+
+    def execute(self, method, *args, **kwargs):
+
+        result = self.master_execute(method, *args, **kwargs)
+
+        for mirror in self.mirrors:
+            fn = getattr(mirror, method)
+            fn(*args, **kwargs)
+
+        return result
+
+    def __getattr__(self, name):
+        attr = getattr(self.master, name)
+
+        if not callable(attr):
+            return attr
+
+        mirrored = hasattr(attr, '_mirrored')
+        locked = hasattr(attr, '_locked')
+
+        execute = mirrored and self.execute or self.master_execute
+        execute = locked and locked_call(execute, self.master.uuid) or execute
+
+        def fn(*args, **kwargs):
+            return execute(name, *args, **kwargs)
+
+        return fn
+
+
+def mirrored(fn):
+    fn._mirrored = True
+    return fn
+
+def mirrored_transaction(fn):
+    fn._mirrored = True
+    fn._locked = True
+    return fn
+
+class ResourceScheduler(object):
     """Used to manage the definitions and reservations of a resource."""
 
     def __init__(self, resource_uuid):
-        self.resource = resource_uuid
+        self.uuid = resource_uuid
 
-    @resource_transaction
+    @mirrored_transaction
     def allocate(self, dates, group=None, raster=15):
         group = group or unicode(uuid())
 
@@ -50,7 +107,7 @@ class Scheduler(object):
             allocation.start = start
             allocation.end = end
             allocation.group = group
-            allocation.resource = self.resource
+            allocation.resource = self.uuid
 
             allocations.append(allocation)
 
@@ -58,7 +115,7 @@ class Scheduler(object):
 
         return group, allocations
 
-    @resource_transaction
+    @mirrored_transaction
     def move_allocation(self, id, new_start, new_end, group):
         # Find allocation
         allocation = self.get_allocation(id)
@@ -91,21 +148,21 @@ class Scheduler(object):
         if id:
             query = Session.query(Allocation).filter(and_(
                 Allocation.id == id,
-                Allocation.resource == self.resource
+                Allocation.resource == self.uuid
             ))
         elif group:
             query = Session.query(Allocation).filter(and_(
                 Allocation.group == group,
-                Allocation.resource == self.resource
+                Allocation.resource == self.uuid
             ))
         else:
             query = Session.query(Allocation).filter(
-                Allocation.resource == self.resource
+                Allocation.resource == self.uuid
             )
 
         return query
 
-    @resource_transaction
+    @mirrored_transaction
     def remove_allocation(self, id=None, group=None):
         query = self.allocations(id=id, group=group)
 
@@ -126,7 +183,7 @@ class Scheduler(object):
         """Yields a list of allocations for the current resource."""
         
         query = all_allocations_in_range(start, end)
-        query = query.filter(Allocation.resource == self.resource)
+        query = query.filter(Allocation.resource == self.uuid)
 
         for result in query:
             yield result
@@ -138,7 +195,7 @@ class Scheduler(object):
             query = self.allocations_in_range(start, end)
         else:
             query = Session.query(Allocation)
-            query = query.filter(Allocation.resource == self.resource)
+            query = query.filter(Allocation.resource == self.uuid)
 
         count, availability = 0, 0.0
         for allocation in query:
@@ -154,7 +211,7 @@ class Scheduler(object):
         """Yields a list of all allocations with the given group."""
 
         query = Session.query(Allocation)
-        query = query.filter(Allocation.resource == self.resource)
+        query = query.filter(Allocation.resource == self.uuid)
         query = query.filter(Allocation.group == group)
 
         for result in query:
@@ -175,7 +232,7 @@ class Scheduler(object):
                     slot.start = slot_start
                     slot.end = slot_end
                     slot.allocation = allocation
-                    slot.resource = self.resource
+                    slot.resource = self.uuid
                     slot.reservation = reservation
 
                     slots_to_reserve.append(slot)
@@ -196,7 +253,7 @@ class Scheduler(object):
     def remove_reservation(self, reservation):
         query = Session.query(ReservedSlot).filter(and_(
                 ReservedSlot.reservation == reservation,
-                ReservedSlot.resource == self.resource
+                ReservedSlot.resource == self.uuid
             ))
 
         query.delete()

@@ -35,8 +35,8 @@ class TestLock(IntegrationTestCase):
 _lock = Lock()
 
 class Mock(object):
-    def __init__(self, resource):
-        self.resource = resource
+    def __init__(self, uuid):
+        self.uuid = uuid
 
     @resource_transaction
     def wait(self):

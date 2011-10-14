@@ -49,7 +49,7 @@ seantis.calendars.defaults = {
                                 calendar.is_moving = false;
                                 calendar.element.fullCalendar('refetchEvents');
                             },
-                            onLoad: function() {
+                            onBeforeLoad: function() {
                                 if (!_.isUndefined(seantis.recurrence))
                                     seantis.recurrence.init();
                             } 
