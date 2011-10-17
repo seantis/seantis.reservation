@@ -6,6 +6,7 @@ from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation.db import Scheduler
 from seantis.reservation.error import OverlappingAllocationError
 from seantis.reservation.error import AffectedReservationError
+from seantis.reservation.error import AlreadyReservedError
 
 class TestScheduler(IntegrationTestCase):
 
@@ -95,7 +96,7 @@ class TestScheduler(IntegrationTestCase):
 
     def test_allocation_partition(self):
         sc = Scheduler(uuid())
-        sc.test = 'asdf'
+        
         group, allocations = sc.allocate([
                 (
                     datetime(2011, 1, 1, 8, 0), 
@@ -120,3 +121,40 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(partitions[1][1], True)
         self.assertEqual(partitions[2][0], 50.00)
         self.assertEqual(partitions[2][1], False)
+
+    def test_quotas(self):
+        sc = Scheduler(uuid(), quota=10)
+        
+        start = datetime(2011, 1, 1, 15, 0)
+        end = datetime(2011, 1, 1, 16, 0)
+
+        # setup an allocation with ten spots
+        group, allocations = sc.allocate([(start, end)], raster=15, quota=10)
+        allocation = allocations[0]
+
+        # which should give us ten allocations (-1 as the master is not counted)
+        self.assertEqual(9, len(sc.mirrored_allocations(allocation)))
+
+        # the same reservation can now be made ten times
+        for i in range(0, 10):
+            sc.reserve([(start, end)])
+
+        # the 11th time it'll fail
+        self.assertRaises(AlreadyReservedError, sc.reserve, [(start, end)])
+
+        sc = Scheduler(uuid(), quota=5)
+
+        start = datetime(2011, 1, 1, 15, 0)
+        end = datetime(2011, 1, 1, 16, 0)
+
+        # setup an allocation with five spots
+        group, allocations = sc.allocate([(start, end)], raster=15, quota=5)
+        allocation = allocations[0]
+
+        self.assertEqual(4, len(sc.mirrored_allocations(allocation)))
+
+        # we can do ten reservations if every reservation only occupies half
+        # of the allocation
+        for i in range(0, 5):
+            sc.reserve([(datetime(2011, 1, 1, 15, 0), datetime(2011, 1, 1, 15, 30))])
+            sc.reserve([(datetime(2011, 1, 1, 15, 30), datetime(2011, 1, 1, 16, 0))])

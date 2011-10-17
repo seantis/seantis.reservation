@@ -28,17 +28,23 @@ def all_allocations_in_range(start, end):
     )
 
 class Scheduler(object):
-    """ Used to manage a resource as well as all connected mirrors. """
+    """ Used to manage a resource as well as all connected mirrors. 
+
+    TODO: One thing about this class, it is less than optimal. If I assign a
+    quota of 100 all records are written a hundred times independent of need.
+
+    This should be revised, minimizing database interaction.
+    """
 
     def __init__(self, resource_uuid, quota=1):
         assert(0 <= quota)
 
-        self.master = ResourceScheduler(resource_uuid)
+        self.master = ResourceScheduler(resource_uuid, quota)
         self.mirrors = []
 
         # get a scheduler for each mirror
         if quota > 1:
-            scheduler = lambda uid: ResourceScheduler(uid)
+            scheduler = lambda uid: ResourceScheduler(uid, quota)
             mirror = lambda n: scheduler(uuid_mirror(self.master.uuid, str(n)))
 
             self.mirrors = [mirror(n) for n in xrange(1, quota)]
@@ -91,6 +97,19 @@ class Scheduler(object):
             return execute(name, *args, **kwargs)
 
         return fn
+
+    def mirrored_allocations(self, master_allocation):
+        """ Returns the mirrored allocations when given the master allocation."""
+
+        master = master_allocation
+        allocations = []
+
+        for mirror in self.mirrors:
+            allocations.append(
+                    mirror.get_allocation(start=master.start, end=master.end)
+                )
+
+        return allocations
 
     def reserve(self, dates):
         """ Tries to reserve a number of dates. If dates are found which are
@@ -206,12 +225,14 @@ def mirrored_transaction(fn):
 class ResourceScheduler(object):
     """Used to manage the definitions and reservations of a resource."""
 
-    def __init__(self, resource_uuid):
+    def __init__(self, resource_uuid, quota):
         self.uuid = resource_uuid
+        self.quota = quota
 
     @mirrored_transaction
-    def allocate(self, dates, group=None, raster=15):
+    def allocate(self, dates, group=None, raster=15, quota=None):
         group = group or unicode(uuid())
+        quota = quota or self.quota
 
         # Make sure that this span does not overlap another
         for start, end in dates:
@@ -230,6 +251,7 @@ class ResourceScheduler(object):
             allocation.end = end
             allocation.group = group
             allocation.resource = self.uuid
+            allocation.quota = quota
 
             allocations.append(allocation)
 
@@ -265,8 +287,8 @@ class ResourceScheduler(object):
             return self.allocations(id=id).one()
 
         if start and end:
-            return all_allocations_in_range(start, end).one()
-
+            query = all_allocations_in_range(start, end)
+            return query.filter(Allocation.resource == self.uuid).one()
 
     def get_allocations(self, group):
         return self.allocations(group=group).all()

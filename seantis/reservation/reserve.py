@@ -1,4 +1,3 @@
-import transaction
 from datetime import datetime
 from datetime import timedelta
 
@@ -8,17 +7,16 @@ from zope import interface
 from plone.directives import form
 from z3c.form import field
 from z3c.form import button
-from z3c.form.interfaces import ActionExecutionError
 from z3c.saconfig import Session
 from sqlalchemy.exc import IntegrityError
 
 from seantis.reservation import _
 from seantis.reservation import resource
-from seantis.reservation import error
 from seantis.reservation import utils
 from seantis.reservation.raster import rasterize_start
 
 #TODO make defaults dynamic
+#TODO add exception handling
 
 class IReservation(interface.Interface):
 
