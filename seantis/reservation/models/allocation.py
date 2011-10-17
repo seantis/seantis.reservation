@@ -26,6 +26,7 @@ class Allocation(ORMBase):
     id = Column(types.Integer(), primary_key=True, autoincrement=True)
     resource = Column(customtypes.GUID(), nullable=False)
     group = Column(types.Unicode(100), nullable=False)
+    quota = Column(types.Integer(), default=1)
 
     _start = Column(types.DateTime(), nullable=False)
     _end = Column(types.DateTime(), nullable=False)
@@ -100,19 +101,37 @@ class Allocation(ORMBase):
         
         return slots
 
-    def all_slots(self, start=None, end=None):
-        """ Returns the slots which exist with this timespan. Does not
-        account for slots which are already reserved.
+    def align_dates(self, start=None, end=None):
+        """ Aligns the given dates to the start and end date of the allocation."""
 
-        """
         start = start or self.start
         start = start < self.start and self.start or start
 
         end = end or self.end
         end = end > self.end and self.end or end
 
+        return start, end
+
+    def all_slots(self, start=None, end=None):
+        """ Returns the slots which exist with this timespan. Does not
+        account for slots which are already reserved.
+
+        """
+        start, end = self.align_dates(start, end)
+
         for start, end in iterate_span(start, end, self.raster):
             yield start, end
+
+    def is_available(self, start, end):
+        """ Returns true if the given daterange is completely available. """
+        assert(self.overlaps(start, end))
+        
+        reserved = [slot.start for slot in self.reserved_slots.all()]
+        for start, end in self.all_slots(start, end):
+            if start in reserved:
+                return False
+
+        return True
 
     @property
     def availability(self):

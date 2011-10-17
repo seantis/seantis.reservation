@@ -15,3 +15,6 @@ class AffectedReservationError(ReservationError):
 
     def __init__(self, existing):
         self.existing = existing
+
+class AlreadyReservedError(ReservationError):
+    pass

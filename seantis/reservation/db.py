@@ -1,5 +1,6 @@
 from uuid import uuid4 as uuid
 from uuid import uuid5 as uuid_mirror
+
 from z3c.saconfig import Session
 from sqlalchemy.sql import and_, or_
 
@@ -7,9 +8,9 @@ from seantis.reservation.models import Allocation
 from seantis.reservation.models import ReservedSlot
 from seantis.reservation.error import OverlappingAllocationError
 from seantis.reservation.error import AffectedReservationError
+from seantis.reservation.error import AlreadyReservedError
 from seantis.reservation.lock import locked_call
 from seantis.reservation.raster import rasterize_span
-
 
 def all_allocations_in_range(start, end):
     # Query version of DefinedTimeSpan.overlaps
@@ -26,7 +27,6 @@ def all_allocations_in_range(start, end):
         ),
     )
 
-
 class Scheduler(object):
     """ Used to manage a resource as well as all connected mirrors. """
 
@@ -42,6 +42,9 @@ class Scheduler(object):
             mirror = lambda n: scheduler(uuid_mirror(self.master.uuid, str(n)))
 
             self.mirrors = [mirror(n) for n in xrange(1, quota)]
+
+        self.schedulers = [self.master]
+        self.schedulers.extend(self.mirrors)
 
     def execute_master(self, method, *args, **kwargs):
         """ Execute a method on the master. """
@@ -89,6 +92,98 @@ class Scheduler(object):
 
         return fn
 
+    def reserve(self, dates):
+        """ Tries to reserve a number of dates. If dates are found which are
+        already reserved, an AlreadyReservedError is thrown. If a reservation
+        is made between the availability check and the reservation an integrity
+        error will surface once the session is flushed.
+
+        """
+        reservation = uuid()
+        slots_to_reserve = []
+
+        for start, end in dates:
+            for allocation in self.reservation_targets(start, end):
+                for slot_start, slot_end in allocation.all_slots(start, end):
+                    slot = ReservedSlot()
+                    slot.start = slot_start
+                    slot.end = slot_end
+                    slot.allocation = allocation
+                    slot.resource = allocation.resource
+                    slot.reservation = reservation
+
+                    slots_to_reserve.append(slot)
+
+        Session.add_all(slots_to_reserve)
+
+        return reservation, slots_to_reserve
+
+    def find_spot(self, master_allocation, start, end):
+        """ Returns the first free allocation spot amongst the master and the
+        mirrors. Honors the quota set on the master and will only try the master
+        if the quota is set to 1.
+
+        If no spot can be found, None is returned.
+
+        """
+        master = master_allocation
+        if master.is_available(start, end):
+            return master
+
+        tries = master.quota - 1
+
+        for mirror in self.mirrors:
+            if tries == 0:
+                return None
+
+            next = mirror.get_allocation(start=master.start, end=master.end)
+            if next.is_available(start, end):
+                return next
+
+            tries -= 1
+
+        return None
+
+    def reservation_targets(self, start, end):
+        """ Returns a list of allocations that are free within start and end.
+        These allocations may come from the master or any of the mirrors. 
+
+        """
+        targets = []
+
+        candidates = self.master.allocations_in_range(start, end)
+        for candidate in candidates:
+
+            found = self.find_spot(candidate, start, end)
+            
+            if not found:
+                raise AlreadyReservedError
+
+            targets.append(found)
+
+        return targets
+
+    def managed_reserved_slots(self):
+        """Returns the reserved slots which are managed by this scheduler."""
+        resources = [sc.uuid for sc in self.schedulers]
+        query = Session.query(ReservedSlot).filter(
+                ReservedSlot.resource.in_(resources)
+            )
+        return query
+
+    def reserved_slots(self, reservation):
+        """Returns all reserved slots of the given reservation."""
+        query = self.managed_reserved_slots()
+        query = query.filter(ReservedSlot.reservation == reservation)
+
+        for result in query:
+            yield result
+
+    def remove_reservation(self, reservation):
+        query = self.managed_reserved_slots()
+        query = query.filter(ReservedSlot.reservation == reservation)
+
+        query.delete('fetch')
 
 def mirrored(fn):
     """ Decorator to signal to the scheduler that the function should be executed
@@ -165,8 +260,13 @@ class ResourceScheduler(object):
         allocation.end = new_end
         allocation.group = group or unicode(uuid())
 
-    def get_allocation(self, id):
-        return self.allocations(id=id).one()
+    def get_allocation(self, id=None, start=None, end=None):
+        if id:
+            return self.allocations(id=id).one()
+
+        if start and end:
+            return all_allocations_in_range(start, end).one()
+
 
     def get_allocations(self, group):
         return self.allocations(group=group).all()
@@ -243,44 +343,3 @@ class ResourceScheduler(object):
 
         for result in query:
             yield result
-
-    def reserve(self, dates):
-        """Tries to reserve a list of dates (tuples). If these dates are already
-        reserved then the sqlalchemy commit/flash will fail.
-
-        """
-        reservation = uuid()
-        slots_to_reserve = []
-
-        for start, end in dates:
-            for allocation in self.allocations_in_range(start, end):
-                for slot_start, slot_end in allocation.all_slots(start, end):
-                    slot = ReservedSlot()
-                    slot.start = slot_start
-                    slot.end = slot_end
-                    slot.allocation = allocation
-                    slot.resource = self.uuid
-                    slot.reservation = reservation
-
-                    slots_to_reserve.append(slot)
-        
-        Session.add_all(slots_to_reserve)
-
-        return reservation, slots_to_reserve
-
-    def reserved_slots(self, reservation):
-        """Returns all reserved slots of the given reservation."""
-        query = Session.query(ReservedSlot).filter(
-                ReservedSlot.reservation == reservation
-            )
-
-        for result in query:
-            yield result
-
-    def remove_reservation(self, reservation):
-        query = Session.query(ReservedSlot).filter(and_(
-                ReservedSlot.reservation == reservation,
-                ReservedSlot.resource == self.uuid
-            ))
-
-        query.delete()
