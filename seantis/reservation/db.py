@@ -1,5 +1,6 @@
 from uuid import uuid4 as uuid
 from uuid import uuid5 as uuid_mirror
+from uuid import UUID
 
 from z3c.saconfig import Session
 from sqlalchemy.sql import and_, or_
@@ -44,8 +45,9 @@ class Scheduler(object):
 
         # get a scheduler for each mirror
         if quota > 1:
+            masteruuid = UUID(self.master.uuid)
             scheduler = lambda uid: ResourceScheduler(uid, quota)
-            mirror = lambda n: scheduler(uuid_mirror(self.master.uuid, str(n)))
+            mirror = lambda n: scheduler(uuid_mirror(masteruuid, str(n)))
 
             self.mirrors = [mirror(n) for n in xrange(1, quota)]
 

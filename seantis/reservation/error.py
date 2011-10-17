@@ -1,3 +1,5 @@
+from sqlalchemy.exc import IntegrityError
+
 class ReservationError(Exception):
     pass
 
