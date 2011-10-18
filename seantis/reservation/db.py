@@ -12,6 +12,7 @@ from seantis.reservation.error import AffectedReservationError
 from seantis.reservation.error import AlreadyReservedError
 from seantis.reservation.lock import resource_transaction
 from seantis.reservation.raster import rasterize_span
+from seantis.reservation import utils
     
 def all_allocations_in_range(start, end):
     # Query version of DefinedTimeSpan.overlaps
@@ -52,6 +53,8 @@ class Scheduler(object):
         self.uuids.extend(self.mirrors)
 
     def allocate(self, dates, group=None, raster=15, quota=None):
+        #dates = utils.pairs(dates)
+
         group = group or unicode(new_uuid())
         quota = quota or self.quota
 
@@ -156,7 +159,9 @@ class Scheduler(object):
         for existing in existing_allocations:
             if existing.id not in ids:
                 raise OverlappingAllocationError(new.start, new.end, existing)
-            for reservation in existing.reserved_slots:
+
+        for change in changing:
+            for reservation in change.reserved_slots:
                 if not new.contains(reservation.start, reservation.end):
                     raise AffectedReservationError(reservation)
 
@@ -193,6 +198,7 @@ class Scheduler(object):
         error will surface once the session is flushed.
 
         """
+        #dates = utils.pairs(dates)
         reservation = new_uuid()
         slots_to_reserve = []
 
