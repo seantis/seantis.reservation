@@ -15,7 +15,7 @@ class TestScheduler(IntegrationTestCase):
 
         start = datetime(2011, 1, 1, 15)
         end = datetime(2011, 1, 1, 16)
-        group, allocations = sc.allocate(((start, end),), raster=15)
+        group, allocations = sc.allocate((start, end), raster=15)
         allocation = allocations[0]
 
         possible_dates = list(allocation.all_slots())
@@ -25,7 +25,7 @@ class TestScheduler(IntegrationTestCase):
 
         # reserve half of the slots
         time = (datetime(2011, 1, 1, 15), datetime(2011, 1, 1, 15, 30))
-        reservation, slots = sc.reserve((time,))
+        reservation, slots = sc.reserve(time)
 
         self.assertEqual(len(slots), 2)
 
@@ -74,22 +74,22 @@ class TestScheduler(IntegrationTestCase):
         start = datetime(2011, 1, 1, 15, 0)
         end = datetime(2011, 1, 1, 16, 0)
         
-        sc1.allocate(((start, end),), raster=15)
-        sc2.allocate(((start, end),), raster=15)
+        sc1.allocate((start, end), raster=15)
+        sc2.allocate((start, end), raster=15)
         
         self.assertRaises(OverlappingAllocationError, 
-                sc1.allocate, ((start, end),), raster=15
+                sc1.allocate, (start, end), raster=15
             )
 
     def test_allocation_partition(self):
         sc = Scheduler(uuid())
         
-        group, allocations = sc.allocate([
+        group, allocations = sc.allocate(
                 (
                     datetime(2011, 1, 1, 8, 0), 
                     datetime(2011, 1, 1, 10, 0)
                 )
-            ])
+            )
 
         allocation = allocations[0]
         partitions = allocation.availability_partitions()
@@ -98,7 +98,7 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(partitions[0][1], False)
 
         start, end = datetime(2011, 1, 1, 8, 30), datetime(2011, 1, 1, 9, 00)
-        sc.reserve([(start, end)])
+        sc.reserve((start, end))
 
         partitions = allocation.availability_partitions()
         self.assertEqual(len(partitions), 3)
@@ -116,7 +116,7 @@ class TestScheduler(IntegrationTestCase):
         end = datetime(2011, 1, 1, 16, 0)
 
         # setup an allocation with ten spots
-        group, allocations = sc.allocate([(start, end)], raster=15, quota=10)
+        group, allocations = sc.allocate((start, end), raster=15, quota=10)
         allocation = allocations[0]
 
         # which should give us ten allocations (-1 as the master is not counted)
@@ -124,7 +124,7 @@ class TestScheduler(IntegrationTestCase):
 
         # the same reservation can now be made ten times
         for i in range(0, 10):
-            sc.reserve([(start, end)])
+            sc.reserve((start, end))
 
         # the 11th time it'll fail
         self.assertRaises(AlreadyReservedError, sc.reserve, [(start, end)])
@@ -143,5 +143,5 @@ class TestScheduler(IntegrationTestCase):
         # we can do ten reservations if every reservation only occupies half
         # of the allocation
         for i in range(0, 5):
-            sc.reserve([(datetime(2011, 1, 1, 15, 0), datetime(2011, 1, 1, 15, 30))])
-            sc.reserve([(datetime(2011, 1, 1, 15, 30), datetime(2011, 1, 1, 16, 0))])
+            sc.reserve((datetime(2011, 1, 1, 15, 0), datetime(2011, 1, 1, 15, 30)))
+            sc.reserve((datetime(2011, 1, 1, 15, 30), datetime(2011, 1, 1, 16, 0)))

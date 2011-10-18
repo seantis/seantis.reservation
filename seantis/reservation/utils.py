@@ -1,4 +1,5 @@
 import re
+import collections
 
 from Acquisition import aq_inner
 from zope.component import getMultiAdapter
@@ -49,3 +50,25 @@ def event_title(context, request, availability):
         return translate(context, request, _(u'Free'))
     else:
         return translate(context, request, _(u'%i%% Free')) % availability
+
+def flatten(l):
+    """Generator for flattening irregularly nested lists. 'Borrowed' from here:
+    
+    http://stackoverflow.com/questions/2158395/flatten-an-irregular-list-of-lists-in-python
+    """
+    for el in l:
+        if isinstance(el, collections.Iterable) and not isinstance(el, basestring):
+            for sub in flatten(el):
+                yield sub
+        else:
+            yield el
+
+def pairs(l):
+    """Takes any list and returns pairs:
+    ((a,b),(c,d)) => ((a,b),(c,d))
+    (a,b,c,d) => ((a,b),(c,d))
+    
+    http://opensourcehacker.com/2011/02/23/tuplifying-a-list-or-pairs-in-python/
+    """
+    l = list(flatten(l))
+    return zip(*[l[x::2] for x in (0,1)])

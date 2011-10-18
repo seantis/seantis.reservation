@@ -41,19 +41,19 @@ class Scheduler(object):
     def __init__(self, resource_uuid, quota=1):
         assert(0 <= quota)
 
-        self.uuid = str(resource_uuid)
+        self.uuid = resource_uuid
         self.mirrors = []
         self.quota = quota
 
         if self.quota > 1:
-            mirror = lambda n: str(new_uuid_mirror(UUID(self.uuid), str(n)))
+            mirror = lambda n: str(new_uuid_mirror(self.uuid, str(n)))
             self.mirrors = [mirror(n) for n in xrange(1, quota)]
 
         self.uuids = [self.uuid]
         self.uuids.extend(self.mirrors)
 
     def allocate(self, dates, group=None, raster=15, quota=None):
-        #dates = utils.pairs(dates)
+        dates = utils.pairs(dates)
 
         group = group or unicode(new_uuid())
         quota = quota or self.quota
@@ -114,6 +114,8 @@ class Scheduler(object):
         return query.filter(Allocation.resource == self.uuid)
 
     def allocation_mirrors_by_master(self, master):
+        if not self.mirrors: return []
+
         query = all_allocations_in_range(master.start, master.end)
         query = query.filter(Allocation.resource.in_(self.mirrors))
         
@@ -198,7 +200,7 @@ class Scheduler(object):
         error will surface once the session is flushed.
 
         """
-        #dates = utils.pairs(dates)
+        dates = utils.pairs(dates)
         reservation = new_uuid()
         slots_to_reserve = []
 
