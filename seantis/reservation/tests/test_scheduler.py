@@ -1,26 +1,35 @@
 from datetime import datetime
-from uuid import uuid4 as uuid
-from datetime import timedelta
+from uuid import uuid4 as new_uuid
 
 from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation.db import Scheduler
 from seantis.reservation.error import OverlappingAllocationError
 from seantis.reservation.error import AffectedReservationError
 from seantis.reservation.error import AlreadyReservedError
+from seantis.reservation import utils
 
 class TestScheduler(IntegrationTestCase):
 
     def test_reserve(self):
-        sc = Scheduler(uuid())
+        sc = Scheduler(new_uuid())
 
         start = datetime(2011, 1, 1, 15)
         end = datetime(2011, 1, 1, 16)
+
         group, allocations = sc.allocate((start, end), raster=15)
+        
+        self.assertTrue(utils.is_uuid(group))
+        self.assertEqual(1, len(allocations))
+        
         allocation = allocations[0]
 
-        possible_dates = list(allocation.all_slots())
+        # Add a second allocation in another scheduler, to ensure that
+        # nothing bleeds over
+        another = Scheduler(new_uuid())
+        another.allocate((start, end))
 
         # 1 hour / 15 min = 4
+        possible_dates = list(allocation.all_slots())
         self.assertEqual(len(possible_dates), 4)
 
         # reserve half of the slots
@@ -68,8 +77,8 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(len(remaining), 2)
 
     def test_allocation_overlap(self):
-        sc1 = Scheduler(uuid())
-        sc2 = Scheduler(uuid())
+        sc1 = Scheduler(new_uuid())
+        sc2 = Scheduler(new_uuid())
 
         start = datetime(2011, 1, 1, 15, 0)
         end = datetime(2011, 1, 1, 16, 0)
@@ -82,7 +91,7 @@ class TestScheduler(IntegrationTestCase):
             )
 
     def test_allocation_partition(self):
-        sc = Scheduler(uuid())
+        sc = Scheduler(new_uuid())
         
         group, allocations = sc.allocate(
                 (
@@ -110,7 +119,8 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(partitions[2][1], False)
 
     def test_quotas(self):
-        sc = Scheduler(uuid(), quota=10)
+        sc = Scheduler(new_uuid(), quota=10)
+        self.assertEqual(10, len(sc.uuids))
         
         start = datetime(2011, 1, 1, 15, 0)
         end = datetime(2011, 1, 1, 16, 0)
@@ -129,19 +139,63 @@ class TestScheduler(IntegrationTestCase):
         # the 11th time it'll fail
         self.assertRaises(AlreadyReservedError, sc.reserve, [(start, end)])
 
-        sc = Scheduler(uuid(), quota=5)
-
-        start = datetime(2011, 1, 1, 15, 0)
-        end = datetime(2011, 1, 1, 16, 0)
+        other = Scheduler(new_uuid(), quota=5)
 
         # setup an allocation with five spots
-        group, allocations = sc.allocate([(start, end)], raster=15, quota=5)
+        group, allocations = other.allocate([(start, end)], raster=15, quota=5)
         allocation = allocations[0]
 
-        self.assertEqual(4, sc.allocation_mirrors_by_master(allocation).count())
+        self.assertEqual(4, other.allocation_mirrors_by_master(allocation).count())
 
         # we can do ten reservations if every reservation only occupies half
         # of the allocation
         for i in range(0, 5):
-            sc.reserve((datetime(2011, 1, 1, 15, 0), datetime(2011, 1, 1, 15, 30)))
-            sc.reserve((datetime(2011, 1, 1, 15, 30), datetime(2011, 1, 1, 16, 0)))
+            other.reserve((datetime(2011, 1, 1, 15, 0), datetime(2011, 1, 1, 15, 30)))
+            other.reserve((datetime(2011, 1, 1, 15, 30), datetime(2011, 1, 1, 16, 0)))
+
+        # test some queries
+        allocations = sc.allocations_in_range(start, end, master_only=True)
+        self.assertEqual(1, allocations.count())
+
+        allocations = other.allocations_in_range(start, end, master_only=True)
+        self.assertEqual(1, allocations.count())
+
+        allocations = sc.allocations_in_range(start, end, master_only=False)
+        self.assertEqual(10, allocations.count())
+
+        allocations = other.allocations_in_range(start, end, master_only=False)
+        self.assertEqual(5, allocations.count())
+        
+        allocation = sc.allocation_by_date(start, end)
+        sc.allocation_by_id(allocation.id)
+        self.assertEqual(9, sc.allocation_mirrors_by_master(allocation).count())
+
+        allocation = other.allocation_by_date(start, end)    
+        other.allocation_by_id(allocation.id)
+        self.assertEqual(4, other.allocation_mirrors_by_master(allocation).count())
+    
+    def test_fragmentation(self):
+        sc = Scheduler(new_uuid(), quota=3)
+
+        start = datetime(2011, 1, 1, 15, 0)
+        end = datetime(2011, 1, 1, 16, 0)
+        daterange = (start, end)
+
+        allocation = sc.allocate(daterange)[1][0]
+
+        reservation, slots = sc.reserve(daterange)
+        self.assertTrue([True for s in slots if s.resource == sc.uuid])
+        
+        slots = sc.reserve(daterange)[1]
+        self.assertFalse([False for s in slots if s.resource == sc.uuid])
+
+        sc.remove_reservation(reservation)
+
+        slots = sc.reserve(daterange)[1]
+        self.assertTrue([True for s in slots if s.resource == sc.uuid])
+
+        self.assertRaises(
+                AffectedReservationError, sc.remove_allocation, allocation.id
+            )
+
+        

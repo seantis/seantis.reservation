@@ -1,6 +1,5 @@
 from uuid import uuid4 as new_uuid
 from uuid import uuid5 as new_uuid_mirror
-from uuid import UUID
 
 from z3c.saconfig import Session
 from sqlalchemy.sql import and_, or_, not_
@@ -89,8 +88,10 @@ class Scheduler(object):
 
         return group, allocations
 
-    def allocation_by_id(self, id):
+    def allocation_by_id(self, id, uuid=None):
+        uuid or self.uuid
         query = Session.query(Allocation)
+        query.filter(Allocation.resource == uuid)
         return query.filter(Allocation.id == id).one()
 
     def allocation_by_date(self, start, end, uuid=None):
@@ -109,7 +110,6 @@ class Scheduler(object):
     def allocations_by_group(self, group):
         query = Session.query(Allocation)
         query = query.filter(Allocation.group == group)
-        query = query.filter(Allocation.resource == self.uuid)
 
         return query.filter(Allocation.resource == self.uuid)
 
@@ -155,7 +155,7 @@ class Scheduler(object):
         new = Allocation(start=new_start, end=new_end, raster=master.raster)
 
         # Ensure that the new span does not overlap an existing one
-        query = self.allocations_in_range(new.start, new.end, master_only=False)
+        query = self.allocations_in_range(new.start, new.end, master_only=True)
         existing_allocations = query.all()
         
         for existing in existing_allocations:
