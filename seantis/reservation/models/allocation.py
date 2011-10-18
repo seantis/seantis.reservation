@@ -13,7 +13,6 @@ from seantis.reservation.raster import rasterize_span
 from seantis.reservation.raster import rasterize_start
 from seantis.reservation.raster import rasterize_end
 from seantis.reservation.raster import iterate_span
-from seantis.reservation import _
 
 
 class Allocation(ORMBase):
@@ -25,6 +24,7 @@ class Allocation(ORMBase):
 
     id = Column(types.Integer(), primary_key=True, autoincrement=True)
     resource = Column(customtypes.GUID(), nullable=False)
+    mirror_of = Column(customtypes.GUID())
     group = Column(types.Unicode(100), nullable=False)
     quota = Column(types.Integer(), default=1)
 

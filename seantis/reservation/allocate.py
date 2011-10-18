@@ -210,7 +210,7 @@ class AllocationEditForm(AllocationForm):
         if not self.id:
             return None
         else:
-            return self.context.scheduler.get_allocation(self.id)
+            return self.context.scheduler.allocation_by_id(self.id)
 
     def update(self, **kwargs):
         id = self.id
@@ -289,10 +289,13 @@ class AllocationRemoveForm(form.Form):
         id, group = self.id, self.group
         if not id and not group:
             return []
-
+        
         scheduler = self.context.scheduler
 
-        return scheduler.allocations(id=id, group=group).all()
+        if id:
+            return [scheduler.allocation_by_id(id)]
+        else:
+            return scheduler.allocations_by_group(group).all()
 
     def updateWidgets(self):
         super(AllocationRemoveForm, self).updateWidgets()

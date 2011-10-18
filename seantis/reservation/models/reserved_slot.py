@@ -47,3 +47,6 @@ class ReservedSlot(ORMBase):
         customtypes.GUID(),
         nullable = False
     )
+
+    def __eq__(self, other):
+        return self.start == other.start and str(self.resource) == str(other.resource)

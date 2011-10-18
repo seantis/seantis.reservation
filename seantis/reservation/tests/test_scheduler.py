@@ -10,19 +10,6 @@ from seantis.reservation.error import AlreadyReservedError
 
 class TestScheduler(IntegrationTestCase):
 
-    def test_allocations_in_range(self):
-        sc = Scheduler(uuid())
-
-        start = datetime(2011, 1, 1, 15, 0)
-        end = datetime(2011, 1, 1, 16, 0)
-        sc.allocate(((start, end),), raster=15)
-
-        hour = timedelta(minutes=60)
-        
-        self.assertTrue(sc.any_allocations_in_range(start, end))
-        self.assertTrue(sc.any_allocations_in_range(start - hour, end + hour))
-        self.assertFalse(sc.any_allocations_in_range(start + hour, end - hour))
-
     def test_reserve(self):
         sc = Scheduler(uuid())
 
@@ -133,7 +120,7 @@ class TestScheduler(IntegrationTestCase):
         allocation = allocations[0]
 
         # which should give us ten allocations (-1 as the master is not counted)
-        self.assertEqual(9, len(sc.mirrored_allocations(allocation)))
+        self.assertEqual(9, sc.allocation_mirrors_by_master(allocation).count())
 
         # the same reservation can now be made ten times
         for i in range(0, 10):
@@ -151,7 +138,7 @@ class TestScheduler(IntegrationTestCase):
         group, allocations = sc.allocate([(start, end)], raster=15, quota=5)
         allocation = allocations[0]
 
-        self.assertEqual(4, len(sc.mirrored_allocations(allocation)))
+        self.assertEqual(4, sc.allocation_mirrors_by_master(allocation).count())
 
         # we can do ten reservations if every reservation only occupies half
         # of the allocation
