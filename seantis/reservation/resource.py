@@ -73,7 +73,6 @@ class Resource(Container):
 
     @property
     def scheduler(self):
-        # TODO ensure that the quota can safely be changed
         return Scheduler(self.uuid, self.quota)
 
 
