@@ -72,12 +72,14 @@ class Scheduler(object):
 
         return prop
 
+    @resource_transaction
     def change_quota(self, new_quota):
         self.resource_property.quota = new_quota
 
-    def change_allocation_quota(self, new_quota):
+    def change_allocation_quota(self, allocation, new_quota):
         pass
 
+    @resource_transaction
     def allocate(self, dates, group=None, raster=15, quota=None):
         dates = utils.pairs(dates)
 
