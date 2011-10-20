@@ -7,7 +7,6 @@ from zope import interface
 from plone.directives import form
 from z3c.form import field
 from z3c.form import button
-from z3c.saconfig import Session
 
 from seantis.reservation import _
 from seantis.reservation import resource
@@ -15,6 +14,7 @@ from seantis.reservation import utils
 from seantis.reservation.error import IntegrityError
 from seantis.reservation.error import AlreadyReservedError
 from seantis.reservation.raster import rasterize_start
+from seantis.reservation import Session
 
 #TODO make defaults dynamic
 #TODO add exception handling

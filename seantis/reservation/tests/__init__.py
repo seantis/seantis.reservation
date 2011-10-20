@@ -1,6 +1,6 @@
 import unittest2 as unittest
 
-from z3c.saconfig import Session
+from seantis.reservation import Session
 
 from seantis.reservation.testing import SEANTIS_RESERVATION_INTEGRATION_TESTING
 from seantis.reservation.testing import SEANTIS_RESERVATION_FUNCTIONAL_TESTING

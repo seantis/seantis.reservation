@@ -1,6 +1,7 @@
 import re
 import collections
 
+from App.config import getConfiguration
 from Acquisition import aq_inner
 from zope.component import getMultiAdapter
 from zope import i18n
@@ -72,3 +73,8 @@ def pairs(l):
     """
     l = list(flatten(l))
     return zip(*[l[x::2] for x in (0,1)])
+
+def get_config(key):
+    config = getConfiguration()
+    configuration = config.product_config.get('seantis.reservation', dict())
+    return configuration.get(key)

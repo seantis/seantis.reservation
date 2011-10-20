@@ -1,12 +1,12 @@
 from datetime import datetime
 from uuid import uuid4 as uuid
 
-from z3c.saconfig import Session
 from sqlalchemy.exc import FlushError
 
 from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation.models import Allocation
 from seantis.reservation.models import ReservedSlot
+from seantis.reservation import Session
 
 
 class TestReservedSlot(IntegrationTestCase):

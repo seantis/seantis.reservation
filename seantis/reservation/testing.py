@@ -1,41 +1,46 @@
 import os
 import tempfile
-import sqlalchemy
 
-from z3c.saconfig.utility import EngineFactory
-from z3c.saconfig.utility import GloballyScopedSession
-
+from App.config import getConfiguration, setConfiguration
 from plone.app.testing import PloneSandboxLayer 
 from plone.app.testing import PLONE_FIXTURE 
 from plone.app.testing import IntegrationTesting
 from plone.app.testing import FunctionalTesting
-
 from plone.testing import z2
-
-from zope.component import provideUtility
 from zope.configuration import xmlconfig 
 
 class SeantisReservation(PloneSandboxLayer):
     default_bases = (PLONE_FIXTURE,)
 
+    def setUpConfig(self):
+        fileno, self.dbFileName = tempfile.mkstemp(suffix='.db')
+        dsn = 'sqlite:///%s' % self.dbFileName
+
+        config = getConfiguration()
+        if not hasattr(config, 'product_config'):
+            config.product_config = {}
+        
+        config.product_config['seantis.reservation'] = dict(dsn=dsn)
+
+        setConfiguration(config)
+
+    def setUpDatabase(self):
+        from seantis.reservation import setuphandlers
+        setuphandlers.dbsetup(None)
+
     def setUpZope(self, app, configurationContext):
+
+        self.setUpConfig()
+
         import seantis.reservation
         xmlconfig.file('configure.zcml',
             seantis.reservation, 
             context=configurationContext
-        ) 
+        )
+
+        self.setUpDatabase()
 
         z2.installProduct(app, 'seantis.reservation')
-
-        fileno, self.dbFileName = tempfile.mkstemp(suffix='.db')
-        dbURI = 'sqlite:///%s' % self.dbFileName
-        dbEngine = sqlalchemy.create_engine(dbURI)
-        seantis.reservation.ORMBase.metadata.create_all(dbEngine)
-
-        engine = EngineFactory(dbURI, echo=False, convert_unicode=False)
-        provideUtility(engine, name=u'ftesting')
-        session = GloballyScopedSession(engine=u'ftesting', twophase=False)
-        provideUtility(session)
 
     def tearDownZope(self, app):
         z2.uninstallProduct(app, 'seantis.reservation')

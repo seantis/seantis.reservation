@@ -1,4 +1,6 @@
 from sqlalchemy.exc import IntegrityError
+from psycopg2.extensions import TransactionRollbackError
+from sqlalchemy.orm.exc import NoResultFound
 
 class ReservationError(Exception):
     pass
@@ -9,9 +11,6 @@ class OverlappingAllocationError(ReservationError):
         self.start = start
         self.end = end
         self.existing = existing
-
-class ResourceLockedError(ReservationError):
-    pass
 
 class AffectedReservationError(ReservationError):
 

@@ -4,8 +4,6 @@ from itertools import groupby
 from sqlalchemy import types
 from sqlalchemy.schema import Column
 
-from z3c.saconfig import Session
-
 from seantis.reservation import ORMBase
 from seantis.reservation import utils
 from seantis.reservation.models import customtypes
@@ -13,6 +11,7 @@ from seantis.reservation.raster import rasterize_span
 from seantis.reservation.raster import rasterize_start
 from seantis.reservation.raster import rasterize_end
 from seantis.reservation.raster import iterate_span
+from seantis.reservation import Session
 
 
 class Allocation(ORMBase):

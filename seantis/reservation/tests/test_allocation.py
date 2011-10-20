@@ -1,9 +1,9 @@
 from datetime import datetime
 from uuid import uuid4 as uuid
 
-from z3c.saconfig import Session
 from sqlalchemy.exc import IntegrityError
 
+from seantis.reservation import Session
 from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation.models import Allocation
 
@@ -18,6 +18,7 @@ class TestAllocation(IntegrationTestCase):
         allocation.group = str(uuid())
 
         Session.add(allocation)
+
         self.assertEqual(Session.query(Allocation).count(), 1)
 
         # Test failing add

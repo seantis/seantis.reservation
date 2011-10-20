@@ -1,6 +1,5 @@
 from seantis.reservation import ORMBase
-from z3c.saconfig import Session
+from seantis.reservation import Session
 
 def dbsetup(context):
-    session = Session()
-    ORMBase.metadata.create_all(session.bind)
+    ORMBase.metadata.create_all(Session.bind)

@@ -2,7 +2,6 @@ from uuid import UUID
 from uuid import uuid4 as new_uuid
 from uuid import uuid5 as new_uuid_mirror
 
-from z3c.saconfig import Session
 from sqlalchemy.sql import and_, or_, not_
 
 from seantis.reservation.models import Allocation
@@ -11,9 +10,10 @@ from seantis.reservation.models import ResourceProperty
 from seantis.reservation.error import OverlappingAllocationError
 from seantis.reservation.error import AffectedReservationError
 from seantis.reservation.error import AlreadyReservedError
-from seantis.reservation.lock import resource_transaction
+from seantis.reservation.session import serialized
 from seantis.reservation.raster import rasterize_span
 from seantis.reservation import utils
+from seantis.reservation import Session
     
 def all_allocations_in_range(start, end):
     # Query version of DefinedTimeSpan.overlaps
@@ -72,14 +72,14 @@ class Scheduler(object):
 
         return prop
 
-    @resource_transaction
+    @serialized
     def change_quota(self, new_quota):
         self.resource_property.quota = new_quota
 
     def change_allocation_quota(self, allocation, new_quota):
         pass
 
-    @resource_transaction
+    @serialized
     def allocate(self, dates, group=None, raster=15, quota=None):
         dates = utils.pairs(dates)
 
@@ -170,7 +170,7 @@ class Scheduler(object):
 
         return count, availability / float(count)
 
-    @resource_transaction
+    @serialized
     def move_allocation(self, master_id, new_start, new_end, group):
         # Find allocation
         master = self.allocation_by_id(master_id)
@@ -201,7 +201,7 @@ class Scheduler(object):
             change.end = new.end
             change.group = group or master.group
 
-    @resource_transaction
+    @serialized
     def remove_allocation(self, id=None, group=None):
         if id:
             master = self.allocation_by_id(id)
@@ -222,6 +222,7 @@ class Scheduler(object):
         for allocation in allocations:
             Session.delete(allocation)
 
+    @serialized
     def reserve(self, dates):
         """ Tries to reserve a number of dates. If dates are found which are
         already reserved, an AlreadyReservedError is thrown. If a reservation
@@ -287,10 +288,12 @@ class Scheduler(object):
         """
         targets = []
 
-        query = all_allocations_in_range(start, end)
+        query = all_allocations_in_range(start, end).with_lockmode('update')
         query = query.filter(Allocation.resource == self.uuid)
 
         for master_allocation in query:
+            if not master_allocation.overlaps(start, end):
+                continue # may happen because start and end are not rasterized
 
             found = self.find_spot(master_allocation, start, end)
             
@@ -316,6 +319,7 @@ class Scheduler(object):
         for result in query:
             yield result
 
+    @serialized
     def remove_reservation(self, reservation):
         query = self.managed_reserved_slots()
         query = query.filter(ReservedSlot.reservation == reservation)

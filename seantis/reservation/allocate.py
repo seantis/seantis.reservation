@@ -1,3 +1,5 @@
+import transaction
+
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
@@ -12,9 +14,9 @@ from zope import schema
 from zope.schema.vocabulary import SimpleVocabulary
 from zope.schema.vocabulary import SimpleTerm
 from zope import interface
-from z3c.saconfig import Session
 from z3c.form.ptcompat import ViewPageTemplateFile
 from plone.memoize import view
+from sqlalchemy.exc import DBAPIError
 
 from seantis.reservation import _
 from seantis.reservation import error
@@ -100,12 +102,25 @@ def from_timestamp(fn):
 
 def handle_action(callback=None):
     try:
-        if callback and callback() or True:
-            Session.flush()
+        if callback: callback()
+        return True
+
     except (error.OverlappingAllocationError,
             error.AffectedReservationError,
-            error.ResourceLockedError), e:
+            error.NoResultFound), e:
+
         handle_exception(e)
+
+    except DBAPIError, e:
+        if type(e.orig) == error.TransactionRollbackError:
+            handle_exception(e.orig)
+        else:
+            raise
+
+    except Exception, e:
+        import pdb; pdb.set_trace()
+
+#TODO move to a central locaiton to be used together with the reserving
 
 def handle_exception(ex):
     msg = None
@@ -113,8 +128,10 @@ def handle_exception(ex):
         msg = _(u'A conflicting allocation exists for the requested time period.')
     if type(ex) == error.AffectedReservationError:
         msg = _(u'An existing reservation would be affected by the requested change')
-    if type(ex) == error.ResourceLockedError:
+    if type(ex) == error.TransactionRollbackError:
         msg = _(u'The resource is being edited by someone else. Please try again.')
+    if type(ex) == error.NoResultFound:
+        msg = _(u'The item does no longer exist.')
 
     if not msg:
         raise NotImplementedError
@@ -188,7 +205,7 @@ class AllocationForm(form.Form):
         action = lambda: scheduler.allocate(dates, raster=raster, group=group)
         
         handle_action(callback=action)
-
+        
         self.request.response.redirect(self.context.absolute_url())
 
 class AllocationEditForm(AllocationForm):
@@ -293,7 +310,10 @@ class AllocationRemoveForm(form.Form):
         scheduler = self.context.scheduler
 
         if id:
-            return [scheduler.allocation_by_id(id)]
+            try:
+                return [scheduler.allocation_by_id(id)]
+            except error.NoResultFound:
+                return []
         else:
             return scheduler.allocations_by_group(group).all()
 
