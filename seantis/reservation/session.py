@@ -183,6 +183,11 @@ def serialized_call(fn):
     def wrapper(*args, **kwargs):
         util = getUtility(ISessionUtility)
 
+        # sqlite has a lot of trouble with nested savepoints. Might be better
+        # with python 2.7....
+        if 'sqlite' in util.dsn: 
+            return fn(*args, **kwargs)
+
         serial = util.use_serial_session()
         serial.begin_nested()
         
