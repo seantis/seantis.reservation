@@ -124,13 +124,16 @@ class TestScheduler(IntegrationTestCase):
     def test_partly(self):
         sc = Scheduler(new_uuid())
 
-        allocation = sc.allocate(
+        allocations = sc.allocate(
                 (
                     datetime(2011, 1, 1, 8, 0),
                     datetime(2011, 1, 1, 18, 0)
                 ),
                 partly_available = False
-            )[1][0]
+            )[1]
+
+        self.assertEqual(1, len(allocations))
+        allocation = allocations[0]
 
         self.assertEqual(1, len(list(allocation.all_slots())))
         self.assertEqual(1, len(list(allocation.free_slots())))

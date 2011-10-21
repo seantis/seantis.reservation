@@ -3,6 +3,10 @@ from itertools import groupby
 
 from sqlalchemy import types
 from sqlalchemy.schema import Column
+from sqlalchemy.schema import Index
+from sqlalchemy.schema import ForeignKey
+from sqlalchemy.orm import backref
+from sqlalchemy.orm import relation
 
 from seantis.reservation import ORMBase
 from seantis.reservation import utils
@@ -11,6 +15,7 @@ from seantis.reservation.raster import rasterize_span
 from seantis.reservation.raster import rasterize_start
 from seantis.reservation.raster import rasterize_end
 from seantis.reservation.raster import iterate_span
+from seantis.reservation.models.resource_properties import ResourceProperty
 from seantis.reservation import Session
 
 
@@ -23,14 +28,23 @@ class Allocation(ORMBase):
 
     id = Column(types.Integer(), primary_key=True, autoincrement=True)
     resource = Column(customtypes.GUID(), nullable=False)
-    mirror_of = Column(customtypes.GUID())
+    mirror_of = Column(customtypes.GUID(), ForeignKey(ResourceProperty.resource))
     group = Column(types.Unicode(100), nullable=False)
     quota = Column(types.Integer(), default=1)
     partly_available = Column(types.Boolean(), default=False)
 
+    __table_args__ = (Index('mirror_resource_ix', 'mirror_of', 'resource'), )
+
     _start = Column(types.DateTime(), nullable=False)
     _end = Column(types.DateTime(), nullable=False)
     _raster = Column(types.Integer(), nullable=False)
+
+    resource_property = relation(ResourceProperty,
+        primaryjoin=ResourceProperty.resource==mirror_of,
+        backref=backref('allocations', lazy='dynamic', 
+                cascade='all, delete-orphan'
+            )
+    )
 
     def get_start(self):
         return self._start

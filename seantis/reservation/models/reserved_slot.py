@@ -1,5 +1,6 @@
 from sqlalchemy import types
 from sqlalchemy.schema import Column
+from sqlalchemy.schema import Index
 from sqlalchemy.schema import ForeignKey
 from sqlalchemy.orm import relation
 from sqlalchemy.orm import backref
@@ -40,13 +41,19 @@ class ReservedSlot(ORMBase):
 
     allocation = relation(Allocation,
         primaryjoin=Allocation.id==allocation_id,
-        backref=backref('reserved_slots', lazy='dynamic', cascade='all')
+        backref=backref('reserved_slots', lazy='dynamic', 
+                cascade='all, delete-orphan'
+            )
     )
 
     reservation = Column(
         customtypes.GUID(),
         nullable = False
     )
+
+    __table_args__ = (
+            Index('reservation_resource_ix', 'reservation', 'reservation'), 
+        )
 
     def __eq__(self, other):
         return self.start == other.start and str(self.resource) == str(other.resource)
