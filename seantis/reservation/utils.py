@@ -59,7 +59,10 @@ def event_availability(context, request, scheduler, allocation):
     else:
         count, availability = scheduler.availability(a.start, a.end)
         spots = int(count * availability / 100)
-        text = title(_(u'%i Spots Free')) % spots
+        if spots:
+            text = title(_(u'%i Spots Available')) % spots
+        else:
+            text = title(_(u'No spots available'))
 
     return text, event_class(availability)
 
