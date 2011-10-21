@@ -288,7 +288,7 @@ class Scheduler(object):
         """
         targets = []
 
-        query = all_allocations_in_range(start, end).with_lockmode('update')
+        query = all_allocations_in_range(start, end)
         query = query.filter(Allocation.resource == self.uuid)
 
         for master_allocation in query:

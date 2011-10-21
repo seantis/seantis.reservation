@@ -16,7 +16,9 @@ class TestScheduler(IntegrationTestCase):
         start = datetime(2011, 1, 1, 15)
         end = datetime(2011, 1, 1, 16)
 
-        group, allocations = sc.allocate((start, end), raster=15)
+        group, allocations = sc.allocate(
+                (start, end), raster=15, partly_available=True
+            )
         
         self.assertTrue(utils.is_uuid(group))
         self.assertEqual(1, len(allocations))
@@ -97,7 +99,8 @@ class TestScheduler(IntegrationTestCase):
                 (
                     datetime(2011, 1, 1, 8, 0), 
                     datetime(2011, 1, 1, 10, 0)
-                )
+                ),
+                partly_available = True
             )
 
         allocation = allocations[0]
@@ -117,6 +120,33 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(partitions[1][1], True)
         self.assertEqual(partitions[2][0], 50.00)
         self.assertEqual(partitions[2][1], False)
+
+    def test_partly(self):
+        sc = Scheduler(new_uuid())
+
+        allocation = sc.allocate(
+                (
+                    datetime(2011, 1, 1, 8, 0),
+                    datetime(2011, 1, 1, 18, 0)
+                ),
+                partly_available = False
+            )[1][0]
+
+        self.assertEqual(1, len(list(allocation.all_slots())))
+        self.assertEqual(1, len(list(allocation.free_slots())))
+
+        slot = list(allocation.all_slots())[0]
+        self.assertEqual(slot[0], allocation.start)
+        self.assertEqual(slot[1], allocation.end)
+
+        slot = list(allocation.free_slots())[0]
+        self.assertEqual(slot[0], allocation.start)
+        self.assertEqual(slot[1], allocation.end)
+
+        sc.reserve((datetime(2011, 1, 1, 16, 0), datetime(2011, 1, 1, 18, 0)))
+        self.assertRaises(AlreadyReservedError, sc.reserve, 
+                (datetime(2011, 1, 1, 8, 0), datetime(2011, 1, 1, 9, 0))
+            )
 
     def test_quotas(self):
         sc = Scheduler(new_uuid(), quota=10)
@@ -142,7 +172,9 @@ class TestScheduler(IntegrationTestCase):
         other = Scheduler(new_uuid(), quota=5)
 
         # setup an allocation with five spots
-        group, allocations = other.allocate([(start, end)], raster=15, quota=5)
+        group, allocations = other.allocate(
+                [(start, end)], raster=15, quota=5, partly_available=True
+            )
         allocation = allocations[0]
 
         self.assertEqual(4, other.allocation_mirrors_by_master(allocation).count())
@@ -152,6 +184,10 @@ class TestScheduler(IntegrationTestCase):
         for i in range(0, 5):
             other.reserve((datetime(2011, 1, 1, 15, 0), datetime(2011, 1, 1, 15, 30)))
             other.reserve((datetime(2011, 1, 1, 15, 30), datetime(2011, 1, 1, 16, 0)))
+
+        self.assertRaises(AlreadyReservedError, other.reserve,
+                ((datetime(2011, 1, 1, 15, 30), datetime(2011, 1, 1, 16, 0)))
+            )
 
         # test some queries
         allocations = sc.allocations_in_range(start, end, master_only=True)

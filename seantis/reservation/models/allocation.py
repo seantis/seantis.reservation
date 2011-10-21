@@ -122,7 +122,7 @@ class Allocation(ORMBase):
             for start, end in iterate_span(start, end, self.raster):
                 yield start, end
         else:
-            yield start, end + timedelta(microseconds=-1)
+            yield self.start, self.end
 
     def is_available(self, start, end):
         """ Returns true if the given daterange is completely available. """
