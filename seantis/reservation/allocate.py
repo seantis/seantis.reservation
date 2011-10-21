@@ -341,7 +341,9 @@ class AllocationRemoveForm(form.Form):
     @view.memoize
     def event_availability(self, allocation):
         context, request = self.context, self.request
-        return utils.event_availability(context, request, allocation)
+        return utils.event_availability(
+                context, request, context.scheduler, allocation
+            )
 
     def event_class(self, allocation):
         return self.event_availability(allocation)[1]
