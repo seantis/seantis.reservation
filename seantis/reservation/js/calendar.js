@@ -50,8 +50,9 @@ seantis.calendars.defaults = {
                                 calendar.element.fullCalendar('refetchEvents');
                             },
                             onBeforeLoad: function() {
-                                if (!_.isUndefined(seantis.recurrence))
-                                    seantis.recurrence.init();
+                                if (!_.isUndefined(seantis.formgroups)) {
+                                    seantis.formgroups.init();
+                                }
                             } 
                         } 
                     });

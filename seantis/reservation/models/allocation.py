@@ -26,6 +26,7 @@ class Allocation(ORMBase):
     mirror_of = Column(customtypes.GUID())
     group = Column(types.Unicode(100), nullable=False)
     quota = Column(types.Integer(), default=1)
+    partly_available = Column(types.Boolean(), default=False)
 
     _start = Column(types.DateTime(), nullable=False)
     _end = Column(types.DateTime(), nullable=False)
@@ -112,14 +113,16 @@ class Allocation(ORMBase):
         return start, end
 
     def all_slots(self, start=None, end=None):
-        """ Returns the slots which exist with this timespan. Does not
-        account for slots which are already reserved.
+        """ Returns the slots which exist with this timespan. Reserved or free.
 
         """
         start, end = self.align_dates(start, end)
 
-        for start, end in iterate_span(start, end, self.raster):
-            yield start, end
+        if self.partly_available:
+            for start, end in iterate_span(start, end, self.raster):
+                yield start, end
+        else:
+            yield start, end + timedelta(microseconds=-1)
 
     def is_available(self, start, end):
         """ Returns true if the given daterange is completely available. """

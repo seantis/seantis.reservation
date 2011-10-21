@@ -44,13 +44,24 @@ def event_class(availability):
     else:
         return 'event-partly-available'
 
-def event_title(context, request, availability):
-    if availability == 0:
-        return translate(context, request, _(u'Occupied'))
-    elif availability == 100:
-        return translate(context, request, _(u'Free'))
+def event_availability(context, request, scheduler, allocation):
+    a = allocation
+    title = lambda msg: translate(context, request, msg)
+
+    if a.partly_available:
+        availability = scheduler.availability(a.start, a.end)[1]
+        if availability == 0:
+            text = title(_(u'Occupied'))
+        elif availability == 100:
+            text = title(_(u'Free'))
+        else:
+            text = title(_(u'%i%% Free')) % availability
     else:
-        return translate(context, request, _(u'%i%% Free')) % availability
+        count, availability = scheduler.availability(a.start, a.end)
+        spots = int(count * availability / 100)
+        text = title(_(u'%i Spots Free')) % spots
+
+    return text, event_class(availability)
 
 def flatten(l):
     """Generator for flattening irregularly nested lists. 'Borrowed' from here:

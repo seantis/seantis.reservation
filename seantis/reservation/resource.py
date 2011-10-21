@@ -156,19 +156,23 @@ class GroupView(grok.View):
     def title(self):
         return self.group
 
+    @view.memoize
+    def event_availability(self, allocation):
+        context, request = self.context, self.request
+        return utils.event_availability(context, request, allocation)
+
+    def event_class(self, allocation):
+        return self.event_availability(allocation)[1]
+
+    def event_title(self, allocation):
+        return self.event_availability(allocation)[0]
+
     def allocations(self):
         if not self.group:
             return []
 
         scheduler = self.context.scheduler
         return scheduler.allocations_by_group(unicode(self.group))
-
-    def event_class(self, allocation):
-        return utils.event_class(allocation.availability)
-
-    def event_title(self, allocation):
-        availability = allocation.availability
-        return utils.event_title(self.context, self.request, availability)
 
 class CalendarRequest(object):
 
@@ -236,15 +240,16 @@ class Slots(grok.View, CalendarRequest):
                 groupurl = None
                 removegroupurl = None
 
-            availability = alloc.availability
-            title = utils.event_title(resource, self.request, availability)
+            title, klass = utils.event_availability(
+                    resource, self.request, scheduler, alloc
+                )
 
             events.append(dict(
                 allDay=False,
                 start=start.isoformat(),
                 end=end.isoformat(),
                 title=title,
-                className=utils.event_class(availability),
+                className=klass,
                 url=reserveurl,
                 editurl=editurl,
                 groupurl=groupurl,

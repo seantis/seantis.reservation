@@ -80,7 +80,7 @@ class Scheduler(object):
         pass
 
     @serialized
-    def allocate(self, dates, group=None, raster=15, quota=None):
+    def allocate(self, dates, group=None, raster=15, quota=None, partly_available=False):
         dates = utils.pairs(dates)
 
         group = group or unicode(new_uuid())
@@ -98,7 +98,6 @@ class Scheduler(object):
             if existing:
                 raise OverlappingAllocationError(start, end, existing)
         
-
         # Prepare the allocations
         allocations = []
         for start, end in dates:
@@ -110,6 +109,7 @@ class Scheduler(object):
                 allocation.resource = uuid
                 allocation.quota = quota
                 allocation.mirror_of = self.uuid
+                allocation.partly_available = partly_available
                 
                 allocations.append(allocation)
 
@@ -158,7 +158,7 @@ class Scheduler(object):
         else:
             query = Session.query(Allocation)
         
-        query = query.filter(Allocation.resource == self.uuid)
+        query = query.filter(Allocation.mirror_of == self.uuid)
 
         count, availability = 0, 0.0
         for allocation in query:

@@ -52,6 +52,11 @@ class IAllocation(interface.Interface):
         default=rasterize_start(datetime.today(), 60) + timedelta(minutes=60)
         )
 
+    partly_available = schema.Bool(
+        title=_(u'Partly available'),
+        default=False
+        )
+
     raster = schema.Choice(
         title=_(u'Raster'),
         values=VALID_RASTER_VALUES,
@@ -201,8 +206,12 @@ class AllocationForm(form.Form):
 
         scheduler = self.context.scheduler
 
+        # TODO use the dictionary directlywith scheduler.allocate
         group, raster = data['group'], data['raster']
-        action = lambda: scheduler.allocate(dates, raster=raster, group=group)
+        partly = data['partly_available']
+        action = lambda: scheduler.allocate(dates, 
+                raster=raster, group=group, partly_available=partly
+            )
         
         handle_action(callback=action)
         
@@ -329,12 +338,16 @@ class AllocationRemoveForm(form.Form):
             self.fields['group'].field.default = self.group
         super(AllocationRemoveForm, self).update(**kwargs)
 
+    @view.memoize
+    def event_availability(self, allocation):
+        context, request = self.context, self.request
+        return utils.event_availability(context, request, allocation)
+
     def event_class(self, allocation):
-        return utils.event_class(allocation.availability)
+        return self.event_availability(allocation)[1]
 
     def event_title(self, allocation):
-        availability = allocation.availability
-        return utils.event_title(self.context, self.request, availability)
+        return self.event_availability(allocation)[0]
 
     @button.buttonAndHandler(_(u'Delete'))
     def delete(self, action):
