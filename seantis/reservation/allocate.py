@@ -122,9 +122,6 @@ def handle_action(callback=None):
         else:
             raise
 
-    except Exception, e:
-        import pdb; pdb.set_trace()
-
 #TODO move to a central locaiton to be used together with the reserving
 
 def handle_exception(ex):

@@ -74,11 +74,13 @@ The current sqlite tests are quite useless as sqlite does not go near the featur
 of postgres. TODO: Add a postgres test
 
 """
+import re
 import threading
 
 from five import grok
 
 from sqlalchemy import create_engine
+from sqlalchemy.pool import SingletonThreadPool
 from sqlalchemy.orm import scoped_session, sessionmaker
 from zope.sqlalchemy import ZopeTransactionExtension
 
@@ -87,21 +89,18 @@ from zope.interface import implements
 from zope.component import getUtility
 from zope.component.interfaces import ComponentLookupError
 
-from seantis.reservation import utils
 from seantis.reservation import error
+from seantis.reservation import utils
 
-def use_serial_session(dsn):
-    """Returns true if the given database connection should be used with
-    Serializable Transaction Isolation or not.
+from sqlalchemy import event
 
-    """
-    # Currently, only postgres+psycopg2 is supported
-    if 'sqlite' in dsn:
-        return False
-    elif 'postgresql+psycopg2' in dsn:
-        return True
-    else:
-        return False
+def get_postgres_version(dsn):
+    engine = create_engine(dsn)
+    version = engine.execute('select version()').fetchone()[0]
+    engine.dispose()
+
+    version = re.findall('PostgreSQL (.*?) on', version)[0]
+    return map(int, version.split('.'))
 
 class ISessionUtility(Interface):
     """Describes the interface of the session utility which provides
@@ -118,7 +117,6 @@ class ISessionUtility(Interface):
     def use_serial_session(self):
         """Instructs the utility to use the isolated serializable session."""
 
-
 class SessionUtility(grok.GlobalUtility):
     """Global session utility. It wraps two global session pools through which
     all database interaction (should) be flowing."""
@@ -127,6 +125,14 @@ class SessionUtility(grok.GlobalUtility):
 
     def __init__(self):
         self.dsn = utils.get_config('dsn')
+        assert 'postgresql+psycopg2' in self.dsn, "only postgres supported"
+
+        version = get_postgres_version(self.dsn)
+        assert len(version) >= 2
+        
+        major, minor = version[0], version[1]
+        assert (major >= 9 and minor >=1) or (major >= 10), "postgres 9.1+ required"
+
         self._threadstore = threading.local()
 
     @property
@@ -137,10 +143,7 @@ class SessionUtility(grok.GlobalUtility):
             store.main_session = self.create_session()
 
         if not hasattr(store, 'serial_session'):
-            if use_serial_session(self.dsn):
-                store.serial_session = self.create_session('SERIALIZABLE')
-            else:
-                store.serial_session = store.main_session
+            store.serial_session = self.create_session('SERIALIZABLE')
 
         if not hasattr(store, 'current_session'):
             store.current_session = store.main_session
@@ -149,16 +152,48 @@ class SessionUtility(grok.GlobalUtility):
 
     def create_session(self, isolation_level=None):
         if isolation_level:
-            engine = create_engine(self.dsn, isolation_level=isolation_level)
+            engine = create_engine(self.dsn, poolclass=SingletonThreadPool,
+                    isolation_level=isolation_level
+                )
         else:
-            engine = create_engine(self.dsn)
+            engine = create_engine(self.dsn, poolclass=SingletonThreadPool)
 
-        return scoped_session(sessionmaker(
+        session = scoped_session(sessionmaker(
             bind=engine, autocommit=False, autoflush=True,
             extension=ZopeTransactionExtension()
         ))
 
+        def before_readonly_flush(session, flush_context, instances):
+            changes = sum(map(len, [session.dirty, session.deleted, session.new]))
+
+            if changes:
+                raise error.ModifiedReadOnlySession
+
+        def reset_serial(session, *args):
+            session._was_used = False
+
+        def mark_serial(session, *args):
+            session._was_used = True
+            
+        if not isolation_level:
+            event.listen(session, 'before_flush', before_readonly_flush)
+        else:
+            event.listen(session, 'after_commit', reset_serial)
+            event.listen(session, 'after_rollback', reset_serial)
+            event.listen(session, 'after_soft_rollback', reset_serial)
+            event.listen(session, 'after_flush', mark_serial)
+        
+        return session
+
     def get_session(self):
+        serial = self.threadstore.serial_session
+        main = self.threadstore.main_session
+        current = self.threadstore.current_session
+        if current is main:
+            if hasattr(serial.registry(), '_was_used'):
+                if serial.registry()._was_used:
+                    raise error.DirtyReadOnlySession
+
         return self.threadstore.current_session
 
     def use_main_session(self):
@@ -183,11 +218,7 @@ def serialized_call(fn):
     def wrapper(*args, **kwargs):
         util = getUtility(ISessionUtility)
 
-        # sqlite has a lot of trouble with nested savepoints. Might be better
-        # with python 2.7....
-        if 'sqlite' in util.dsn: 
-            return fn(*args, **kwargs)
-
+        current = util.threadstore.current_session
         serial = util.use_serial_session()
         serial.begin_nested()
         
@@ -199,7 +230,8 @@ def serialized_call(fn):
             serial.rollback()
             raise    
         finally:
-            util.use_main_session()
+            util.threadstore.current_session = current
+
     
     return wrapper
 

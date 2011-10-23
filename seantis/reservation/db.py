@@ -6,7 +6,6 @@ from sqlalchemy.sql import and_, or_, not_
 
 from seantis.reservation.models import Allocation
 from seantis.reservation.models import ReservedSlot
-from seantis.reservation.models import ResourceProperty
 from seantis.reservation.error import OverlappingAllocationError
 from seantis.reservation.error import AffectedReservationError
 from seantis.reservation.error import AlreadyReservedError
@@ -50,34 +49,12 @@ class Scheduler(object):
         self.mirrors = []
         self.quota = quota
 
-        if self.resource_property.quota != self.quota:
-            self.change_quota(self.quota)
-
         if self.quota > 1:
             mirror = lambda n: new_uuid_mirror(self.uuid, str(n))
             self.mirrors = [mirror(n) for n in xrange(1, quota)]
 
         self.uuids = [self.uuid]
         self.uuids.extend(self.mirrors)
-
-    @property
-    def resource_property(self):
-        query = Session.query(ResourceProperty)
-        prop = query.filter(ResourceProperty.resource == self.uuid).first()
-
-        if prop: return prop
-
-        prop = ResourceProperty(resource=self.uuid, quota=self.quota)
-        Session.add(prop)
-
-        return prop
-
-    @serialized
-    def change_quota(self, new_quota):
-        self.resource_property.quota = new_quota
-
-    def change_allocation_quota(self, allocation, new_quota):
-        pass
 
     @serialized
     def allocate(self, dates, group=None, raster=15, quota=None, partly_available=False):

@@ -77,7 +77,6 @@ class ReservationForm(form.Form):
 
         try:
             scheduler.reserve(((start, end),))
-            Session.flush()
         except (IntegrityError, AlreadyReservedError):
             utils.form_error(_(u'The requested period is no longer available.'))
         

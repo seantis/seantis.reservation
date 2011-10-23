@@ -1,5 +1,4 @@
 import os
-import tempfile
 
 from App.config import getConfiguration, setConfiguration
 from plone.app.testing import PloneSandboxLayer 
@@ -7,30 +6,31 @@ from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import IntegrationTesting
 from plone.app.testing import FunctionalTesting
 from plone.testing import z2
-from zope.configuration import xmlconfig 
+from zope.configuration import xmlconfig
+from seantis.reservation import test_database
 
-class SeantisReservation(PloneSandboxLayer):
+class SqlLayer(PloneSandboxLayer):
     default_bases = (PLONE_FIXTURE,)
 
-    def setUpConfig(self):
-        fileno, self.dbFileName = tempfile.mkstemp(suffix='.db')
-        dsn = 'sqlite:///%s' % self.dbFileName
+    @property
+    def dsn(self):
+        if not self.get('dsn'):
+            self['dsn'] = test_database.testdsn
 
+        return self['dsn']
+
+    def init_config(self):
         config = getConfiguration()
         if not hasattr(config, 'product_config'):
             config.product_config = {}
         
-        config.product_config['seantis.reservation'] = dict(dsn=dsn)
+        config.product_config['seantis.reservation'] = dict(dsn=self.dsn)
 
         setConfiguration(config)
 
-    def setUpDatabase(self):
-        from seantis.reservation import setuphandlers
-        setuphandlers.dbsetup(None)
-
     def setUpZope(self, app, configurationContext):
 
-        self.setUpConfig()
+        self.init_config()
 
         import seantis.reservation
         xmlconfig.file('configure.zcml',
@@ -38,22 +38,19 @@ class SeantisReservation(PloneSandboxLayer):
             context=configurationContext
         )
 
-        self.setUpDatabase()
-
         z2.installProduct(app, 'seantis.reservation')
 
     def tearDownZope(self, app):
         z2.uninstallProduct(app, 'seantis.reservation')
-        os.unlink(self.dbFileName)
 
-SEANTIS_RESERVATION_FIXTURE = SeantisReservation()
+SQL_FIXTURE = SqlLayer()
 
-SEANTIS_RESERVATION_INTEGRATION_TESTING = IntegrationTesting(
-        bases=(SEANTIS_RESERVATION_FIXTURE, ),
-        name="SeantisReservation:Integration"
+SQL_INTEGRATION_TESTING = IntegrationTesting(
+        bases=(SQL_FIXTURE, ),
+        name="SqlLayer:Integration"
     )
 
-SEANTIS_RESERVATION_FUNCTIONAL_TESTING = FunctionalTesting(
-        bases=(SEANTIS_RESERVATION_FIXTURE, ),
-        name="SeantisReservation:Functional"
+SQL_FUNCTIONAL_TESTING = FunctionalTesting(
+        bases=(SQL_FIXTURE, ),
+        name="SqlLayer:Functional"
     )

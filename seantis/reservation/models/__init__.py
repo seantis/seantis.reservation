@@ -1,3 +1,2 @@
 from allocation import Allocation
 from reserved_slot import ReservedSlot
-from resource_properties import ResourceProperty

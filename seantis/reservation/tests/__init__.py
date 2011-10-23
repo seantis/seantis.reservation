@@ -1,18 +1,25 @@
 import unittest2 as unittest
 
+from seantis.reservation import setuphandlers
 from seantis.reservation import Session
+from seantis.reservation.session import getUtility, ISessionUtility
 
-from seantis.reservation.testing import SEANTIS_RESERVATION_INTEGRATION_TESTING
-from seantis.reservation.testing import SEANTIS_RESERVATION_FUNCTIONAL_TESTING
+from seantis.reservation.testing import SQL_INTEGRATION_TESTING
+from seantis.reservation.testing import SQL_FUNCTIONAL_TESTING
 
 class TestCase(unittest.TestCase):
+
+    def setUp(self):
+        #getUtility(ISessionUtility).use_serial_session()
+        setuphandlers.dbsetup(None)
+
     def tearDown(self):
-        Session.rollback()
-
+        util = getUtility(ISessionUtility)
+        util.threadstore.main_session.rollback()
+        util.threadstore.serial_session.rollback()
+        
 class IntegrationTestCase(TestCase):
-
-    layer = SEANTIS_RESERVATION_INTEGRATION_TESTING
+    layer = SQL_INTEGRATION_TESTING
 
 class FunctionalTestCase(TestCase):
-
-    layer = SEANTIS_RESERVATION_FUNCTIONAL_TESTING
+    layer = SQL_FUNCTIONAL_TESTING

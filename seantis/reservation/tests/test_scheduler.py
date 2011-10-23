@@ -7,9 +7,11 @@ from seantis.reservation.error import OverlappingAllocationError
 from seantis.reservation.error import AffectedReservationError
 from seantis.reservation.error import AlreadyReservedError
 from seantis.reservation import utils
+from seantis.reservation.session import serialized
 
 class TestScheduler(IntegrationTestCase):
 
+    @serialized
     def test_reserve(self):
         sc = Scheduler(new_uuid())
 
@@ -151,6 +153,7 @@ class TestScheduler(IntegrationTestCase):
                 (datetime(2011, 1, 1, 8, 0), datetime(2011, 1, 1, 9, 0))
             )
 
+    @serialized
     def test_quotas(self):
         sc = Scheduler(new_uuid(), quota=10)
         self.assertEqual(10, len(sc.uuids))

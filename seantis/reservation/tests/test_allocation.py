@@ -6,10 +6,11 @@ from sqlalchemy.exc import IntegrityError
 from seantis.reservation import Session
 from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation.models import Allocation
-
+from seantis.reservation.session import serialized
 
 class TestAllocation(IntegrationTestCase):
 
+    @serialized
     def test_simple_add(self):
         # Test a simple add
         allocation = Allocation(raster=15, resource=uuid())

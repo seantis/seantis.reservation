@@ -19,3 +19,9 @@ class AffectedReservationError(ReservationError):
 
 class AlreadyReservedError(ReservationError):
     pass
+
+class DirtyReadOnlySession(ReservationError):
+    pass
+
+class ModifiedReadOnlySession(ReservationError):
+    pass

@@ -42,7 +42,7 @@ class ReservedSlot(ORMBase):
     allocation = relation(Allocation,
         primaryjoin=Allocation.id==allocation_id,
         backref=backref('reserved_slots', lazy='dynamic', 
-                cascade='all, delete-orphan'
+                cascade='expunge, delete, delete-orphan, refresh-expire, save-update'
             )
     )
 
