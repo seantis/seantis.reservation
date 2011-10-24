@@ -17,7 +17,6 @@ from seantis.reservation.raster import rasterize_start
 from seantis.reservation import Session
 
 #TODO make defaults dynamic
-#TODO add exception handling
 
 class IReservation(interface.Interface):
 
@@ -74,10 +73,8 @@ class ReservationForm(form.Form):
         end = data['end']
 
         scheduler = self.context.scheduler
+        action = lambda: scheduler.reserve((start, end))
+        redirect = self.request.response.redirect
+        success = lambda: redirect(self.context.absolute_url())
 
-        try:
-            scheduler.reserve(((start, end),))
-        except (IntegrityError, AlreadyReservedError):
-            utils.form_error(_(u'The requested period is no longer available.'))
-        
-        self.request.response.redirect(self.context.absolute_url())
+        utils.handle_action(action=action, success=success)

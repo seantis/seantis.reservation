@@ -1,5 +1,3 @@
-import transaction
-
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
@@ -16,7 +14,6 @@ from zope.schema.vocabulary import SimpleTerm
 from zope import interface
 from z3c.form.ptcompat import ViewPageTemplateFile
 from plone.memoize import view
-from sqlalchemy.exc import DBAPIError
 
 from seantis.reservation import _
 from seantis.reservation import error
@@ -105,41 +102,6 @@ def from_timestamp(fn):
 
     return converter
 
-def handle_action(callback=None):
-    try:
-        if callback: callback()
-        return True
-
-    except (error.OverlappingAllocationError,
-            error.AffectedReservationError,
-            error.NoResultFound), e:
-
-        handle_exception(e)
-
-    except DBAPIError, e:
-        if type(e.orig) == error.TransactionRollbackError:
-            handle_exception(e.orig)
-        else:
-            raise
-
-#TODO move to a central locaiton to be used together with the reserving
-
-def handle_exception(ex):
-    msg = None
-    if type(ex) == error.OverlappingAllocationError:
-        msg = _(u'A conflicting allocation exists for the requested time period.')
-    if type(ex) == error.AffectedReservationError:
-        msg = _(u'An existing reservation would be affected by the requested change')
-    if type(ex) == error.TransactionRollbackError:
-        msg = _(u'The resource is being edited by someone else. Please try again.')
-    if type(ex) == error.NoResultFound:
-        msg = _(u'The item does no longer exist.')
-
-    if not msg:
-        raise NotImplementedError
-
-    utils.form_error(msg)
-
 class AllocationForm(form.Form):
     grok.context(resource.IResource)
     grok.name('allocate')
@@ -209,10 +171,10 @@ class AllocationForm(form.Form):
         action = lambda: scheduler.allocate(dates, 
                 raster=raster, group=group, partly_available=partly
             )
+        redirect = self.request.response.redirect
+        success = lambda: redirect(self.context.absolute_url())
         
-        handle_action(callback=action)
-        
-        self.request.response.redirect(self.context.absolute_url())
+        utils.handle_action(action=action, success=success)
 
 class AllocationEditForm(AllocationForm):
     grok.context(resource.IResource)
@@ -278,10 +240,11 @@ class AllocationEditForm(AllocationForm):
                 data['end'], 
                 unicode(data['group'] or ''))
         action = lambda: scheduler.move_allocation(*args)
+        redirect = self.request.response.redirect
+        success = lambda: redirect(self.context.absolute_url())
         
-        handle_action(callback=action)
+        utils.handle_action(action=action, success=success)
 
-        self.request.response.redirect(self.context.absolute_url())
 
 class AllocationRemoveForm(form.Form):
     grok.context(resource.IResource)
@@ -367,6 +330,7 @@ class AllocationRemoveForm(form.Form):
         scheduler = self.context.scheduler
 
         action = lambda: scheduler.remove_allocation(id=id, group=group)
-        handle_action(callback=action)
-
-        self.request.response.redirect(self.context.absolute_url())
+        redirect = self.request.response.redirect
+        success = lambda: redirect(self.context.absolute_url())
+        
+        utils.handle_action(action=action, success=success)

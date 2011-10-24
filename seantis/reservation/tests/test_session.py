@@ -2,10 +2,19 @@ from threading import Thread
 from uuid import uuid4 as uuid
 from datetime import datetime
 from seantis.reservation.tests import IntegrationTestCase
-from seantis.reservation.session import getUtility, ISessionUtility, serialized_call
+
+from seantis.reservation.session import (
+        getUtility, 
+        ISessionUtility, 
+        serialized_call
+    )
+
 from seantis.reservation import Session
 from seantis.reservation.models import Allocation
-from seantis.reservation.error import DirtyReadOnlySession, ModifiedReadOnlySession
+from seantis.reservation.error import (
+        DirtyReadOnlySession, 
+        ModifiedReadOnlySession
+    )
 
 class SessionIds(Thread):
     def __init__(self):
@@ -18,15 +27,16 @@ class SessionIds(Thread):
         self.serial_id = id(util.threadstore.serial_session)
         self.readonly_id = id(util.threadstore.main_session)
 
-def add_something():
-    allocation = Allocation(raster=15, resource=uuid())
+def add_something(resource=None):
+    resource = resource or uuid()
+    allocation = Allocation(raster=15, resource=resource)
     allocation.start = datetime(2011, 1, 1, 15)
     allocation.end = datetime(2011, 1, 1, 15, 59)
-    allocation.group = str(uuid())
+    allocation.group = 'test'
 
     Session.add(allocation)
 
-class TestScheduler(IntegrationTestCase):
+class TestSession(IntegrationTestCase):
 
     def test_threadstore(self):
         t1 = SessionIds()

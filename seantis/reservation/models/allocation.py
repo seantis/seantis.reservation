@@ -4,6 +4,7 @@ from itertools import groupby
 from sqlalchemy import types
 from sqlalchemy.schema import Column
 from sqlalchemy.schema import Index
+from sqlalchemy.schema import UniqueConstraint
 
 from seantis.reservation import ORMBase
 from seantis.reservation import utils
@@ -29,11 +30,14 @@ class Allocation(ORMBase):
     quota = Column(types.Integer(), default=1)
     partly_available = Column(types.Boolean(), default=False)
 
-    __table_args__ = (Index('mirror_resource_ix', 'mirror_of', 'resource'), )
-
     _start = Column(types.DateTime(), nullable=False)
     _end = Column(types.DateTime(), nullable=False)
     _raster = Column(types.Integer(), nullable=False)
+
+    __table_args__ = (
+            Index('mirror_resource_ix', 'mirror_of', 'resource'), 
+            UniqueConstraint('resource', '_start', name='resource_start_ix')
+        )
 
     def get_start(self):
         return self._start

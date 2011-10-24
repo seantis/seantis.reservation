@@ -8,6 +8,8 @@ from zope import i18n
 from zope import interface
 from Products.CMFCore.utils import getToolByName
 from z3c.form.interfaces import ActionExecutionError
+from seantis.reservation import error
+from sqlalchemy.exc import DBAPIError
 
 from seantis.reservation import _
 
@@ -20,6 +22,43 @@ def get_current_language(context, request):
 def translate(context, request, text):
     lang = get_current_language(context, request)
     return i18n.translate(text, target_language=lang)
+
+def handle_action(action=None, success=None):
+    try:
+        if action: action()
+        if success: success()
+
+    except (error.OverlappingAllocationError,
+            error.AffectedReservationError,
+            error.NoResultFound), e:
+
+        handle_exception(e)
+
+    except DBAPIError, e:
+        if type(e.orig) == error.TransactionRollbackError:
+            handle_exception(e.orig)
+        else:
+            raise
+
+def handle_exception(ex):
+    msg = None
+    if type(ex) == error.OverlappingAllocationError:
+        msg = _(u'A conflicting allocation exists for the requested time period.')
+    if type(ex) == error.AffectedReservationError:
+        msg = _(u'An existing reservation would be affected by the requested change')
+    if type(ex) == error.TransactionRollbackError:
+        msg = _(u'The resource is being edited by someone else. Please try again.')
+    if type(ex) == error.NoResultFound:
+        msg = _(u'The item does no longer exist.')
+    if type(ex) == error.AlreadyReservedError:
+        msg = _(u'The requested period is no longer available.')
+    if type(ex) == error.IntegrityError:
+        msg =_(u'This record already exists.')
+
+    if not msg:
+        raise NotImplementedError
+
+    form_error(msg)
 
 def form_error(msg):
     raise ActionExecutionError(interface.Invalid(msg))

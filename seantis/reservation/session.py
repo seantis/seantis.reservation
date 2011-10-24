@@ -150,6 +150,9 @@ class SessionUtility(grok.GlobalUtility):
 
         return store
 
+    def is_serial_session(self):
+        return self.threadstore.current_session is self.threadstore.serial_session
+
     def create_session(self, isolation_level=None):
         if isolation_level:
             engine = create_engine(self.dsn, poolclass=SingletonThreadPool,
