@@ -169,8 +169,13 @@ class Scheduler(object):
                 raise OverlappingAllocationError(new.start, new.end, existing)
 
         for change in changing:
-            for reservation in change.reserved_slots:
-                if not new.contains(reservation.start, reservation.end):
+            if change.partly_available:
+                for reservation in change.reserved_slots:
+                    if not new.contains(reservation.start, reservation.end):
+                        raise AffectedReservationError(reservation)
+            else:
+                reservation = change.reserved_slots.one()
+                if reservation:
                     raise AffectedReservationError(reservation)
 
         for change in changing:
