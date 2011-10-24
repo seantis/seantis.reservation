@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<dc-workflow workflow_id="timeframe_workflow" title="Timeframe Workflow" description="" state_variable="review_state" initial_state="hidden" manager_bypass="False">
+ <state state_id="hidden" title="">
+  <exit-transition transition_id="show"/>
+ </state>
+ <state state_id="visible" title="">
+  <exit-transition transition_id="hide"/>
+ </state>
+ <transition transition_id="hide" title="Hide" new_state="hidden" trigger="USER" before_script="" after_script="">
+  <action url="%(content_url)s/content_status_modify?workflow_action=hide" category="workflow" icon="">Hide</action>
+  <guard>
+  </guard>
+ </transition>
+ <transition transition_id="show" title="Show" new_state="visible" trigger="USER" before_script="" after_script="">
+  <action url="%(content_url)s/content_status_modify?workflow_action=show" category="workflow" icon="">Show</action>
+  <guard>
+  </guard>
+ </transition>
+</dc-workflow>
