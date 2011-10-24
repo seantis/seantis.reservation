@@ -80,7 +80,7 @@ import threading
 from five import grok
 
 from sqlalchemy import create_engine
-from sqlalchemy.pool import SingletonThreadPool
+from sqlalchemy.pool import SingletonThreadPool, AssertionPool
 from sqlalchemy.orm import scoped_session, sessionmaker
 from zope.sqlalchemy import ZopeTransactionExtension
 
@@ -155,11 +155,11 @@ class SessionUtility(grok.GlobalUtility):
 
     def create_session(self, isolation_level=None):
         if isolation_level:
-            engine = create_engine(self.dsn, poolclass=SingletonThreadPool,
+            engine = create_engine(self.dsn, poolclass=AssertionPool,
                     isolation_level=isolation_level
                 )
         else:
-            engine = create_engine(self.dsn, poolclass=SingletonThreadPool)
+            engine = create_engine(self.dsn, poolclass=AssertionPool)
 
         session = scoped_session(sessionmaker(
             bind=engine, autocommit=False, autoflush=True,
@@ -219,6 +219,7 @@ Session = SessionWrapper()
 def serialized_call(fn):
 
     def wrapper(*args, **kwargs):
+
         util = getUtility(ISessionUtility)
 
         current = util.threadstore.current_session
@@ -234,10 +235,8 @@ def serialized_call(fn):
             raise    
         finally:
             util.threadstore.current_session = current
-
     
     return wrapper
-
 
 def serialized(fn):
 

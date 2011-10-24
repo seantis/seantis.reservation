@@ -1,3 +1,5 @@
+import transaction
+
 from threading import Thread
 from uuid import uuid4 as uuid
 from datetime import datetime
@@ -13,7 +15,8 @@ from seantis.reservation import Session
 from seantis.reservation.models import Allocation
 from seantis.reservation.error import (
         DirtyReadOnlySession, 
-        ModifiedReadOnlySession
+        ModifiedReadOnlySession,
+        TransactionRollbackError
     )
 
 class SessionIds(Thread):
@@ -26,6 +29,20 @@ class SessionIds(Thread):
         util = getUtility(ISessionUtility)
         self.serial_id = id(util.threadstore.serial_session)
         self.readonly_id = id(util.threadstore.main_session)
+
+class ExceptionThread(Thread):
+    def __init__(self, call):
+        Thread.__init__(self)
+        self.call = call
+        self.exception = None
+
+    def run(self):
+        try:
+            self.call()
+            import time; time.sleep(1)
+            transaction.commit()
+        except Exception, e:
+            self.exception = e
 
 def add_something(resource=None):
     resource = resource or uuid()
@@ -69,3 +86,44 @@ class TestSession(IntegrationTestCase):
         serialized_call(add_something)()
 
         self.assertRaises(DirtyReadOnlySession, lambda: Session.flush)
+
+    def test_collission(self):
+
+        # for this test to work we need something commited (delete it later)
+        def commit():
+            add_something()
+            transaction.commit()
+
+        serialized_call(commit)()
+        
+        try:
+            def change_allocation():
+                allocation = Session.query(Allocation).one()
+                allocation.group = unicode(uuid())
+
+            t1 = ExceptionThread(serialized_call(change_allocation))
+            t2 = ExceptionThread(serialized_call(change_allocation))
+
+            t1.start()
+            t2.start()
+
+            t1.join()
+            t2.join()
+
+            exceptions = (t1.exception, t2.exception)
+
+            is_rollback = lambda ex: ex and isinstance(ex.orig, TransactionRollbackError)
+            is_nothing = lambda ex: not is_rollback(ex)
+            
+            rollbacks = filter(is_rollback, exceptions)
+            updates = filter(is_nothing, exceptions)
+
+            self.assertEqual(1, len(rollbacks))
+            self.assertEqual(1, len(updates))
+
+        finally:
+            def drop():
+                Session.query(Allocation).delete()
+                transaction.commit()
+
+            serialized_call(drop)()
