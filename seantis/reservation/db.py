@@ -174,7 +174,7 @@ class Scheduler(object):
                     if not new.contains(reservation.start, reservation.end):
                         raise AffectedReservationError(reservation)
             else:
-                reservation = change.reserved_slots.one()
+                reservation = change.reserved_slots.first()
                 if reservation:
                     raise AffectedReservationError(reservation)
 
