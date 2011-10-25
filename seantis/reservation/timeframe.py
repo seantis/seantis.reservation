@@ -1,12 +1,13 @@
+from datetime import date, MINYEAR, MAXYEAR
+
 from five import grok
 from plone.directives import form, dexterity
 from plone.dexterity.content import Item
+from plone.app.layout.viewlets.interfaces import IBelowContentBody
+from plone.memoize import view
+from Products.CMFCore.utils import getToolByName
 from z3c.form import button
 from zope import schema, interface
-from Products.CMFCore.utils import getToolByName
-from plone.app.layout.viewlets.interfaces import IBelowContentBody
-
-from plone.memoize import view
 
 from seantis.reservation import _
 from seantis.reservation import utils
@@ -72,8 +73,7 @@ def timeframes_in_context(context):
             portal_type = 'seantis.reservation.timeframe',
             path={'query': path, 'depth': 1}
         )
-
-    return [r.getObject() for r in results]
+    return results
 
 def overlapping_timeframe(context, start, end):
     if context.portal_type == 'seantis.reservation.timeframe':
@@ -103,7 +103,7 @@ class TimeframeViewlet(grok.Viewlet):
 
     @view.memoize
     def timeframes(self):
-        return timeframes_in_context(self.context)
+        return [t.getObject() for t in timeframes_in_context(self.context)]
 
     def state(self, timeframe):
         workflowTool = getToolByName(self.context, "portal_workflow")
@@ -115,3 +115,31 @@ class TimeframeViewlet(grok.Viewlet):
             return self._template.render(self)
         else:
             return u''
+
+class TimeFrameMask(object):
+    def __init__(self, timeframe=None):
+        workflowTool = getToolByName(timeframe, "portal_workflow")
+        status = workflowTool.getStatusOf("timeframe_workflow", timeframe)
+        
+        self.visible = status["review_state"] == 'visible'
+        self.start, self.end = timeframe.start, timeframe.end
+
+def timeframes_by_resource(resource):
+    def traverse(context):
+        frames = timeframes_in_context(context)
+        if frames:
+            return [f.getObject() for f in frames]
+        else:
+            if not hasattr(context, 'portal_type'):
+                return []
+            if context.portal_type == 'Plone Site':
+                return []
+            
+            parent = context.aq_inner.aq_parent
+            return traverse(parent)
+
+    return traverse(resource)
+
+def timeframe_masks(resource):
+    frames = timeframes_by_resource(resource)
+    return [TimeFrameMask(f) for f in frames]

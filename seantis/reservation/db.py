@@ -2,6 +2,8 @@ from uuid import UUID
 from uuid import uuid4 as new_uuid
 from uuid import uuid5 as new_uuid_mirror
 
+from datetime import date, MINYEAR, MAXYEAR
+
 from sqlalchemy.sql import and_, or_, not_
 
 from seantis.reservation.models import Allocation
@@ -9,8 +11,10 @@ from seantis.reservation.models import ReservedSlot
 from seantis.reservation.error import OverlappingAllocationError
 from seantis.reservation.error import AffectedReservationError
 from seantis.reservation.error import AlreadyReservedError
+from seantis.reservation.error import NotReservableError
 from seantis.reservation.session import serialized
 from seantis.reservation.raster import rasterize_span
+from seantis.reservation.timeframe import Timeframe
 from seantis.reservation import utils
 from seantis.reservation import Session
     
@@ -38,7 +42,7 @@ class Scheduler(object):
     This should be revised, minimizing database interaction.
     """
 
-    def __init__(self, resource_uuid, quota=1):
+    def __init__(self, resource_uuid, quota=1, masks=None):
         assert(0 <= quota)
 
         try: 
@@ -46,6 +50,7 @@ class Scheduler(object):
         except AttributeError: 
             self.uuid = resource_uuid
         
+        self.masks = masks
         self.mirrors = []
         self.quota = quota
 
@@ -127,6 +132,22 @@ class Scheduler(object):
         
         return query
 
+    def reservable(self, allocation):
+        return self.render_allocation(allocation)
+
+    def render_allocation(self, allocation):
+        if not self.masks:
+            return True
+
+        start = allocation.start
+        day = date(start.year, start.month, start.day)
+
+        for mask in self.masks:
+            if mask.start <= day and day <=mask.end:
+                return mask.visible
+
+        return False
+
     def availability(self, start=None, end=None):
         """Goes through all allocations and sums up the availabilty."""
 
@@ -139,8 +160,9 @@ class Scheduler(object):
 
         count, availability = 0, 0.0
         for allocation in query:
-            count += 1
-            availability += allocation.availability
+            if self.render_allocation(allocation):
+                count += 1
+                availability += allocation.availability
             
         if not count:
             return 0, 0.0
@@ -218,6 +240,9 @@ class Scheduler(object):
 
         for start, end in dates:
             for allocation in self.reservation_targets(start, end):
+                if not self.reservable(allocation):
+                    continue
+
                 for slot_start, slot_end in allocation.all_slots(start, end):
                     slot = ReservedSlot()
                     slot.start = slot_start
@@ -227,6 +252,9 @@ class Scheduler(object):
                     slot.reservation = reservation
 
                     slots_to_reserve.append(slot)
+
+        if not slots_to_reserve:
+            raise NotReservableError
 
         Session.add_all(slots_to_reserve)
 

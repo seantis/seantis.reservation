@@ -47,17 +47,9 @@ def handle_action(action=None, success=None):
         if action: action()
         if success: success()
 
-    except (error.OverlappingAllocationError,
-            error.AffectedReservationError,
-            error.NoResultFound), e:
-
+    except Exception, e:
+        e = hasattr(e, 'orig') and e.orig or e
         handle_exception(e)
-
-    except DBAPIError, e:
-        if type(e.orig) == error.TransactionRollbackError:
-            handle_exception(e.orig)
-        else:
-            raise
 
 def handle_exception(ex):
     msg = None
@@ -73,9 +65,11 @@ def handle_exception(ex):
         msg = _(u'The requested period is no longer available.')
     if type(ex) == error.IntegrityError:
         msg =_(u'This record already exists.')
+    if type(ex) == error.NotReservableError:
+        msg =_(u'No reservable slot found.')
 
     if not msg:
-        raise NotImplementedError
+        raise ex
 
     form_error(msg)
 

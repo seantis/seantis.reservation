@@ -25,3 +25,6 @@ class DirtyReadOnlySession(ReservationError):
 
 class ModifiedReadOnlySession(ReservationError):
     pass
+
+class NotReservableError(ReservationError):
+    pass

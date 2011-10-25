@@ -14,6 +14,7 @@ from zope import interface
 from seantis.reservation import utils
 from seantis.reservation.db import Scheduler
 from seantis.reservation import _
+from timeframe import timeframe_masks
 
 class IResourceBase(form.Schema):
 
@@ -64,16 +65,14 @@ class IResource(IResourceBase):
 
 class Resource(Container):
 
-    def parent(self):
-        return self.aq_inner.aq_parent
+    # Do not use @property here as it messes with the acquisition context.
+    # Don't know why.. it worked for me in other cases.
 
-    @property
     def uuid(self):
         return IUUID(self)
 
-    @property
     def scheduler(self):
-        return Scheduler(self.uuid, self.quota)
+        return Scheduler(self.uuid(), self.quota, timeframe_masks(self))
 
 
 class View(grok.View):
@@ -160,7 +159,7 @@ class GroupView(grok.View):
     def event_availability(self, allocation):
         context, request = self.context, self.request
         return utils.event_availability(
-                context, request, context.scheduler, allocation
+                context, request, context.scheduler(), allocation
             )
 
     def event_class(self, allocation):
@@ -173,7 +172,7 @@ class GroupView(grok.View):
         if not self.group:
             return []
 
-        scheduler = self.context.scheduler
+        scheduler = self.context.scheduler()
         return scheduler.allocations_by_group(unicode(self.group))
 
 class CalendarRequest(object):
@@ -213,7 +212,7 @@ class Slots(grok.View, CalendarRequest):
 
     def events(self):
         resource = self.context
-        scheduler = resource.scheduler
+        scheduler = resource.scheduler()
 
         base = resource.absolute_url_path()
         reserve = '/reserve?start=%s&end=%s'
@@ -226,6 +225,10 @@ class Slots(grok.View, CalendarRequest):
         urlquote = lambda fragment: quote(unicode(fragment).encode('utf-8'))
 
         for alloc in scheduler.allocations_in_range(*self.range):
+
+            if not scheduler.render_allocation(alloc):
+                continue
+
             start, end = alloc.display_start, alloc.display_end
 
             startstamp = time.mktime(start.timetuple())

@@ -72,7 +72,7 @@ class ReservationForm(form.Form):
         start = data['start']
         end = data['end']
 
-        scheduler = self.context.scheduler
+        scheduler = self.context.scheduler()
         action = lambda: scheduler.reserve((start, end))
         redirect = self.request.response.redirect
         success = lambda: redirect(self.context.absolute_url())

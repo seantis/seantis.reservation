@@ -163,7 +163,7 @@ class AllocationForm(form.Form):
             for date in rule:
                 dates.append((date, date+delta))
 
-        scheduler = self.context.scheduler
+        scheduler = self.context.scheduler()
 
         # TODO use the dictionary directlywith scheduler.allocate
         group, raster = data['group'], data['raster']
@@ -195,7 +195,7 @@ class AllocationEditForm(AllocationForm):
         if not self.id:
             return None
         else:
-            return self.context.scheduler.allocation_by_id(self.id)
+            return self.context.scheduler().allocation_by_id(self.id)
 
     def update(self, **kwargs):
         id = self.id
@@ -233,7 +233,7 @@ class AllocationEditForm(AllocationForm):
         # TODO since we can't trust the id here there should be another check
         # to make sure the user has the right to work with it. 
 
-        scheduler = self.context.scheduler
+        scheduler = self.context.scheduler()
 
         args = (data['id'], 
                 data['start'], 
@@ -276,7 +276,7 @@ class AllocationRemoveForm(form.Form):
         if not id and not group:
             return []
         
-        scheduler = self.context.scheduler
+        scheduler = self.context.scheduler()
 
         if id:
             try:
@@ -302,7 +302,7 @@ class AllocationRemoveForm(form.Form):
     def event_availability(self, allocation):
         context, request = self.context, self.request
         return utils.event_availability(
-                context, request, context.scheduler, allocation
+                context, request, context.scheduler(), allocation
             )
 
     def event_class(self, allocation):
@@ -327,7 +327,7 @@ class AllocationRemoveForm(form.Form):
         assert(id or group)
         assert(not (id and group))
 
-        scheduler = self.context.scheduler
+        scheduler = self.context.scheduler()
 
         action = lambda: scheduler.remove_allocation(id=id, group=group)
         redirect = self.request.response.redirect
