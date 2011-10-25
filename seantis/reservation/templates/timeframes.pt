@@ -1,0 +1,12 @@
+<div xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="seantis.reservation">
+
+<div class="directoryChildren" tal:condition="viewlet/timeframes">
+    <h2 i18n:translate="">Timeframes</h2>
+    <a tal:attributes="href frame/absolute_url" tal:repeat="frame viewlet/timeframes">
+        <div class="resourceTitle" tal:content="frame/timestr"></div>
+        <div class="resourceTitle" tal:content="frame/title"></div>
+        <div class="resourceTitle" tal:content="python: '(' + viewlet.state(frame) + ')'"></div>
+        <div style="clear:both;"></div>
+    </a>
+</div>
+</div>
