@@ -8,10 +8,20 @@ from zope import i18n
 from zope import interface
 from Products.CMFCore.utils import getToolByName
 from z3c.form.interfaces import ActionExecutionError
+from Products.statusmessages.interfaces import IStatusMessage
 from seantis.reservation import error
 from sqlalchemy.exc import DBAPIError
 
 from seantis.reservation import _
+
+def overlaps(start, end, otherstart, otherend):
+    if otherstart <= start and start <= otherend:
+        return True
+
+    if start <= otherstart and otherstart <= end:
+        return True
+
+    return False
 
 def get_current_language(context, request):
     """Returns the current language"""
@@ -22,6 +32,15 @@ def get_current_language(context, request):
 def translate(context, request, text):
     lang = get_current_language(context, request)
     return i18n.translate(text, target_language=lang)
+
+def form_info(message):
+    def wrap(f):
+        def info(self, *args):
+            f(self, *args)
+            if not self.status == self.formErrorsMessage:
+                IStatusMessage(self.request).add(message, type='info')
+        return info
+    return wrap
 
 def handle_action(action=None, success=None):
     try:

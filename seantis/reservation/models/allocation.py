@@ -81,14 +81,7 @@ class Allocation(ORMBase):
 
         """
         start, end = rasterize_span(start, end, self.raster)
-
-        if self.start <= start and start <= self.end:
-            return True
-
-        if start <= self.start and self.start <= end:
-            return True
-
-        return False
+        return utils.overlaps(start, end, self.start, self.end)
 
     def contains(self, start, end):
         """ Returns true if the current timespan contains the given start
