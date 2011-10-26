@@ -103,7 +103,8 @@ class TimeframeViewlet(grok.Viewlet):
 
     @view.memoize
     def timeframes(self):
-        return [t.getObject() for t in timeframes_in_context(self.context)]
+        frames = [t.getObject() for t in timeframes_in_context(self.context)]
+        return sorted(frames, key=lambda f: f.start)
 
     def state(self, timeframe):
         workflowTool = getToolByName(self.context, "portal_workflow")

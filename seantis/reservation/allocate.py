@@ -13,6 +13,7 @@ from zope.schema.vocabulary import SimpleVocabulary
 from zope.schema.vocabulary import SimpleTerm
 from zope import interface
 from z3c.form.ptcompat import ViewPageTemplateFile
+from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from plone.memoize import view
 
 from seantis.reservation import _
@@ -22,6 +23,17 @@ from seantis.reservation import resource
 from seantis.reservation.raster import rasterize_start
 from seantis.reservation.raster import VALID_RASTER_VALUES
 
+days = SimpleVocabulary(
+        [SimpleTerm(value=rrule.MO, title=_(u'Monday')),
+         SimpleTerm(value=rrule.TU, title=_(u'Tuesday')),
+         SimpleTerm(value=rrule.WE, title=_(u'Wednesday')),
+         SimpleTerm(value=rrule.TH, title=_(u'Thursday')),
+         SimpleTerm(value=rrule.FR, title=_(u'Friday')),
+         SimpleTerm(value=rrule.SA, title=_(u'Saturday')),
+         SimpleTerm(value=rrule.SU, title=_(u'Sunday')),
+        ]
+    )
+    
 frequencies = SimpleVocabulary(
         [SimpleTerm(value=rrule.DAILY, title=_(u'Daily')),
          SimpleTerm(value=rrule.WEEKLY, title=_(u'Weekly')),
@@ -32,7 +44,7 @@ frequencies = SimpleVocabulary(
 
 #TODO make defaults dynamic
 
-class IAllocation(interface.Interface):
+class IAllocation(form.Schema):
 
     id = schema.Int(
         title=_(u'Id'),
@@ -57,7 +69,7 @@ class IAllocation(interface.Interface):
     raster = schema.Choice(
         title=_(u'Raster'),
         values=VALID_RASTER_VALUES,
-        default=60
+        default=30
         )
 
     recurring = schema.Bool(
@@ -69,6 +81,11 @@ class IAllocation(interface.Interface):
         title=_(u'Frequency'),
         vocabulary=frequencies
         )
+
+    days = schema.List(
+        title=_(u'Days'),
+        value_type=schema.Choice(vocabulary=days)
+    )
 
     recurrence_end = schema.Date(
         title=_(u'Until'),
@@ -110,6 +127,8 @@ class AllocationForm(form.Form):
     template = ViewPageTemplateFile('templates/allocate.pt')
 
     fields = field.Fields(IAllocation)
+    fields['days'].widgetFactory = CheckBoxFieldWidget
+
     label = _(u'Resource allocation')
 
     ignoreContext = True
@@ -153,10 +172,16 @@ class AllocationForm(form.Form):
         if not data['recurring']:
             dates.append((start, end))
         else:
+            frequency = data['frequency']
+            byweekday = None
+            if frequency == rrule.DAILY:
+                byweekday = data['days']
+
             rule = rrule.rrule(
                     data['frequency'], 
                     dtstart=start, 
-                    until=data['recurrence_end']
+                    until=data['recurrence_end'],
+                    byweekday=byweekday
                 )
         
             delta = end - start
