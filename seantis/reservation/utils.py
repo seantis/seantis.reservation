@@ -99,9 +99,11 @@ def event_class(availability):
 def event_availability(context, request, scheduler, allocation):
     a = allocation
     title = lambda msg: translate(context, request, msg)
+    
+    count, availability = scheduler.availability(a.start, a.end)
+    availability = availability // count
 
     if a.partly_available:
-        availability = scheduler.availability(a.start, a.end)[1]
         if availability == 0:
             text = title(_(u'Occupied'))
         elif availability == 100:
@@ -109,8 +111,7 @@ def event_availability(context, request, scheduler, allocation):
         else:
             text = title(_(u'%i%% Free')) % availability
     else:
-        count, availability = scheduler.availability(a.start, a.end)
-        spots = int(count * availability / 100)
+        spots = allocation.quota * availability // 100
         if spots:
             text = title(_(u'%i Spots Available')) % spots
         else:

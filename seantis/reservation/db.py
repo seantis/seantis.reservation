@@ -150,7 +150,7 @@ class Scheduler(object):
 
     def availability(self, start=None, end=None):
         """Goes through all allocations and sums up the availabilty."""
-
+        
         if all((start, end)):
             query = all_allocations_in_range(start, end)
         else:
@@ -167,7 +167,7 @@ class Scheduler(object):
         if not count:
             return 0, 0.0
 
-        return count, availability / float(count)
+        return count, availability
 
     @serialized
     def move_allocation(self, master_id, new_start, new_end, group):
