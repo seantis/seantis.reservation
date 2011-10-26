@@ -85,19 +85,19 @@ class IAllocation(form.Schema):
     days = schema.List(
         title=_(u'Days'),
         value_type=schema.Choice(vocabulary=days)
-    )
+        )
 
     recurrence_end = schema.Date(
         title=_(u'Until'),
         default=date.today() + timedelta(days=30)
-    )
+        )
 
     group = schema.Text(
         title=_(u'Group'),
         default=u'',
         max_length=100,
         required=False
-    )
+        )
 
     @interface.invariant
     def isValidDateRange(Allocation):
