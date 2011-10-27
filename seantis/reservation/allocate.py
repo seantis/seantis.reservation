@@ -120,18 +120,15 @@ def from_timestamp(fn):
     return converter
 
 class AllocationForm(form.Form):
+    grok.baseclass()
+    
     grok.context(resource.IResource)
-    grok.name('allocate')
-    grok.require('cmf.ManagePortal')
-
+    ignoreContext = True
+    
     template = ViewPageTemplateFile('templates/allocate.pt')
 
-    fields = field.Fields(IAllocation)
-    fields['days'].widgetFactory = CheckBoxFieldWidget
-
-    label = _(u'Resource allocation')
-
-    ignoreContext = True
+    hidden_fields = ['id']
+    ignore_requirements = False
 
     @property
     @from_timestamp
@@ -157,59 +154,72 @@ class AllocationForm(form.Form):
 
     def updateWidgets(self):
         super(AllocationForm, self).updateWidgets()
-        self.widgets['id'].mode = interfaces.HIDDEN_MODE
+        for field in self.hidden_fields:
+            self.widgets[field].mode = interfaces.HIDDEN_MODE
+
+        if self.ignore_requirements:
+            self.widgets.hasRequiredFields = False
+
+    def redirect_to_context(self):
+        self.request.response.redirect(self.context.absolute_url())
+
+    @property
+    def scheduler(self):
+        return self.context.scheduler()
+
+
+class AllocationAddForm(AllocationForm):
+    grok.name('allocate')
+    grok.require('cmf.ManagePortal')
+    
+    fields = field.Fields(IAllocation)
+    fields['days'].widgetFactory = CheckBoxFieldWidget
+
+    label = _(u'Resource allocation')
+
+    def get_dates(self, data):
+        """ Return a list with date tuples depending on the data entered by the
+        user, using rrule if requested.
+
+        """
+
+        if not data.recurring:
+            return ((data.start, data.end))
+
+        # weekdays is only available for daily frequencies
+        byweekday = data.frequency == rrule.DAILY and data.days or None
+        
+        rule = rrule.rrule(
+                data.frequency,
+                byweekday=byweekday,
+                dtstart=data.start, 
+                until=data.recurrence_end,
+            )
+    
+        # the rule is created using the start date, the delta is added to each
+        # generated date to get the end
+        delta = data.end - data.start
+        return [(d, d+delta) for d in rule]
 
     @button.buttonAndHandler(_(u'Allocate'))
-    def allocate(self, action):
-        data, errors = self.extractData()
-        if errors:
-            self.status = self.formErrorsMessage
-            return
+    @utils.extract_action_data
+    def allocate(self,data):
+        dates = self.get_dates(data)
 
-        start, end = data['start'], data['end']
-
-        dates = []
-        if not data['recurring']:
-            dates.append((start, end))
-        else:
-            frequency = data['frequency']
-            byweekday = None
-            if frequency == rrule.DAILY:
-                byweekday = data['days']
-
-            rule = rrule.rrule(
-                    data['frequency'], 
-                    dtstart=start, 
-                    until=data['recurrence_end'],
-                    byweekday=byweekday
-                )
-        
-            delta = end - start
-            for date in rule:
-                dates.append((date, date+delta))
-
-        scheduler = self.context.scheduler()
-
-        # TODO use the dictionary directlywith scheduler.allocate
-        group, raster = data['group'], data['raster']
-        partly = data['partly_available']
-        action = lambda: scheduler.allocate(dates, 
-                raster=raster, group=group, partly_available=partly
+        action = lambda: self.scheduler.allocate(dates, 
+                raster=data.raster, 
+                group=data.group, 
+                partly_available=data.partly_available
             )
-        redirect = self.request.response.redirect
-        success = lambda: redirect(self.context.absolute_url())
         
-        utils.handle_action(action=action, success=success)
+        utils.handle_action(action=action, success=self.redirect_to_context)
 
 class AllocationEditForm(AllocationForm):
-    grok.context(resource.IResource)
     grok.name('edit-allocation')
     grok.require('cmf.ManagePortal')
 
     fields = field.Fields(IAllocation).select('id', 'start', 'end', 'group')
     label = _(u'Edit resource allocation')
-
-    ignoreContext = True
 
     @property
     def id(self):
@@ -223,71 +233,56 @@ class AllocationEditForm(AllocationForm):
             return self.context.scheduler().allocation_by_id(self.id)
 
     def update(self, **kwargs):
-        id = self.id
-
-        if not id:
+        """ Fills the defaults depending on the POST arguments given. """
+        if not self.id:
             self.status = utils.translate(self.context, self.request, 
                     _(u'Invalid arguments')
                 )
         else:
             allocation = self.allocation
-            group = allocation.group
 
             start, end = self.start, self.end
             if not all((start, end)):
-                start = allocation.start
-                end = allocation.end + timedelta(microseconds=1)
+                start = allocation.display_start
+                end = allocation.display_end
 
-            if utils.is_uuid(group):
-                group = None
+            group = allocation.group
+
+            # hide the group if it's a uuid
+            group = not utils.is_uuid(group) and group or None
             
-            self.fields['id'].field.default = id
+            self.fields['id'].field.default = self.id
             self.fields['start'].field.default = start
             self.fields['end'].field.default = end
-            self.fields['group'].field.default = group and group or u''
+            self.fields['group'].field.default = group or u''
 
         super(AllocationEditForm, self).update(**kwargs)
 
     @button.buttonAndHandler(_(u'Edit'))
-    def edit(self, action):
-        data, errors = self.extractData()
-        if errors:
-            self.status = self.formErrorMessage
-            return
+    @utils.extract_action_data
+    def edit(self, data):
 
         # TODO since we can't trust the id here there should be another check
         # to make sure the user has the right to work with it. 
 
         scheduler = self.context.scheduler()
 
-        args = (data['id'], 
-                data['start'], 
-                data['end'], 
-                unicode(data['group'] or ''))
+        args = (data.id, data.start, data.end, unicode(data.group))
         action = lambda: scheduler.move_allocation(*args)
-        redirect = self.request.response.redirect
-        success = lambda: redirect(self.context.absolute_url())
         
-        utils.handle_action(action=action, success=success)
+        utils.handle_action(action=action, success=self.redirect_to_context)
 
-
-class AllocationRemoveForm(form.Form):
-    grok.context(resource.IResource)
+class AllocationRemoveForm(AllocationForm):
     grok.name('remove-allocation')
     grok.require('cmf.ManagePortal')
 
-    template = ViewPageTemplateFile('templates/remove_allocation.pt')
-
     fields = field.Fields(IAllocation).select('id', 'group')
+    template = ViewPageTemplateFile('templates/remove_allocation.pt')
+    
     label = _(u'Remove resource allocation')
 
-    ignoreContext = True
-
-    @property
-    def group(self):
-        if self.widgets and 'group' in self.widgets:
-            return unicode(self.widgets['group'].value)
-        return unicode(self.request.get('group', '').decode('utf-8'))
+    hidden_fields = ['id', 'group']
+    ignore_requirements = True
 
     @property
     def id(self):
@@ -295,27 +290,37 @@ class AllocationRemoveForm(form.Form):
             return int(self.widgets['id'].value)
         return int(self.request.get('id', 0))
 
+    @property
+    def group(self):
+        if self.widgets and 'group' in self.widgets:
+            return unicode(self.widgets['group'].value)
+        return unicode(self.request.get('group', '').decode('utf-8'))
+
+    @button.buttonAndHandler(_(u'Delete'))
+    @utils.extract_action_data
+    def delete(self, data):
+
+        # TODO since we can't trust the id here there should be another check
+        # to make sure the user has the right to work with it. 
+
+        assert bool(data.id) != bool(data.group), "Either id or group, not both"
+
+        scheduler = self.scheduler
+        action = lambda: scheduler.remove_allocation(id=data.id, group=data.group)
+        
+        utils.handle_action(action=action, success=self.redirect_to_context)
+
     @view.memoize
     def allocations(self):
-        id, group = self.id, self.group
-        if not id and not group:
-            return []
-        
-        scheduler = self.context.scheduler()
-
-        if id:
+        if self.id:
             try:
-                return [scheduler.allocation_by_id(id)]
+                return [self.scheduler.allocation_by_id(self.id)]
             except error.NoResultFound:
                 return []
+        elif self.group:
+            return self.scheduler.allocations_by_group(self.group).all()
         else:
-            return scheduler.allocations_by_group(group).all()
-
-    def updateWidgets(self):
-        super(AllocationRemoveForm, self).updateWidgets()
-        self.widgets['id'].mode = interfaces.HIDDEN_MODE
-        self.widgets['group'].mode = interfaces.HIDDEN_MODE
-        self.widgets.hasRequiredFields = False
+            return []
 
     def update(self, **kwargs):
         if self.id or self.group:
@@ -325,9 +330,11 @@ class AllocationRemoveForm(form.Form):
 
     @view.memoize
     def event_availability(self, allocation):
-        context, request = self.context, self.request
         return utils.event_availability(
-                context, request, context.scheduler(), allocation
+                self.context,
+                self.request,
+                self.scheduler,
+                allocation
             )
 
     def event_class(self, allocation):
@@ -335,27 +342,3 @@ class AllocationRemoveForm(form.Form):
 
     def event_title(self, allocation):
         return self.event_availability(allocation)[0]
-
-    @button.buttonAndHandler(_(u'Delete'))
-    def delete(self, action):
-        data, errors = self.extractData()
-        if errors:
-            self.status = self.formErrorMessage
-            return
-
-        # TODO since we can't trust the id here there should be another check
-        # to make sure the user has the right to work with it. 
-
-        id = data['id']
-        group = data['group']
-
-        assert(id or group)
-        assert(not (id and group))
-
-        scheduler = self.context.scheduler()
-
-        action = lambda: scheduler.remove_allocation(id=id, group=group)
-        redirect = self.request.response.redirect
-        success = lambda: redirect(self.context.absolute_url())
-        
-        utils.handle_action(action=action, success=success)

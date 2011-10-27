@@ -10,7 +10,7 @@ from Products.CMFCore.utils import getToolByName
 from z3c.form.interfaces import ActionExecutionError
 from Products.statusmessages.interfaces import IStatusMessage
 from seantis.reservation import error
-from sqlalchemy.exc import DBAPIError
+from collections import namedtuple
 
 from seantis.reservation import _
 
@@ -22,6 +22,22 @@ def overlaps(start, end, otherstart, otherend):
         return True
 
     return False
+
+def dictionary_to_namedtuple(dictionary):
+    return namedtuple('GenericDict', dictionary.keys())(**dictionary)
+
+def extract_action_data(fn):
+
+    def wrapper(self, action):
+        data, errors = self.extractData()
+
+        if errors:
+            self.status = self.formErrorsMessage
+            return
+
+        return fn(self, dictionary_to_namedtuple(data))
+
+    return wrapper
 
 def get_current_language(context, request):
     """Returns the current language"""
