@@ -7,7 +7,6 @@ from five import grok
 from plone.directives import form
 from z3c.form import field
 from z3c.form import button
-from z3c.form import interfaces
 from zope import schema
 from zope.schema.vocabulary import SimpleVocabulary
 from zope.schema.vocabulary import SimpleTerm
@@ -17,9 +16,9 @@ from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from plone.memoize import view
 
 from seantis.reservation import _
+from seantis.reservation.form import ResourceBaseForm, extract_action_data
 from seantis.reservation import error
 from seantis.reservation import utils
-from seantis.reservation import resource
 from seantis.reservation.raster import rasterize_start
 from seantis.reservation.raster import VALID_RASTER_VALUES
 
@@ -119,16 +118,10 @@ def from_timestamp(fn):
 
     return converter
 
-class AllocationForm(form.Form):
+class AllocationForm(ResourceBaseForm):
     grok.baseclass()
     
-    grok.context(resource.IResource)
-    ignoreContext = True
-    
     template = ViewPageTemplateFile('templates/allocate.pt')
-
-    hidden_fields = ['id']
-    ignore_requirements = False
 
     @property
     @from_timestamp
@@ -151,21 +144,6 @@ class AllocationForm(form.Form):
             self.fields['end'].field.default = end
 
         super(AllocationForm, self).update(**kwargs)
-
-    def updateWidgets(self):
-        super(AllocationForm, self).updateWidgets()
-        for field in self.hidden_fields:
-            self.widgets[field].mode = interfaces.HIDDEN_MODE
-
-        if self.ignore_requirements:
-            self.widgets.hasRequiredFields = False
-
-    def redirect_to_context(self):
-        self.request.response.redirect(self.context.absolute_url())
-
-    @property
-    def scheduler(self):
-        return self.context.scheduler()
 
 
 class AllocationAddForm(AllocationForm):
@@ -202,7 +180,7 @@ class AllocationAddForm(AllocationForm):
         return [(d, d+delta) for d in rule]
 
     @button.buttonAndHandler(_(u'Allocate'))
-    @utils.extract_action_data
+    @extract_action_data
     def allocate(self,data):
         dates = self.get_dates(data)
 
@@ -259,7 +237,7 @@ class AllocationEditForm(AllocationForm):
         super(AllocationEditForm, self).update(**kwargs)
 
     @button.buttonAndHandler(_(u'Edit'))
-    @utils.extract_action_data
+    @extract_action_data
     def edit(self, data):
 
         # TODO since we can't trust the id here there should be another check
@@ -297,7 +275,7 @@ class AllocationRemoveForm(AllocationForm):
         return unicode(self.request.get('group', '').decode('utf-8'))
 
     @button.buttonAndHandler(_(u'Delete'))
-    @utils.extract_action_data
+    @extract_action_data
     def delete(self, data):
 
         # TODO since we can't trust the id here there should be another check

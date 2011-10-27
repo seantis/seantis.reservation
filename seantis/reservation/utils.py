@@ -26,19 +26,6 @@ def overlaps(start, end, otherstart, otherend):
 def dictionary_to_namedtuple(dictionary):
     return namedtuple('GenericDict', dictionary.keys())(**dictionary)
 
-def extract_action_data(fn):
-
-    def wrapper(self, action):
-        data, errors = self.extractData()
-
-        if errors:
-            self.status = self.formErrorsMessage
-            return
-
-        return fn(self, dictionary_to_namedtuple(data))
-
-    return wrapper
-
 def get_current_language(context, request):
     """Returns the current language"""
     context = aq_inner(context)

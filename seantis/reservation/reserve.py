@@ -4,17 +4,14 @@ from datetime import timedelta
 from five import grok
 from zope import schema
 from zope import interface
-from plone.directives import form
 from z3c.form import field
 from z3c.form import button
 
 from seantis.reservation import _
 from seantis.reservation import resource
 from seantis.reservation import utils
-from seantis.reservation.error import IntegrityError
-from seantis.reservation.error import AlreadyReservedError
 from seantis.reservation.raster import rasterize_start
-from seantis.reservation import Session
+from seantis.reservation.form import ResourceBaseForm, extract_action_data
 
 #TODO make defaults dynamic
 
@@ -35,8 +32,7 @@ class IReservation(interface.Interface):
         if Allocation.start >= Allocation.end:
             raise interface.Invalid(_(u'End date before start date'))
 
-class ReservationForm(form.Form):
-    grok.context(resource.IResource)
+class ReservationForm(ResourceBaseForm):
     grok.name('reserve')
     grok.require('cmf.ManagePortal')
 
@@ -63,17 +59,11 @@ class ReservationForm(form.Form):
         super(ReservationForm, self).update(**kwargs)
 
     @button.buttonAndHandler(_(u'Reserve'))
-    def reserve(self, action):
-        data, errors = self.extractData()
-        if errors:
-            self.status = self.formErrorsMessage
-            return
-
-        start = data['start']
-        end = data['end']
+    @extract_action_data
+    def reserve(self, data):
 
         scheduler = self.context.scheduler()
-        action = lambda: scheduler.reserve((start, end))
+        action = lambda: scheduler.reserve((data.start, data.end))
         redirect = self.request.response.redirect
         success = lambda: redirect(self.context.absolute_url())
 
