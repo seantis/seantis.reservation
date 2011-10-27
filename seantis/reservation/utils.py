@@ -8,7 +8,6 @@ from zope import i18n
 from zope import interface
 from Products.CMFCore.utils import getToolByName
 from z3c.form.interfaces import ActionExecutionError
-from Products.statusmessages.interfaces import IStatusMessage
 from seantis.reservation import error
 from collections import namedtuple
 
@@ -36,19 +35,13 @@ def translate(context, request, text):
     lang = get_current_language(context, request)
     return i18n.translate(text, target_language=lang)
 
-def form_info(message):
-    def wrap(f):
-        def info(self, *args):
-            f(self, *args)
-            if not self.status == self.formErrorsMessage:
-                IStatusMessage(self.request).add(message, type='info')
-        return info
-    return wrap
-
 def handle_action(action=None, success=None):
     try:
-        if action: action()
+        result = None
+        if action: result = action()
         if success: success()
+
+        return result
 
     except Exception, e:
         e = hasattr(e, 'orig') and e.orig or e

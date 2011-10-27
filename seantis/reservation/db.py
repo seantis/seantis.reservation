@@ -211,11 +211,13 @@ class Scheduler(object):
             master = self.allocation_by_id(id)
             allocations = [master]
             allocations.extend(self.allocation_mirrors_by_master(master))
+            count = 1
         elif group:
             query = Session.query(Allocation)
             query = query.filter(Allocation.group == group)
             query = query.filter(Allocation.resource.in_(self.uuids))
             allocations = query.all()
+            count = len(allocations)
         else:
             raise NotImplementedError
         
@@ -225,6 +227,8 @@ class Scheduler(object):
 
         for allocation in allocations:
             Session.delete(allocation)
+
+        return count
 
     @serialized
     def reserve(self, dates):

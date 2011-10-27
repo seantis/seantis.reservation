@@ -1,6 +1,7 @@
 from five import grok
 from plone.directives import form
 from z3c.form import interfaces
+from Products.statusmessages.interfaces import IStatusMessage
 
 from seantis.reservation import utils
 from seantis.reservation.resource import IResource

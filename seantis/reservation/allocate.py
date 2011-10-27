@@ -286,7 +286,9 @@ class AllocationRemoveForm(AllocationForm):
         scheduler = self.scheduler
         action = lambda: scheduler.remove_allocation(id=data.id, group=data.group)
         
-        utils.handle_action(action=action, success=self.redirect_to_context)
+        count = utils.handle_action(action=action, success=self.redirect_to_context)
+
+        self.info(self.translate(_(u'Removed %i allocations') % count))
 
     @view.memoize
     def allocations(self):
