@@ -1,10 +1,41 @@
+from datetime import datetime
+
 from five import grok
 from plone.directives import form
 from z3c.form import interfaces
-from Products.statusmessages.interfaces import IStatusMessage
 
 from seantis.reservation import utils
 from seantis.reservation.resource import IResource
+
+def extract_action_data(fn):
+    """ Decorator which inserted after a buttonAndHandler directive will
+    put the extracted data into a named tuple for easier access. 
+
+    """
+    def wrapper(self, action):
+        data, errors = self.extractData()
+
+        if errors:
+            self.status = self.formErrorsMessage
+            return
+
+        return fn(self, utils.dictionary_to_namedtuple(data))
+
+    return wrapper
+
+def from_timestamp(fn):
+    """ Decorator which inserted after a property will convert the return value
+    from a timestamp to datetime. 
+
+    """
+    def converter(self, *args, **kwargs):
+        try:
+            date = fn(self, *args, **kwargs)
+            return date and datetime.fromtimestamp(float(date)) or None
+        except TypeError:
+            return None
+
+    return converter
 
 class ResourceBaseForm(form.Form):
     """Baseform for all forms that work with resources as their context. 
@@ -39,18 +70,24 @@ class ResourceBaseForm(form.Form):
         """ Returns the scheduler of the resource. """
         return self.context.scheduler()
 
-def extract_action_data(fn):
-    """ Decorator which inserted after a buttonAndHandler directive will
-    put the extracted data into a named tuple for easier access. 
+    @property
+    @from_timestamp
+    def start(self):
+        return self.request.get('start')
 
-    """
-    def wrapper(self, action):
-        data, errors = self.extractData()
+    @property
+    @from_timestamp
+    def end(self):
+        return self.request.get('end')
 
-        if errors:
-            self.status = self.formErrorsMessage
-            return
+    @property
+    def group(self):
+        return unicode(self.request.get('group', '').decode('utf-8'))
 
-        return fn(self, utils.dictionary_to_namedtuple(data))
+    def update(self, **kwargs):
+        start, end = self.start, self.end
+        if start and end:
+            self.fields['start'].field.default = start
+            self.fields['end'].field.default = end
 
-    return wrapper
+        super(ResourceBaseForm, self).update(**kwargs)

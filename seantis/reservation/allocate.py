@@ -16,11 +16,16 @@ from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from plone.memoize import view
 
 from seantis.reservation import _
-from seantis.reservation.form import ResourceBaseForm, extract_action_data
 from seantis.reservation import error
 from seantis.reservation import utils
 from seantis.reservation.raster import rasterize_start
 from seantis.reservation.raster import VALID_RASTER_VALUES
+
+from seantis.reservation.form import (
+    ResourceBaseForm, 
+    extract_action_data,
+    from_timestamp
+)
 
 days = SimpleVocabulary(
         [SimpleTerm(value=rrule.MO, title=_(u'Monday')),
@@ -108,42 +113,9 @@ class IAllocation(form.Schema):
         if Allocation.recurring and not Allocation.group:
             raise interface.Invalid(_(u'Recurring allocations require a group'))
 
-def from_timestamp(fn):
-    def converter(self, *args, **kwargs):
-        try:
-            date = fn(self, *args, **kwargs)
-            return date and datetime.fromtimestamp(float(date)) or None
-        except TypeError:
-            return None
-
-    return converter
-
 class AllocationForm(ResourceBaseForm):
     grok.baseclass()
-    
     template = ViewPageTemplateFile('templates/allocate.pt')
-
-    @property
-    @from_timestamp
-    def start(self):
-        return self.request.get('start')
-
-    @property
-    @from_timestamp
-    def end(self):
-        return self.request.get('end')
-
-    @property
-    def group(self):
-        return unicode(self.request.get('group', '').decode('utf-8'))
-
-    def update(self, **kwargs):
-        start, end = self.start, self.end
-        if start and end:
-            self.fields['start'].field.default = start
-            self.fields['end'].field.default = end
-
-        super(AllocationForm, self).update(**kwargs)
 
 
 class AllocationAddForm(AllocationForm):
@@ -286,9 +258,7 @@ class AllocationRemoveForm(AllocationForm):
         scheduler = self.scheduler
         action = lambda: scheduler.remove_allocation(id=data.id, group=data.group)
         
-        count = utils.handle_action(action=action, success=self.redirect_to_context)
-
-        self.info(self.translate(_(u'Removed %i allocations') % count))
+        utils.handle_action(action=action, success=self.redirect_to_context)
 
     @view.memoize
     def allocations(self):
