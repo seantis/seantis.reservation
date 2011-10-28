@@ -5,6 +5,8 @@ from sqlalchemy import types
 from sqlalchemy.schema import Column
 from sqlalchemy.schema import Index
 from sqlalchemy.schema import UniqueConstraint
+from sqlalchemy.orm import object_session 
+from sqlalchemy.orm.util import has_identity 
 
 from seantis.reservation import ORMBase
 from seantis.reservation import utils
@@ -38,6 +40,18 @@ class Allocation(ORMBase):
             Index('mirror_resource_ix', 'mirror_of', 'resource'), 
             UniqueConstraint('resource', '_start', name='resource_start_ix')
         )
+
+    def copy(self):
+        allocation = Allocation()
+        allocation.resource = self.resource
+        allocation.mirror_of = self.mirror_of
+        allocation.group = self.group
+        allocation.quota = self.quota
+        allocation.partly_available = self.partly_available
+        allocation._start = self._start
+        allocation._end = self._end
+        allocation._raster = self._raster
+        return allocation
 
     def get_start(self):
         return self._start
@@ -214,3 +228,22 @@ class Allocation(ORMBase):
         partitions[-1:][0][0] -= diff
 
         return partitions
+
+    @property
+    def is_transient(self):
+        """True if the allocation does not exist in the database, and is not 
+        about to be written to the database.
+
+        See:
+        http://www.sqlalchemy.org/docs/orm/session.html#quickie-intro-to-object-states
+        http://stackoverflow.com/questions/3885601/sqlalchemy-get-object-instance-state
+
+        """
+        
+        return object_session(self) is None and not has_identity(self)
+
+    @property
+    def is_master(self):
+        """True if the allocation is a master allocation."""
+
+        return self.resource == self.mirror_of

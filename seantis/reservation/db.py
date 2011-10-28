@@ -134,18 +134,9 @@ class Scheduler(object):
             if uuid in existing:
                 mirrors.append(existing[uuid])
             elif imaginary:
-                imaginary -= 1
-
-                allocation = Allocation(resource=uuid)
-                allocation.raster = master.raster
-                allocation.start = master.start
-                allocation.end = master.end
-                allocation.group = master.group
-                allocation.quota = master.quota
-                allocation.mirror_of = master.mirror_of
-                allocation.partly_available = master.partly_available
-
-                allocation._imaginary = True
+                allocation = master.copy()
+                allocation.resource = uuid
+                
                 mirrors.append(allocation)
 
         return mirrors
@@ -246,7 +237,7 @@ class Scheduler(object):
                 raise AffectedReservationError(allocation.reserved_slots.first())
 
         for allocation in allocations:
-            if not hasattr(allocation, '_imaginary'):
+            if not allocation.is_transient:
                 Session.delete(allocation)
 
     @serialized
@@ -266,8 +257,7 @@ class Scheduler(object):
                 if not self.reservable(allocation):
                     continue
 
-                if hasattr(allocation, '_imaginary'):
-                    delattr(allocation, '_imaginary')
+                if allocation.is_transient:
                     Session.add(allocation)
 
                 for slot_start, slot_end in allocation.all_slots(start, end):

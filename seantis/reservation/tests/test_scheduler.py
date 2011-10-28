@@ -233,5 +233,37 @@ class TestScheduler(IntegrationTestCase):
         self.assertRaises(
                 AffectedReservationError, sc.remove_allocation, allocation.id
             )
+    
+    @serialized
+    def test_imaginary_mirrors(self):
+        sc = Scheduler(new_uuid(), quota=3)
 
-        
+        start = datetime(2011, 1, 1, 15, 0)
+        end = datetime(2011, 1, 1, 16, 0)
+        daterange = (start, end)
+
+        allocation = sc.allocate(daterange)[1][0]
+        self.assertTrue(allocation.is_master)
+
+        mirrors = sc.allocation_mirrors_by_master(allocation)
+        imaginary = len([m for m in mirrors if m.is_transient])
+        self.assertEqual(imaginary, 2)
+
+        masters = len([m for m in mirrors if m.is_master])
+        self.assertEqual(masters, 0)
+
+        sc.reserve(daterange)
+        mirrors = sc.allocation_mirrors_by_master(allocation)
+        imaginary = len([m for m in mirrors if m.is_transient])
+        self.assertEqual(imaginary, 2)
+
+        sc.reserve(daterange)
+        mirrors = sc.allocation_mirrors_by_master(allocation)
+        imaginary = len([m for m in mirrors if m.is_transient])
+        self.assertEqual(imaginary, 1)
+
+        sc.reserve(daterange)
+        mirrors = sc.allocation_mirrors_by_master(allocation)
+        imaginary = len([m for m in mirrors if m.is_transient])
+        self.assertEqual(imaginary, 0)
+
