@@ -10,13 +10,12 @@ from seantis.reservation.testing import SQL_FUNCTIONAL_TESTING
 class TestCase(unittest.TestCase):
 
     def setUp(self):
-        #getUtility(ISessionUtility).use_serial_session()
         setuphandlers.dbsetup(None)
 
     def tearDown(self):
         util = getUtility(ISessionUtility)
-        util.threadstore.main_session.rollback()
-        util.threadstore.serial_session.rollback()
+        util.threadstore.readonly.rollback()
+        util.threadstore.serial.rollback()
         
 class IntegrationTestCase(TestCase):
     layer = SQL_INTEGRATION_TESTING

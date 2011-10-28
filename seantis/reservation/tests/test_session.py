@@ -27,8 +27,8 @@ class SessionIds(Thread):
     
     def run(self):
         util = getUtility(ISessionUtility)
-        self.serial_id = id(util.threadstore.serial_session)
-        self.readonly_id = id(util.threadstore.main_session)
+        self.serial_id = id(util.threadstore.serial)
+        self.readonly_id = id(util.threadstore.readonly)
 
 class ExceptionThread(Thread):
     def __init__(self, call):
