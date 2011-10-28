@@ -163,6 +163,7 @@ class Scheduler(object):
 
         query = all_allocations_in_range(start, end)
         query = query.filter(Allocation.resource == Allocation.mirror_of)
+        query = query.filter(Allocation.resource == self.uuid)
         
         masters = query.all()
         mirrors = chain(*[self.allocation_mirrors_by_master(m) for m in masters])
