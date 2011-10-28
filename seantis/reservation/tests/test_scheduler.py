@@ -166,7 +166,7 @@ class TestScheduler(IntegrationTestCase):
         allocation = allocations[0]
 
         # which should give us ten allocations (-1 as the master is not counted)
-        self.assertEqual(9, sc.allocation_mirrors_by_master(allocation).count())
+        self.assertEqual(9, len(sc.allocation_mirrors_by_master(allocation)))
 
         # the same reservation can now be made ten times
         for i in range(0, 10):
@@ -183,7 +183,7 @@ class TestScheduler(IntegrationTestCase):
             )
         allocation = allocations[0]
 
-        self.assertEqual(4, other.allocation_mirrors_by_master(allocation).count())
+        self.assertEqual(4, len(other.allocation_mirrors_by_master(allocation)))
 
         # we can do ten reservations if every reservation only occupies half
         # of the allocation
@@ -196,25 +196,19 @@ class TestScheduler(IntegrationTestCase):
             )
 
         # test some queries
-        allocations = sc.allocations_in_range(start, end, master_only=True)
+        allocations = sc.allocations_in_range(start, end)
         self.assertEqual(1, allocations.count())
 
-        allocations = other.allocations_in_range(start, end, master_only=True)
+        allocations = other.allocations_in_range(start, end)
         self.assertEqual(1, allocations.count())
-
-        allocations = sc.allocations_in_range(start, end, master_only=False)
-        self.assertEqual(10, allocations.count())
-
-        allocations = other.allocations_in_range(start, end, master_only=False)
-        self.assertEqual(5, allocations.count())
         
         allocation = sc.allocation_by_date(start, end)
         sc.allocation_by_id(allocation.id)
-        self.assertEqual(9, sc.allocation_mirrors_by_master(allocation).count())
+        self.assertEqual(9, len(sc.allocation_mirrors_by_master(allocation)))
 
         allocation = other.allocation_by_date(start, end)    
         other.allocation_by_id(allocation.id)
-        self.assertEqual(4, other.allocation_mirrors_by_master(allocation).count())
+        self.assertEqual(4, len(other.allocation_mirrors_by_master(allocation)))
     
     def test_fragmentation(self):
         sc = Scheduler(new_uuid(), quota=3)

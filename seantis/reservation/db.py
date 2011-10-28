@@ -1,10 +1,10 @@
 from uuid import UUID
 from uuid import uuid4 as new_uuid
 from uuid import uuid5 as new_uuid_mirror
+from datetime import date, datetime, MINYEAR, MAXYEAR
+from itertools import chain
 
-from datetime import date, MINYEAR, MAXYEAR
-
-from sqlalchemy.sql import and_, or_, not_
+from sqlalchemy.sql import and_, or_
 
 from seantis.reservation.models import Allocation
 from seantis.reservation.models import ReservedSlot
@@ -14,7 +14,6 @@ from seantis.reservation.error import AlreadyReservedError
 from seantis.reservation.error import NotReservableError
 from seantis.reservation.session import serialized
 from seantis.reservation.raster import rasterize_span
-from seantis.reservation.timeframe import Timeframe
 from seantis.reservation import utils
 from seantis.reservation import Session
     
@@ -68,69 +67,88 @@ class Scheduler(object):
         group = group or unicode(new_uuid())
         quota = quota or self.quota
 
-        # Make sure that this span does not overlap another
+        # Make sure that this span does not overlap another master
         for start, end in dates:
             start, end = rasterize_span(start, end, raster)
             
             query = all_allocations_in_range(start, end)
-            query = query.filter(Allocation.resource.in_(self.uuids))
+            query = query.filter(Allocation.resource == self.uuid)
 
             existing = query.first()
-
             if existing:
                 raise OverlappingAllocationError(start, end, existing)
         
-        # Prepare the allocations
+        # Write the master allocations
         allocations = []
         for start, end in dates:
-            for uuid in self.uuids:
-                allocation = Allocation(raster=raster)
-                allocation.start = start
-                allocation.end = end
-                allocation.group = group
-                allocation.resource = uuid
-                allocation.quota = quota
-                allocation.mirror_of = self.uuid
-                allocation.partly_available = partly_available
+            allocation = Allocation(raster=raster)
+            allocation.start = start
+            allocation.end = end
+            allocation.group = group
+            allocation.resource = self.uuid
+            allocation.quota = quota
+            allocation.mirror_of = self.uuid
+            allocation.partly_available = partly_available
                 
-                allocations.append(allocation)
+            allocations.append(allocation)
 
         Session.add_all(allocations)
 
         return group, allocations
 
-    def allocation_by_id(self, id, uuid=None):
-        uuid or self.uuid
+    def allocation_by_id(self, id):
         query = Session.query(Allocation)
-        query.filter(Allocation.resource == uuid)
-        return query.filter(Allocation.id == id).one()
-
-    def allocation_by_date(self, start, end, uuid=None):
-        uuid = uuid or self.uuid
-        query = all_allocations_in_range(start, end)
-        return query.filter(Allocation.resource == uuid).one()
-
-    def allocations_in_range(self, start, end, master_only=True):
-        query = all_allocations_in_range(start, end)
-
-        if master_only:
-            return query.filter(Allocation.resource == self.uuid)
-        else:
-            return query.filter(Allocation.mirror_of == self.uuid)
+        query = query.filter(Allocation.resource == self.uuid)
+        query = query.filter(Allocation.id == id)
+        return query.one()
 
     def allocations_by_group(self, group):
         query = Session.query(Allocation)
         query = query.filter(Allocation.group == group)
+        query = query.filter(Allocation.resource == self.uuid)
+        return query
 
-        return query.filter(Allocation.resource == self.uuid)
+    def allocations_in_range(self, start, end):
+        query = all_allocations_in_range(start, end)
+        query = query.filter(Allocation.resource == self.uuid)
+        return query
+
+    def allocation_by_date(self, start, end):
+        query = self.allocations_in_range(start, end)
+        return query.one()
 
     def allocation_mirrors_by_master(self, master):
         if not self.mirrors: return []
 
-        query = all_allocations_in_range(master.start, master.end)
-        query = query.filter(Allocation.resource.in_(self.mirrors))
+        query = Session.query(Allocation)
+        query = query.filter(Allocation.mirror_of == self.uuid)
+        query = query.filter(Allocation.resource != self.uuid)
         
-        return query
+        existing = query.all()
+        existing = dict([(e.resource, e) for e in existing])
+
+        imaginary = master.quota - len(existing)
+        
+        mirrors = []
+        for uuid in self.mirrors:
+            if uuid in existing:
+                mirrors.append(existing[uuid])
+            elif imaginary:
+                imaginary -= 1
+
+                allocation = Allocation(resource=uuid)
+                allocation.raster = master.raster
+                allocation.start = master.start
+                allocation.end = master.end
+                allocation.group = master.group
+                allocation.quota = master.quota
+                allocation.mirror_of = master.mirror_of
+                allocation.partly_available = master.partly_available
+
+                allocation._imaginary = True
+                mirrors.append(allocation)
+
+        return mirrors
 
     def reservable(self, allocation):
         return self.render_allocation(allocation)
@@ -150,16 +168,21 @@ class Scheduler(object):
 
     def availability(self, start=None, end=None):
         """Goes through all allocations and sums up the availabilty."""
+
+        if not (start and end):
+            start = datetime(MINYEAR, 1, 1)
+            end = datetime(MAXYEAR, 12, 31)
+
+        query = all_allocations_in_range(start, end)
+        query = query.filter(Allocation.resource == Allocation.mirror_of)
         
-        if all((start, end)):
-            query = all_allocations_in_range(start, end)
-        else:
-            query = Session.query(Allocation)
-        
-        query = query.filter(Allocation.mirror_of == self.uuid)
+        masters = query.all()
+        mirrors = chain(*[self.allocation_mirrors_by_master(m) for m in masters])
+       
+        allocations = chain(masters, mirrors)
 
         count, availability = 0, 0.0
-        for allocation in query:
+        for allocation in allocations:
             if self.render_allocation(allocation):
                 count += 1
                 availability += allocation.availability
@@ -174,7 +197,7 @@ class Scheduler(object):
         # Find allocation
         master = self.allocation_by_id(master_id)
         mirrors = self.allocation_mirrors_by_master(master)
-        changing = [master] + list(mirrors)
+        changing = [master] + mirrors
         ids = [c.id for c in changing]
 
         assert(group or master.group)
@@ -183,9 +206,8 @@ class Scheduler(object):
         new = Allocation(start=new_start, end=new_end, raster=master.raster)
 
         # Ensure that the new span does not overlap an existing one
-        query = self.allocations_in_range(new.start, new.end, master_only=True)
-        existing_allocations = query.all()
-        
+        existing_allocations = self.allocations_in_range(new.start, new.end)
+
         for existing in existing_allocations:
             if existing.id not in ids:
                 raise OverlappingAllocationError(new.start, new.end, existing)
@@ -211,13 +233,11 @@ class Scheduler(object):
             master = self.allocation_by_id(id)
             allocations = [master]
             allocations.extend(self.allocation_mirrors_by_master(master))
-            count = 1
         elif group:
             query = Session.query(Allocation)
             query = query.filter(Allocation.group == group)
             query = query.filter(Allocation.resource.in_(self.uuids))
             allocations = query.all()
-            count = len(allocations)
         else:
             raise NotImplementedError
         
@@ -226,9 +246,8 @@ class Scheduler(object):
                 raise AffectedReservationError(allocation.reserved_slots.first())
 
         for allocation in allocations:
-            Session.delete(allocation)
-
-        return count
+            if not hasattr(allocation, '_imaginary'):
+                Session.delete(allocation)
 
     @serialized
     def reserve(self, dates):
@@ -246,6 +265,10 @@ class Scheduler(object):
             for allocation in self.reservation_targets(start, end):
                 if not self.reservable(allocation):
                     continue
+
+                if hasattr(allocation, '_imaginary'):
+                    delattr(allocation, '_imaginary')
+                    Session.add(allocation)
 
                 for slot_start, slot_end in allocation.all_slots(start, end):
                     slot = ReservedSlot()
@@ -276,24 +299,20 @@ class Scheduler(object):
         if master.is_available(start, end):
             return master
 
+        if master.quota == 1:
+            return None
+        
+        mirrors = self.allocation_mirrors_by_master(master)
         tries = master.quota - 1
 
-        for mirror in self.mirrors:
-            if tries == 0:
+        for mirror in mirrors:
+            if mirror.is_available(start, end):
+                return mirror
+
+            if tries >= 1:
+                tries -= 1
+            else:
                 return None
-
-            next = self.allocation_by_date(
-                    start=master.start, 
-                    end=master.end,
-                    uuid=mirror
-                )
-
-            if next.is_available(start, end):
-                return next
-
-            tries -= 1
-
-        return None
 
     def reservation_targets(self, start, end):
         """ Returns a list of allocations that are free within start and end.
