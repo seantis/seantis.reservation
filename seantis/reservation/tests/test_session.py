@@ -127,3 +127,45 @@ class TestSession(IntegrationTestCase):
                 transaction.commit()
 
             serialized_call(drop)()
+
+    def test_non_collision(self):
+        # same as above, but this time the second session is read only and
+        # should therefore not have an impact on existing code
+
+        def commit():
+            add_something()
+            transaction.commit()
+
+        serialized_call(commit)()
+        
+        try:
+            def change_allocation():
+                allocation = Session.query(Allocation).one()
+                allocation.group = unicode(uuid())
+
+            def read_allocation():
+                allocation = Session.query(Allocation).one()
+                allocation.resource
+
+            t1 = ExceptionThread(serialized_call(change_allocation))
+            t2 = ExceptionThread(read_allocation)
+
+            t1.start()
+            t2.start()
+
+            t1.join()
+            t2.join()
+
+            exceptions = (t1.exception, t2.exception)
+
+            is_rollback = lambda ex: ex and isinstance(ex.orig, TransactionRollbackError)
+            rollbacks = filter(is_rollback, exceptions)
+
+            self.assertEqual(0, len(rollbacks))
+
+        finally:
+            def drop():
+                Session.query(Allocation).delete()
+                transaction.commit()
+
+            serialized_call(drop)()
