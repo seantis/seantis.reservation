@@ -61,6 +61,9 @@ class ResourceBaseForm(form.Form):
         if self.ignore_requirements:
             self.widgets.hasRequiredFields = False
 
+    def defaults(self):
+        return {}
+
     def redirect_to_context(self):
         """ Redirect to the url of the resource. """
         self.request.response.redirect(self.context.absolute_url())
@@ -89,5 +92,9 @@ class ResourceBaseForm(form.Form):
         if start and end:
             self.fields['start'].field.default = start
             self.fields['end'].field.default = end
+        
+        other_defaults = self.defaults()
+        for k, v in other_defaults.items():
+            self.fields[k].field.default = v
 
         super(ResourceBaseForm, self).update(**kwargs)

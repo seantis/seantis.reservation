@@ -156,7 +156,6 @@ class TestScheduler(IntegrationTestCase):
     @serialized
     def test_quotas(self):
         sc = Scheduler(new_uuid(), quota=10)
-        self.assertEqual(10, len(sc.uuids))
         
         start = datetime(2011, 1, 1, 15, 0)
         end = datetime(2011, 1, 1, 16, 0)

@@ -103,6 +103,10 @@ class IAllocation(form.Schema):
         required=False
         )
 
+    quota = schema.Int(
+        title=_(u'Quota'),
+        )
+
     @interface.invariant
     def isValidDateRange(Allocation):
         if Allocation.start >= Allocation.end:
@@ -112,6 +116,11 @@ class IAllocation(form.Schema):
     def isValidGroup(Allocation):
         if Allocation.recurring and not Allocation.group:
             raise interface.Invalid(_(u'Recurring allocations require a group'))
+
+    @interface.invariant
+    def isValidQuota(Allocation):
+        if not (0 <= Allocation.quota and Allocation.quota <= 100):
+            raise interface.Invalid(_(u'Quota must be between 1 and 100'))
 
 class AllocationForm(ResourceBaseForm):
     grok.baseclass()
@@ -126,6 +135,9 @@ class AllocationAddForm(AllocationForm):
     fields['days'].widgetFactory = CheckBoxFieldWidget
 
     label = _(u'Resource allocation')
+
+    def defaults(self):
+        return {'quota': self.scheduler.quota}
 
     def get_dates(self, data):
         """ Return a list with date tuples depending on the data entered by the
@@ -158,7 +170,8 @@ class AllocationAddForm(AllocationForm):
 
         action = lambda: self.scheduler.allocate(dates, 
                 raster=data.raster, 
-                group=data.group, 
+                group=data.group,
+                quota = data.quota,
                 partly_available=data.partly_available
             )
         

@@ -32,6 +32,11 @@ def all_allocations_in_range(start, end):
         )
     )
 
+# TODO cache this incrementally
+def generate_uuids(uuid, quota):
+    mirror = lambda n: new_uuid_mirror(uuid, str(n))
+    return [mirror(n) for n in xrange(1, quota)]
+
 class Scheduler(object):
     """ Used to manage a resource as well as all connected mirrors. 
 
@@ -50,15 +55,7 @@ class Scheduler(object):
             self.uuid = resource_uuid
         
         self.masks = masks
-        self.mirrors = []
         self.quota = quota
-
-        if self.quota > 1:
-            mirror = lambda n: new_uuid_mirror(self.uuid, str(n))
-            self.mirrors = [mirror(n) for n in xrange(1, quota)]
-
-        self.uuids = [self.uuid]
-        self.uuids.extend(self.mirrors)
 
     @serialized
     def allocate(self, dates, group=None, raster=15, quota=None, partly_available=False):
@@ -118,11 +115,11 @@ class Scheduler(object):
         return query.one()
 
     def allocation_mirrors_by_master(self, master):
-        if not self.mirrors: return []
+        if master.quota == 1: return []
 
         query = Session.query(Allocation)
-        query = query.filter(Allocation.mirror_of == self.uuid)
-        query = query.filter(Allocation.resource != self.uuid)
+        query = query.filter(Allocation._start == master._start)
+        query = query.filter(Allocation.id != master.id)
         
         existing = query.all()
         existing = dict([(e.resource, e) for e in existing])
@@ -130,7 +127,7 @@ class Scheduler(object):
         imaginary = master.quota - len(existing)
         
         mirrors = []
-        for uuid in self.mirrors:
+        for uuid in generate_uuids(master.resource, master.quota):
             if uuid in existing:
                 mirrors.append(existing[uuid])
             elif imaginary:
@@ -227,7 +224,7 @@ class Scheduler(object):
         elif group:
             query = Session.query(Allocation)
             query = query.filter(Allocation.group == group)
-            query = query.filter(Allocation.resource.in_(self.uuids))
+            query = query.filter(Allocation.mirror_of == self.uuid)
             allocations = query.all()
         else:
             raise NotImplementedError
@@ -329,9 +326,10 @@ class Scheduler(object):
 
     def managed_reserved_slots(self):
         """Returns the reserved slots which are managed by this scheduler."""
-        query = Session.query(ReservedSlot).filter(
-                ReservedSlot.resource.in_(self.uuids)
-            )
+        query = Session.query(ReservedSlot)
+        query = query.join(Allocation)
+        query = query.filter(Allocation.mirror_of == self.uuid)
+
         return query
 
     def reserved_slots(self, reservation):
@@ -347,4 +345,5 @@ class Scheduler(object):
         query = self.managed_reserved_slots()
         query = query.filter(ReservedSlot.reservation == reservation)
 
-        query.delete('fetch')
+        for slot in query:
+            Session.delete(slot)
