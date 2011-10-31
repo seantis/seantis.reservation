@@ -4,7 +4,7 @@ from uuid import uuid5 as new_uuid_mirror
 from datetime import date, datetime, MINYEAR, MAXYEAR
 from itertools import chain
 
-from sqlalchemy.sql import and_, or_
+from sqlalchemy.sql import and_, or_, not_
 
 from seantis.reservation.models import Allocation
 from seantis.reservation.models import ReservedSlot
@@ -12,6 +12,7 @@ from seantis.reservation.error import OverlappingAllocationError
 from seantis.reservation.error import AffectedReservationError
 from seantis.reservation.error import AlreadyReservedError
 from seantis.reservation.error import NotReservableError
+
 from seantis.reservation.session import serialized
 from seantis.reservation.raster import rasterize_span
 from seantis.reservation import utils
@@ -57,7 +58,7 @@ class Scheduler(object):
     Since we do not want to calculate these mirror uuids all the time, since it
     is a somewhat expensive calculations and because it is a bit of hassle, we
     store the master uuid in the mirror_of field of each allocation record.
-    
+
     """
 
     def __init__(self, resource_uuid, quota=1, masks=None):
@@ -107,6 +108,90 @@ class Scheduler(object):
 
         return group, allocations
 
+    def change_quota(self, master, new_quota):
+        assert new_quota > 0, "Quota must be greater than 0"
+
+        if new_quota == master.quota:
+            return
+
+        if new_quota > master.quota:
+            master.quota = new_quota
+            return
+
+        free_mirrors = []
+        
+        mirrors = self.allocation_mirrors_by_master(master)
+        for mirror in mirrors:
+            if mirror.is_available():
+                free_mirrors.append(mirror)
+
+        required_spaces = master.quota - new_quota 
+        required_spaces -= master.is_available() and 1 or 0
+        if len(free_mirrors) < required_spaces:
+            raise AffectedReservationError(None)
+        
+        reordered = self.reordered_keylist(master, new_quota)
+        unused = set(reordered.keys()) - set(reordered.values()) - set((None,))
+
+        resources = [master]
+        resources.extend(mirrors)
+        ids = dict(((r.resource, r.id) for r in resources))
+
+        for resource in resources:
+            resource.quota = new_quota
+            
+            new_resource = reordered[resource.resource]
+            if not new_resource:
+                continue
+
+            new_id = ids[new_resource]
+
+            for slot in resource.reserved_slots:
+                slot.resource = new_resource
+                slot.allocation_id = new_id
+
+            if resource.is_transient:
+                Session.add(resource)
+        
+        if unused:
+            query = Session.query(Allocation)
+            query = query.filter(Allocation.resource.in_(unused))
+            query = query.filter(Allocation.id != master.id)
+            query.delete('fetch')
+        
+    
+    def reordered_keylist(self, master, new_quota):
+        assert new_quota < master.quota
+        assert new_quota > 0
+
+        keylist = [master.resource]
+        keylist.extend(generate_uuids(master.resource, master.quota))
+
+        reordered = dict(((k, k) for k in keylist)) 
+
+        if new_quota > master.quota:
+            return reordered
+        
+        resources = [master]
+        resources.extend(self.allocation_mirrors_by_master(master))
+        resources = dict(((r.resource, r) for r in resources))
+
+        offset = 0
+        for ix, key in enumerate(keylist):
+            resource = resources[key]
+            skip = resource.is_transient or resource.is_available()
+
+            if skip:
+                offset += 1
+                reordered[key] = None
+            else:
+                index = ix - offset
+                index = index >= 0 and index or 0
+                reordered[key] = keylist[index]
+
+        return reordered
+
+
     def allocation_by_id(self, id):
         query = Session.query(Allocation)
         query = query.filter(Allocation.resource == self.uuid)
@@ -147,8 +232,9 @@ class Scheduler(object):
             elif imaginary:
                 allocation = master.copy()
                 allocation.resource = uuid
-                
                 mirrors.append(allocation)
+
+                imaginary -= 1
 
         return mirrors
 
@@ -196,7 +282,7 @@ class Scheduler(object):
         return count, availability
 
     @serialized
-    def move_allocation(self, master_id, new_start, new_end, group):
+    def move_allocation(self, master_id, new_start, new_end, group, new_quota):
         # Find allocation
         master = self.allocation_by_id(master_id)
         mirrors = self.allocation_mirrors_by_master(master)
@@ -221,9 +307,12 @@ class Scheduler(object):
                     if not new.contains(reservation.start, reservation.end):
                         raise AffectedReservationError(reservation)
             else:
-                reservation = change.reserved_slots.first()
-                if reservation:
-                    raise AffectedReservationError(reservation)
+                if change.start != new.start or change.end != new.end:
+                    reservation = change.reserved_slots.first()
+                    if reservation:
+                        raise AffectedReservationError(reservation)
+
+        self.change_quota(master, new_quota)
 
         for change in changing:
             change.start = new.start

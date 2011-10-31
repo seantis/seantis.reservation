@@ -138,8 +138,12 @@ class Allocation(ORMBase):
         else:
             yield self.start, self.end
 
-    def is_available(self, start, end):
+    def is_available(self, start=None, end=None):
         """ Returns true if the given daterange is completely available. """
+
+        if not (start and end):
+            start, end = self.start, self.end
+
         assert(self.overlaps(start, end))
         
         reserved = [slot.start for slot in self.reserved_slots.all()]

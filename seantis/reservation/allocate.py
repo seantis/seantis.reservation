@@ -181,7 +181,7 @@ class AllocationEditForm(AllocationForm):
     grok.name('edit-allocation')
     grok.require('cmf.ManagePortal')
 
-    fields = field.Fields(IAllocation).select('id', 'start', 'end', 'group')
+    fields = field.Fields(IAllocation).select('id', 'start', 'end', 'group', 'quota')
     label = _(u'Edit resource allocation')
 
     @property
@@ -218,6 +218,7 @@ class AllocationEditForm(AllocationForm):
             self.fields['start'].field.default = start
             self.fields['end'].field.default = end
             self.fields['group'].field.default = group or u''
+            self.fields['quota'].field.default = allocation.quota
 
         super(AllocationEditForm, self).update(**kwargs)
 
@@ -230,7 +231,7 @@ class AllocationEditForm(AllocationForm):
 
         scheduler = self.context.scheduler()
 
-        args = (data.id, data.start, data.end, unicode(data.group))
+        args = (data.id, data.start, data.end, unicode(data.group), data.quota)
         action = lambda: scheduler.move_allocation(*args)
         
         utils.handle_action(action=action, success=self.redirect_to_context)

@@ -265,4 +265,3 @@ class TestScheduler(IntegrationTestCase):
         mirrors = sc.allocation_mirrors_by_master(allocation)
         imaginary = len([m for m in mirrors if m.is_transient])
         self.assertEqual(imaginary, 0)
-

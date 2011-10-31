@@ -107,7 +107,7 @@ def event_availability(context, request, scheduler, allocation):
         else:
             text = title(_(u'%i%% Free')) % availability
     else:
-        spots = allocation.quota * availability // 100
+        spots = int(round(allocation.quota * availability / 100))
         if spots:
             text = title(_(u'%i Spots Available')) % spots
         else:
