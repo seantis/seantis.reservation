@@ -119,7 +119,7 @@ class IAllocation(form.Schema):
 
     @interface.invariant
     def isValidQuota(Allocation):
-        if not (0 <= Allocation.quota and Allocation.quota <= 100):
+        if not (1 <= Allocation.quota and Allocation.quota <= 100):
             raise interface.Invalid(_(u'Quota must be between 1 and 100'))
 
 class AllocationForm(ResourceBaseForm):

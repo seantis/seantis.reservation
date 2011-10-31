@@ -324,7 +324,7 @@ class Scheduler(object):
                     if reservation:
                         raise AffectedReservationError(reservation)
 
-        if new_quota:
+        if new_quota is not None:
             self.change_quota(master, new_quota)
 
         for change in changing:
