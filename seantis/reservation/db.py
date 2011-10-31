@@ -40,10 +40,24 @@ def generate_uuids(uuid, quota):
 class Scheduler(object):
     """ Used to manage a resource as well as all connected mirrors. 
 
-    TODO: One thing about this class, it is less than optimal. If I assign a
-    quota of 100 all records are written a hundred times independent of need.
+    Master -> Mirror relationship
+    =============================
 
-    This should be revised, minimizing database interaction.
+    Mirrors are viewed as resources which mirror a master resource. These mirrors
+    do not really exist as seantis.reservation.resource types in plone (unlike
+    the master). Instead they have their own resource uuids which are calculated
+    by creating new uuids from the master's uuid and the number of the mirror.
+    (See generate_uuids).
+
+    The reason for this mechanism is to ensure two things:
+    - No more mirrors than required are created (if we tried that we would get
+      integrity errors as the resource plus the start-time are unique)
+    - A weak link between master and mirror exist (master_uuid * mirror = mirror_uuid)
+
+    Since we do not want to calculate these mirror uuids all the time, since it
+    is a somewhat expensive calculations and because it is a bit of hassle, we
+    store the master uuid in the mirror_of field of each allocation record.
+    
     """
 
     def __init__(self, resource_uuid, quota=1, masks=None):
