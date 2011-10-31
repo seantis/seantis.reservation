@@ -249,6 +249,15 @@ class Slots(grok.View, CalendarRequest):
                     resource, self.request, scheduler, alloc
                 )
 
+            if not alloc.partly_available:
+                # TODO get rid of this workaround
+                # (it's about showing a used partition when the master is
+                # available but not the mirrors)
+                reserved = klass != utils.event_class(100)
+                partitions = ((100.0, reserved),)
+            else:
+                partitions = alloc.availability_partitions()
+
             events.append(dict(
                 allDay=False,
                 start=start.isoformat(),
@@ -261,7 +270,7 @@ class Slots(grok.View, CalendarRequest):
                 removeurl=removeurl,
                 removegroupurl=removegroupurl,
                 allocation = alloc.id,
-                partitions = alloc.availability_partitions(),
+                partitions = partitions,
                 group = alloc.group
             ))
         

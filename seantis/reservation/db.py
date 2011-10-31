@@ -158,6 +158,7 @@ class Scheduler(object):
             query = Session.query(Allocation)
             query = query.filter(Allocation.resource.in_(unused))
             query = query.filter(Allocation.id != master.id)
+            query = query.filter(Allocation._start == master._start)
             query.delete('fetch')
         
     

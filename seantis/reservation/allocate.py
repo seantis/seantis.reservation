@@ -137,7 +137,10 @@ class AllocationAddForm(AllocationForm):
     label = _(u'Resource allocation')
 
     def defaults(self):
-        return {'quota': self.scheduler.quota}
+        return {
+            'quota': self.scheduler.quota,
+            'group': u''
+        }
 
     def get_dates(self, data):
         """ Return a list with date tuples depending on the data entered by the
@@ -231,7 +234,7 @@ class AllocationEditForm(AllocationForm):
 
         scheduler = self.context.scheduler()
 
-        args = (data.id, data.start, data.end, unicode(data.group), data.quota)
+        args = (data.id, data.start, data.end, unicode(data.group or u''), data.quota)
         action = lambda: scheduler.move_allocation(*args)
         
         utils.handle_action(action=action, success=self.redirect_to_context)
