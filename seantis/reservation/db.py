@@ -108,6 +108,7 @@ class Scheduler(object):
 
         return group, allocations
 
+    @serialized
     def change_quota(self, master, new_quota):
         assert new_quota > 0, "Quota must be greater than 0"
 
@@ -139,7 +140,7 @@ class Scheduler(object):
 
         for resource in resources:
             resource.quota = new_quota
-            
+
             new_resource = reordered[resource.resource]
             if not new_resource:
                 continue
@@ -207,6 +208,11 @@ class Scheduler(object):
     def allocations_in_range(self, start, end):
         query = all_allocations_in_range(start, end)
         query = query.filter(Allocation.resource == self.uuid)
+        return query
+
+    def allocations_by_reservation(self, reservation):
+        query = Session.query(Allocation).join(ReservedSlot)
+        query = query.filter(ReservedSlot.reservation == reservation)
         return query
 
     def allocation_by_date(self, start, end):
@@ -282,7 +288,12 @@ class Scheduler(object):
         return count, availability
 
     @serialized
-    def move_allocation(self, master_id, new_start, new_end, group, new_quota):
+    def move_allocation(self, master_id, new_start=None, new_end=None, 
+                            group=None, new_quota=None):
+
+        assert master_id
+        assert any([new_start and new_end, group, new_quota])
+
         # Find allocation
         master = self.allocation_by_id(master_id)
         mirrors = self.allocation_mirrors_by_master(master)
@@ -312,7 +323,8 @@ class Scheduler(object):
                     if reservation:
                         raise AffectedReservationError(reservation)
 
-        self.change_quota(master, new_quota)
+        if new_quota:
+            self.change_quota(master, new_quota)
 
         for change in changing:
             change.start = new.start

@@ -265,3 +265,83 @@ class TestScheduler(IntegrationTestCase):
         mirrors = sc.allocation_mirrors_by_master(allocation)
         imaginary = len([m for m in mirrors if m.is_transient])
         self.assertEqual(imaginary, 0)
+
+    @serialized
+    def test_quota_changes(self):
+        sc = Scheduler(new_uuid(), quota=5)
+
+        start = datetime(2011, 1, 1, 15, 0)
+        end = datetime(2011, 1, 1, 16, 0)
+        daterange = (start, end)
+
+        master = sc.allocate(daterange)[1][0]
+
+        reservations = []
+        for i in range(0, 5):
+            reservations.append(sc.reserve(daterange)[0])
+
+        mirrors = sc.allocation_mirrors_by_master(master)
+
+        self.assertFalse(master.is_available())
+        self.assertEqual(4, len([m for m in mirrors if not m.is_available()]))
+
+        sc.remove_reservation(reservations[0])
+        self.assertTrue(master.is_available())
+
+        # by removing the reservation on the master and changing the quota
+        # a reordering is triggered which will ensure that the master and the
+        # mirrors are reserved without gaps (master, mirror 0, mirror 1 usw..)
+        # so we should see an unavailable master after changing the quota
+        sc.change_quota(master, 4)
+        self.assertFalse(master.is_available())
+        self.assertEqual(4, master.quota)
+
+        mirrors = sc.allocation_mirrors_by_master(master)
+        self.assertEqual(3, len([m for m in mirrors if not m.is_available()]))
+
+        for reservation in reservations:
+            sc.remove_reservation(reservation)
+
+        self.assertTrue(master.is_available())
+        mirrors = sc.allocation_mirrors_by_master(master)
+        self.assertEqual(0, len([m for m in mirrors if not m.is_available()]))
+
+        # let's do another round, adding 7 reservations and removing the three
+        # in the middle, which should result in a reordering:
+        # -> 1, 2, 3, 4, 5, 6, 7
+        # -> 1, 2, -, -, 5, -, 7
+        # => 1, 2, 3, 4, -, - ,-
+
+        sc.change_quota(master, 7)
+        
+        sc.reserve(daterange)[0]
+        r2 = sc.reserve(daterange)[0]
+        r3 = sc.reserve(daterange)[0]
+        r4 = sc.reserve(daterange)[0]
+        r5 = sc.reserve(daterange)[0]
+        r6 = sc.reserve(daterange)[0]
+        r7 = sc.reserve(daterange)[0]
+
+        a2 = sc.allocations_by_reservation(r2).one().id
+        a3 = sc.allocations_by_reservation(r3).one().id
+        a4 = sc.allocations_by_reservation(r4).one().id
+        a5 = sc.allocations_by_reservation(r5).one().id
+        a7 = sc.allocations_by_reservation(r7).one().id
+
+        sc.remove_reservation(r3)
+        sc.remove_reservation(r4)
+        sc.remove_reservation(r6)
+
+        sc.change_quota(master, 4)
+
+        a2_ = sc.allocations_by_reservation(r2).one().id
+        a5_ = sc.allocations_by_reservation(r5).one().id
+        a7_ = sc.allocations_by_reservation(r7).one().id
+
+        self.assertTrue(a2_ == a2)
+
+        self.assertTrue(a5_ == a3)
+        self.assertTrue(a5_ != a5)
+
+        self.assertTrue(a7_ == a4)
+        self.assertTrue(a7_ != a7)
