@@ -39,7 +39,7 @@ def generate_uuids(uuid, quota):
     return [mirror(n) for n in xrange(1, quota)]
 
 class Scheduler(object):
-    """ Used to manage a resource as well as all connected mirrors. 
+    """Used to manage a resource as well as all connected mirrors. 
 
     Master -> Mirror relationship
     =============================
@@ -51,9 +51,12 @@ class Scheduler(object):
     (See generate_uuids).
 
     The reason for this mechanism is to ensure two things:
+
     - No more mirrors than required are created (if we tried that we would get
       integrity errors as the resource plus the start-time are unique)
-    - A weak link between master and mirror exist (master_uuid * mirror = mirror_uuid)
+
+    - The reservation slot does not need to carry any information about the
+      mirror. It just references a resource uuid
 
     Since we do not want to calculate these mirror uuids all the time, since it
     is a somewhat expensive calculations and because it is a bit of hassle, we
@@ -74,6 +77,32 @@ class Scheduler(object):
 
     @serialized
     def allocate(self, dates, group=None, raster=15, quota=None, partly_available=False):
+        """Allocates a spot in the calendar.
+
+        An allocation defines a timerange which can be reserved. No reservations
+        can exist outside of existing allocations. In fact any reserved slot will
+        link to an allocation.
+
+        An allocation may be available as a whole (to reserve all or nothing).
+        It may also be partly available which means reservations can be made
+        for parts of the allocation. 
+
+        If an allocation is partly available a raster defines the granularity
+        with which a reservation can be made (e.g. a raster of 15min will ensure 
+        that reservations are at least 15 minutes long and start either at 
+        :00, :15, :30 or :45)
+
+        The reason for the raster is mainly to ensure that different reservations
+        trying to reserve overlapping times need the same keys in the reserved_slots
+        table, ensuring integrity at the database level.
+
+        Allocations may have a quota, which determines how many times an allocation
+        may be reserved. Quotas are enabled using a master-mirrors relationship.
+
+        The master is the first allocation to be created. The mirrors copies of
+        that allocation. See Scheduler.__doc__
+
+        """
         dates = utils.pairs(dates)
 
         group = group or unicode(new_uuid())
@@ -110,6 +139,55 @@ class Scheduler(object):
 
     @serialized
     def change_quota(self, master, new_quota):
+        """ Changes the quota of a master allocation.
+
+        Fails if the quota is already exhausted.
+
+        When the quota is decreased a reorganization of the mirrors is triggered.
+        Reorganizing means eliminating gaps in the chain of mirrors that emerge
+        when reservations are removed:
+
+        Initial State:
+        1   (master)    Free
+        2   (mirror)    Free
+        3   (mirror)    Free
+
+        Reservations are made:
+        1   (master)    Reserved
+        2   (mirror)    Reserved
+        3   (mirror)    Reserved
+
+        A reservation is deleted:
+        1   (master)    Reserved
+        2   (mirror)    Free     <-- !!
+        3   (mirror)    Reserved
+
+        Reorganization is performed:
+        1   (master)    Reserved
+        2   (mirror)    Reserved <-- !!
+        3   (mirror)    Free     <-- !!
+
+        The quota is decreased:
+        1   (master)    Reserved
+        2   (mirror)    Reserved
+
+        In other words, the reserved allocations are moved to the beginning,
+        the free allocations moved at the end. This is done to ensure that
+        the sequence of generated uuids for the mirrors always represent all
+        possible keys.
+
+        Without the reorganization we would see the following after
+        decreasing the quota:
+
+        The quota is decreased:
+        1   (master)    Reserved
+        3   (mirror)    Reserved
+
+        This would make it impossible to calculate the mirror keys. Instead the
+        existing keys would have to queried from the database.
+        
+        """
+
         assert new_quota > 0, "Quota must be greater than 0"
 
         if new_quota == master.quota:
@@ -119,41 +197,43 @@ class Scheduler(object):
             master.quota = new_quota
             return
 
-        free_mirrors = []
-        
+        # Make sure that the quota can be decreased
         mirrors = self.allocation_mirrors_by_master(master)
-        for mirror in mirrors:
-            if mirror.is_available():
-                free_mirrors.append(mirror)
+        allocations = [master] + mirrors
 
-        required_spaces = master.quota - new_quota 
-        required_spaces -= master.is_available() and 1 or 0
-        if len(free_mirrors) < required_spaces:
+        free_allocations = [a for a in allocations if a.is_available]
+
+        required = master.quota - new_quota
+        if len(free_allocations) < required:
             raise AffectedReservationError(None)
         
-        reordered = self.reordered_keylist(master, new_quota)
+        # get a map pointing from the existing uuid to the newly assigned uuid
+        reordered = self.reordered_keylist(allocations, new_quota)
+
+        # unused keys are the ones not present in the newly assignd uuid list
         unused = set(reordered.keys()) - set(reordered.values()) - set((None,))
+        
+        # get a map for resource_uuid -> allocation.id
+        ids = dict(((a.resource, a.id) for a in allocations))
 
-        resources = [master]
-        resources.extend(mirrors)
-        ids = dict(((r.resource, r.id) for r in resources))
+        for allocation in allocations:
 
-        for resource in resources:
-            resource.quota = new_quota
+            # change the quota for all allocations
+            allocation.quota = new_quota
 
-            new_resource = reordered[resource.resource]
+            # the value is None if the allocation is not mapped to a new uuid
+            new_resource = reordered[allocation.resource]
             if not new_resource:
                 continue
-
+            
+            # move all slots to the mapped allocation id
             new_id = ids[new_resource]
 
-            for slot in resource.reserved_slots:
+            for slot in allocation.reserved_slots:
                 slot.resource = new_resource
                 slot.allocation_id = new_id
-
-            if resource.is_transient:
-                Session.add(resource)
         
+        # get rid of the unused allocations (always preserving the master)
         if unused:
             query = Session.query(Allocation)
             query = query.filter(Allocation.resource.in_(unused))
@@ -162,34 +242,35 @@ class Scheduler(object):
             query.delete('fetch')
         
     
-    def reordered_keylist(self, master, new_quota):
-        assert new_quota < master.quota
-        assert new_quota > 0
+    def reordered_keylist(self, allocations, new_quota):
+        """ Creates the map for the keylist reorganzation. 
 
+        Each key of the returned dictionary is a resource uuid pointing to the 
+        resource uuid it should be moved to. If the allocation should not be
+        moved they key-value is None.
+
+        """
+        masters = [a for a in allocations if a.is_master]
+        assert(len(masters) == 1)
+
+        master = masters[0]
+        allocations = dict(((a.resource, a) for a in allocations))
+        
+        # generate the keylist (the allocation resources may be unordered)
         keylist = [master.resource]
         keylist.extend(generate_uuids(master.resource, master.quota))
-
-        reordered = dict(((k, k) for k in keylist)) 
-
-        if new_quota > master.quota:
-            return reordered
         
-        resources = [master]
-        resources.extend(self.allocation_mirrors_by_master(master))
-        resources = dict(((r.resource, r) for r in resources))
+        # prefill the map
+        reordered = dict(((k, None) for k in keylist))
 
+        # each free allocation increases the offset by which the next key
+        # for a non-free allocation is acquired
         offset = 0
         for ix, key in enumerate(keylist):
-            resource = resources[key]
-            skip = resource.is_transient or resource.is_available()
-
-            if skip:
+            if allocations[key].is_available():
                 offset += 1
-                reordered[key] = None
             else:
-                index = ix - offset
-                index = index >= 0 and index or 0
-                reordered[key] = keylist[index]
+                reordered[key] = keylist[ix - offset]
 
         return reordered
 
