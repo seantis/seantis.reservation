@@ -40,9 +40,12 @@ seantis.calendars.defaults = {
                     var calendar = this;
                     element.prepOverlay({
                         subtype: 'ajax', 
-                        filter:  '#content>*',
+                        filter:  common_content_filter,
                         formselector: 'form', 
                         noform: 'close',
+                        afterpost: function(el) {
+                            seantis.formgroups.init(el);
+                        },
                         config: { 
                             onClose: function() {
                                 calendar.is_resizing = false;
@@ -50,9 +53,7 @@ seantis.calendars.defaults = {
                                 calendar.element.fullCalendar('refetchEvents');
                             },
                             onBeforeLoad: function() {
-                                if (!_.isUndefined(seantis.formgroups)) {
-                                    seantis.formgroups.init();
-                                }
+                                seantis.formgroups.init();
                             } 
                         } 
                     });

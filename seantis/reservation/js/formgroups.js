@@ -30,16 +30,24 @@ seantis.formgroups.add = function(options) {
     seantis.formgroups.groups[options.name] = options;
 };
 
-seantis.formgroups.init = function() {
-    
-    var groups = seantis.formgroups.groups;
+seantis.formgroups.clear = function() {
+    seantis.formgroups.groups = {};  
+};
 
-    this.add({
+seantis.formgroups.init = function(el) {
+    seantis.formgroups.clear();
+
+    var root = _.isUndefined(el) ? null : $(el);
+    var find = function(selector) { return $(selector, root); };
+    var groups = seantis.formgroups.groups;
+    var add = seantis.formgroups.add;
+
+    add({
         name: "recurring",
-        trigger: $('#form-widgets-recurring-0'),
+        trigger: find('#form-widgets-recurring-0'),
         fields: [
-            $('#formfield-form-widgets-frequency'),
-            $('#formfield-form-widgets-recurrence_end')
+            find('#formfield-form-widgets-frequency'),
+            find('#formfield-form-widgets-recurrence_end')
         ],
         on_show: function(show) {
             if (groups.days)
@@ -47,19 +55,19 @@ seantis.formgroups.init = function() {
         }
     });
 
-    this.add({
+    add({
         name: "partly",
-        trigger: $('#form-widgets-partly_available-0'),
+        trigger: find('#form-widgets-partly_available-0'),
         fields: [
-            $('#formfield-form-widgets-raster')
+            find('#formfield-form-widgets-raster')
         ]
     });
 
-    var days = this.add({
+    add({
        name: "days",
-       trigger: $('#form-widgets-frequency'),
+       trigger: find('#form-widgets-frequency'),
        fields: [
-            $('#formfield-form-widgets-days')
+            find('#formfield-form-widgets-days')
        ],
        on_is_enabled: function(trigger) {
             if (!groups.recurring.is_enabled())
