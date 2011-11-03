@@ -46,6 +46,25 @@ seantis.locale.ix = function(language) {
     }
 };
 
+seantis.locale.fullcalendar = function() {
+    if (seantis.locale.language() == 'de') {
+        return {
+            buttonText: {  
+                today: 'Heute',  
+                month: 'Monat',  
+                day: 'Tag',  
+                week: 'Woche'
+            },  
+            monthNames: ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'],  
+            monthNamesShort: ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sept','Okt','Nov','Dez'],  
+            dayNames: ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'],  
+            dayNamesShort: ['So','Mo','Di','Mi','Do','Fr','Sa']
+        };
+    }
+
+    return {}
+};
+
 seantis.locale.translate = function(html) {
     return html.replace(/%([a-zA-Z0-9 ]+)%/g, function(text, group) {
         return seantis.locale(group);

@@ -210,6 +210,7 @@ seantis.calendars.defaults = {
 
             // Merge the options with the ones defined by the resource view as 
             // well as with the defaults
+            $.extend(options, seantis.locale.fullcalendar());
             $.extend(options, seantis.calendars.defaults);
             $.extend(options, calendar.options);
             calendar.element.fullCalendar(options);

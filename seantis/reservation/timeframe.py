@@ -29,7 +29,7 @@ class ITimeframe(form.Schema):
     @interface.invariant
     def isValidDateRange(Timeframe):
         if Timeframe.start > Timeframe.end:
-            raise interface.Invalid(_(u'Start date before end date'))
+            raise interface.Invalid(_(u'End date before start date'))
 
 class Timeframe(Item):
     @property

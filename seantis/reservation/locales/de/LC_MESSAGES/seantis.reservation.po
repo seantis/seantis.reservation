@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-09-08 10:18+0000\n"
+"POT-Creation-Date: 2011-11-03 15:28+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,7 +14,266 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: DOMAIN\n"
 
+#: ./utils.py:115
+msgid "%i Spots Available"
+msgstr "%i Plätze Verfügbar"
+
+#: ./utils.py:108
+msgid "%i%% Free"
+msgstr "%i%% Frei"
+
+#: ./utils.py:113
+msgid "1 Spot Available"
+msgstr "Ein Platz verfügbar"
+
+#: ./utils.py:53
+msgid "A conflicting allocation exists for the requested time period."
+msgstr "Es existiert bereits eine Einteilung für den gewählten Zeitraum"
+
+#: ./timeframe.py:135
+msgid "Add"
+msgstr "Hinzufügen"
+
+#: ./allocate.py:174
+msgid "Allocate"
+msgstr "Einteilen"
+
+#: ./allocate.py:139
+msgid "Allocation"
+msgstr "Einteilung"
+
+#: ./utils.py:55
+msgid "An existing reservation would be affected by the requested change"
+msgstr "Eine bestehende Reservation wäre durch die Änderung betroffen"
+
+#: ./allocate.py:42
+msgid "Daily"
+msgstr "Täglich"
+
+#: ./allocate.py:59
+#: ./reserve.py:23
+msgid "Day"
+msgstr "Tag"
+
+#: ./allocate.py:92
+msgid "Days"
+msgstr "Tage"
+
+#: ./allocate.py:274
+#: ./timeframe.py:149
+msgid "Delete"
+msgstr "Löschen"
+
+#: ./resource.py:26
+msgid "Description"
+msgstr "Beschreibung"
+
+#: ./templates/remove_allocation.pt:13
+msgid "Do you really want to remove the following allocations?"
+msgstr "Möchten Sie die folgenden Einteilungen wirklich löschen?"
+
+#: ./allocate.py:236
+#: ./timeframe.py:148
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: ./allocate.py:195
+msgid "Edit allocation"
+msgstr "Einteilung bearbeiten"
+
+#: ./allocate.py:67
+#: ./reserve.py:31
+#: ./timeframe.py:26
+msgid "End"
+msgstr "Ende"
+
+#: ./allocate.py:115
+#: ./reserve.py:37
+#: ./timeframe.py:32
+msgid "End date before start date"
+msgstr "Ende vor Start"
+
+#: ./resource.py:58
+msgid "First hour must be smaller than last hour"
+msgstr "Die erste Stunde muss kleiner als die letzte Stunde sein"
+
+#: ./resource.py:31
+msgid "First hour of the day"
+msgstr "Erste Stunde des Tages"
+
+#: ./utils.py:106
+msgid "Free"
+msgstr "Frei"
+
+#: ./allocate.py:87
+msgid "Frequency"
+msgstr "Frequenz"
+
+#: ./allocate.py:35
+msgid "Friday"
+msgstr "Freitag"
+
+#: ./allocate.py:102
+msgid "Group"
+msgstr "Gruppe"
+
+#: ./allocate.py:54
+msgid "Id"
+msgstr "Id"
+
+#: ./allocate.py:212
+msgid "Invalid arguments"
+msgstr "Ungültige Argumente"
+
+#: ./resource.py:51
+msgid "Invalid first hour"
+msgstr "Ungültige erste Stunde"
+
+#: ./resource.py:54
+msgid "Invalid last hour"
+msgstr "Ungültige letzte Stunde"
+
+#: ./resource.py:36
+msgid "Last hour of the day"
+msgstr "Letzte Stunde des Tages"
+
+#: ./allocate.py:31
+msgid "Monday"
+msgstr "Montag"
+
+#: ./allocate.py:44
+msgid "Monthly"
+msgstr "Monatlich"
+
+#: ./resource.py:22
+#: ./timeframe.py:18
+msgid "Name"
+msgstr "Name"
+
+#: ./utils.py:65
+msgid "No reservable slot found."
+msgstr "Der gewünschte Zeitbereich ist bereits besetzt."
+
+#: ./utils.py:117
+msgid "No spots available"
+msgstr "Keine Plätze frei"
+
+#: ./utils.py:104
+msgid "Occupied"
+msgstr "Besetzt"
+
+#: ./allocate.py:71
+msgid "Partly available"
+msgstr "Teilweise verfügbar"
+
+#: ./allocate.py:109
+#: ./resource.py:41
+msgid "Quota"
+msgstr "Kontingent"
+
+#: ./allocate.py:125
+msgid "Quota must be between 1 and 100"
+msgstr "Kontingent muss zwischen 1 und 100 liegen"
+
+#: ./allocate.py:76
+msgid "Raster"
+msgstr "Raster"
+
+#: ./allocate.py:82
+msgid "Recurring"
+msgstr "Wiederholend"
+
+#: ./allocate.py:120
+msgid "Recurring allocations require a group"
+msgstr "Wiederholende Einteilungen bedingen einen Gruppennamen"
+
+#: ./allocate.py:257
+msgid "Remove allocations"
+msgstr "Einteilungen entfernen"
+
+#: ./reserve.py:46
+msgid "Reserve"
+msgstr "Reservieren"
+
 #: ./profiles/default/types/seantis.reservation.resource.xml
 msgid "Resource"
 msgstr "Ressource"
+
+#: ./reserve.py:44
+msgid "Resource reservation"
+msgstr "Reservation"
+
+#: ./allocate.py:36
+msgid "Saturday"
+msgstr "Samstag"
+
+#: ./timeframe.py:46
+msgid "Save"
+msgstr "Speichern"
+
+#: ./allocate.py:63
+#: ./reserve.py:27
+#: ./timeframe.py:22
+msgid "Start"
+msgstr "Start"
+
+#: ./allocate.py:37
+msgid "Sunday"
+msgstr "Sonntag"
+
+#: ./utils.py:59
+msgid "The item does no longer exist."
+msgstr "Der Eintrag existiert nicht mehr"
+
+#: ./templates/remove_allocation.pt:14
+msgid "The requested allocations could not be found"
+msgstr "Die gewnüschten Einteilungen konnten nicht gefunden werden"
+
+#: ./utils.py:61
+msgid "The requested period is no longer available."
+msgstr "Die gewünschte Periode ist nicht mehr verfügbar."
+
+#: ./utils.py:57
+msgid "The resource is being edited by someone else. Please try again."
+msgstr "Die Resource wird von jemand anderem bearbeitet. Bitte versuchen Sie es nochmal."
+
+#: ./utils.py:63
+msgid "This record already exists."
+msgstr "Dieser Eintrag existiert bereits."
+
+#: ./allocate.py:34
+msgid "Thursday"
+msgstr "Donnerstag"
+
+#: ./profiles/default/types/seantis.reservation.timeframe.xml
+msgid "Timeframe"
+msgstr "Belegungsperiode"
+
+#: ./timeframe.py:65
+msgid "Timeframe overlaps with '%s' in the current folder"
+msgstr "Belegungsperiode überschneidet sich mit '%s'"
+
+#: ./templates/timeframes.pt:4
+msgid "Timeframes"
+msgstr "Belegungsperioden"
+
+#: ./allocate.py:32
+msgid "Tuesday"
+msgstr "Dienstag"
+
+#: ./allocate.py:97
+msgid "Until"
+msgstr "Bis"
+
+#: ./allocate.py:33
+msgid "Wednesday"
+msgstr "Mittwoch"
+
+#: ./allocate.py:43
+msgid "Weekly"
+msgstr "Wöchentlich"
+
+#: ./allocate.py:45
+msgid "Yearly"
+msgstr "Jährlich"
 

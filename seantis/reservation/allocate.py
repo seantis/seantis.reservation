@@ -136,7 +136,7 @@ class AllocationAddForm(AllocationForm):
     fields = field.Fields(IAllocation)
     fields['days'].widgetFactory = CheckBoxFieldWidget
 
-    label = _(u'Resource allocation')
+    label = _(u'Allocation')
 
     def defaults(self):
         return {
@@ -192,7 +192,7 @@ class AllocationEditForm(AllocationForm):
     fields = field.Fields(IAllocation).select(
             'id', 'day', 'start_time', 'end_time', 'group', 'quota'
         )
-    label = _(u'Edit resource allocation')
+    label = _(u'Edit allocation')
 
     @property
     def id(self):
@@ -254,7 +254,7 @@ class AllocationRemoveForm(AllocationForm):
     fields = field.Fields(IAllocation).select('id', 'group')
     template = ViewPageTemplateFile('templates/remove_allocation.pt')
     
-    label = _(u'Remove resource allocation')
+    label = _(u'Remove allocations')
 
     hidden_fields = ['id', 'group']
     ignore_requirements = True

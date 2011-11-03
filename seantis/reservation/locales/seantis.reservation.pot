@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-09-08 10:18+0000\n"
+"POT-Creation-Date: 2011-11-03 15:28+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,266 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: seantis.reservation\n"
 
+#: ./utils.py:115
+msgid "%i Spots Available"
+msgstr ""
+
+#: ./utils.py:108
+msgid "%i%% Free"
+msgstr ""
+
+#: ./utils.py:113
+msgid "1 Spot Available"
+msgstr ""
+
+#: ./utils.py:53
+msgid "A conflicting allocation exists for the requested time period."
+msgstr ""
+
+#: ./timeframe.py:135
+msgid "Add"
+msgstr ""
+
+#: ./allocate.py:174
+msgid "Allocate"
+msgstr ""
+
+#: ./allocate.py:139
+msgid "Allocation"
+msgstr ""
+
+#: ./utils.py:55
+msgid "An existing reservation would be affected by the requested change"
+msgstr ""
+
+#: ./allocate.py:42
+msgid "Daily"
+msgstr ""
+
+#: ./allocate.py:59
+#: ./reserve.py:23
+msgid "Day"
+msgstr ""
+
+#: ./allocate.py:92
+msgid "Days"
+msgstr ""
+
+#: ./allocate.py:274
+#: ./timeframe.py:149
+msgid "Delete"
+msgstr ""
+
+#: ./resource.py:26
+msgid "Description"
+msgstr ""
+
+#: ./templates/remove_allocation.pt:13
+msgid "Do you really want to remove the following allocations?"
+msgstr ""
+
+#: ./allocate.py:236
+#: ./timeframe.py:148
+msgid "Edit"
+msgstr ""
+
+#: ./allocate.py:195
+msgid "Edit allocation"
+msgstr ""
+
+#: ./allocate.py:67
+#: ./reserve.py:31
+#: ./timeframe.py:26
+msgid "End"
+msgstr ""
+
+#: ./allocate.py:115
+#: ./reserve.py:37
+#: ./timeframe.py:32
+msgid "End date before start date"
+msgstr ""
+
+#: ./resource.py:58
+msgid "First hour must be smaller than last hour"
+msgstr ""
+
+#: ./resource.py:31
+msgid "First hour of the day"
+msgstr ""
+
+#: ./utils.py:106
+msgid "Free"
+msgstr ""
+
+#: ./allocate.py:87
+msgid "Frequency"
+msgstr ""
+
+#: ./allocate.py:35
+msgid "Friday"
+msgstr ""
+
+#: ./allocate.py:102
+msgid "Group"
+msgstr ""
+
+#: ./allocate.py:54
+msgid "Id"
+msgstr ""
+
+#: ./allocate.py:212
+msgid "Invalid arguments"
+msgstr ""
+
+#: ./resource.py:51
+msgid "Invalid first hour"
+msgstr ""
+
+#: ./resource.py:54
+msgid "Invalid last hour"
+msgstr ""
+
+#: ./resource.py:36
+msgid "Last hour of the day"
+msgstr ""
+
+#: ./allocate.py:31
+msgid "Monday"
+msgstr ""
+
+#: ./allocate.py:44
+msgid "Monthly"
+msgstr ""
+
+#: ./resource.py:22
+#: ./timeframe.py:18
+msgid "Name"
+msgstr ""
+
+#: ./utils.py:65
+msgid "No reservable slot found."
+msgstr ""
+
+#: ./utils.py:117
+msgid "No spots available"
+msgstr ""
+
+#: ./utils.py:104
+msgid "Occupied"
+msgstr ""
+
+#: ./allocate.py:71
+msgid "Partly available"
+msgstr ""
+
+#: ./allocate.py:109
+#: ./resource.py:41
+msgid "Quota"
+msgstr ""
+
+#: ./allocate.py:125
+msgid "Quota must be between 1 and 100"
+msgstr ""
+
+#: ./allocate.py:76
+msgid "Raster"
+msgstr ""
+
+#: ./allocate.py:82
+msgid "Recurring"
+msgstr ""
+
+#: ./allocate.py:120
+msgid "Recurring allocations require a group"
+msgstr ""
+
+#: ./allocate.py:257
+msgid "Remove allocations"
+msgstr ""
+
+#: ./reserve.py:46
+msgid "Reserve"
+msgstr ""
+
 #: ./profiles/default/types/seantis.reservation.resource.xml
 msgid "Resource"
+msgstr ""
+
+#: ./reserve.py:44
+msgid "Resource reservation"
+msgstr ""
+
+#: ./allocate.py:36
+msgid "Saturday"
+msgstr ""
+
+#: ./timeframe.py:46
+msgid "Save"
+msgstr ""
+
+#: ./allocate.py:63
+#: ./reserve.py:27
+#: ./timeframe.py:22
+msgid "Start"
+msgstr ""
+
+#: ./allocate.py:37
+msgid "Sunday"
+msgstr ""
+
+#: ./utils.py:59
+msgid "The item does no longer exist."
+msgstr ""
+
+#: ./templates/remove_allocation.pt:14
+msgid "The requested allocations could not be found"
+msgstr ""
+
+#: ./utils.py:61
+msgid "The requested period is no longer available."
+msgstr ""
+
+#: ./utils.py:57
+msgid "The resource is being edited by someone else. Please try again."
+msgstr ""
+
+#: ./utils.py:63
+msgid "This record already exists."
+msgstr ""
+
+#: ./allocate.py:34
+msgid "Thursday"
+msgstr ""
+
+#: ./profiles/default/types/seantis.reservation.timeframe.xml
+msgid "Timeframe"
+msgstr ""
+
+#: ./timeframe.py:65
+msgid "Timeframe overlaps with '%s' in the current folder"
+msgstr ""
+
+#: ./templates/timeframes.pt:4
+msgid "Timeframes"
+msgstr ""
+
+#: ./allocate.py:32
+msgid "Tuesday"
+msgstr ""
+
+#: ./allocate.py:97
+msgid "Until"
+msgstr ""
+
+#: ./allocate.py:33
+msgid "Wednesday"
+msgstr ""
+
+#: ./allocate.py:43
+msgid "Weekly"
+msgstr ""
+
+#: ./allocate.py:45
+msgid "Yearly"
 msgstr ""
 
