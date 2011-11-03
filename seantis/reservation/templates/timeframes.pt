@@ -1,12 +1,31 @@
-<div xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="seantis.reservation">
+<div xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+     i18n:domain="seantis.reservation">
 
-<div class="directoryChildren" tal:condition="viewlet/timeframes">
-    <h2 i18n:translate="">Timeframes</h2>
-    <a tal:attributes="href frame/absolute_url" tal:repeat="frame viewlet/timeframes">
-        <div class="resourceTitle" tal:content="frame/timestr"></div>
-        <div class="resourceTitle" tal:content="frame/title"></div>
-        <div class="resourceTitle" tal:content="python: '(' + viewlet.state(frame) + ')'"></div>
-        <div style="clear:both;"></div>
-    </a>
-</div>
+<script type="text/javascript">
+(function($) {
+    $(document).ready(function() {
+        var links = $('a', $('#timeframes'));
+        links.prepOverlay({
+            subtype: 'ajax',
+            filter: common_content_filter,
+            formselector: '#content-core form',
+            noform: 'reload',
+        });
+    });
+})(jQuery);
+</script>
+
+    <div id="timeframes">
+        <h2 i18n:translate="" style="display: inline;">Timeframes</h2>
+        <a class="resourceTitle" style="float: none;" i18n:translate="" tal:attributes="href python: context.absolute_url() + '/++add++seantis.reservation.timeframe'">Add</a>
+        <div tal:condition="viewlet/timeframes">
+            <a tal:attributes="href python: frame.absolute_url() + '/edit'" tal:repeat="frame viewlet/timeframes">
+                <div class="resourceTitle" tal:content="frame/timestr"></div>
+                <div class="resourceTitle" tal:content="frame/title"></div>
+                <div class="resourceTitle" tal:content="python: '(%s)' % viewlet.state(frame)"></div>
+                <div class="resourceTitle"><a i18n:translate="" tal:attributes="href python: frame.absolute_url() + '/delete_confirmation'">Delete</a></div>
+                <div style="clear:both;"></div>
+            </a>
+        </div>
+    </div>
 </div>

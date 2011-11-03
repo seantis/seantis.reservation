@@ -88,7 +88,7 @@ def overlapping_timeframe(context, start, end):
             continue
 
         if utils.overlaps(start, end, frame.start, frame.end):
-            return frame
+            return frame.getObject()
 
     return None
 
