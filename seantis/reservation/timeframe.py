@@ -112,10 +112,15 @@ class TimeframeViewlet(grok.Viewlet):
         return status["review_state"]
 
     def render(self, **kwargs):
-        if self.context != None:
-            return self._template.render(self)
-        else:
+        if self.context == None:
             return u''
+
+        # TODO add a view for the timeframes in effect, until then
+        # disable them on the resource
+        if self.context.portal_type == 'seantis.reservation.resource':
+            return u''
+        
+        return self._template.render(self)
 
     def links(self, frame=None):
 
@@ -148,7 +153,7 @@ class TimeFrameMask(object):
         self.visible = status["review_state"] == 'visible'
         self.start, self.end = timeframe.start, timeframe.end
 
-def timeframes_by_resource(resource):
+def timeframes_by_context(context):
     def traverse(context):
         frames = timeframes_in_context(context)
         if frames:
@@ -162,8 +167,8 @@ def timeframes_by_resource(resource):
             parent = context.aq_inner.aq_parent
             return traverse(parent)
 
-    return traverse(resource)
+    return traverse(context)
 
-def timeframe_masks(resource):
-    frames = timeframes_by_resource(resource)
+def timeframe_masks(context):
+    frames = timeframes_by_context(context)
     return [TimeFrameMask(f) for f in frames]
