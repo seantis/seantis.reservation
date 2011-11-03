@@ -117,6 +117,29 @@ class TimeframeViewlet(grok.Viewlet):
         else:
             return u''
 
+    def links(self, frame=None):
+
+        # global links
+        if not frame:
+            baseurl = self.context.absolute_url()
+            return [(_(u'Add'), 
+                    baseurl + '/++add++seantis.reservation.timeframe')]
+        
+        # frame specific links
+        links = []
+
+        action_tool = getToolByName(frame, 'portal_actions')
+        actions = action_tool.listFilteredActionsFor(frame)['workflow']
+        for action in actions:
+            if action['visible'] and action['available']:
+                links.append((action['title'], action['url']))
+
+        baseurl = frame.absolute_url()
+        links.append((_(u'Edit'), baseurl + '/edit'))
+        links.append((_(u'Delete'), baseurl + '/delete_confirmation'))
+        
+        return links      
+
 class TimeFrameMask(object):
     def __init__(self, timeframe=None):
         workflowTool = getToolByName(timeframe, "portal_workflow")
