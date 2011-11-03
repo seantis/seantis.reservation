@@ -19,19 +19,21 @@ from seantis.reservation.form import (
 
 class IReservation(interface.Interface):
 
-    start = schema.Datetime(
-        title=_(u'From'),
-        default=rasterize_start(datetime.now(), 30)
+    day = schema.Date(
+        title=_(u'Day')
         )
 
-    end = schema.Datetime(
-        title=_(u'To'),
-        default=rasterize_start(datetime.today(), 30) + timedelta(minutes=60)
+    start_time = schema.Time(
+        title=_(u'Start')
+        )
+
+    end_time = schema.Time(
+        title=_(u'End')
         )
 
     @interface.invariant
-    def isValidDateRange(Allocation):
-        if Allocation.start >= Allocation.end:
+    def isValidDateRange(Reservation):
+        if Reservation.start_time >= Reservation.end_time:
             raise interface.Invalid(_(u'End date before start date'))
 
 class ReservationForm(ResourceBaseForm):
@@ -45,8 +47,11 @@ class ReservationForm(ResourceBaseForm):
     @extract_action_data
     def reserve(self, data):
 
+        start = datetime.combine(data.day, data.start_time)
+        end = datetime.combine(data.day, data.end_time)
+
         scheduler = self.context.scheduler()
-        action = lambda: scheduler.reserve((data.start, data.end))
+        action = lambda: scheduler.reserve((start, end))
         redirect = self.request.response.redirect
         success = lambda: redirect(self.context.absolute_url())
 

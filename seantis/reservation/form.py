@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date, time
 
 from five import grok
 from plone.directives import form
@@ -90,8 +90,9 @@ class ResourceBaseForm(form.Form):
     def update(self, **kwargs):
         start, end = self.start, self.end
         if start and end:
-            self.fields['start'].field.default = start
-            self.fields['end'].field.default = end
+            self.fields['day'].field.default = start.date()
+            self.fields['start_time'].field.default = start.time()
+            self.fields['end_time'].field.default = end.time()
         
         other_defaults = self.defaults()
         for k, v in other_defaults.items():

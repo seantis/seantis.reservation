@@ -55,14 +55,16 @@ class IAllocation(form.Schema):
         default=-1
         )
 
-    start = schema.Datetime(
-        title=_(u'From'),
-        default=rasterize_start(datetime.today(), 60)
+    day = schema.Date(
+        title=_(u'Day')
         )
 
-    end = schema.Datetime(
-        title=_(u'To'),
-        default=rasterize_start(datetime.today(), 60) + timedelta(minutes=60)
+    start_time = schema.Time(
+        title=_(u'Start')
+        )
+
+    end_time = schema.Time(
+        title=_(u'End')
         )
 
     partly_available = schema.Bool(
@@ -109,7 +111,7 @@ class IAllocation(form.Schema):
 
     @interface.invariant
     def isValidDateRange(Allocation):
-        if Allocation.start >= Allocation.end:
+        if Allocation.start_time >= Allocation.end_time:
             raise interface.Invalid(_(u'End date before start date'))
 
     @interface.invariant
@@ -139,7 +141,7 @@ class AllocationAddForm(AllocationForm):
     def defaults(self):
         return {
             'quota': self.scheduler.quota,
-            'group': u''
+            'group': u'',
         }
 
     def get_dates(self, data):
@@ -148,8 +150,11 @@ class AllocationAddForm(AllocationForm):
 
         """
 
+        start = datetime.combine(data.day, data.start_time)
+        end = datetime.combine(data.day, data.end_time)
+
         if not data.recurring:
-            return ((data.start, data.end))
+            return ((start, end))
 
         # weekdays is only available for daily frequencies
         byweekday = data.frequency == rrule.DAILY and data.days or None
@@ -157,13 +162,13 @@ class AllocationAddForm(AllocationForm):
         rule = rrule.rrule(
                 data.frequency,
                 byweekday=byweekday,
-                dtstart=data.start, 
+                dtstart=start, 
                 until=data.recurrence_end,
             )
     
         # the rule is created using the start date, the delta is added to each
         # generated date to get the end
-        delta = data.end - data.start
+        delta = end - start
         return [(d, d+delta) for d in rule]
 
     @button.buttonAndHandler(_(u'Allocate'))
@@ -184,7 +189,9 @@ class AllocationEditForm(AllocationForm):
     grok.name('edit-allocation')
     grok.require('cmf.ManagePortal')
 
-    fields = field.Fields(IAllocation).select('id', 'start', 'end', 'group', 'quota')
+    fields = field.Fields(IAllocation).select(
+            'id', 'day', 'start_time', 'end_time', 'group', 'quota'
+        )
     label = _(u'Edit resource allocation')
 
     @property
@@ -218,8 +225,9 @@ class AllocationEditForm(AllocationForm):
             group = not utils.is_uuid(group) and group or None
             
             self.fields['id'].field.default = self.id
-            self.fields['start'].field.default = start
-            self.fields['end'].field.default = end
+            self.fields['day'].field.default = start.date()
+            self.fields['start_time'].field.default = start.time()
+            self.fields['end_time'].field.default = end.time()
             self.fields['group'].field.default = group or u''
             self.fields['quota'].field.default = allocation.quota
 
