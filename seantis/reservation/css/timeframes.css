@@ -1,0 +1,7 @@
+#timeframes .visibleTimeframe {
+    color: #111 !important;
+}
+
+#timeframes .hiddenTimeframe {
+    color: #aaa !important;
+}

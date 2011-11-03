@@ -1,34 +1,5 @@
-<div xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-     i18n:domain="seantis.reservation">
-
-<script type="text/javascript">
-(function($) {
-    $(document).ready(function() {
-        var links = $('a', $('#timeframes'));
-        var formselector = '#content-core form';
-
-        links.prepOverlay({
-            subtype: 'ajax',
-            filter: common_content_filter,
-            formselector: formselector,
-            noform: 'reload',
-            closeselector: '[name=form.button.Cancel]',
-            config: {
-                onBeforeLoad: function() {
-                    // Ff the formselector can't be found the overlay is
-                    // immediatly discarded and the page reloaded. This
-                    // is a bit of a hack to enable workflow_state changes
-                    // without showing a meaningless overlay.
-                    var overlay = this.getOverlay();
-                    if (overlay.find(formselector).length === 0)
-                        window.location.reload();
-                }
-            }
-        });
-    });
-})(jQuery);
-</script>
-
+<div xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="seantis.reservation">
+    
     <div id="timeframes">
         <h2 i18n:translate="" style="display: inline;">
             Timeframes
@@ -38,12 +9,12 @@
         <div tal:condition="viewlet/timeframes">
             
             <div class="resourceItem" tal:repeat="frame viewlet/timeframes">
+                <div tal:attributes="class python: viewlet.visible(frame) and 'visibleTimeframe' or 'hiddenTimeframe'">
+                    <div class="resourceTitle" tal:content="frame/timestr"></div>
+                    <div class="resourceTitle" tal:content="frame/title"></div>
 
-                <div class="resourceTitle" tal:content="frame/timestr"></div>
-                <div class="resourceTitle" tal:content="frame/title"></div>
-
-                <div class="resourceTitle" tal:content="python: '(%s)' % viewlet.state(frame)"></div>
-                
+                    <div tal:content="python: viewlet.state(frame)" class="resourceTitle"></div>
+                </div>
                 <a tal:repeat="link python: viewlet.links(frame)" tal:attributes="href python: link[1]">
                     
                     <div class="resourceTitle" tal:content="python: link[0]"></div>

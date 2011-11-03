@@ -4,5 +4,8 @@
     <stylesheet title="" cacheable="True" compression="safe" cookable="True" enabled="1" expression="python:object.portal_type == 'seantis.reservation.resource'" id="++resource++seantis.reservation.css/miniTip.css" media="screen" rel="stylesheet" rendering="import"/>
 
     <stylesheet title="" cacheable="True" compression="safe" cookable="True" enabled="1" expression="python:object.portal_type == 'seantis.reservation.resource'" id="++resource++seantis.reservation.css/resource.css" media="screen" rel="stylesheet" rendering="import"/>
+
+    <stylesheet title="" cacheable="True" compression="safe" cookable="True" enabled="1"
+    id="++resource++seantis.reservation.css/timeframes.css" media="screen" rel="stylehsset" rendering="import"/>
     
 </object>

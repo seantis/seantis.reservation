@@ -122,6 +122,11 @@ class TimeframeViewlet(grok.Viewlet):
         
         return self._template.render(self)
 
+    def visible(self, frame):
+        # TODO does this work with translation?
+        state = self.state(frame)
+        return state == 'visible'
+
     def links(self, frame=None):
 
         # global links

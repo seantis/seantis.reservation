@@ -9,5 +9,9 @@
         
         <javascript id="++resource++seantis.reservation.js/calendar.js" cacheable="True" compression="safe" cookable="True" enabled="True" expression="python:object.portal_type == 'seantis.reservation.resource'" inline="False" insert-after="jquery.js"/>
 
-        <javascript id="++resource++seantis.reservation.js/formgroups.js" cacheable="True" compression="safe" cookable="True" enabled="True" inline="False" insert-after="jquery.js"/>
+        <javascript id="++resource++seantis.reservation.js/formgroups.js" cacheable="True" compression="safe" cookable="True" enabled="True" inline="False" insert-after="jquery.js" expression="python: object.portal_type == 'seantis.reservation.resource'"/>
+
+        <javascript id="++resource++seantis.reservation.js/timeframes.js" cacheable="True"
+        compression="safe" cookable="True" enabled="True" inline="False" insert-after="++resource++plone.app.jquerytools.overlayhelpers.js"/>
+        
 </object>
