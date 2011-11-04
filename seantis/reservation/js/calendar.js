@@ -46,6 +46,7 @@ seantis.calendars.defaults = {
                         subtype: 'ajax', 
                         filter:  common_content_filter,
                         formselector: 'form', 
+                        closeselector: '[name=form.button.Cancel]',
                         noform: 'close',
                         afterpost: function(el) {
                             seantis.formgroups.init(el);

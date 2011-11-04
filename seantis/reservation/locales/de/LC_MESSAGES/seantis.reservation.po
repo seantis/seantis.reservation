@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-11-04 13:30+0000\n"
+"POT-Creation-Date: 2011-11-04 15:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,11 +34,11 @@ msgstr "Es existiert bereits eine Einteilung für den gewählten Zeitraum"
 msgid "Add"
 msgstr "Hinzufügen"
 
-#: ./allocate.py:200
+#: ./allocate.py:207
 msgid "Allocate"
 msgstr "Einteilen"
 
-#: ./allocate.py:139
+#: ./allocate.py:134
 msgid "Allocation"
 msgstr "Einteilung"
 
@@ -46,20 +46,25 @@ msgstr "Einteilung"
 msgid "An existing reservation would be affected by the requested change"
 msgstr "Eine bestehende Reservation wäre durch die Änderung betroffen"
 
-#: ./allocate.py:45
+#: ./allocate.py:220
+#: ./reserve.py:60
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: ./allocate.py:38
 msgid "Daily"
 msgstr "Täglich"
 
-#: ./allocate.py:83
+#: ./allocate.py:77
 #: ./reserve.py:23
 msgid "Day"
 msgstr "Tag"
 
-#: ./allocate.py:95
+#: ./allocate.py:89
 msgid "Days"
 msgstr "Tage"
 
-#: ./allocate.py:293
+#: ./allocate.py:311
 #: ./timeframe.py:149
 msgid "Delete"
 msgstr "Löschen"
@@ -72,22 +77,22 @@ msgstr "Beschreibung"
 msgid "Do you really want to remove the following allocations?"
 msgstr "Möchten Sie die folgenden Einteilungen wirklich löschen?"
 
-#: ./allocate.py:255
+#: ./allocate.py:266
 #: ./timeframe.py:148
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: ./allocate.py:220
+#: ./allocate.py:231
 msgid "Edit allocation"
 msgstr "Einteilung bearbeiten"
 
-#: ./allocate.py:73
+#: ./allocate.py:67
 #: ./reserve.py:31
 #: ./timeframe.py:26
 msgid "End"
 msgstr "Ende"
 
-#: ./allocate.py:117
+#: ./allocate.py:112
 #: ./reserve.py:37
 #: ./timeframe.py:32
 msgid "End date before start date"
@@ -101,7 +106,7 @@ msgstr "Die erste Stunde muss kleiner als die letzte Stunde sein"
 msgid "First hour of the day"
 msgstr "Erste Stunde des Tages"
 
-#: ./allocate.py:37
+#: ./allocate.py:30
 msgid "Fr"
 msgstr "Fr"
 
@@ -109,19 +114,19 @@ msgstr "Fr"
 msgid "Free"
 msgstr "Frei"
 
-#: ./allocate.py:87
+#: ./allocate.py:81
 msgid "From"
 msgstr "Von"
 
-#: ./allocate.py:59
+#: ./allocate.py:51
 msgid "Group"
 msgstr "Gruppe"
 
-#: ./allocate.py:54
+#: ./allocate.py:45
 msgid "Id"
 msgstr "Id"
 
-#: ./allocate.py:237
+#: ./allocate.py:248
 msgid "Invalid arguments"
 msgstr "Ungültige Argumente"
 
@@ -137,7 +142,7 @@ msgstr "Ungültige letzte Stunde"
 msgid "Last hour of the day"
 msgstr "Letzte Stunde des Tages"
 
-#: ./allocate.py:33
+#: ./allocate.py:26
 msgid "Mo"
 msgstr "Mo"
 
@@ -158,32 +163,32 @@ msgstr "Keine Plätze frei"
 msgid "Occupied"
 msgstr "Besetzt"
 
-#: ./allocate.py:44
+#: ./allocate.py:37
 msgid "Once"
 msgstr "Einmalig"
 
-#: ./allocate.py:100
+#: ./allocate.py:95
 msgid "Partly available"
 msgstr "Teilweise verfügbar"
 
-#: ./allocate.py:111
+#: ./allocate.py:106
 #: ./resource.py:41
 msgid "Quota"
 msgstr "Kontingent"
 
-#: ./allocate.py:122
+#: ./allocate.py:117
 msgid "Quota must be between 1 and 100"
 msgstr "Kontingent muss zwischen 1 und 100 liegen"
 
-#: ./allocate.py:105
+#: ./allocate.py:100
 msgid "Raster"
 msgstr "Raster"
 
-#: ./allocate.py:77
+#: ./allocate.py:71
 msgid "Recurrence"
 msgstr "Wiederholung"
 
-#: ./allocate.py:276
+#: ./allocate.py:294
 msgid "Remove allocations"
 msgstr "Einteilungen entfernen"
 
@@ -199,7 +204,7 @@ msgstr "Ressource"
 msgid "Resource reservation"
 msgstr "Reservation"
 
-#: ./allocate.py:38
+#: ./allocate.py:31
 msgid "Sa"
 msgstr "Sa"
 
@@ -207,17 +212,17 @@ msgstr "Sa"
 msgid "Save"
 msgstr "Speichern"
 
-#: ./allocate.py:69
+#: ./allocate.py:63
 #: ./reserve.py:27
 #: ./timeframe.py:22
 msgid "Start"
 msgstr "Start"
 
-#: ./allocate.py:39
+#: ./allocate.py:32
 msgid "Su"
 msgstr "So"
 
-#: ./allocate.py:36
+#: ./allocate.py:29
 msgid "Th"
 msgstr "Do"
 
@@ -249,20 +254,20 @@ msgstr "Belegungsperiode"
 msgid "Timeframe overlaps with '%s' in the current folder"
 msgstr "Belegungsperiode überschneidet sich mit '%s'"
 
-#: ./allocate.py:64
+#: ./allocate.py:57
 #: ./templates/timeframes.pt:4
 msgid "Timeframes"
 msgstr "Belegungsperioden"
 
-#: ./allocate.py:34
+#: ./allocate.py:27
 msgid "Tu"
 msgstr "Di"
 
-#: ./allocate.py:91
+#: ./allocate.py:85
 msgid "Until"
 msgstr "Bis"
 
-#: ./allocate.py:35
+#: ./allocate.py:28
 msgid "We"
 msgstr "Mi"
 

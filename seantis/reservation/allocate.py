@@ -1,33 +1,26 @@
 import json
 from datetime import date
 from datetime import datetime
-from datetime import timedelta
 from dateutil import rrule
 
 from five import grok
 from plone.directives import form
-from z3c.form import field
-from z3c.form import button
+from plone.memoize import view
 from zope import schema
 from zope.schema.vocabulary import SimpleVocabulary
 from zope.schema.vocabulary import SimpleTerm
 from zope import interface
+from z3c.form import field
+from z3c.form import button
 from z3c.form.ptcompat import ViewPageTemplateFile
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from z3c.form.browser.radio import RadioFieldWidget
-from plone.memoize import view
 
 from seantis.reservation import _
 from seantis.reservation import error
 from seantis.reservation import utils
-from seantis.reservation.raster import rasterize_start
 from seantis.reservation.raster import VALID_RASTER_VALUES
-
-from seantis.reservation.form import (
-    ResourceBaseForm, 
-    extract_action_data,
-    from_timestamp
-)
+from seantis.reservation.form import ResourceBaseForm, extract_action_data
 
 days = SimpleVocabulary(
         [SimpleTerm(value=rrule.MO, title=_(u'Mo')),
@@ -45,8 +38,6 @@ recurrence = SimpleVocabulary(
          SimpleTerm(value=True, title=_(u'Daily')),
         ]
     )
-
-#TODO make defaults dynamic
 
 class IAllocation(form.Schema):
 
@@ -226,6 +217,10 @@ class AllocationAddForm(AllocationForm):
         
         utils.handle_action(action=action, success=self.redirect_to_context)
 
+    @button.buttonAndHandler(_(u'Cancel'))
+    def cancel(self, action):
+        self.redirect_to_context()
+
 class AllocationEditForm(AllocationForm):
     grok.name('edit-allocation')
     grok.require('cmf.ManagePortal')
@@ -285,6 +280,10 @@ class AllocationEditForm(AllocationForm):
         
         utils.handle_action(action=action, success=self.redirect_to_context)
 
+    @button.buttonAndHandler(_(u'Cancel'))
+    def cancel(self, action):
+        self.redirect_to_context()
+
 class AllocationRemoveForm(AllocationForm):
     grok.name('remove-allocation')
     grok.require('cmf.ManagePortal')
@@ -322,6 +321,10 @@ class AllocationRemoveForm(AllocationForm):
         action = lambda: scheduler.remove_allocation(id=data.id, group=data.group)
         
         utils.handle_action(action=action, success=self.redirect_to_context)
+
+    @button.buttonAndHandler(_(u'Cancel'))
+    def cancel(self, action):
+        self.redirect_to_context()
 
     @view.memoize
     def allocations(self):

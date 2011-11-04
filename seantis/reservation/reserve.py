@@ -56,3 +56,7 @@ class ReservationForm(ResourceBaseForm):
         success = lambda: redirect(self.context.absolute_url())
 
         utils.handle_action(action=action, success=success)
+
+    @button.buttonAndHandler(_(u'Cancel'))
+    def cancel(self, action):
+        self.redirect_to_context()
