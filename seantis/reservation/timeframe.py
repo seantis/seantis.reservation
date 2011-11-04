@@ -157,6 +157,7 @@ class TimeFrameMask(object):
         
         self.visible = status["review_state"] == 'visible'
         self.start, self.end = timeframe.start, timeframe.end
+        self.title = timeframe.title
 
 def timeframes_by_context(context):
     def traverse(context):

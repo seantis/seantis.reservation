@@ -13,12 +13,16 @@ seantis.formgroups.add = function(options) {
         return options.trigger.is(':checked');
     };
 
-    options.show_fields = function(show) {
-        if (options.on_show) options.on_show(show);
+    options.show_fields = function(show, no_notify) {
+        if (!no_notify && options.on_show) options.on_show(show);
 
         _.each(options.fields, function(field) {
             field.toggle(show); 
         });
+    };
+
+    options.refresh = function() {
+        options.show_fields(options.is_enabled());
     };
 
     var o = options;
@@ -34,6 +38,64 @@ seantis.formgroups.clear = function() {
     seantis.formgroups.groups = {};  
 };
 
+seantis.formgroups.add_utility_links = function() {
+    var timeframes_field = $('#formfield-form-widgets-timeframes input');
+    if (!timeframes_field.length)
+        return;
+
+    var timeframes = $.parseJSON(timeframes_field.val());
+    timeframes = _.sortBy(timeframes, function(frame) {
+        return frame.start;
+    });
+    
+    var target = $('#formfield-form-widgets-recurrence_start');
+    var link = _.template(
+            '<div id="<%= id %>"><a href="#">&gt;&gt; <%= title %></a></div>'
+        );
+
+    var start = {};
+    start.year = $('#form-widgets-recurrence_start-year');
+    start.month = $('#form-widgets-recurrence_start-month');
+    start.day = $('#form-widgets-recurrence_start-day');
+
+    var end = {};
+    end.year = $('#form-widgets-recurrence_end-year');
+    end.month = $('#form-widgets-recurrence_end-month');
+    end.day = $('#form-widgets-recurrence_end-day');
+
+    var set_date = function(recurrence, date) {
+        var date = seantis.utils.parse_date(date);
+        recurrence.year.val(date.year);
+        recurrence.month.val(date.month);
+        recurrence.day.val(date.day);
+    };
+
+    start.set = function(date) { set_date(start, date); };
+    end.set = function(date) { set_date(end, date); };
+
+    _.each(timeframes, function(frame) {
+        var id = _.uniqueId('timeframe');
+        var el = $(link({id: id, title: frame.title}));
+        
+        target.before(el);
+        
+        var tool = $('#' + id);
+        tool.click(function(e) {
+            start.set(frame.start);
+            end.set(frame.end);
+
+            e.preventDefault();
+        });
+        seantis.formgroups.groups.recurrent.fields.push(tool);
+    });
+
+    if (timeframes.length) {
+        target.before($('<br />'));
+    }
+
+    seantis.formgroups.groups.recurrent.refresh();
+};
+
 seantis.formgroups.init = function(el) {
     seantis.formgroups.clear();
 
@@ -43,15 +105,34 @@ seantis.formgroups.init = function(el) {
     var add = seantis.formgroups.add;
 
     add({
-        name: "recurring",
+        name: "once",
         trigger: find('#form-widgets-recurring-0'),
         fields: [
-            find('#formfield-form-widgets-frequency'),
-            find('#formfield-form-widgets-recurrence_end')
+            find('#formfield-form-widgets-day')
         ],
+        on_is_enabled: function(trigger) {
+            return trigger.attr('checked');
+        },
         on_show: function(show) {
-            if (groups.days)
-                groups.days.trigger.change();
+            if (groups.recurrent)
+                groups.recurrent.show_fields(!show, true);
+        }
+    });
+
+    add({
+        name: "recurrent",
+        trigger: find('#form-widgets-recurring-1'),
+        fields: [
+            find('#formfield-form-widgets-recurrence_start'),
+            find('#formfield-form-widgets-recurrence_end'),
+            find('#formfield-form-widgets-days')
+        ],
+        on_is_enabled: function(trigger) {
+            return trigger.attr('checked');
+        },
+        on_show: function(show) {
+            if (groups.once)
+                groups.once.show_fields(!show, true);
         }
     });
 
@@ -63,19 +144,7 @@ seantis.formgroups.init = function(el) {
         ]
     });
 
-    add({
-       name: "days",
-       trigger: find('#form-widgets-frequency'),
-       fields: [
-            find('#formfield-form-widgets-days')
-       ],
-       on_is_enabled: function(trigger) {
-            if (!groups.recurring.is_enabled())
-                return false;
-            
-            return trigger.val() == RRULE_DAILY;
-       }
-    });
+    seantis.formgroups.add_utility_links();
 };
 
 (function($) {

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-11-03 15:28+0000\n"
+"POT-Creation-Date: 2011-11-04 13:30+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,7 +16,7 @@ msgstr ""
 
 #: ./utils.py:115
 msgid "%i Spots Available"
-msgstr "%i Plätze Verfügbar"
+msgstr "%i Plätze verfügbar"
 
 #: ./utils.py:108
 msgid "%i%% Free"
@@ -34,7 +34,7 @@ msgstr "Es existiert bereits eine Einteilung für den gewählten Zeitraum"
 msgid "Add"
 msgstr "Hinzufügen"
 
-#: ./allocate.py:174
+#: ./allocate.py:200
 msgid "Allocate"
 msgstr "Einteilen"
 
@@ -46,20 +46,20 @@ msgstr "Einteilung"
 msgid "An existing reservation would be affected by the requested change"
 msgstr "Eine bestehende Reservation wäre durch die Änderung betroffen"
 
-#: ./allocate.py:42
+#: ./allocate.py:45
 msgid "Daily"
 msgstr "Täglich"
 
-#: ./allocate.py:59
+#: ./allocate.py:83
 #: ./reserve.py:23
 msgid "Day"
 msgstr "Tag"
 
-#: ./allocate.py:92
+#: ./allocate.py:95
 msgid "Days"
 msgstr "Tage"
 
-#: ./allocate.py:274
+#: ./allocate.py:293
 #: ./timeframe.py:149
 msgid "Delete"
 msgstr "Löschen"
@@ -72,22 +72,22 @@ msgstr "Beschreibung"
 msgid "Do you really want to remove the following allocations?"
 msgstr "Möchten Sie die folgenden Einteilungen wirklich löschen?"
 
-#: ./allocate.py:236
+#: ./allocate.py:255
 #: ./timeframe.py:148
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: ./allocate.py:195
+#: ./allocate.py:220
 msgid "Edit allocation"
 msgstr "Einteilung bearbeiten"
 
-#: ./allocate.py:67
+#: ./allocate.py:73
 #: ./reserve.py:31
 #: ./timeframe.py:26
 msgid "End"
 msgstr "Ende"
 
-#: ./allocate.py:115
+#: ./allocate.py:117
 #: ./reserve.py:37
 #: ./timeframe.py:32
 msgid "End date before start date"
@@ -101,19 +101,19 @@ msgstr "Die erste Stunde muss kleiner als die letzte Stunde sein"
 msgid "First hour of the day"
 msgstr "Erste Stunde des Tages"
 
+#: ./allocate.py:37
+msgid "Fr"
+msgstr "Fr"
+
 #: ./utils.py:106
 msgid "Free"
 msgstr "Frei"
 
 #: ./allocate.py:87
-msgid "Frequency"
-msgstr "Frequenz"
+msgid "From"
+msgstr "Von"
 
-#: ./allocate.py:35
-msgid "Friday"
-msgstr "Freitag"
-
-#: ./allocate.py:102
+#: ./allocate.py:59
 msgid "Group"
 msgstr "Gruppe"
 
@@ -121,7 +121,7 @@ msgstr "Gruppe"
 msgid "Id"
 msgstr "Id"
 
-#: ./allocate.py:212
+#: ./allocate.py:237
 msgid "Invalid arguments"
 msgstr "Ungültige Argumente"
 
@@ -137,13 +137,9 @@ msgstr "Ungültige letzte Stunde"
 msgid "Last hour of the day"
 msgstr "Letzte Stunde des Tages"
 
-#: ./allocate.py:31
-msgid "Monday"
-msgstr "Montag"
-
-#: ./allocate.py:44
-msgid "Monthly"
-msgstr "Monatlich"
+#: ./allocate.py:33
+msgid "Mo"
+msgstr "Mo"
 
 #: ./resource.py:22
 #: ./timeframe.py:18
@@ -162,32 +158,32 @@ msgstr "Keine Plätze frei"
 msgid "Occupied"
 msgstr "Besetzt"
 
-#: ./allocate.py:71
+#: ./allocate.py:44
+msgid "Once"
+msgstr "Einmalig"
+
+#: ./allocate.py:100
 msgid "Partly available"
 msgstr "Teilweise verfügbar"
 
-#: ./allocate.py:109
+#: ./allocate.py:111
 #: ./resource.py:41
 msgid "Quota"
 msgstr "Kontingent"
 
-#: ./allocate.py:125
+#: ./allocate.py:122
 msgid "Quota must be between 1 and 100"
 msgstr "Kontingent muss zwischen 1 und 100 liegen"
 
-#: ./allocate.py:76
+#: ./allocate.py:105
 msgid "Raster"
 msgstr "Raster"
 
-#: ./allocate.py:82
-msgid "Recurring"
-msgstr "Wiederholend"
+#: ./allocate.py:77
+msgid "Recurrence"
+msgstr "Wiederholung"
 
-#: ./allocate.py:120
-msgid "Recurring allocations require a group"
-msgstr "Wiederholende Einteilungen bedingen einen Gruppennamen"
-
-#: ./allocate.py:257
+#: ./allocate.py:276
 msgid "Remove allocations"
 msgstr "Einteilungen entfernen"
 
@@ -203,23 +199,27 @@ msgstr "Ressource"
 msgid "Resource reservation"
 msgstr "Reservation"
 
-#: ./allocate.py:36
-msgid "Saturday"
-msgstr "Samstag"
+#: ./allocate.py:38
+msgid "Sa"
+msgstr "Sa"
 
 #: ./timeframe.py:46
 msgid "Save"
 msgstr "Speichern"
 
-#: ./allocate.py:63
+#: ./allocate.py:69
 #: ./reserve.py:27
 #: ./timeframe.py:22
 msgid "Start"
 msgstr "Start"
 
-#: ./allocate.py:37
-msgid "Sunday"
-msgstr "Sonntag"
+#: ./allocate.py:39
+msgid "Su"
+msgstr "So"
+
+#: ./allocate.py:36
+msgid "Th"
+msgstr "Do"
 
 #: ./utils.py:59
 msgid "The item does no longer exist."
@@ -241,10 +241,6 @@ msgstr "Die Resource wird von jemand anderem bearbeitet. Bitte versuchen Sie es 
 msgid "This record already exists."
 msgstr "Dieser Eintrag existiert bereits."
 
-#: ./allocate.py:34
-msgid "Thursday"
-msgstr "Donnerstag"
-
 #: ./profiles/default/types/seantis.reservation.timeframe.xml
 msgid "Timeframe"
 msgstr "Belegungsperiode"
@@ -253,27 +249,20 @@ msgstr "Belegungsperiode"
 msgid "Timeframe overlaps with '%s' in the current folder"
 msgstr "Belegungsperiode überschneidet sich mit '%s'"
 
+#: ./allocate.py:64
 #: ./templates/timeframes.pt:4
 msgid "Timeframes"
 msgstr "Belegungsperioden"
 
-#: ./allocate.py:32
-msgid "Tuesday"
-msgstr "Dienstag"
+#: ./allocate.py:34
+msgid "Tu"
+msgstr "Di"
 
-#: ./allocate.py:97
+#: ./allocate.py:91
 msgid "Until"
 msgstr "Bis"
 
-#: ./allocate.py:33
-msgid "Wednesday"
-msgstr "Mittwoch"
-
-#: ./allocate.py:43
-msgid "Weekly"
-msgstr "Wöchentlich"
-
-#: ./allocate.py:45
-msgid "Yearly"
-msgstr "Jährlich"
+#: ./allocate.py:35
+msgid "We"
+msgstr "Mi"
 

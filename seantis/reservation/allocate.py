@@ -1,3 +1,4 @@
+import json
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
@@ -13,6 +14,7 @@ from zope.schema.vocabulary import SimpleTerm
 from zope import interface
 from z3c.form.ptcompat import ViewPageTemplateFile
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
+from z3c.form.browser.radio import RadioFieldWidget
 from plone.memoize import view
 
 from seantis.reservation import _
@@ -28,21 +30,19 @@ from seantis.reservation.form import (
 )
 
 days = SimpleVocabulary(
-        [SimpleTerm(value=rrule.MO, title=_(u'Monday')),
-         SimpleTerm(value=rrule.TU, title=_(u'Tuesday')),
-         SimpleTerm(value=rrule.WE, title=_(u'Wednesday')),
-         SimpleTerm(value=rrule.TH, title=_(u'Thursday')),
-         SimpleTerm(value=rrule.FR, title=_(u'Friday')),
-         SimpleTerm(value=rrule.SA, title=_(u'Saturday')),
-         SimpleTerm(value=rrule.SU, title=_(u'Sunday')),
+        [SimpleTerm(value=rrule.MO, title=_(u'Mo')),
+         SimpleTerm(value=rrule.TU, title=_(u'Tu')),
+         SimpleTerm(value=rrule.WE, title=_(u'We')),
+         SimpleTerm(value=rrule.TH, title=_(u'Th')),
+         SimpleTerm(value=rrule.FR, title=_(u'Fr')),
+         SimpleTerm(value=rrule.SA, title=_(u'Sa')),
+         SimpleTerm(value=rrule.SU, title=_(u'Su')),
         ]
     )
     
-frequencies = SimpleVocabulary(
-        [SimpleTerm(value=rrule.DAILY, title=_(u'Daily')),
-         SimpleTerm(value=rrule.WEEKLY, title=_(u'Weekly')),
-         SimpleTerm(value=rrule.MONTHLY, title=_(u'Monthly')),
-         SimpleTerm(value=rrule.YEARLY, title=_(u'Yearly'))
+recurrence = SimpleVocabulary(
+        [SimpleTerm(value=False, title=_(u'Once')),
+         SimpleTerm(value=True, title=_(u'Daily')),
         ]
     )
 
@@ -52,11 +52,20 @@ class IAllocation(form.Schema):
 
     id = schema.Int(
         title=_(u'Id'),
-        default=-1
+        default=-1,
+        required=False
         )
 
-    day = schema.Date(
-        title=_(u'Day')
+    group = schema.Text(
+        title=_(u'Group'),
+        default=u'',
+        required=False
+        )
+
+    timeframes = schema.Text(
+        title=_(u'Timeframes'),
+        default=u'',
+        required=False
         )
 
     start_time = schema.Time(
@@ -65,6 +74,30 @@ class IAllocation(form.Schema):
 
     end_time = schema.Time(
         title=_(u'End')
+        )
+
+    recurring = schema.Choice(
+        title=_(u'Recurrence'),
+        vocabulary=recurrence,
+        default=False
+        )
+
+    day = schema.Date(
+        title=_(u'Day'),
+        )
+
+    recurrence_start = schema.Date(
+        title=_(u'From'),
+        )
+
+    recurrence_end = schema.Date(
+        title=_(u'Until')
+        )
+
+    days = schema.List(
+        title=_(u'Days'),
+        value_type=schema.Choice(vocabulary=days),
+        required=False
         )
 
     partly_available = schema.Bool(
@@ -78,33 +111,6 @@ class IAllocation(form.Schema):
         default=30
         )
 
-    recurring = schema.Bool(
-        title=_(u'Recurring'),
-        default=False
-        )
-
-    frequency = schema.Choice(
-        title=_(u'Frequency'),
-        vocabulary=frequencies
-        )
-
-    days = schema.List(
-        title=_(u'Days'),
-        value_type=schema.Choice(vocabulary=days)
-        )
-
-    recurrence_end = schema.Date(
-        title=_(u'Until'),
-        default=date.today() + timedelta(days=30)
-        )
-
-    group = schema.Text(
-        title=_(u'Group'),
-        default=u'',
-        max_length=100,
-        required=False
-        )
-
     quota = schema.Int(
         title=_(u'Quota'),
         )
@@ -115,19 +121,16 @@ class IAllocation(form.Schema):
             raise interface.Invalid(_(u'End date before start date'))
 
     @interface.invariant
-    def isValidGroup(Allocation):
-        if Allocation.recurring and not Allocation.group:
-            raise interface.Invalid(_(u'Recurring allocations require a group'))
-
-    @interface.invariant
     def isValidQuota(Allocation):
         if not (1 <= Allocation.quota and Allocation.quota <= 100):
             raise interface.Invalid(_(u'Quota must be between 1 and 100'))
 
+
 class AllocationForm(ResourceBaseForm):
     grok.baseclass()
-    template = ViewPageTemplateFile('templates/allocate.pt')
+    hidden_fields = ['id', 'group', 'timeframes']
 
+    template = ViewPageTemplateFile('templates/allocate.pt')
 
 class AllocationAddForm(AllocationForm):
     grok.name('allocate')
@@ -135,14 +138,55 @@ class AllocationAddForm(AllocationForm):
     
     fields = field.Fields(IAllocation)
     fields['days'].widgetFactory = CheckBoxFieldWidget
+    fields['recurring'].widgetFactory = RadioFieldWidget
 
     label = _(u'Allocation')
 
-    def defaults(self):
+    def defaults(self):        
+        global days
+        if self.start:
+            weekday = self.start.weekday()
+            daymap = dict([(d.value.weekday, d.value) for d in days])
+            default_days = [daymap[weekday]]
+        else:
+            default_days = []
+            
+        recurrence_start, recurrence_end = self.default_recurrence()
+
         return {
             'quota': self.scheduler.quota,
             'group': u'',
+            'recurrence_start': recurrence_start,
+            'recurrence_end': recurrence_end,
+            'timeframes': self.json_timeframes(),
+            'days': default_days
         }
+
+    def timeframes(self):
+        return self.scheduler.masks
+
+    def json_timeframes(self):
+        results = []
+        for frame in self.timeframes():
+            results.append(
+                    dict(title=frame.title, start=frame.start, end=frame.end)
+                )
+
+        dthandler = lambda obj: obj.isoformat() if isinstance(obj, date) else None
+        return unicode(json.dumps(results, default=dthandler))
+
+    def default_recurrence(self):
+        start = self.start and self.start.date() or None
+        end = self.end and self.end.date() or None
+
+        if not all((start, end)):
+            return None, None
+        
+        for frame in sorted(self.timeframes(), key=lambda f: f.start):
+            if frame.start <= start and start <= frame.end:
+                return (frame.start, frame.end)
+
+        return start, end
 
     def get_dates(self, data):
         """ Return a list with date tuples depending on the data entered by the
@@ -156,20 +200,18 @@ class AllocationAddForm(AllocationForm):
         if not data.recurring:
             return ((start, end))
 
-        # weekdays is only available for daily frequencies
-        byweekday = data.frequency == rrule.DAILY and data.days or None
-        
         rule = rrule.rrule(
-                data.frequency,
-                byweekday=byweekday,
-                dtstart=start, 
+                rrule.DAILY,
+                byweekday=data.days,
+                dtstart=data.recurrence_start, 
                 until=data.recurrence_end,
             )
     
-        # the rule is created using the start date, the delta is added to each
-        # generated date to get the end
-        delta = end - start
-        return [(d, d+delta) for d in rule]
+        event = lambda d: (
+                datetime.combine(d, data.start_time),
+                datetime.combine(d, data.end_time)
+            )
+        return [event(d) for d in rule]
 
     @button.buttonAndHandler(_(u'Allocate'))
     @extract_action_data
@@ -177,9 +219,8 @@ class AllocationAddForm(AllocationForm):
         dates = self.get_dates(data)
 
         action = lambda: self.scheduler.allocate(dates, 
-                raster=data.raster, 
-                group=data.group,
-                quota = data.quota,
+                raster=data.raster,
+                quota=data.quota,
                 partly_available=data.partly_available
             )
         
@@ -190,7 +231,7 @@ class AllocationEditForm(AllocationForm):
     grok.require('cmf.ManagePortal')
 
     fields = field.Fields(IAllocation).select(
-            'id', 'day', 'start_time', 'end_time', 'group', 'quota'
+            'id', 'group', 'start_time', 'end_time', 'day', 'quota',
         )
     label = _(u'Edit allocation')
 
@@ -219,16 +260,10 @@ class AllocationEditForm(AllocationForm):
                 start = allocation.display_start
                 end = allocation.display_end
 
-            group = allocation.group
-
-            # hide the group if it's a uuid
-            group = not utils.is_uuid(group) and group or None
-            
             self.fields['id'].field.default = self.id
-            self.fields['day'].field.default = start.date()
             self.fields['start_time'].field.default = start.time()
             self.fields['end_time'].field.default = end.time()
-            self.fields['group'].field.default = group or u''
+            self.fields['day'].field.default = start.date()
             self.fields['quota'].field.default = allocation.quota
 
         super(AllocationEditForm, self).update(**kwargs)
@@ -242,7 +277,10 @@ class AllocationEditForm(AllocationForm):
 
         scheduler = self.context.scheduler()
 
-        args = (data.id, data.start, data.end, unicode(data.group or u''), data.quota)
+        start = datetime.combine(data.day, data.start_time)
+        end = datetime.combine(data.day, data.end_time)
+
+        args = (data.id, start, end, unicode(data.group or u''), data.quota)
         action = lambda: scheduler.move_allocation(*args)
         
         utils.handle_action(action=action, success=self.redirect_to_context)

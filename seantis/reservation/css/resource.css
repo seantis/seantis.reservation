@@ -27,7 +27,6 @@
     border-radius: 3px;
 }
 
-/* main content style */
 #miniTip_c a { 
     padding-bottom: 2px;
     padding-top: 2px;
@@ -73,4 +72,8 @@
 .event-partly-available, .event-partly-available .fc-event-skin, .event-partly-available .fc-event-head {
     background-color: #e99623 !important;
     border-color: #e99623 !important;
+}
+
+#formfield-form-widgets-days span.option {
+    display: inline;
 }

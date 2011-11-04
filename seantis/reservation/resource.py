@@ -224,6 +224,8 @@ class Slots(grok.View, CalendarRequest):
         events = []
         urlquote = lambda fragment: quote(unicode(fragment).encode('utf-8'))
 
+        groups = []
+
         for alloc in scheduler.allocations_in_range(*self.range):
 
             if not scheduler.render_allocation(alloc):
@@ -238,7 +240,8 @@ class Slots(grok.View, CalendarRequest):
             editurl = base + edit % alloc.id
             removeurl = base + remove % alloc.id
 
-            if alloc.in_group:
+            if (alloc.group in groups) or alloc.in_group:
+                groups.append(alloc.group) # cache the group for performance
                 groupurl = base + group % urlquote(alloc.group)
                 removegroupurl = base + removegroup % urlquote(alloc.group)
             else:

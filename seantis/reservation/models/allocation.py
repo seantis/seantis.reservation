@@ -175,11 +175,7 @@ class Allocation(ORMBase):
     @property
     def in_group(self):
         """Returns true if the event is in any group."""
-
-        # If the group is a uuid, it's probably a single event
-        if utils.is_uuid(self.group):
-            return False
-
+        
         query = Session.query(Allocation)
         query = query.filter(Allocation.resource == self.resource)
         query = query.filter(Allocation.group == self.group)

@@ -4,7 +4,11 @@ if (!this.seantis.calendars) this.seantis.calendars = [];
 seantis.calendars.defaults = {
     timeFormat: 'HH:mm{ - HH:mm}',
     axisFormat: 'HH:mm{ - HH:mm}',
-    columnFormat: 'dddd d.M',
+    columnFormat: {
+        month: 'dddd',    // Mon
+        week: 'ddd d.M', // Mon 7.9
+        day: 'dddd d.M'  // Monday 7.9
+    },
     firstDay: 1,
 };
 
