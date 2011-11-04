@@ -1,7 +1,6 @@
 if (!this.seantis) this.seantis = {};
 if (!this.seantis.formgroups) this.seantis.formgroups = {};
 
-var RRULE_DAILY = 3;
 seantis.formgroups.groups = {};
 
 seantis.formgroups.add = function(options) {
@@ -38,8 +37,10 @@ seantis.formgroups.clear = function() {
     seantis.formgroups.groups = {};  
 };
 
-seantis.formgroups.add_utility_links = function() {
-    var timeframes_field = $('#formfield-form-widgets-timeframes input');
+seantis.formgroups.add_utility_links = function(findfn) {
+    var find = findfn;
+
+    var timeframes_field = find('#formfield-form-widgets-timeframes input');
     if (!timeframes_field.length)
         return;
 
@@ -48,20 +49,20 @@ seantis.formgroups.add_utility_links = function() {
         return frame.start;
     });
     
-    var target = $('#formfield-form-widgets-recurrence_start');
+    var target = find('#formfield-form-widgets-recurrence_start');
     var link = _.template(
             '<div id="<%= id %>"><a href="#">&gt;&gt; <%= title %></a></div>'
         );
 
     var start = {};
-    start.year = $('#form-widgets-recurrence_start-year');
-    start.month = $('#form-widgets-recurrence_start-month');
-    start.day = $('#form-widgets-recurrence_start-day');
+    start.year = find('#form-widgets-recurrence_start-year');
+    start.month = find('#form-widgets-recurrence_start-month');
+    start.day = find('#form-widgets-recurrence_start-day');
 
     var end = {};
-    end.year = $('#form-widgets-recurrence_end-year');
-    end.month = $('#form-widgets-recurrence_end-month');
-    end.day = $('#form-widgets-recurrence_end-day');
+    end.year = find('#form-widgets-recurrence_end-year');
+    end.month = find('#form-widgets-recurrence_end-month');
+    end.day = find('#form-widgets-recurrence_end-day');
 
     var set_date = function(recurrence, date) {
         var date = seantis.utils.parse_date(date);
@@ -79,7 +80,7 @@ seantis.formgroups.add_utility_links = function() {
         
         target.before(el);
         
-        var tool = $('#' + id);
+        var tool = find('#' + id);
         tool.click(function(e) {
             start.set(frame.start);
             end.set(frame.end);
@@ -144,7 +145,7 @@ seantis.formgroups.init = function(el) {
         ]
     });
 
-    seantis.formgroups.add_utility_links();
+    seantis.formgroups.add_utility_links(find);
 };
 
 (function($) {
