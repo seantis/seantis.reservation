@@ -17,7 +17,7 @@ class TestScheduler(IntegrationTestCase):
 
         start = datetime(2011, 1, 1, 15)
         end = datetime(2011, 1, 1, 16)
-
+        
         group, allocations = sc.allocate(
                 (start, end), raster=15, partly_available=True
             )
