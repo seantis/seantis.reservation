@@ -15,5 +15,8 @@
         compression="safe" cookable="True" enabled="True" inline="False" insert-after="++resource++plone.app.jquerytools.overlayhelpers.js"/>
 
         <javascript id="++resource++seantis.reservation.js/utils.js" cacheable="True" compression="safe" cookable="True" enabled="True" inline="False" insert-after=""/>
+
+        <javascript id="++resource++seantis.reservation.js/overview.js" cacheable="True"
+        compression="safe" cookable="True" enabled="True" inline="False" insert-after="jquery.js" />
         
 </object>

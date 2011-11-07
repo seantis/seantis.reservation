@@ -22,6 +22,18 @@ def overlaps(start, end, otherstart, otherend):
 
     return False
 
+def compare_link(resources):
+    if len(resources) < 2:
+            return ''
+
+    link = resources[0:1][0].absolute_url_path() + '?'
+    compare_to = [r.uuid() for r in resources[1:]]
+
+    for uuid in compare_to:
+        link += 'compare_to=' + str(uuid) + '&'
+        
+    return link.rstrip('&')
+
 def dictionary_to_namedtuple(dictionary):
     return namedtuple('GenericDict', dictionary.keys())(**dictionary)
 
