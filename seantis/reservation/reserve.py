@@ -1,5 +1,4 @@
 from datetime import datetime
-from datetime import timedelta
 
 from five import grok
 from zope import schema
@@ -9,13 +8,10 @@ from z3c.form import button
 
 from seantis.reservation import _
 from seantis.reservation import utils
-from seantis.reservation.raster import rasterize_start
 from seantis.reservation.form import (
         ResourceBaseForm, 
         extract_action_data
     )
-
-#TODO make defaults dynamic
 
 class IReservation(interface.Interface):
 
