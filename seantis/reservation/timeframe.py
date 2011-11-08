@@ -1,5 +1,3 @@
-from datetime import date, MINYEAR, MAXYEAR
-
 from five import grok
 from plone.directives import form, dexterity
 from plone.dexterity.content import Item
@@ -47,11 +45,7 @@ class Timeframe(Item):
         workflowTool = getToolByName(self, "portal_workflow")
         status = workflowTool.getStatusOf("timeframe_workflow", self)
         return status['review_state'] == 'visible'
-
-    def __eq__(self, other):
-        return self.id == other.id
         
-
 def validate_timeframe(context, request, data):
     overlap = overlapping_timeframe(context, data['start'], data['end'])
     if overlap:
@@ -61,6 +55,7 @@ def validate_timeframe(context, request, data):
         utils.form_error(msg)
 
 def timeframes_in_context(context):
+    """Returns the timeframes _within_ the current context."""
     path = '/'.join(context.getPhysicalPath())
     catalog = getToolByName(context, 'portal_catalog')
     results = catalog(
@@ -70,6 +65,10 @@ def timeframes_in_context(context):
     return results
 
 def timeframes_by_context(context):
+    """Returns the timeframes _for_ the current context. Timeframes for a context
+    are required by traversing up the acquisition context.
+
+    """
     def traverse(context):
         frames = timeframes_in_context(context)
         if frames:

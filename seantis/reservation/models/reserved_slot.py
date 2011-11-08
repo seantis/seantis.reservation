@@ -41,7 +41,12 @@ class ReservedSlot(ORMBase):
 
     allocation = relationship(Allocation,
         primaryjoin=Allocation.id==allocation_id,
-        backref=backref('reserved_slots', lazy='joined', 
+        
+        # Reserved_slots are eagerly joined since we usually want both
+        # allocation and reserved_slots. There's barely a function which does
+        # not need to know about reserved slots when working with allocation.
+        backref=backref('reserved_slots', 
+                lazy='joined',
                 cascade='all, delete-orphan'
             )
     )

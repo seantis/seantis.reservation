@@ -1,11 +1,10 @@
 from uuid import UUID
 from uuid import uuid4 as new_uuid
 from uuid import uuid5 as new_uuid_mirror
-from datetime import date, datetime, MINYEAR, MAXYEAR
-from dateutil import rrule
-from itertools import chain, groupby
+from datetime import datetime, MINYEAR, MAXYEAR
+from itertools import groupby
 
-from sqlalchemy.sql import and_, or_, not_
+from sqlalchemy.sql import and_, or_
 from sqlalchemy.orm import joinedload
 
 from seantis.reservation.models import Allocation
@@ -14,15 +13,13 @@ from seantis.reservation.error import OverlappingAllocationError
 from seantis.reservation.error import AffectedReservationError
 from seantis.reservation.error import AlreadyReservedError
 from seantis.reservation.error import NotReservableError
-
-from seantis.reservation import exposure
 from seantis.reservation.session import serialized
 from seantis.reservation.raster import rasterize_span
 from seantis.reservation import utils
 from seantis.reservation import Session
     
 def all_allocations_in_range(start, end):
-    # Query version of DefinedTimeSpan.overlaps
+    # Query version of utils.overlaps
     return Session.query(Allocation).filter(
         or_(
             and_(
@@ -37,11 +34,18 @@ def all_allocations_in_range(start, end):
     )
 
 def availability_by_allocations(allocations):
+    """Takes any iterator with alloctions and calculates the availability. Counts
+    missing mirrors as 100% free and returns a value between 0-100 in any case.
+    For single allocations check the allocation.availability property.
+
+    """
     total, expected_count, count = 0, 0, 0
     for allocation in allocations:
         total += allocation.availability
         count += 1
 
+        # Sum up the expected number of allocations. Missing allocations
+        # indicate mirrors that have not yet been physically created.
         if allocation.is_master:
             expected_count += allocation.quota
 
@@ -50,9 +54,17 @@ def availability_by_allocations(allocations):
     
     missing = expected_count - count
     total += missing * 100
+
     return total / expected_count
 
 def availability_by_range(start, end, resources, is_exposed):
+    """Returns the availability for the given resources in the given range.
+    The callback *is_exposed* is used to check if the allocation is visible
+    to the current user. This should usually be the exposure.for_allocations
+    return value.
+
+    """
+    
     query = all_allocations_in_range(start, end)
     query = query.filter(Allocation.mirror_of.in_(resources))
     query = query.options(joinedload(Allocation.reserved_slots))
@@ -61,6 +73,11 @@ def availability_by_range(start, end, resources, is_exposed):
     return availability_by_allocations(allocations)
 
 def availability_by_day(start, end, resources, is_exposed):
+    """Availability by range with a twist. Instead of returning a grand total,
+    a dictionary is returned with each day in the range as key and a tuple of
+    availability and the resources counted for that day.
+
+    """
     query = all_allocations_in_range(start, end)
     query = query.filter(Allocation.mirror_of.in_(resources))
     query = query.options(joinedload(Allocation.reserved_slots))
@@ -71,6 +88,9 @@ def availability_by_day(start, end, resources, is_exposed):
 
     for day, allocations in group:
         exposed = [a for a in allocations if is_exposed(a)]
+        if not exposed:
+            continue
+            
         members = set([a.resource for a in exposed])
         days[day] = (availability_by_allocations(exposed), members)
 
@@ -273,6 +293,10 @@ class Scheduler(object):
             new_id = ids[new_resource]
 
             for slot in allocation.reserved_slots:
+                # build a query here as the manipulation of mapped objects in
+                # combination with the delete query below seems a bit
+                # unpredictable given the cascading of changes
+
                 query = Session.query(ReservedSlot)
                 query = query.filter(and_(
                         ReservedSlot.resource == slot.resource,
@@ -388,30 +412,6 @@ class Scheduler(object):
 
     def availability(self, start=None, end=None):
         """Goes through all allocations and sums up the availabilty."""
-
-        # if not (start and end):
-        #     start = datetime(MINYEAR, 1, 1)
-        #     end = datetime(MAXYEAR, 12, 31)
-
-        # query = all_allocations_in_range(start, end)
-        # query = query.filter(Allocation.resource == Allocation.mirror_of)
-        # query = query.filter(Allocation.resource == self.uuid)
-        
-        # masters = query.all()
-        # mirrors = chain(*[self.allocation_mirrors_by_master(m) for m in masters])
-       
-        # allocations = chain(masters, mirrors)
-
-        # count, availability = 0, 0
-        # for allocation in allocations:
-        #     if self.render_allocation(allocation):
-        #         count += 1
-        #         availability += allocation.availability
-            
-        # if not count:
-        #     return 0
-
-        # return availability / count
 
         if not (start and end):
             start = datetime(MINYEAR, 1, 1)
