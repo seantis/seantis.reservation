@@ -310,6 +310,7 @@ def serialized_call(fn):
         try:    
             result = fn(*args, **kwargs)
             serial.flush()
+            serial.expire_all()
             return result
         except:
             serial.rollback()

@@ -2,7 +2,7 @@ from sqlalchemy import types
 from sqlalchemy.schema import Column
 from sqlalchemy.schema import Index
 from sqlalchemy.schema import ForeignKey
-from sqlalchemy.orm import relation
+from sqlalchemy.orm import relationship
 from sqlalchemy.orm import backref
 
 from seantis.reservation import ORMBase
@@ -39,10 +39,10 @@ class ReservedSlot(ORMBase):
         nullable=False
     )
 
-    allocation = relation(Allocation,
+    allocation = relationship(Allocation,
         primaryjoin=Allocation.id==allocation_id,
-        backref=backref('reserved_slots', lazy='dynamic', 
-                cascade='expunge, delete, delete-orphan, refresh-expire, save-update'
+        backref=backref('reserved_slots', lazy='joined', 
+                cascade='all, delete-orphan'
             )
     )
 

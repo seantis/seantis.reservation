@@ -14,7 +14,8 @@ from zope import interface
 from seantis.reservation import utils
 from seantis.reservation.db import Scheduler
 from seantis.reservation import _
-from timeframe import timeframe_masks
+from seantis.reservation import exposure
+from seantis.reservation.timeframe import timeframes_by_context
 
 class IResourceBase(form.Schema):
 
@@ -72,7 +73,12 @@ class Resource(Container):
         return IUUID(self)
 
     def scheduler(self):
-        return Scheduler(self.uuid(), self.quota, timeframe_masks(self))
+        uuid = str(self.uuid())
+        is_exposed = exposure.for_allocations(self, [uuid])
+        return Scheduler(self.uuid(), self.quota, is_exposed)
+
+    def timeframes(self):
+        return timeframes_by_context(self)
 
 
 class View(grok.View):

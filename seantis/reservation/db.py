@@ -2,9 +2,11 @@ from uuid import UUID
 from uuid import uuid4 as new_uuid
 from uuid import uuid5 as new_uuid_mirror
 from datetime import date, datetime, MINYEAR, MAXYEAR
-from itertools import chain
+from dateutil import rrule
+from itertools import chain, groupby
 
 from sqlalchemy.sql import and_, or_, not_
+from sqlalchemy.orm import joinedload
 
 from seantis.reservation.models import Allocation
 from seantis.reservation.models import ReservedSlot
@@ -13,6 +15,7 @@ from seantis.reservation.error import AffectedReservationError
 from seantis.reservation.error import AlreadyReservedError
 from seantis.reservation.error import NotReservableError
 
+from seantis.reservation import exposure
 from seantis.reservation.session import serialized
 from seantis.reservation.raster import rasterize_span
 from seantis.reservation import utils
@@ -32,6 +35,46 @@ def all_allocations_in_range(start, end):
             )
         )
     )
+
+def availability_by_allocations(allocations):
+    total, expected_count, count = 0, 0, 0
+    for allocation in allocations:
+        total += allocation.availability
+        count += 1
+
+        if allocation.is_master:
+            expected_count += allocation.quota
+
+    if not expected_count:
+        return 0
+    
+    missing = expected_count - count
+    total += missing * 100
+    return total / expected_count
+
+def availability_by_range(start, end, resources, is_exposed):
+    query = all_allocations_in_range(start, end)
+    query = query.filter(Allocation.mirror_of.in_(resources))
+    query = query.options(joinedload(Allocation.reserved_slots))
+
+    allocations = (a for a in query if is_exposed(a))
+    return availability_by_allocations(allocations)
+
+def availability_by_day(start, end, resources, is_exposed):
+    query = all_allocations_in_range(start, end)
+    query = query.filter(Allocation.mirror_of.in_(resources))
+    query = query.options(joinedload(Allocation.reserved_slots))
+    query = query.order_by(Allocation._start)
+
+    group = groupby(query, key=lambda a: a._start.date())
+    days = {}
+
+    for day, allocations in group:
+        exposed = [a for a in allocations if is_exposed(a)]
+        members = set([a.resource for a in exposed])
+        days[day] = (availability_by_allocations(exposed), members)
+
+    return days
 
 # TODO cache this incrementally
 def generate_uuids(uuid, quota):
@@ -64,7 +107,7 @@ class Scheduler(object):
 
     """
 
-    def __init__(self, resource_uuid, quota=1, masks=None):
+    def __init__(self, resource_uuid, quota=1, is_exposed=None):
         assert(0 <= quota)
 
         try: 
@@ -72,7 +115,7 @@ class Scheduler(object):
         except AttributeError: 
             self.uuid = resource_uuid
         
-        self.masks = masks
+        self.is_exposed = is_exposed or (lambda allocation: True)
         self.quota = quota
 
     @serialized
@@ -230,9 +273,20 @@ class Scheduler(object):
             new_id = ids[new_resource]
 
             for slot in allocation.reserved_slots:
-                slot.resource = new_resource
-                slot.allocation_id = new_id
-        
+                query = Session.query(ReservedSlot)
+                query = query.filter(and_(
+                        ReservedSlot.resource == slot.resource,
+                        ReservedSlot.allocation_id == slot.allocation_id,
+                        ReservedSlot.start == slot.start
+                    ))
+                query.update(
+                        {
+                            ReservedSlot.resource: new_resource, 
+                            ReservedSlot.allocation_id: new_id
+                        }
+                    )
+                
+
         # get rid of the unused allocations (always preserving the master)
         if unused:
             query = Session.query(Allocation)
@@ -327,47 +381,43 @@ class Scheduler(object):
         return mirrors
 
     def reservable(self, allocation):
-        return self.render_allocation(allocation)
+        return self.is_exposed(allocation)
 
     def render_allocation(self, allocation):
-        if not self.masks:
-            return True
-
-        start = allocation.start
-        day = date(start.year, start.month, start.day)
-
-        for mask in self.masks:
-            if mask.start <= day and day <=mask.end:
-                return mask.visible
-
-        return False
+        return self.is_exposed(allocation)
 
     def availability(self, start=None, end=None):
         """Goes through all allocations and sums up the availabilty."""
+
+        # if not (start and end):
+        #     start = datetime(MINYEAR, 1, 1)
+        #     end = datetime(MAXYEAR, 12, 31)
+
+        # query = all_allocations_in_range(start, end)
+        # query = query.filter(Allocation.resource == Allocation.mirror_of)
+        # query = query.filter(Allocation.resource == self.uuid)
+        
+        # masters = query.all()
+        # mirrors = chain(*[self.allocation_mirrors_by_master(m) for m in masters])
+       
+        # allocations = chain(masters, mirrors)
+
+        # count, availability = 0, 0
+        # for allocation in allocations:
+        #     if self.render_allocation(allocation):
+        #         count += 1
+        #         availability += allocation.availability
+            
+        # if not count:
+        #     return 0
+
+        # return availability / count
 
         if not (start and end):
             start = datetime(MINYEAR, 1, 1)
             end = datetime(MAXYEAR, 12, 31)
 
-        query = all_allocations_in_range(start, end)
-        query = query.filter(Allocation.resource == Allocation.mirror_of)
-        query = query.filter(Allocation.resource == self.uuid)
-        
-        masters = query.all()
-        mirrors = chain(*[self.allocation_mirrors_by_master(m) for m in masters])
-       
-        allocations = chain(masters, mirrors)
-
-        count, availability = 0, 0.0
-        for allocation in allocations:
-            if self.render_allocation(allocation):
-                count += 1
-                availability += allocation.availability
-            
-        if not count:
-            return 0, 0.0
-
-        return count, availability
+        return availability_by_range(start, end, [self.uuid], self.is_exposed)
 
     @serialized
     def move_allocation(self, master_id, new_start=None, new_end=None, 
@@ -401,9 +451,8 @@ class Scheduler(object):
                         raise AffectedReservationError(reservation)
             else:
                 if change.start != new.start or change.end != new.end:
-                    reservation = change.reserved_slots.first()
-                    if reservation:
-                        raise AffectedReservationError(reservation)
+                    if len(change.reserved_slots):
+                        raise AffectedReservationError(change.reserved_slots[0])
 
         if new_quota is not None:
             self.change_quota(master, new_quota)
@@ -428,8 +477,8 @@ class Scheduler(object):
             raise NotImplementedError
         
         for allocation in allocations:
-            if allocation.reserved_slots.count() > 0:
-                raise AffectedReservationError(allocation.reserved_slots.first())
+            if len(allocation.reserved_slots) > 0:
+                raise AffectedReservationError(allocation.reserved_slots[0])
 
         for allocation in allocations:
             if not allocation.is_transient:
@@ -449,26 +498,25 @@ class Scheduler(object):
 
         for start, end in dates:
             for allocation in self.reservation_targets(start, end):
+                
                 if not self.reservable(allocation):
                     continue
-
-                if allocation.is_transient:
-                    Session.add(allocation)
 
                 for slot_start, slot_end in allocation.all_slots(start, end):
                     slot = ReservedSlot()
                     slot.start = slot_start
                     slot.end = slot_end
-                    slot.allocation = allocation
                     slot.resource = allocation.resource
                     slot.reservation = reservation
 
+                    allocation.reserved_slots.append(slot)
                     slots_to_reserve.append(slot)
+
+                if allocation.is_transient:
+                    Session.add(allocation)
 
         if not slots_to_reserve:
             raise NotReservableError
-
-        Session.add_all(slots_to_reserve)
 
         return reservation, slots_to_reserve
 
@@ -540,8 +588,5 @@ class Scheduler(object):
 
     @serialized
     def remove_reservation(self, reservation):
-        query = self.managed_reserved_slots()
-        query = query.filter(ReservedSlot.reservation == reservation)
-
-        for slot in query:
+        for slot in self.reserved_slots(reservation):
             Session.delete(slot)

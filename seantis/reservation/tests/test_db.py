@@ -356,19 +356,19 @@ class TestScheduler(IntegrationTestCase):
 
         sc.reserve((datetime(2011, 1, 1, 15, 0), datetime(2011, 1, 1, 15, 15)))
         self.assertEqual(a.availability, 75.0)
-        self.assertEqual((1, a.availability), sc.availability())
+        self.assertEqual(a.availability, sc.availability())
         
         sc.reserve((datetime(2011, 1, 1, 15, 45), datetime(2011, 1, 1, 16, 0)))
         self.assertEqual(a.availability, 50.0)
-        self.assertEqual((1, a.availability), sc.availability())
+        self.assertEqual(a.availability, sc.availability())
 
         sc.reserve((datetime(2011, 1, 1, 15, 15), datetime(2011, 1, 1, 15, 30)))
         self.assertEqual(a.availability, 25.0)
-        self.assertEqual((1, a.availability), sc.availability())
+        self.assertEqual(a.availability, sc.availability())
 
         sc.reserve((datetime(2011, 1, 1, 15, 30), datetime(2011, 1, 1, 15, 45)))
         self.assertEqual(a.availability, 0.0)
-        self.assertEqual((1, a.availability), sc.availability())
+        self.assertEqual(a.availability, sc.availability())
 
         sc = Scheduler(new_uuid())
         
@@ -378,15 +378,15 @@ class TestScheduler(IntegrationTestCase):
 
         sc.reserve((start, end))
 
-        self.assertEqual((4, 300.0), sc.availability())
+        self.assertEqual(75.0, sc.availability())
 
         self.assertEqual(a.availability, 0.0) # master only!
 
         sc.reserve((start, end))
-        self.assertEqual((4, 200.0), sc.availability())        
+        self.assertEqual(50.0, sc.availability())        
 
         sc.reserve((start, end))
-        self.assertEqual((4, 100.0), sc.availability())
+        self.assertEqual(25.0, sc.availability())
 
         sc.reserve((start, end))
-        self.assertEqual((4, 0.0), sc.availability())
+        self.assertEqual(0.0, sc.availability())

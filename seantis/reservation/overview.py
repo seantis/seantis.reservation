@@ -1,5 +1,5 @@
 import json
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from five import grok
 from zope.interface import Interface
@@ -7,6 +7,8 @@ from plone.uuid.interfaces import IUUID
 
 from seantis.reservation.resource import CalendarRequest
 from seantis.reservation import utils
+from seantis.reservation import db
+from seantis.reservation import exposure
 
 class IOverview(Interface):
 
@@ -100,49 +102,34 @@ class Overview(grok.View, CalendarRequest):
 
     def events(self):
         """ Returns the events for the overview. """
+
+        from time import time
+        __start = time()
+
         start, end = self.range
         if not all((start, end)):
             return []
 
-        brains = [utils.get_resource_by_uuid(self.context, uid) for uid in self.uuids()]
-        resources = [b.getObject() for b in brains]
-        schedulers = [r.scheduler() for r in resources]
-
-        if not schedulers:
-            return []
-
         events = []
 
-        # iterate through all days and aggregate the availability for each day
-        for day in xrange(0, (end - start).days):
+        uuids = self.uuids()
+        is_exposed = exposure.for_allocations(self.context, uuids)
 
-            # create an event which spans over an entire day
-            event_start = start + timedelta(days=day)
-            event_end = start + timedelta(days=day+1, microseconds=-1)
+        days = db.availability_by_day(start, end, uuids, is_exposed)
+        for day, result in days.items():
 
-            uuids = []
-            totalcount, totalavailability = 0, 0.0
+            event_start = datetime(day.year, day.month, day.day, 0, 0)
+            event_end = start + timedelta(days=+1, microseconds=-1)
 
-            for sc in schedulers:
-                count, availability = sc.availability(event_start, event_end)
-                totalcount += count
-                totalavailability += availability
-
-                # add every resource that belongs the the current event
-                if count > 0:
-                    uuids.append(str(sc.uuid))
-
-            if not totalcount:
-                continue
-
-            average = int(totalavailability / totalcount)
-            title = u''
+            availability, resources = result
             events.append(dict(
                 start=event_start.isoformat(),
                 end=event_end.isoformat(),
-                title=title,
-                uuids=uuids,
-                className=utils.event_class(average)
+                title=u'',
+                uuids=[str(r) for r in resources],
+                className=utils.event_class(availability)
             ))
+
+        print time() - __start
 
         return events

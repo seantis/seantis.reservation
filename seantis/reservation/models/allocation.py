@@ -6,6 +6,7 @@ from sqlalchemy.schema import Column
 from sqlalchemy.schema import Index
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.orm import object_session 
+from sqlalchemy.orm import relationship
 from sqlalchemy.orm.util import has_identity 
 
 from seantis.reservation import ORMBase
@@ -107,7 +108,8 @@ class Allocation(ORMBase):
 
     def free_slots(self, start=None, end=None):
         """ Returns the slots which are not yet reserved."""
-        reserved = [slot.start for slot in self.reserved_slots.all()]
+        reserved = [slot.start for slot in self.reserved_slots]
+        
         slots = []
         for start, end in self.all_slots(start, end):
             if not start in reserved:
@@ -146,7 +148,7 @@ class Allocation(ORMBase):
 
         assert(self.overlaps(start, end))
         
-        reserved = [slot.start for slot in self.reserved_slots.all()]
+        reserved = [slot.start for slot in self.reserved_slots]
         for start, end in self.all_slots(start, end):
             if start in reserved:
                 return False
@@ -157,8 +159,12 @@ class Allocation(ORMBase):
     def availability(self):
         """Returns the availability in percent."""
 
-        total = sum(1 for s in self.all_slots())
-        count = self.reserved_slots.count()
+        if self.partly_available:
+            total = sum(1 for s in self.all_slots())
+        else:
+            total = 1
+
+        count = len(self.reserved_slots)
 
         if total == count:
             return 0.0
@@ -166,10 +172,6 @@ class Allocation(ORMBase):
         if count == 0:
             return 100.0
 
-        # Can't think of a reason why this should happen..
-        assert(total > 0)
-
-        # ..but if it does I prefer an assertion to a division through zero
         return 100.0 - (float(count) / float(total) * 100.0)
 
     @property
@@ -204,9 +206,10 @@ class Allocation(ORMBase):
         frontend, indicating to the user which parts of an allocation are reserved.
 
         """
-        reserved = [r.start for r in self.reserved_slots.all()]
-        if (len(reserved) == 0):
+        if (len(self.reserved_slots) == 0):
             return [(100.0, False)]
+
+        reserved = [r.start for r in self.reserved_slots]
 
         # Get the percentage one slot represents
         slots = list(self.all_slots())

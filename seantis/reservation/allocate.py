@@ -1,4 +1,5 @@
 import json
+import re
 from datetime import date
 from datetime import datetime
 from dateutil import rrule
@@ -19,6 +20,7 @@ from z3c.form.browser.radio import RadioFieldWidget
 from seantis.reservation import _
 from seantis.reservation import error
 from seantis.reservation import utils
+from seantis.reservation.timeframe import timeframes_by_uuid
 from seantis.reservation.raster import VALID_RASTER_VALUES
 from seantis.reservation.form import ResourceBaseForm, extract_action_data
 
@@ -154,7 +156,7 @@ class AllocationAddForm(AllocationForm):
         }
 
     def timeframes(self):
-        return self.scheduler.masks
+        return self.context.timeframes()
 
     def json_timeframes(self):
         results = []
@@ -299,8 +301,11 @@ class AllocationRemoveForm(AllocationForm):
     @property
     def id(self):
         if self.widgets and 'id' in self.widgets:
-            return int(self.widgets['id'].value)
-        return int(self.request.get('id', 0))
+            value = self.widgets['id'].value
+        else:
+            value = self.request.get('id')
+        
+        return utils.request_id_as_int(value)
 
     @property
     def group(self):

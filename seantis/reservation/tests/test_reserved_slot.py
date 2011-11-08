@@ -1,8 +1,8 @@
 from datetime import datetime
 from uuid import uuid4 as uuid
 
-from sqlalchemy.exc import FlushError
 
+from seantis.reservation.error import IntegrityError
 from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation.models import Allocation
 from seantis.reservation.models import ReservedSlot
@@ -28,11 +28,7 @@ class TestReservedSlot(IntegrationTestCase):
         slot.end = allocation.end
         slot.allocation = allocation
         slot.reservation = reservation
-
-        Session.add(allocation)
-        Session.add(slot)
-
-        self.assertEqual(allocation.reserved_slots.count(), 1)
+        allocation.reserved_slots.append(slot)
 
         # Ensure that the same slot cannot be doubly used
         anotherslot = ReservedSlot(resource=allocation.resource)
@@ -42,4 +38,4 @@ class TestReservedSlot(IntegrationTestCase):
         anotherslot.reservation = reservation
 
         Session.add(anotherslot)
-        self.assertRaises(FlushError, Session.flush)
+        self.assertRaises(IntegrityError, Session.flush)
