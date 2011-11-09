@@ -70,9 +70,6 @@ if (!this.seantis.overview) this.seantis.overview = {};
 
         seantis.overview.dayrender = function(date, element, view) {
             if (!seantis.overview.days.cleared) {
-                console.log('removing old classes');
-                seantis.overview.days.cleared = true;
-
                 var keys = _.keys(seantis.overview.days);
                 for(var i=0; i<keys.length; i++) {
                     var key = keys[i];
@@ -87,7 +84,16 @@ if (!this.seantis.overview) this.seantis.overview = {};
                         el.removeData('old_classes');
                     }
                 }
-                console.log('finished removing old classes');
+
+                _.each(_.values(seantis.overview.days), function(cell) {
+                    if (!_.isUndefined(cell.unbind)) {
+                        cell.unbind('mouseenter');
+                        cell.unbind('mouseleave');
+                    } 
+                });
+
+                seantis.overview.days = {};
+                seantis.overview.days.cleared = true;
             }
 
             var key = seantis.overview.datekey(date);
