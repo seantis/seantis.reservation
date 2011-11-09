@@ -1,5 +1,6 @@
 import re
 import collections
+from uuid import UUID
 
 from App.config import getConfiguration
 from Acquisition import aq_inner
@@ -95,12 +96,16 @@ def handle_exception(ex):
 def form_error(msg):
     raise ActionExecutionError(interface.Invalid(msg))
 
-def is_uuid(text):
-    regex = re.compile(
+def is_uuid(obj):
+    if isinstance(obj, basestring):
+
+        regex = re.compile(
             '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}'
         )
 
-    return re.match(regex, unicode(text))
+        return re.match(regex, unicode(obj))
+    
+    return isinstance(obj, UUID)
 
 def get_resource_by_uuid(context, uuid):
     catalog = getToolByName(context, 'portal_catalog')
@@ -166,19 +171,3 @@ def get_config(key):
     config = getConfiguration()
     configuration = config.product_config.get('seantis.reservation', dict())
     return configuration.get(key)
-
-class cached_property(object):
-    '''A read-only @property that is only evaluated once. The value is cached
-    on the object itself rather than the function or class; this should prevent
-    memory leakage.'''
-    def __init__(self, fget, doc=None):
-        self.fget = fget
-        self.__doc__ = doc or fget.__doc__
-        self.__name__ = fget.__name__
-        self.__module__ = fget.__module__
-
-    def __get__(self, obj, cls):
-        if obj is None:
-            return self
-        obj.__dict__[self.__name__] = result = self.fget(obj)
-        return result

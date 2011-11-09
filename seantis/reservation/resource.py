@@ -233,68 +233,64 @@ class Slots(grok.View, CalendarRequest):
         resource = self.context
         scheduler = resource.scheduler()
 
-        is_exposed = exposure.for_views(self.context, self.request)
+        # get a couple of factory methods which will either create an url
+        # or None depending on the permissions of the current user
+        def factory(view, urltemplate):
+            base = resource.absolute_url_path()
+            is_exposed = exposure.for_views(resource, self.request)
 
-        base = resource.absolute_url_path()
+            # strings need to be encoded and urlquoted
+            urlquote = lambda fragment: quote(unicode(fragment).encode('utf-8'))
+            quoted = lambda a: isinstance(a, basestring) and urlquote(a) or a
 
-        reserve = is_exposed('reserve') and '/reserve?start=%s&end=%s' or ''
-        edit = is_exposed('edit-allocation') and '/edit-allocation?id=%s' or ''
-        group = is_exposed('group') and '/group?name=%s' or ''
+            def build(*args):
+                if is_exposed(view):
+                    return base + urltemplate % tuple(map(quoted, args))
+                else:
+                    return None
+
+            # return closure
+            return build
         
-        if is_exposed('remove-allocation'):
-            remove = '/remove-allocation?id=%s'
-            removegroup = 'remove-allocat/remove-allocation?group=%s'
-        else:
-            remove, removegroup = '', ''
+        # prepare url factories
+        reserve = factory('reserve', '/reserve?start=%s&end=%s')
+        edit = factory('edit-allocation', '/edit-allocation?id=%i')
+        group = factory('group', '/group?name=%s')
+        remove = factory('remove-allocation', '/remove-allocation?id=%i')
+        removegroup = factory('remove-allocation', '/remove-allocation?group=%s')
 
-        group_section = any((group, removegroup))
-
-        events = []
-        urlquote = lambda fragment: quote(unicode(fragment).encode('utf-8'))
-
+        # cache the following for the loop
         groups = []
+        timestamp = lambda dt: time.mktime(dt.timetuple())   
+        is_exposed = exposure.for_allocations(resource, [resource])
 
+        # get an event for each exposed allocation
+        events = []
         for alloc in scheduler.allocations_in_range(*self.range):
 
-            if not scheduler.render_allocation(alloc):
+            if not is_exposed(alloc):
                 continue
 
             start, end = alloc.display_start, alloc.display_end
-
-            startstamp = time.mktime(start.timetuple())
-            endstamp = time.mktime(end.timetuple())
-
-            if reserve:
-                reserveurl = base + reserve % (startstamp, endstamp)
-            else:
-                reserveurl = None
             
-            if edit:
-                editurl = base + edit % alloc.id
+            # get url for single items
+            reserveurl = reserve(timestamp(start), timestamp(end))
+            editurl = edit(alloc.id)
+            removeurl = remove(alloc.id)
+
+            # get additional urls for items in groups
+            if (alloc.group in groups) or alloc.in_group:
+                
+                # cache the group for performance
+                groups.append(alloc.group) 
+
+                groupurl = group(alloc.group)
+                removegroupurl = removegroup(alloc.group)
             else:
-                editurl = None
-            
-            if remove:
-                removeurl = base + remove % alloc.id
-            else:
-                removeurl = None
+                groupurl, removegroupurl = None, None
 
-            if group_section and ((alloc.group in groups) or alloc.in_group):
-                groups.append(alloc.group) # cache the group for performance
-
-                if group:
-                    groupurl = base + group % urlquote(alloc.group)
-                else:
-                    groupurl = None
-
-                if removegroup:
-                    removegroupurl = base + removegroup % urlquote(alloc.group)
-                else:
-                    removegroupurl = None
-            else:
-                groupurl = None
-                removegroupurl = None
-
+          
+            # calculate the availability for title and class
             title, klass = utils.event_availability(
                     resource, self.request, scheduler, alloc
                 )
@@ -309,10 +305,9 @@ class Slots(grok.View, CalendarRequest):
                 partitions = alloc.availability_partitions()
 
             events.append(dict(
-                allDay=False,
+                title=title, 
                 start=start.isoformat(),
                 end=end.isoformat(),
-                title=title,
                 className=klass,
                 url=reserveurl,
                 editurl=editurl,
@@ -321,7 +316,8 @@ class Slots(grok.View, CalendarRequest):
                 removegroupurl=removegroupurl,
                 allocation = alloc.id,
                 partitions = partitions,
-                group = alloc.group
+                group = alloc.group,
+                allDay=False
             ))
         
         return events
