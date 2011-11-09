@@ -87,11 +87,12 @@ def availability_by_day(start, end, resources, is_exposed):
     days = {}
 
     for day, allocations in group:
+
         exposed = [a for a in allocations if is_exposed(a)]
         if not exposed:
             continue
 
-        members = set([a.resource for a in exposed])
+        members = set([a.mirror_of for a in exposed])
         days[day] = (availability_by_allocations(exposed), members)
 
     return days

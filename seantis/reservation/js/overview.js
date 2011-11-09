@@ -22,17 +22,21 @@ if (!this.seantis.overview) this.seantis.overview = {};
         seantis.overview.render = function(event, element) {
             var cell = seantis.overview.dayelement(event.start);
             if (!_.isUndefined(cell) && ! cell.data('old_classes')) {
-                var classes = event.className.join(' ');
-                classes += ' ' + seantis.overview.items(event.uuids).join(' ');
+                var items = seantis.overview.items(event.uuids);
+                var itemids = '#' + items.join(', #');
+                var classes = event.className.join(' ') + ' ' + items.join(' ');
 
                 cell.addClass(classes);
                 cell.data('old_classes', classes); 
                 
-                cell.mouseenter(function() {
-                    seantis.overview.mouseover(event, cell);
+                cell.bind('mouseenter', function() {
+                    highlight_group($(itemids), true);
+                    highlight_group($(cell), true);
                 });
-                cell.mouseleave(function() {
-                    seantis.overview.mouseout(event, cell);
+                
+                cell.bind('mouseleave', function() {
+                    highlight_group($(itemids), false);
+                    highlight_group($(cell), false);
                 });
             }
 
@@ -41,18 +45,6 @@ if (!this.seantis.overview) this.seantis.overview = {};
 
         var highlight_group = function(elements, highlight) {
             elements.toggleClass('groupSelection', highlight);
-        };
-
-        seantis.overview.mouseover = function(event, cell) {
-            var ids = '#' + seantis.overview.items(event.uuids).join(', #');
-            highlight_group($(ids), true);
-            highlight_group($(cell), true);
-        };
-
-        seantis.overview.mouseout = function(event, cell) {
-            var ids = '#' + seantis.overview.items(event.uuids).join(', #');
-            highlight_group($(ids), false);
-            highlight_group($(cell), false);
         };
 
         seantis.overview.resultmouseover = function() {
@@ -99,8 +91,7 @@ if (!this.seantis.overview) this.seantis.overview = {};
             }
 
             var key = seantis.overview.datekey(date);
-            if (_.isUndefined(seantis.overview.days[key]))
-                seantis.overview.days[seantis.overview.datekey(date)] = element;
+            seantis.overview.days[seantis.overview.datekey(date)] = element;
         };
 
         $('.directoryResult').mouseenter(seantis.overview.resultmouseover);
