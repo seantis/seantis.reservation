@@ -103,9 +103,6 @@ class Overview(grok.View, CalendarRequest):
     def events(self):
         """ Returns the events for the overview. """
 
-        from time import time
-        __start = time()
-
         start, end = self.range
         if not all((start, end)):
             return []
@@ -129,7 +126,5 @@ class Overview(grok.View, CalendarRequest):
                 uuids=[str(r) for r in resources],
                 className=utils.event_class(availability)
             ))
-
-        print time() - __start
 
         return events

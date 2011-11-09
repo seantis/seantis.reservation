@@ -90,7 +90,7 @@ def availability_by_day(start, end, resources, is_exposed):
         exposed = [a for a in allocations if is_exposed(a)]
         if not exposed:
             continue
-            
+
         members = set([a.resource for a in exposed])
         days[day] = (availability_by_allocations(exposed), members)
 
