@@ -42,3 +42,9 @@ def for_views(context, request):
         return checkPermission(view.permission, view)
 
     return is_exposed
+
+def for_calendar(resource):
+    def is_exposed(option):
+        return checkPermission('cmf.ManagePortal', resource)
+
+    return is_exposed

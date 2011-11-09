@@ -15,7 +15,6 @@ from seantis.reservation import exposure
 from seantis.reservation import utils
 from seantis.reservation.db import Scheduler
 from seantis.reservation import _
-from seantis.reservation import exposure
 from seantis.reservation.timeframe import timeframes_by_context
 
 class IResourceBase(form.Schema):
@@ -143,7 +142,14 @@ class View(grok.View):
         options['events'] = eventurl
         options['minTime'] = first_hour or resource.first_hour
         options['maxTime'] = last_hour or resource.last_hour
-        
+
+        #TODO theoretically, multiple calendars may have different permissions
+        #which would be important for the calendar compare view. It's not a very
+        #important feature, but it might be needed one day
+        is_exposed = exposure.for_calendar(self.context)
+        options['selectable'] = is_exposed('selectable')
+        options['editable'] = is_exposed('editable')
+
         return template % (resource.calendar_id, json.dumps(options), allocateurl)
 
     @property
