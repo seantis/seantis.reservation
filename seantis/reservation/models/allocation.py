@@ -183,7 +183,7 @@ class Allocation(ORMBase):
         query = query.filter(Allocation.group == self.group)
         query = query.limit(2)
 
-        return len(query.all()) >= 1
+        return len(query.all()) > 1
 
     def availability_partitions(self):
         """Partitions the space between start and end into blocks of either

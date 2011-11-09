@@ -126,8 +126,10 @@ class AllocationForm(ResourceBaseForm):
     template = ViewPageTemplateFile('templates/allocate.pt')
 
 class AllocationAddForm(AllocationForm):
+    permission = 'cmf.ManagePortal'
+
     grok.name('allocate')
-    grok.require('cmf.ManagePortal')
+    grok.require(permission)
     
     fields = field.Fields(IAllocation)
     fields['days'].widgetFactory = CheckBoxFieldWidget
@@ -224,8 +226,10 @@ class AllocationAddForm(AllocationForm):
         self.redirect_to_context()
 
 class AllocationEditForm(AllocationForm):
+    permission = 'cmf.ManagePortal'
+
     grok.name('edit-allocation')
-    grok.require('cmf.ManagePortal')
+    grok.require(permission)
 
     fields = field.Fields(IAllocation).select(
             'id', 'group', 'start_time', 'end_time', 'day', 'quota',
@@ -287,8 +291,10 @@ class AllocationEditForm(AllocationForm):
         self.redirect_to_context()
 
 class AllocationRemoveForm(AllocationForm):
+    permission = 'cmf.ManagePortal'
+
     grok.name('remove-allocation')
-    grok.require('cmf.ManagePortal')
+    grok.require(permission)
 
     fields = field.Fields(IAllocation).select('id', 'group')
     template = ViewPageTemplateFile('templates/remove_allocation.pt')

@@ -33,8 +33,10 @@ class IReservation(interface.Interface):
             raise interface.Invalid(_(u'End date before start date'))
 
 class ReservationForm(ResourceBaseForm):
+    permission = 'zope2.View'
+
     grok.name('reserve')
-    grok.require('cmf.ManagePortal')
+    grok.require(permission)
 
     fields = field.Fields(IReservation)
     label = _(u'Resource reservation')

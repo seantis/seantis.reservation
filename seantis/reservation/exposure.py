@@ -1,3 +1,6 @@
+from zope.security import checkPermission
+from zope.component import getMultiAdapter
+
 from seantis.reservation import utils
 from seantis.reservation.timeframe import timeframes_by_context
 
@@ -30,3 +33,12 @@ def for_allocations(context, resources):
 
     return is_exposed
 
+def for_views(context, request):
+    get_view = lambda name: getMultiAdapter((context, request), name=name)
+
+    def is_exposed(viewname):
+        view = get_view(viewname)
+        assert hasattr(view, 'permission'), "missing permission attribute"
+        return checkPermission(view.permission, view)
+
+    return is_exposed

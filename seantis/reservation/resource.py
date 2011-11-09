@@ -11,6 +11,7 @@ from plone.memoize import view
 from zope import schema
 from zope import interface
 
+from seantis.reservation import exposure
 from seantis.reservation import utils
 from seantis.reservation.db import Scheduler
 from seantis.reservation import _
@@ -82,8 +83,10 @@ class Resource(Container):
 
 
 class View(grok.View):
+    permission = 'zope2.View'
+
     grok.context(IResourceBase)
-    grok.require('zope2.View')
+    grok.require(permission)
     
     template = grok.PageTemplateFile('templates/resource.pt')
 
@@ -148,8 +151,10 @@ class View(grok.View):
         return len(self.resources())
 
 class GroupView(grok.View):
+    permission = 'zope2.View'
+
     grok.context(IResourceBase)
-    grok.require('zope2.View')
+    grok.require(permission)
     grok.name('group')
 
     group = None
@@ -209,8 +214,10 @@ class CalendarRequest(object):
         raise NotImplementedError
 
 class Slots(grok.View, CalendarRequest):
+    permission = 'zope2.View'
+
     grok.context(IResourceBase)
-    grok.require('zope2.View')
+    grok.require(permission)
     grok.name('slots')
 
     def render(self):
@@ -220,12 +227,21 @@ class Slots(grok.View, CalendarRequest):
         resource = self.context
         scheduler = resource.scheduler()
 
+        is_exposed = exposure.for_views(self.context, self.request)
+
         base = resource.absolute_url_path()
-        reserve = '/reserve?start=%s&end=%s'
-        edit = '/edit-allocation?id=%s'
-        group = '/group?name=%s'
-        remove = '/remove-allocation?id=%s'
-        removegroup = '/remove-allocation?group=%s'
+
+        reserve = is_exposed('reserve') and '/reserve?start=%s&end=%s' or ''
+        edit = is_exposed('edit-allocation') and '/edit-allocation?id=%s' or ''
+        group = is_exposed('group') and '/group?name=%s' or ''
+        
+        if is_exposed('remove-allocation'):
+            remove = '/remove-allocation?id=%s'
+            removegroup = 'remove-allocat/remove-allocation?group=%s'
+        else:
+            remove, removegroup = '', ''
+
+        group_section = any((group, removegroup))
 
         events = []
         urlquote = lambda fragment: quote(unicode(fragment).encode('utf-8'))
@@ -242,14 +258,33 @@ class Slots(grok.View, CalendarRequest):
             startstamp = time.mktime(start.timetuple())
             endstamp = time.mktime(end.timetuple())
 
-            reserveurl = base + reserve % (startstamp, endstamp)
-            editurl = base + edit % alloc.id
-            removeurl = base + remove % alloc.id
+            if reserve:
+                reserveurl = base + reserve % (startstamp, endstamp)
+            else:
+                reserveurl = None
+            
+            if edit:
+                editurl = base + edit % alloc.id
+            else:
+                editurl = None
+            
+            if remove:
+                removeurl = base + remove % alloc.id
+            else:
+                removeurl = None
 
-            if (alloc.group in groups) or alloc.in_group:
+            if group_section and ((alloc.group in groups) or alloc.in_group):
                 groups.append(alloc.group) # cache the group for performance
-                groupurl = base + group % urlquote(alloc.group)
-                removegroupurl = base + removegroup % urlquote(alloc.group)
+
+                if group:
+                    groupurl = base + group % urlquote(alloc.group)
+                else:
+                    groupurl = None
+
+                if removegroup:
+                    removegroupurl = base + removegroup % urlquote(alloc.group)
+                else:
+                    removegroupurl = None
             else:
                 groupurl = None
                 removegroupurl = None

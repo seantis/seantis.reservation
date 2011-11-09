@@ -2,7 +2,6 @@
 <object name="portal_workflow" meta_type="Plone Workflow Tool">
  <object name="timeframe_workflow" meta_type="Workflow"/>
  <bindings>
-  <default/>
   <type type_id="seantis.reservation.timeframe">
    <bound-workflow workflow_id="timeframe_workflow"/>
   </type>

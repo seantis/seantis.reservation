@@ -3,6 +3,10 @@ if (!this.seantis) this.seantis = {};
 // Adds the contextmenu to the element and adds plone overlays to all
 // links in the content
 seantis.contextmenu = function(event, element, calendar) {
+    var content = seantis.contextmenu.build(event);
+    if (!content)
+        return;
+        
     element.miniTip({
         title: '',
         content: seantis.contextmenu.build(event),
@@ -22,20 +26,22 @@ seantis.contextmenu.build = function(event) {
     var locale = seantis.locale;
     var html = '';
 
-    var single = [
-        title({text: locale('entry')}),
-        entry({text: locale('reserve'), url:event.url}),
-        entry({text: locale('edit'),    url:event.editurl}),
-        entry({text: locale('remove'),  url:event.removeurl})
-    ];
+    if (event.url || event.editurl || event.removeurl) {
+        var single = [
+            title({text: locale('entry')}),
+            event.url && entry({text: locale('reserve'), url:event.url}),
+            event.editurl && entry({text: locale('edit'),    url:event.editurl}),
+            event.removeurl && entry({text: locale('remove'),  url:event.removeurl})
+        ];
 
-    html = single.join('');
+        html = single.join('');
+    }
 
-    if (event.groupurl) {
+    if (event.groupurl || event.removegroupurl) {
         var group = [
             title({text: locale('group')}),
-            entry({text: locale('showgroup'), url:   event.groupurl}),
-            entry({text: locale('removegroup'), url: event.removegroupurl})
+            event.groupurl && entry({text: locale('showgroup'), url:   event.groupurl}),
+            event.removegroupurl && entry({text: locale('removegroup'), url: event.removegroupurl})
         ];    
 
         html += group.join('');
