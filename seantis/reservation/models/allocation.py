@@ -178,11 +178,12 @@ class Allocation(ORMBase):
     def in_group(self):
         """Returns true if the event is in any group."""
         
-        query = Session.query(Allocation)
+        query = Session.query(Allocation.id)
         query = query.filter(Allocation.resource == self.resource)
         query = query.filter(Allocation.group == self.group)
+        query = query.limit(2)
 
-        return query.count() > 1
+        return len(query.all()) >= 1
 
     def availability_partitions(self):
         """Partitions the space between start and end into blocks of either
