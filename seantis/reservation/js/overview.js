@@ -86,6 +86,9 @@ var CalendarDays = function (options) {
 (function($) {
     $(document).ready(function() {
 
+        if (_.isUndefined(seantis.overview))
+            return;
+
         if (_.isUndefined(seantis.overview.id))
             return;
 
