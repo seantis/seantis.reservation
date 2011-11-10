@@ -1,7 +1,7 @@
 import json
-import re
 from datetime import date
 from datetime import datetime
+from datetime import timedelta
 from dateutil import rrule
 
 from five import grok
@@ -40,6 +40,16 @@ recurrence = SimpleVocabulary(
          SimpleTerm(value=True, title=_(u'Daily')),
         ]
     )
+
+def get_date_range(allocation):
+    start = datetime.combine(allocation.day, allocation.start_time)
+    end = datetime.combine(allocation.day, allocation.end_time)
+
+    # since the user can only one date with separate times it is assumed
+    # that an end before a start is meant for the following day
+    if end < start: end += timedelta(days=1)
+
+    return start, end
 
 class IAllocation(form.Schema):
 
@@ -109,9 +119,11 @@ class IAllocation(form.Schema):
         )
 
     @interface.invariant
-    def isValidDateRange(Allocation):
-        if Allocation.start_time >= Allocation.end_time:
-            raise interface.Invalid(_(u'End date before start date'))
+    def isValidRange(Allocation):
+        start, end = get_date_range(Allocation)
+        
+        if abs((end - start).seconds // 60) < 5:
+            raise interface.Invalid(_(u'The allocation must be at least 5 minutes long'))
 
     @interface.invariant
     def isValidQuota(Allocation):
@@ -189,8 +201,7 @@ class AllocationAddForm(AllocationForm):
 
         """
 
-        start = datetime.combine(data.day, data.start_time)
-        end = datetime.combine(data.day, data.end_time)
+        start, end = get_date_range(data)
 
         if not data.recurring:
             return ((start, end))
@@ -278,9 +289,8 @@ class AllocationEditForm(AllocationForm):
 
         scheduler = self.context.scheduler()
 
-        start = datetime.combine(data.day, data.start_time)
-        end = datetime.combine(data.day, data.end_time)
-
+        start, end = get_date_range(data)
+        
         args = (data.id, start, end, unicode(data.group or u''), data.quota)
         action = lambda: scheduler.move_allocation(*args)
         

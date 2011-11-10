@@ -28,3 +28,6 @@ class ModifiedReadOnlySession(ReservationError):
 
 class NotReservableError(ReservationError):
     pass
+
+class ReservationTooLong(ReservationError):
+    pass

@@ -13,6 +13,7 @@ from seantis.reservation.error import OverlappingAllocationError
 from seantis.reservation.error import AffectedReservationError
 from seantis.reservation.error import AlreadyReservedError
 from seantis.reservation.error import NotReservableError
+from seantis.reservation.error import ReservationTooLong
 from seantis.reservation.session import serialized
 from seantis.reservation.raster import rasterize_span
 from seantis.reservation import utils
@@ -498,6 +499,14 @@ class Scheduler(object):
         slots_to_reserve = []
 
         for start, end in dates:
+
+            assert start < end
+            
+            if (end - start).days > 0:
+                raise ReservationTooLong
+
+            assert (end - start).seconds >= 5 * 60
+
             for allocation in self.reservation_targets(start, end):
                 
                 if not self.reservable(allocation):

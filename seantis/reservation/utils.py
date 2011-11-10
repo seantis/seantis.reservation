@@ -87,6 +87,8 @@ def handle_exception(ex):
         msg =_(u'This record already exists.')
     if type(ex) == error.NotReservableError:
         msg =_(u'No reservable slot found.')
+    if type(ex) == error.ReservationTooLong:
+        msg =_(u"Reservations can't be made for more than 24 hours at a time")
 
     if not msg:
         raise ex

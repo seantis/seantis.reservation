@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from uuid import uuid4 as new_uuid
 
 from seantis.reservation.tests import IntegrationTestCase
@@ -6,6 +6,7 @@ from seantis.reservation.db import Scheduler
 from seantis.reservation.error import OverlappingAllocationError
 from seantis.reservation.error import AffectedReservationError
 from seantis.reservation.error import AlreadyReservedError
+from seantis.reservation.error import ReservationTooLong
 from seantis.reservation import utils
 from seantis.reservation.session import serialized
 
@@ -79,6 +80,21 @@ class TestScheduler(IntegrationTestCase):
 
         remaining = allocation.free_slots()
         self.assertEqual(len(remaining), 2)
+
+    def test_userlimits(self):
+        # ensure that no user can make a reservation for more than 24 hours at 
+        # the time. the user acutally can't do that anyway, since we do not offer
+        # start / end dates, but a day and two times. But if this changes in the 
+        # future it should throw en error first, because it would mean that we
+        # have to look at how to stop the user from reserving one year with a single
+        # form
+
+        start = datetime(2011, 1, 1, 15, 0)
+        end = start + timedelta(days=1)
+
+        sc = Scheduler(new_uuid())
+
+        self.assertRaises(ReservationTooLong, sc.reserve, (start, end))
 
     def test_allocation_overlap(self):
         sc1 = Scheduler(new_uuid())

@@ -13,6 +13,8 @@ from seantis.reservation.form import (
         extract_action_data
     )
 
+from seantis.reservation.allocate import get_date_range
+
 class IReservation(interface.Interface):
 
     day = schema.Date(
@@ -27,11 +29,6 @@ class IReservation(interface.Interface):
         title=_(u'End')
         )
 
-    @interface.invariant
-    def isValidDateRange(Reservation):
-        if Reservation.start_time >= Reservation.end_time:
-            raise interface.Invalid(_(u'End date before start date'))
-
 class ReservationForm(ResourceBaseForm):
     permission = 'zope2.View'
 
@@ -45,8 +42,7 @@ class ReservationForm(ResourceBaseForm):
     @extract_action_data
     def reserve(self, data):
 
-        start = datetime.combine(data.day, data.start_time)
-        end = datetime.combine(data.day, data.end_time)
+        start, end = get_date_range(data)
 
         scheduler = self.context.scheduler()
         action = lambda: scheduler.reserve((start, end))
