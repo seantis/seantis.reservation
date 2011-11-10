@@ -1,17 +1,14 @@
-if (!this.seantis) this.seantis = {};
-if (!this.seantis.calendar) this.seantis.calender = {};
-if (!this.seantis.overview) this.seantis.overview = {};
-
-seantis.overview.days = {
-    store: {},
-    cleared: false,
-
-    key: function(date) { 
+var CalendarDays = function (options) {
+    var cleared = false;
+    var store = {};
+    var get_dates =  function() { return _.keys(store); };
+    var get_cells =  function() { return _.values(store); };
+    var key = function(date) {
         return date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate();
-    },   
+    };
 
-    clear: function() {
-        var cells = this.cells();
+    var clear = function() {
+        var cells = get_cells();
         for(var i=0; i<cells.length; i++) {
             var cell = cells[i];
 
@@ -26,33 +23,41 @@ seantis.overview.days = {
         }
 
         return true;
-    },
+    };
 
-    add: function(date, cell) {
-        if (!this.cleared)
-            this.cleared = this.clear();
+    var add = function(date, cell) {
+        if (!cleared)
+            cleared = clear();
             
-        this.store[this.key(date)] = cell;
-    },
+        store[key(date)] = cell;
+    };
 
-    get: function(date) {
-        return this.store[this.key(date)];
-    },
+    var get = function(date) { 
+        return store[key(date)]; 
+    };
 
-    dates: function() { return _.keys(this.store); },
-    cells: function() { return _.values(this.store); }
+    this.add = add;
+    this.get = get;
+
+    options.loading = function() { 
+        cleared=false; 
+    };
+    options.dayRender = function(date, element) { add(date, element); };
 };
 
 (function($) {
     $(document).ready(function() {
-        
+
         if (_.isUndefined(seantis.overview.id))
             return;
 
-        seantis.overview.element = $(seantis.overview.id);
+        var overview = $(seantis.overview.id);
 
-        seantis.overview.items = function(uuids) {
-            var uuidmap = seantis.overview.options.uuidmap;
+        var options = {};
+        var days = new CalendarDays(options);
+
+        var get_items = function(uuids) {
+            var uuidmap = options.uuidmap;
             if (_.isEmpty(uuids) || _.isEmpty(uuidmap))
                 return [];
 
@@ -61,10 +66,10 @@ seantis.overview.days = {
             }));
         };
 
-        seantis.overview.render = function(event, element) {
-            var cell = seantis.overview.days.get(event.start);
+        var render = function(event, element) {
+            var cell = days.get(event.start);
             if (!_.isUndefined(cell) && ! cell.data('old_classes')) {
-                var items = seantis.overview.items(event.uuids);
+                var items = get_items(event.uuids);
                 var itemids = '#' + items.join(', #');
                 var classes = event.className.join(' ') + ' ' + items.join(' ');
 
@@ -89,39 +94,37 @@ seantis.overview.days = {
             elements.toggleClass('groupSelection', highlight);
         };
 
-        seantis.overview.resultmouseover = function() {
+        var item_mouseover = function() {
             var element = $('.' + $(this).attr('id'));
             highlight_group(element, true);
         };
 
-        seantis.overview.resultmouseout = function() {
+        var item_mouseout = function() {
             var element = $('.' + $(this).attr('id'));
             highlight_group(element, false);
         };  
 
         var dayrender = function(date, element, view) {
-            seantis.overview.days.add(date, element);
+            days.add(date, element);
         };
 
         var isloading = function() {
-            seantis.overview.days.cleared = false;
+            days.cleared = false;
         };
 
-        $('.directoryResult').mouseenter(seantis.overview.resultmouseover);
-        $('.directoryResult').mouseleave(seantis.overview.resultmouseout);
+        $('.directoryResult').mouseenter(item_mouseover);
+        $('.directoryResult').mouseleave(item_mouseout);
         
-        var options = {
+        $.extend(options, {
             firstDay: 1,
             timeFormat: 'HH:mm{ - HH:mm}',
             axisFormat: 'HH:mm{ - HH:mm}',
             columnFormat: 'ddd d.M',
-            eventRender: seantis.overview.render,
-            dayRender: dayrender,
-            loading: isloading
-        };
-
+            eventRender: render
+        });
         $.extend(options, seantis.locale.fullcalendar());
         $.extend(options, seantis.overview.options);
-        seantis.overview.element.fullCalendar(options);
+
+        overview.fullCalendar(options);
     });
 })( jQuery );
