@@ -1,11 +1,10 @@
-from datetime import datetime
-
 from five import grok
 from zope import schema
 from zope import interface
 from z3c.form import field
 from z3c.form import button
 
+from seantis.reservation import throttle
 from seantis.reservation import _
 from seantis.reservation import utils
 from seantis.reservation.form import (
@@ -42,14 +41,13 @@ class ReservationForm(ResourceBaseForm):
     @extract_action_data
     def reserve(self, data):
 
-        start, end = get_date_range(data)
+        def reserve(): 
+            throttle.apply(self.context, 'reserve')
 
-        scheduler = self.context.scheduler()
-        action = lambda: scheduler.reserve((start, end))
-        redirect = self.request.response.redirect
-        success = lambda: redirect(self.context.absolute_url())
+            start, end = get_date_range(data)
+            self.context.scheduler().reserve((start, end))
 
-        utils.handle_action(action=action, success=success)
+        utils.handle_action(action=reserve, success=self.redirect_to_context)
 
     @button.buttonAndHandler(_(u'Cancel'))
     def cancel(self, action):

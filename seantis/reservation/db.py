@@ -500,11 +500,10 @@ class Scheduler(object):
 
         for start, end in dates:
 
-            assert start < end
-            
-            if (end - start).days > 0:
+            if abs((end - start).days) > 0:
                 raise ReservationTooLong
 
+            assert start < end
             assert (end - start).seconds >= 5 * 60
 
             for allocation in self.reservation_targets(start, end):

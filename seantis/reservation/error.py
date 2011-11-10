@@ -31,3 +31,6 @@ class NotReservableError(ReservationError):
 
 class ReservationTooLong(ReservationError):
     pass
+
+class ThrottleBlock(ReservationError):
+    pass

@@ -89,6 +89,8 @@ def handle_exception(ex):
         msg =_(u'No reservable slot found.')
     if type(ex) == error.ReservationTooLong:
         msg =_(u"Reservations can't be made for more than 24 hours at a time")
+    if type(ex) == error.ThrottleBlock:
+        msg =_(u'Too many reservations in a short time. Wait for a moment before trying again.')
 
     if not msg:
         raise ex
@@ -173,3 +175,7 @@ def get_config(key):
     config = getConfiguration()
     configuration = config.product_config.get('seantis.reservation', dict())
     return configuration.get(key)
+
+# obsolete in python 2.7
+def total_timedelta_seconds(td):
+    return (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
