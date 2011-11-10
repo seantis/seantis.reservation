@@ -1,13 +1,55 @@
 if (!this.seantis) this.seantis = {};
+if (!this.seantis.calendar) this.seantis.calender = {};
 if (!this.seantis.overview) this.seantis.overview = {};
+
+seantis.overview.days = {
+    store: {},
+    cleared: false,
+
+    key: function(date) { 
+        return date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate();
+    },   
+
+    clear: function() {
+        var cells = this.cells();
+        for(var i=0; i<cells.length; i++) {
+            var cell = cells[i];
+
+            var old_classes = cell.data('old_classes');
+            if (old_classes) {
+                cell.removeClass(old_classes);
+                cell.removeData('old_classes');
+            }
+
+            cell.unbind('mouseenter');
+            cell.unbind('mouseleave');
+        }
+
+        return true;
+    },
+
+    add: function(date, cell) {
+        if (!this.cleared)
+            this.cleared = this.clear();
+            
+        this.store[this.key(date)] = cell;
+    },
+
+    get: function(date) {
+        return this.store[this.key(date)];
+    },
+
+    dates: function() { return _.keys(this.store); },
+    cells: function() { return _.values(this.store); }
+};
 
 (function($) {
     $(document).ready(function() {
+        
         if (_.isUndefined(seantis.overview.id))
             return;
 
         seantis.overview.element = $(seantis.overview.id);
-        seantis.overview.days = {};
 
         seantis.overview.items = function(uuids) {
             var uuidmap = seantis.overview.options.uuidmap;
@@ -20,7 +62,7 @@ if (!this.seantis.overview) this.seantis.overview = {};
         };
 
         seantis.overview.render = function(event, element) {
-            var cell = seantis.overview.dayelement(event.start);
+            var cell = seantis.overview.days.get(event.start);
             if (!_.isUndefined(cell) && ! cell.data('old_classes')) {
                 var items = seantis.overview.items(event.uuids);
                 var itemids = '#' + items.join(', #');
@@ -55,49 +97,14 @@ if (!this.seantis.overview) this.seantis.overview = {};
         seantis.overview.resultmouseout = function() {
             var element = $('.' + $(this).attr('id'));
             highlight_group(element, false);
+        };  
+
+        var dayrender = function(date, element, view) {
+            seantis.overview.days.add(date, element);
         };
 
-        seantis.overview.datekey = function(date) {
-            var key = date.getFullYear().toString() + '-';
-            key += date.getMonth().toString() + '-';
-            key += date.getDate().toString();
-            return key;
-        }
-
-        seantis.overview.dayelement = function(date) {
-            return seantis.overview.days[seantis.overview.datekey(date)];
-        };
-
-        seantis.overview.dayrender = function(date, element, view) {
-            if (!seantis.overview.days.cleared) {
-                var keys = _.keys(seantis.overview.days);
-                for(var i=0; i<keys.length; i++) {
-                    var key = keys[i];
-                    var el = seantis.overview.days[key];
-                    
-                    if (!el.data)
-                        continue;
-
-                    var old_classes = el.data('old_classes');
-                    if (old_classes) {
-                        el.removeClass(old_classes);
-                        el.removeData('old_classes');
-                    }
-                }
-
-                _.each(_.values(seantis.overview.days), function(cell) {
-                    if (!_.isUndefined(cell.unbind)) {
-                        cell.unbind('mouseenter');
-                        cell.unbind('mouseleave');
-                    } 
-                });
-
-                seantis.overview.days = {};
-                seantis.overview.days.cleared = true;
-            }
-
-            var key = seantis.overview.datekey(date);
-            seantis.overview.days[seantis.overview.datekey(date)] = element;
+        var isloading = function() {
+            seantis.overview.days.cleared = false;
         };
 
         $('.directoryResult').mouseenter(seantis.overview.resultmouseover);
@@ -109,8 +116,8 @@ if (!this.seantis.overview) this.seantis.overview = {};
             axisFormat: 'HH:mm{ - HH:mm}',
             columnFormat: 'ddd d.M',
             eventRender: seantis.overview.render,
-            dayRender: seantis.overview.dayrender,
-            loading: function(isLoading, view) { seantis.overview.days.cleared = false; }
+            dayRender: dayrender,
+            loading: isloading
         };
 
         $.extend(options, seantis.locale.fullcalendar());
