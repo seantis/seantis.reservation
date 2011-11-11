@@ -8,7 +8,7 @@
   <!-- Basic metadata -->
   <property name="title" i18n:translate="">Resource</property>
   <property name="description" i18n:translate=""></property>
-  <property name="content_icon">document_icon.gif</property>
+  <property name="content_icon">++resource++seantis.reservation.images/logo.gif</property>
   <property name="allow_discussion">False</property>
   <property name="global_allow">True</property>
   <property name="filter_content_types">False</property>

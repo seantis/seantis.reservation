@@ -11,6 +11,7 @@ from plone.memoize import view
 from zope import schema
 from zope import interface
 
+from seantis.reservation.models import Allocation
 from seantis.reservation import exposure
 from seantis.reservation import utils
 from seantis.reservation.db import Scheduler
@@ -190,7 +191,11 @@ class GroupView(grok.View):
             return []
 
         scheduler = self.context.scheduler()
-        return scheduler.allocations_by_group(unicode(self.group))
+        query = scheduler.allocations_by_group(unicode(self.group))
+        query = query.order_by(Allocation._start)
+
+        return query
+        
 
 class CalendarRequest(object):
 

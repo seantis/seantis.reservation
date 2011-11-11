@@ -20,7 +20,7 @@ from z3c.form.browser.radio import RadioFieldWidget
 from seantis.reservation import _
 from seantis.reservation import error
 from seantis.reservation import utils
-from seantis.reservation.timeframe import timeframes_by_uuid
+from seantis.reservation.models import Allocation
 from seantis.reservation.raster import VALID_RASTER_VALUES
 from seantis.reservation.form import ResourceBaseForm, extract_action_data
 
@@ -349,13 +349,15 @@ class AllocationRemoveForm(AllocationForm):
 
     @view.memoize
     def allocations(self):
-        if self.id:
+        if self.group:
+            query = self.scheduler.allocations_by_group(self.group)
+            query = query.order_by(Allocation._start)
+            return query.all()
+        elif self.id:
             try:
                 return [self.scheduler.allocation_by_id(self.id)]
             except error.NoResultFound:
                 return []
-        elif self.group:
-            return self.scheduler.allocations_by_group(self.group).all()
         else:
             return []
 
