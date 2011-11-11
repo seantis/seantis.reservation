@@ -77,3 +77,10 @@
 #formfield-form-widgets-days span.option {
     display: inline;
 }
+
+.multiCalendarContainer {
+    float: left;
+    width: 45%;
+    margin-right: 5%;
+    margin-bottom: 25px;
+}

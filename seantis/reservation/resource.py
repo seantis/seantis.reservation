@@ -106,7 +106,7 @@ class View(grok.View):
             setattr(resource, 'calendar_id', template % ix)
 
         return resources
-        
+
     def javascript(self):
         template = """
         <script type="text/javascript">

@@ -11,8 +11,8 @@
 
 <body>
 
-<metal:block metal:fill-slot="javascript_head_slot">
-    <tal:block tal:replace="structure view/javascript" />
+<metal:block fill-slot="javascript_head_slot">
+    <tal:block replace="structure view/javascript" />
 </metal:block>
 
 <metal:main fill-slot="main">
@@ -22,23 +22,45 @@
         <div tal:replace="structure provider:plone.belowcontenttitle" />
         <div tal:replace="structure provider:plone.abovecontentbody" />
 
-        <div class="documentContent">
-            <tal:block condition="python: view.calendar_count == 1" repeat="resource view/resources">
-                <h1 class="documentFirstHeading" tal:content="python: resource.parent().title + ' - ' + resource.title"></h1>
-                <p tal:content="resource/description" />
+        <div class="documentContent" 
+            tal:define="multicalendar python: view.calendar_count == 1">
 
-                <div tal:attributes="id resource/calendar_id"></div>
+            <!-- single calendar -->
+            <tal:block 
+                condition="multicalendar" 
+                repeat="resource view/resources">
+                
+                <div tal:define="
+                    parent      python: resource.parent();
+                    title       python: parent.title + ' - ' + resource.title;
+                    description resource/description;
+                    calendar_id resource/calendar_id;
+                    ">
+
+                    <h1 tal:content="title" class="documentFirstHeading"></h1>
+                    <p tal:content="description" />
+                    <div tal:attributes="id calendar_id"></div>
+
+                </div>
             </tal:block>
 
-            <tal:block tal:condition="python: view.calendar_count > 1" tal:repeat="resource view/resources">
-                <div style="float: left; width: 45%; margin-right: 5%;">
-                    <h1 class="documentFirstHeading" tal:content="python: resource.parent().title + ' - ' + resource.title"></h1>
-                    <p tal:content="resource/description" />
-                    <div tal:attributes="id resource/calendar_id"></div>
+            <!-- multiple calendar comparison -->
+            <tal:block 
+                condition="not: multicalendar" 
+                repeat="resource view/resources">
+                
+                <div class="multiCalendarContainer" tal:define="
+                    parent      python: resource.parent();
+                    title       python: parent.title + ' - ' + resource.title;
+                    calendar_id resource/calendar_id;
+                    ">
+
+                    <h1 tal:content="title" class="documentFirstHeading"></h1>
+                    <div tal:attributes="id calendar_id"></div>
+
                 </div>
 
                 <div tal:condition="repeat/resource/odd" style="clear: both;"></div>
-                
             </tal:block>
         </div>
 
