@@ -1,7 +1,11 @@
 from datetime import datetime
 
+from seantis.reservation import settings
 from seantis.reservation import error
 from seantis.reservation import utils
+
+def seconds_required():
+    return settings.get('throttle_minutes') * 60
 
 def session_get(context, key):
     man = context.session_data_manager
@@ -20,7 +24,7 @@ def apply(context, name):
         delta = (datetime.today() - last_change)
         seconds_since = utils.total_timedelta_seconds(delta)
         
-        if seconds_since < 60:
+        if seconds_since < seconds_required():
             raise error.ThrottleBlock
 
     session_set(context, key, datetime.today())

@@ -30,8 +30,17 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
     provides="Products.GenericSetup.interfaces.EXTENSION"
 />
 
+<!-- Controlpanel View -->
+<browser:page
+    for="plone.app.layout.navigation.interfaces.INavigationRoot"
+    name="reservation-controlpanel"
+    class="seantis.reservation.settings.SeantisReservationControlPanelView"
+    permission="cmf.ManagePortal"
+    />
+
     
 <!-- Resources -->
+<browser:resourceDirectory name="seantis.reservation.images" directory="images"/>
 <browser:resourceDirectory name="seantis.reservation.js" directory="js"/>
 <browser:resourceDirectory name="seantis.reservation.css" directory="css"/>
 

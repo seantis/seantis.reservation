@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<object
+    name="portal_controlpanel"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="seantis.reservation">
+
+    <configlet
+        title="Seantis Reservation Settings"
+        action_id="seantis_reservation"
+        appId="seantis_reservation"
+        category="Products"
+        condition_expr=""
+        url_expr="string:${portal_url}/@@reservation-controlpanel"
+        icon_expr="string:$portal_url/++resource++seantis.reservation.images/logo.gif"
+        visible="True"
+        i18n:attributes="title">
+            <permission>Manage portal</permission>
+    </configlet>
+</object>
