@@ -5,7 +5,9 @@ from datetime import datetime, MINYEAR, MAXYEAR
 from itertools import groupby
 
 from sqlalchemy.sql import and_, or_
+from sqlalchemy.sql.expression import alias
 from sqlalchemy.orm import joinedload
+from sqlalchemy import func
 
 from seantis.reservation.models import Allocation
 from seantis.reservation.models import ReservedSlot
@@ -33,6 +35,26 @@ def all_allocations_in_range(start, end):
             )
         )
     )
+
+def grouped_reservation_view(query):
+    """Takes a query of reserved slots joined with allocations and uses it
+    to return reservation uuid, allocation id and the start and end dates within
+    the referenced allocation.
+
+    If the above sentence does not make sense: It essentialy builds the data
+    needed for the ManageReservationsForm.
+
+    """
+    query = query.with_entities(
+            ReservedSlot.reservation, 
+            Allocation.id,
+            func.min(ReservedSlot.start),
+            func.max(ReservedSlot.end)
+        )
+    query = query.group_by(ReservedSlot.reservation, Allocation.id)
+    query = query.order_by(ReservedSlot.reservation, 'min_1', Allocation.id)
+
+    return query
 
 def availability_by_allocations(allocations):
     """Takes any iterator with alloctions and calculates the availability. Counts

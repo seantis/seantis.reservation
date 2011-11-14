@@ -31,11 +31,12 @@ def from_timestamp(fn):
 
     """
     def converter(self, *args, **kwargs):
+        date = None
         try:
             date = fn(self, *args, **kwargs)
             return date and datetime.fromtimestamp(float(date)) or None
         except TypeError:
-            return None
+            return date
 
     return converter
 
@@ -78,12 +79,18 @@ class ResourceBaseForm(form.Form):
     @property
     @from_timestamp
     def start(self):
-        return self.request.get('start')
+        if 'start' in self.request:
+            return self.request['start']
+        elif self.updateWidgets and 'start' in self.widgets:
+            return self.widgets['start']
 
     @property
     @from_timestamp
     def end(self):
-        return self.request.get('end')
+        if 'end' in self.request:
+            return self.request['end']
+        elif self.updateWidgets and 'end' in self.widgets:
+            return self.widgets['end']
 
     @property
     def id(self):
@@ -94,13 +101,19 @@ class ResourceBaseForm(form.Form):
         else:
             return 0
         
-        return utils.request_id_as_int(value)
+        if value in (None, u'', ''):
+            return 0
+        else:
+            return utils.request_id_as_int(value)
 
     @property
     def group(self):
-        if self.widgets and 'group' in self.widgets:
+        if 'group' in self.request:
+            return unicode(self.request['group'].decode('utf-8'))
+        elif self.widgets and 'group' in self.widgets:
             return unicode(self.widgets['group'].value)
-        return unicode(self.request.get('group', '').decode('utf-8'))
+        
+        return u''
 
     def update(self, **kwargs):
         start, end = self.start, self.end

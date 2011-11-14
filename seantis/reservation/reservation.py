@@ -1,13 +1,17 @@
 import json
+from itertools import groupby
 
 from five import grok
 from zope import schema
 from zope import interface
 from z3c.form import field
 from z3c.form import button
+from z3c.form.ptcompat import ViewPageTemplateFile
+from plone.memoize import view
 
 from seantis.reservation.throttle import throttled
 from seantis.reservation.resource import IResourceBase
+from seantis.reservation import db
 from seantis.reservation import _
 from seantis.reservation import utils
 from seantis.reservation.form import (
@@ -85,6 +89,31 @@ class ManageReservationsForm(ResourceBaseForm):
 
     fields = field.Fields(IManageReservation)
     hidden_fields = ['id', 'group', 'start', 'end']
+
+    label = _(u'Manage reservations')
+    template = ViewPageTemplateFile('templates/manage_reservations.pt')
+
+    def reservations(self):
+        scheduler = self.context.scheduler()
+
+        if self.id:
+            query = scheduler.reservations_for_allocation(self.id)
+        elif self.group:
+            query = scheduler.reservations_for_group(self.group)
+        elif self.start and self.end:
+            query = scheduler.reservations_for_range(self.start, self.end)
+        else:
+            return None
+        
+        query = db.grouped_reservation_view(query)
+
+        keyfn = lambda result: result.reservation
+
+        results = {}
+        for key, values in groupby(query, key=keyfn):
+            results[key] = list(values)
+
+        return results
 
 class Remove(grok.View):
     permission = "cmf.ManagePortal"
