@@ -13,10 +13,12 @@
 <h1 class="documentFirstHeading" tal:content="view/label"/>
 <tal:block tal:repeat="group python: view.reservations().items()">
     
-    <div tal:attributes="id python: group[0]">
-        <div tal:repeat="reservation python: group[1]">
+    <div class="reservation">
+        <a tal:attributes="id python: group[0]" href="#"><div class="reservation-title"><a href="/remove-reservation">Delete</a></div></a>
+        <div tal:repeat="reservation python: group[1]" class="reservation-list">
             <span tal:content="python: reservation[2].strftime('%d.%m.%Y %H:%M')"/>
             <span tal:content="python: reservation[3].strftime('%d.%m.%Y %H:%M')"/>
+            <a href="/remove-reservation">Delete</a>
         </div>
     </div>
 
