@@ -14,11 +14,14 @@
 <tal:block tal:repeat="group python: view.reservations().items()">
     
     <div class="reservation">
-        <a tal:attributes="id python: group[0]" href="#"><div class="reservation-title"><a href="/remove-reservation">Delete</a></div></a>
+        <div class="reservation-title">
+            <h3 tal:content="python: group[0]"></h3>
+            <a href="/remove-reservation" class="reservation-delete">Delete</a>
+        </div>
         <div tal:repeat="reservation python: group[1]" class="reservation-list">
             <span tal:content="python: reservation[2].strftime('%d.%m.%Y %H:%M')"/>
             <span tal:content="python: reservation[3].strftime('%d.%m.%Y %H:%M')"/>
-            <a href="/remove-reservation">Delete</a>
+            <a href="/remove-reservation" class="reservation-delete">Delete</a>
         </div>
     </div>
 
