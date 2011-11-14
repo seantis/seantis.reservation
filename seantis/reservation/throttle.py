@@ -18,9 +18,8 @@ def session_set(context, key, value):
 def apply(context, name):
     key = 'throttle_' + name
     last_change = session_get(context, key)
-
+    
     if last_change:
-
         delta = (datetime.today() - last_change)
         seconds_since = utils.total_timedelta_seconds(delta)
         
@@ -28,3 +27,16 @@ def apply(context, name):
             raise error.ThrottleBlock
 
     session_set(context, key, datetime.today())
+
+    # return a function which resets the throttle if called
+    return lambda: last_change and session_set(context, key, last_change)
+
+def throttled(function, context, name):
+    def wrap():
+        abort = apply(context, name)
+        try:
+            function()
+        except:
+            abort()
+            raise
+    return wrap

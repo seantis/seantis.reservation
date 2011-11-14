@@ -4,7 +4,7 @@ from zope import interface
 from z3c.form import field
 from z3c.form import button
 
-from seantis.reservation import throttle
+from seantis.reservation.throttle import throttled
 from seantis.reservation import _
 from seantis.reservation import utils
 from seantis.reservation.form import (
@@ -42,12 +42,11 @@ class ReservationForm(ResourceBaseForm):
     def reserve(self, data):
 
         def reserve(): 
-            throttle.apply(self.context, 'reserve')
-
             start, end = get_date_range(data)
             self.context.scheduler().reserve((start, end))
 
-        utils.handle_action(action=reserve, success=self.redirect_to_context)
+        action = throttled(reserve, self.context, 'reserve')
+        utils.handle_action(action=action, success=self.redirect_to_context)
 
     @button.buttonAndHandler(_(u'Cancel'))
     def cancel(self, action):
