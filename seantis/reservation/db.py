@@ -614,6 +614,13 @@ class Scheduler(object):
         return query
 
     @serialized
-    def remove_reservation(self, reservation):
-        for slot in self.reserved_slots(reservation):
+    def remove_reservation(self, reservation, id=None):
+        assert reservation
+
+        query = self.reserved_slots(reservation)
+
+        if id: 
+            query = query.filter(ReservedSlot.allocation_id == id)
+        
+        for slot in query:
             Session.delete(slot)

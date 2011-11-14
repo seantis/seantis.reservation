@@ -59,7 +59,7 @@ def translate(context, request, text):
     lang = get_current_language(context, request)
     return i18n.translate(text, target_language=lang)
 
-def handle_action(action=None, success=None):
+def handle_action(action=None, success=None, message_handler=None):
     try:
         result = None
         if action: result = action()
@@ -69,9 +69,12 @@ def handle_action(action=None, success=None):
 
     except Exception, e:
         e = hasattr(e, 'orig') and e.orig or e
-        handle_exception(e)
+        handle_exception(e, message_handler)
 
-def handle_exception(ex):
+def form_error(msg):
+    raise ActionExecutionError(interface.Invalid(msg))
+
+def handle_exception(ex, message_handler=form_error):
     msg = None
     if type(ex) == error.OverlappingAllocationError:
         msg = _(u'A conflicting allocation exists for the requested time period.')
@@ -84,7 +87,7 @@ def handle_exception(ex):
     if type(ex) == error.AlreadyReservedError:
         msg = _(u'The requested period is no longer available.')
     if type(ex) == error.IntegrityError:
-        msg =_(u'This record already exists.')
+        msg =_(u'Invalid change. Your request may have already been processed earlier.')
     if type(ex) == error.NotReservableError:
         msg =_(u'No reservable slot found.')
     if type(ex) == error.ReservationTooLong:
@@ -95,10 +98,7 @@ def handle_exception(ex):
     if not msg:
         raise ex
 
-    form_error(msg)
-
-def form_error(msg):
-    raise ActionExecutionError(interface.Invalid(msg))
+    message_handler(msg)
 
 def is_uuid(obj):
     if isinstance(obj, basestring):
