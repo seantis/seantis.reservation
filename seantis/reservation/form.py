@@ -86,7 +86,20 @@ class ResourceBaseForm(form.Form):
         return self.request.get('end')
 
     @property
+    def id(self):
+        if 'id' in self.request:
+            value = self.request['id']
+        elif self.widgets and 'id' in self.widgets:
+            value = self.widgets['id'].value
+        else:
+            return 0
+        
+        return utils.request_id_as_int(value)
+
+    @property
     def group(self):
+        if self.widgets and 'group' in self.widgets:
+            return unicode(self.widgets['group'].value)
         return unicode(self.request.get('group', '').decode('utf-8'))
 
     def update(self, **kwargs):

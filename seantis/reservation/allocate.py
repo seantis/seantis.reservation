@@ -248,10 +248,6 @@ class AllocationEditForm(AllocationForm):
     label = _(u'Edit allocation')
 
     @property
-    def id(self):
-        return int(self.request.get('id', 0))
-
-    @property
     def allocation(self):
         if not self.id:
             return None
@@ -313,21 +309,6 @@ class AllocationRemoveForm(AllocationForm):
 
     hidden_fields = ['id', 'group']
     ignore_requirements = True
-
-    @property
-    def id(self):
-        if self.widgets and 'id' in self.widgets:
-            value = self.widgets['id'].value
-        else:
-            value = self.request.get('id')
-        
-        return utils.request_id_as_int(value)
-
-    @property
-    def group(self):
-        if self.widgets and 'group' in self.widgets:
-            return unicode(self.widgets['group'].value)
-        return unicode(self.request.get('group', '').decode('utf-8'))
 
     @button.buttonAndHandler(_(u'Delete'))
     @extract_action_data

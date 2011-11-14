@@ -48,7 +48,7 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(len(remaining), 2)
         self.assertEqual(remaining, possible_dates[2:])
 
-        reserved_slots = list(sc.reserved_slots(reservation))
+        reserved_slots = sc.reserved_slots(reservation).all()
         self.assertEqual(slots, reserved_slots)
 
         # try to illegally move the slot

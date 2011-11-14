@@ -52,3 +52,4 @@ class ReservationForm(ResourceBaseForm):
     @button.buttonAndHandler(_(u'Cancel'))
     def cancel(self, action):
         self.redirect_to_context()
+

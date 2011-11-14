@@ -592,8 +592,26 @@ class Scheduler(object):
         query = self.managed_reserved_slots()
         query = query.filter(ReservedSlot.reservation == reservation)
 
-        for result in query:
-            yield result
+        return query
+
+    def reservations_for_range(self, start, end):
+        query = self.managed_reserved_slots()
+        query = query.filter(start <= ReservedSlot.start)
+        query = query.filter(ReservedSlot.end <= end)
+
+        return query
+
+    def reservations_for_group(self, group):
+        query = self.managed_reserved_slots()
+        query = query.filter(Allocation.group == group)
+
+        return query
+
+    def reservations_for_allocation(self, allocation_id):
+        query = self.managed_reserved_slots()
+        query = query.filter(ReservedSlot.allocation_id == allocation_id)
+
+        return query
 
     @serialized
     def remove_reservation(self, reservation):
