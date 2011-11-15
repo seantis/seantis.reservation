@@ -13,7 +13,7 @@
 <h1 class="documentFirstHeading" tal:content="view/label"/>
 <tal:block tal:repeat="group python: view.reservations().items()">
     
-    <div class="reservation">
+    <div id="reservation-info" class="reservation">
         <div class="reservation-title">
             <h3 tal:content="python: group[0]"></h3>
             <a href="/remove-reservation" class="reservation-delete">Delete</a>

@@ -39,7 +39,7 @@ seantis.calendars.defaults = {
                     return _.pluck(_.filter(this, key), 'element');
                 };
 
-                // Sets a calendar event up with a form overlay
+                // Sets a calendar element up with an overlay
                 calendar.overlay_init = function(element, onclose) {
                     var calendar = this;
                     element.prepOverlay({
@@ -62,6 +62,20 @@ seantis.calendars.defaults = {
                             } 
                         } 
                     });
+                };
+
+                // Sets a calendar element up with an inline load
+                calendar.inline_init = function(element, url, filter, target) {
+                    var load = function(event) {
+                        $.get(url, function(data) {
+                            var result = $(filter, $(data));
+                            target.html(result.html());
+                        });
+
+                        event.preventDefault();
+                    };
+
+                    element.click(load);
                 };
 
                 calendar.is_resizing = false;

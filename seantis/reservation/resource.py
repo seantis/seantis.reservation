@@ -260,9 +260,11 @@ class Slots(grok.View, CalendarRequest):
         # prepare url factories
         reserve = factory('reserve', '/reserve?start=%s&end=%s')
         edit = factory('edit-allocation', '/edit-allocation?id=%i')
+        reservations = factory('reservations', '/reservations?id=%i')
         group = factory('group', '/group?name=%s')
         remove = factory('remove-allocation', '/remove-allocation?id=%i')
         removegroup = factory('remove-allocation', '/remove-allocation?group=%s')
+        groupreservations = factory('reservations', '/reservations?group=%s')
 
         # cache the following for the loop
         groups = []
@@ -282,6 +284,7 @@ class Slots(grok.View, CalendarRequest):
             reserveurl = reserve(timestamp(start), timestamp(end))
             editurl = edit(alloc.id)
             removeurl = remove(alloc.id)
+            reservationsurl = reservations(alloc.id)
 
             # get additional urls for items in groups
             if (alloc.group in groups) or alloc.in_group:
@@ -291,8 +294,9 @@ class Slots(grok.View, CalendarRequest):
 
                 groupurl = group(alloc.group)
                 removegroupurl = removegroup(alloc.group)
+                groupreservationsurl = groupreservations(alloc.group)
             else:
-                groupurl, removegroupurl = None, None
+                groupurl, removegroupurl, groupreservationsurl = None, None, None
 
           
             # calculate the availability for title and class
@@ -319,6 +323,8 @@ class Slots(grok.View, CalendarRequest):
                 groupurl=groupurl,
                 removeurl=removeurl,
                 removegroupurl=removegroupurl,
+                reservationsurl=reservationsurl,
+                groupreservationsurl=groupreservationsurl,
                 allocation = alloc.id,
                 partitions = partitions,
                 group = alloc.group,

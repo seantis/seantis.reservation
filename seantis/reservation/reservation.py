@@ -90,7 +90,7 @@ class ManageReservationsForm(ResourceBaseForm):
     fields = field.Fields(IManageReservation)
     hidden_fields = ['id', 'group', 'start', 'end']
 
-    label = _(u'Manage reservations')
+    label = _(u'Reservations')
     template = ViewPageTemplateFile('templates/manage_reservations.pt')
 
     def reservations(self):

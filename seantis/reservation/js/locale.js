@@ -103,5 +103,9 @@ seantis.locale.dictionary = {
     'group' : [
         'Group',
         'Gruppe'
+    ],
+    'reservations' : [
+        'Reservations',
+        'Reservationen'
     ]
 };

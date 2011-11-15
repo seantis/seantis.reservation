@@ -118,3 +118,7 @@ a.reservation-delete {
     border-top: none;
     padding: 5px 10px 5px 20px;
 }
+
+#inline-page {
+    margin-top: 20px;
+}
