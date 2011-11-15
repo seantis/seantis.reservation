@@ -6,7 +6,6 @@ from zope import schema
 from zope import interface
 from z3c.form import field
 from z3c.form import button
-from z3c.form.ptcompat import ViewPageTemplateFile
 from plone.memoize import view
 
 from seantis.reservation.throttle import throttled
@@ -81,18 +80,40 @@ class ReservationForm(ResourceBaseForm):
     def cancel(self, action):
         self.redirect_to_context()
 
-class ManageReservationsForm(ResourceBaseForm):
+class ManageReservations(grok.View):
     permission = "cmf.ManagePortal"
 
     grok.name('reservations')
     grok.require(permission)
 
-    fields = field.Fields(IManageReservation)
-    hidden_fields = ['id', 'group', 'start', 'end']
+    grok.context(IResourceBase)
 
-    label = _(u'Reservations')
-    template = ViewPageTemplateFile('templates/manage_reservations.pt')
+    template = grok.PageTemplateFile('templates/manage_reservations.pt')
 
+    @property
+    def id(self):
+        return utils.request_id_as_int(self.request.get('id'))
+      
+    @property  
+    def group(self):
+        if 'group' in self.request:
+            return unicode(self.request['group'].decode('utf-8'))
+        else:
+            return u''
+
+    def title(self):
+        if self.id:
+            if not self.reservations():
+                return _(u'No reservations for this allocation')
+
+            return _(u'Reservations for allocation')
+        else:
+            if not self.reservations():
+                return _(u'No reservations for this group')
+
+            return _(u'Reserations for group')
+
+    @view.memoize
     def reservations(self):
         scheduler = self.context.scheduler()
 
@@ -100,8 +121,6 @@ class ManageReservationsForm(ResourceBaseForm):
             query = scheduler.reservations_for_allocation(self.id)
         elif self.group:
             query = scheduler.reservations_for_group(self.group)
-        elif self.start and self.end:
-            query = scheduler.reservations_for_range(self.start, self.end)
         else:
             return None
         

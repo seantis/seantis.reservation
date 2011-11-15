@@ -30,7 +30,7 @@ def request_id_as_int(string):
 
     """
     if string == None:
-        return -1
+        return 0
         
     return int(''.join(re.findall(_requestid_expr, string)))
 

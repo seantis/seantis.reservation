@@ -5,7 +5,6 @@ from datetime import datetime, MINYEAR, MAXYEAR
 from itertools import groupby
 
 from sqlalchemy.sql import and_, or_
-from sqlalchemy.sql.expression import alias
 from sqlalchemy.orm import joinedload
 from sqlalchemy import func
 
@@ -630,8 +629,12 @@ class Scheduler(object):
         return query
 
     def reservations_for_allocation(self, allocation_id):
+        master = self.allocation_by_id(allocation_id)
+        mirrors = self.allocation_mirrors_by_master(master)
+        ids = [master.id] + [m.id for m in mirrors]
+
         query = self.managed_reserved_slots()
-        query = query.filter(ReservedSlot.allocation_id == allocation_id)
+        query = query.filter(ReservedSlot.allocation_id.in_(ids))
 
         return query
 

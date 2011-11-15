@@ -10,7 +10,7 @@
 <metal:main fill-slot="main">
 <tal:main-macro metal:define-macro="main">
       
-<h1 class="documentFirstHeading" tal:content="view/label"/>
+<h1 class="documentFirstHeading" tal:content="view/title"/>
 <tal:block tal:repeat="group python: view.reservations().items()">
     
     <div id="reservation-info" class="reservation">

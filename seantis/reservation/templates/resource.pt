@@ -64,6 +64,7 @@
             </tal:block>
         </div>
 
+        <div style="clear: both"></div>
         <div id="inline-page"></div>
 
         <div tal:replace="structure provider:plone.belowcontentbody" />
