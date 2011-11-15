@@ -6,6 +6,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.orm import backref
 
 from seantis.reservation import ORMBase
+from seantis.reservation.raster import rasterize_start, rasterize_end
 from seantis.reservation.models import customtypes
 from seantis.reservation.models.allocation import Allocation
 
@@ -59,6 +60,12 @@ class ReservedSlot(ORMBase):
     __table_args__ = (
             Index('reservation_resource_ix', 'reservation', 'reservation'), 
         )
+
+    def display_start(self):
+        return rasterize_start(self.start, self.allocation.raster)
+
+    def display_end(self):
+        return rasterize_end(self.end, self.allocation.raster)
 
     def __eq__(self, other):
         return self.start == other.start and str(self.resource) == str(other.resource)

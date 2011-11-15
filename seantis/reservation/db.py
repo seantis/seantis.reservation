@@ -588,6 +588,7 @@ class Scheduler(object):
         query = query.filter(Allocation.resource == self.uuid)
 
         for master_allocation in query:
+
             if not master_allocation.overlaps(start, end):
                 continue # may happen because start and end are not rasterized
 
@@ -610,17 +611,29 @@ class Scheduler(object):
 
     def reserved_slots(self, reservation):
         """Returns all reserved slots of the given reservation."""
+
+        assert reservation
+
         query = self.managed_reserved_slots()
         query = query.filter(ReservedSlot.reservation == reservation)
 
         return query
 
-    def reservations_for_range(self, start, end):
-        query = self.managed_reserved_slots()
+    def reserved_slots_by_range(self, reservation, start, end):
+        assert start and end
+
+        query = self.reserved_slots(reservation)
         query = query.filter(start <= ReservedSlot.start)
         query = query.filter(ReservedSlot.end <= end)
 
-        return query
+        slots = []
+        for slot in query:
+            if not slot.allocation.overlaps(start, end):
+                continue # Might happen because start and end are not rasterized
+
+            slots.append(slot)
+
+        return slots
 
     def reservations_for_group(self, group):
         query = self.managed_reserved_slots()
@@ -639,13 +652,11 @@ class Scheduler(object):
         return query
 
     @serialized
-    def remove_reservation(self, reservation, id=None):
-        assert reservation
+    def remove_reservation(self, reservation, start=None, end=None):
+        if start and end:
+            slots = self.reserved_slots_by_range(reservation, start, end)
+        else:
+            slots = self.reserved_slots(reservation)
 
-        query = self.reserved_slots(reservation)
-
-        if id: 
-            query = query.filter(ReservedSlot.allocation_id == id)
-        
-        for slot in query:
+        for slot in slots:
             Session.delete(slot)

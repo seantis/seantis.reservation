@@ -1,0 +1,36 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="seantis.reservation"
+>
+
+<body>
+<metal:main fill-slot="main">
+    <tal:main-macro metal:define-macro="main">
+        <h1 class="documentFirstHeading" tal:content="view/label | nothing"></h1>
+        <p tal:content="python: view.hint"></p>
+
+        <div class="reservation">
+            <tal:block repeat="timespan view/timespans">
+                <div class="reservation-title">
+                    <h3 tal:content="python: view.reservation_title"></h3>
+                </div>
+                
+                <div class="reservation-list" tal:define="
+                    start python: view.display_start(timespan.start);
+                    end python: view.display_end(timespan.end);
+                    ">
+                    <span tal:content="start"></span>
+                    &nbsp;-&nbsp;
+                    <span tal:content="end"></span>
+                </div>
+            </tal:block>
+        </div>
+        
+        <metal:block use-macro="context/@@ploneform-macros/titlelessform" />
+    </tal:main-macro>
+</metal:main>
+</body>
+</html>

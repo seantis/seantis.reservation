@@ -15,13 +15,25 @@
     
     <div id="reservation-info" class="reservation">
         <div class="reservation-title">
+            
             <h3 tal:content="python: group[0]"></h3>
-            <a href="/remove-reservation" class="reservation-delete">Delete</a>
+
+            <a 
+                tal:attributes="href python: view.remove_all_url(group)"
+                class="reservation-delete">
+                Delete
+            </a>
         </div>
         <div tal:repeat="reservation python: group[1]" class="reservation-list">
-            <span tal:content="python: reservation[2].strftime('%d.%m.%Y %H:%M')"/>
-            <span tal:content="python: reservation[3].strftime('%d.%m.%Y %H:%M')"/>
-            <a href="/remove-reservation" class="reservation-delete">Delete</a>
+            
+            <span tal:content="python: view.display_start(reservation[2])"/>
+            <span tal:content="python: view.display_end(reservation[3])"/>
+            
+            <a 
+                tal:attributes="href python: view.remove_part_url(reservation)" 
+                class="reservation-delete">
+                Delete
+            </a>
         </div>
     </div>
 

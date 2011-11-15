@@ -268,7 +268,6 @@ class Slots(grok.View, CalendarRequest):
 
         # cache the following for the loop
         groups = []
-        timestamp = lambda dt: time.mktime(dt.timetuple())   
         is_exposed = exposure.for_allocations(resource, [resource])
 
         # get an event for each exposed allocation
@@ -281,7 +280,7 @@ class Slots(grok.View, CalendarRequest):
             start, end = alloc.display_start, alloc.display_end
             
             # get url for single items
-            reserveurl = reserve(timestamp(start), timestamp(end))
+            reserveurl = reserve(utils.timestamp(start), utils.timestamp(end))
             editurl = edit(alloc.id)
             removeurl = remove(alloc.id)
             reservationsurl = reservations(alloc.id)

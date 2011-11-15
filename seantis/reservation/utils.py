@@ -1,5 +1,8 @@
 import re
+import time
 import collections
+from collections import namedtuple
+from itertools import tee, izip
 from uuid import UUID
 
 from App.config import getConfiguration
@@ -10,7 +13,7 @@ from zope import interface
 from Products.CMFCore.utils import getToolByName
 from z3c.form.interfaces import ActionExecutionError
 from seantis.reservation import error
-from collections import namedtuple
+
 
 from seantis.reservation import _
 
@@ -171,6 +174,14 @@ def pairs(l):
     l = list(flatten(l))
     return zip(*[l[x::2] for x in (0,1)])
 
+def pairwise(iterable):
+    """Almost like paris, but not quite:
+    "s -> (s0,s1), (s1,s2), (s2, s3), ..."
+    """
+    a, b = tee(iterable)
+    next(b, None)
+    return izip(a, b)
+
 def get_config(key):
     config = getConfiguration()
     configuration = config.product_config.get('seantis.reservation', dict())
@@ -179,3 +190,49 @@ def get_config(key):
 # obsolete in python 2.7
 def total_timedelta_seconds(td):
     return (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
+
+def timestamp(dt):
+    return time.mktime(dt.timetuple())   
+
+def merge_reserved_slots(slots):
+    """Given a list of reserved slots a list of tuples with from-to datetimes is
+    formed, with adjacent slots being combined into one continious timespan. 
+    Usually this leaves reserved_slots be, but if the slots in the list come from
+    a partially available allocation the reserved_slots of such an allocation can
+    be merged into one timespan.
+
+    So instead of
+    08:00 - 08:14:59:59
+    08:15 - 08:29:59:59
+
+    You'll get
+    08:00 - 08:30
+
+    for this, the display_start and display_end of ResourceSlot are used."""
+
+    class Timespan(object):
+        def __init__(self, start, end):
+            self.start = start
+            self.end = end
+
+    if len(slots) == 1:
+        return [Timespan(slots[0].start, slots[0].end)]
+
+    slots = sorted(slots, key=lambda s: s.start)
+    
+    merged = []
+    current = Timespan(None, None)
+
+    for this, next in pairwise(slots):
+        
+        if abs((next.start - this.end).seconds) <= 1:
+            current.start = current.start and current.start or this.start
+            current.end = next.end
+        else:
+            merged.append(current)
+            current = Timespan(None, None)
+
+    if current.start:
+        merged.append(current)
+
+    return merged

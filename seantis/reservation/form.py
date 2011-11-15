@@ -82,7 +82,11 @@ class ResourceBaseForm(form.Form):
         if 'start' in self.request:
             return self.request['start']
         elif self.updateWidgets and 'start' in self.widgets:
-            return self.widgets['start']
+            widget = self.widgets['start']
+            if all(widget.day, widget.month, widget.year):
+                return widget.value
+            
+        return None
 
     @property
     @from_timestamp
@@ -90,7 +94,11 @@ class ResourceBaseForm(form.Form):
         if 'end' in self.request:
             return self.request['end']
         elif self.updateWidgets and 'end' in self.widgets:
-            return self.widgets['end']
+            widget = self.widgets['end']
+            if all(widget.day, widget.month, widget.year):
+                return widget.value
+        
+        return None
 
     @property
     def id(self):
@@ -118,9 +126,12 @@ class ResourceBaseForm(form.Form):
     def update(self, **kwargs):
         start, end = self.start, self.end
         if start and end:
-            self.fields['day'].field.default = start.date()
-            self.fields['start_time'].field.default = start.time()
-            self.fields['end_time'].field.default = end.time()
+            if 'day' in self.fields:
+                self.fields['day'].field.default = start.date()
+            if 'start_time' in self.fields:
+                self.fields['start_time'].field.default = start.time()
+            if 'end_time' in self.fields:
+                self.fields['end_time'].field.default = end.time()
         
         other_defaults = self.defaults()
         for k, v in other_defaults.items():
