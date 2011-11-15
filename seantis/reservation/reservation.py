@@ -199,7 +199,7 @@ class ManageReservations(grok.View):
         return base + u'/remove-reservation?reservation=%s&start=%s&end=%s' % (
                 reservation[0], 
                 utils.timestamp(reservation[2]), 
-                utils.timestamp(reservation[3])
+                utils.timestamp(reservation[3]+timedelta(microseconds=1))
             )
 
     def display_start(self, date):

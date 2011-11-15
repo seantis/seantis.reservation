@@ -39,9 +39,10 @@ seantis.calendars.defaults = {
                     return _.pluck(_.filter(this, key), 'element');
                 };
 
-                // Sets a calendar element up with an overlay
+                // Sets an element up with an overlay
                 calendar.overlay_init = function(element, onclose) {
                     var calendar = this;
+                    var element = element;
                     element.prepOverlay({
                         subtype: 'ajax', 
                         filter:  common_content_filter,
@@ -56,6 +57,7 @@ seantis.calendars.defaults = {
                                 calendar.is_resizing = false;
                                 calendar.is_moving = false;
                                 calendar.element.fullCalendar('refetchEvents');
+                                if (onclose) onclose();
                             },
                             onBeforeLoad: function() {
                                 seantis.formgroups.init();
@@ -67,11 +69,21 @@ seantis.calendars.defaults = {
                 // Sets a calendar element up with an inline load
                 calendar.inline_init = function(element, url, filter, target) {
                     var load = function(event) {
-                        $.get(url, function(data) {
-                            var result = $(filter, $(data));
-                            target.html(result.html());
-                        });
+                        var fetch = function() {
+                            $.get(url, function(data) {
+                                var result = $(filter, $(data));
+                                target.html(result.html());
 
+                                var links = $('a', target);
+                                $.each(links, function(ix, link) {
+                                    calendar.overlay_init($(link), function() {
+                                        fetch();
+                                    }); 
+                                });
+                            });
+                        };
+
+                        fetch();
                         event.preventDefault();
                     };
 

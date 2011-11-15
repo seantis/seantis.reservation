@@ -93,20 +93,25 @@
     padding-top: 5px;
 }
 
-#content .reservation-title a:link {
-    color: white;
-    margin-right: 11px;
-}
-
-#content .reservation-title h3,
-#content .reservation-title h3:link {
+/*Since the default plone theme uses !important in conjunction with an 
+id selector we need quite the selectors to get a higher weight...*/
+.reservation-title h3,
+#content .reservation-title a,
+#content .reservation-title a:visited,
+#reservation-info .reservation-title a,
+#reservation-info .reservation-title a:visited {
     font-size: 1em !important;
     font-weight: normal !important;
     display: inline;
     margin-left: 10px;
-    color: white;
-    border: none !important;
-    text-decoration: none !important;
+    margin-right: 11px;
+    color: white !important;
+    border-color: white !important;
+}
+
+#reservation-info .reservation-title a:hover,
+#content .reservation-title a:hover {
+    color: #75AD0A !important;
 }
 
 a.reservation-delete {
