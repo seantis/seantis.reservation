@@ -12,7 +12,7 @@ seantis.contextmenu = function(event, element, calendar) {
     element.miniTip({
         title: '',
         content: seantis.contextmenu.build(event),
-        anchor: 's',
+        anchor: 'e',
         event: 'hover',
         aHide: false,
         fadeIn: 100,
