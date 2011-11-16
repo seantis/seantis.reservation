@@ -47,7 +47,7 @@ seantis.calendars.defaults = {
                         subtype: 'ajax', 
                         filter:  common_content_filter,
                         formselector: 'form', 
-                        closeselector: '[name=form.button.Cancel]',
+                        closeselector: '[name=form.buttons.cancel]',
                         noform: 'close',
                         afterpost: function(el) {
                             seantis.formgroups.init(el);
@@ -57,6 +57,7 @@ seantis.calendars.defaults = {
                                 calendar.is_resizing = false;
                                 calendar.is_moving = false;
                                 calendar.element.fullCalendar('refetchEvents');
+                                
                                 if (onclose) _.defer(onclose);
                             },
                             onBeforeLoad: function() {
