@@ -15,7 +15,7 @@
 
         <div tal:replace="structure provider:plone.abovecontentbody" />
 
-        <div style="overflow:auto; height: 500px;">
+        <div style="overflow:auto; max-height: 500px;">
           <div tal:repeat="alloc view/allocations">
 
             <div style="float: left; width:75px; margin-bottom: 10px;" tal:content="python: alloc.display_start.strftime('%d.%m.%Y')"></div>
