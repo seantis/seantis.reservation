@@ -104,12 +104,18 @@
                     o.aHide = true;
                 
                     // add the click event to the anchor
-                    el.click(function(){
+                    el.click(function(event){
                         // make sure we know this was activated by click
                         tt_w.attr('click', 't');
+
+                        if (window.miniTip_target !== el) {
+                            show();
+                            window.miniTip_target = el;
+                        } else {
+                            hide();
+                            window.miniTip_target = null;
+                        };
                         
-                        // show the tooltip, unless it is already showing, then close it
-                        if (tt_w.css('display') == 'none') show(); else hide();
                         return false;
                     });
                     

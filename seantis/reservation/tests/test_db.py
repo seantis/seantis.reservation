@@ -19,11 +19,10 @@ class TestScheduler(IntegrationTestCase):
         start = datetime(2011, 1, 1, 15)
         end = datetime(2011, 1, 1, 16)
         
-        group, allocations = sc.allocate(
+        allocations = sc.allocate(
                 (start, end), raster=15, partly_available=True
             )
         
-        self.assertTrue(utils.is_uuid(group))
         self.assertEqual(1, len(allocations))
         
         allocation = allocations[0]
@@ -113,7 +112,7 @@ class TestScheduler(IntegrationTestCase):
     def test_allocation_partition(self):
         sc = Scheduler(new_uuid())
         
-        group, allocations = sc.allocate(
+        allocations = sc.allocate(
                 (
                     datetime(2011, 1, 1, 8, 0), 
                     datetime(2011, 1, 1, 10, 0)
@@ -148,7 +147,7 @@ class TestScheduler(IntegrationTestCase):
                     datetime(2011, 1, 1, 18, 0)
                 ),
                 partly_available = False
-            )[1]
+            )
 
         self.assertEqual(1, len(allocations))
         allocation = allocations[0]
@@ -177,7 +176,7 @@ class TestScheduler(IntegrationTestCase):
         end = datetime(2011, 1, 1, 16, 0)
 
         # setup an allocation with ten spots
-        group, allocations = sc.allocate((start, end), raster=15, quota=10)
+        allocations = sc.allocate((start, end), raster=15, quota=10)
         allocation = allocations[0]
 
         # which should give us ten allocations (-1 as the master is not counted)
@@ -193,7 +192,7 @@ class TestScheduler(IntegrationTestCase):
         other = Scheduler(new_uuid(), quota=5)
 
         # setup an allocation with five spots
-        group, allocations = other.allocate(
+        allocations = other.allocate(
                 [(start, end)], raster=15, quota=5, partly_available=True
             )
         allocation = allocations[0]
@@ -232,7 +231,7 @@ class TestScheduler(IntegrationTestCase):
         end = datetime(2011, 1, 1, 16, 0)
         daterange = (start, end)
 
-        allocation = sc.allocate(daterange)[1][0]
+        allocation = sc.allocate(daterange)[0]
 
         reservation, slots = sc.reserve(daterange)
         self.assertTrue([True for s in slots if s.resource == sc.uuid])
@@ -257,7 +256,7 @@ class TestScheduler(IntegrationTestCase):
         end = datetime(2011, 1, 1, 16, 0)
         daterange = (start, end)
 
-        allocation = sc.allocate(daterange)[1][0]
+        allocation = sc.allocate(daterange)[0]
         self.assertTrue(allocation.is_master)
 
         mirrors = sc.allocation_mirrors_by_master(allocation)
@@ -290,7 +289,7 @@ class TestScheduler(IntegrationTestCase):
         end = datetime(2011, 1, 1, 16, 0)
         daterange = (start, end)
 
-        master = sc.allocate(daterange)[1][0]
+        master = sc.allocate(daterange)[0]
 
         reservations = []
         for i in range(0, 5):
@@ -368,7 +367,7 @@ class TestScheduler(IntegrationTestCase):
         end = datetime(2011, 1, 1, 16, 0)
 
         sc = Scheduler(new_uuid())
-        a = sc.allocate((start, end), raster=15, partly_available=True)[1][0]
+        a = sc.allocate((start, end), raster=15, partly_available=True)[0]
 
         sc.reserve((datetime(2011, 1, 1, 15, 0), datetime(2011, 1, 1, 15, 15)))
         self.assertEqual(a.availability, 75.0)
@@ -388,7 +387,7 @@ class TestScheduler(IntegrationTestCase):
 
         sc = Scheduler(new_uuid())
         
-        a = sc.allocate((start, end), quota=4)[1][0]
+        a = sc.allocate((start, end), quota=4)[0]
         
         self.assertEqual(a.availability, 100.0) # master only!
 

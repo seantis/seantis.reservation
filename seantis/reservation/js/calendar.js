@@ -154,7 +154,7 @@ seantis.calendars.defaults = {
                 renderPartitions(event, element, calendar);
 
                 // Init overlay for the click on the event
-                calendar.overlay_init(element);
+                //calendar.overlay_init(element);
             });
         };
 

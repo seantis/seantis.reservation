@@ -162,7 +162,7 @@ class Scheduler(object):
         self.quota = quota
 
     @serialized
-    def allocate(self, dates, group=None, raster=15, quota=None, partly_available=False):
+    def allocate(self, dates, raster=15, quota=None, partly_available=False, grouped=False):
         """Allocates a spot in the calendar.
 
         An allocation defines a timerange which can be reserved. No reservations
@@ -191,7 +191,7 @@ class Scheduler(object):
         """
         dates = utils.pairs(dates)
 
-        group = group or unicode(new_uuid())
+        group = unicode(new_uuid())
         quota = quota or self.quota
 
         # Make sure that this span does not overlap another master
@@ -211,17 +211,21 @@ class Scheduler(object):
             allocation = Allocation(raster=raster)
             allocation.start = start
             allocation.end = end
-            allocation.group = group
             allocation.resource = self.uuid
             allocation.quota = quota
             allocation.mirror_of = self.uuid
             allocation.partly_available = partly_available
+
+            if grouped:
+                allocation.group = group
+            else:
+                allocation.group = unicode(new_uuid())
                 
             allocations.append(allocation)
 
         Session.add_all(allocations)
 
-        return group, allocations
+        return allocations
 
     @serialized
     def change_quota(self, master, new_quota):

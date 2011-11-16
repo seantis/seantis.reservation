@@ -103,6 +103,12 @@ class IAllocation(form.Schema):
         required=False
         )
 
+    separately = schema.Bool(
+        title=_(u'Seperately reservable'),
+        required=False,
+        default=False
+        )
+
     partly_available = schema.Bool(
         title=_(u'Partly available'),
         default=False
@@ -227,7 +233,8 @@ class AllocationAddForm(AllocationForm):
         action = lambda: self.scheduler.allocate(dates, 
                 raster=data.raster,
                 quota=data.quota,
-                partly_available=data.partly_available
+                partly_available=data.partly_available,
+                grouped= not data.separately
             )
         
         utils.handle_action(action=action, success=self.redirect_to_context)

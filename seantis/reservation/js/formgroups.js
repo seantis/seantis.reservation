@@ -126,7 +126,8 @@ seantis.formgroups.init = function(el) {
         fields: [
             find('#formfield-form-widgets-recurrence_start'),
             find('#formfield-form-widgets-recurrence_end'),
-            find('#formfield-form-widgets-days')
+            find('#formfield-form-widgets-days'),
+            find('#formfield-form-widgets-separately')
         ],
         on_is_enabled: function(trigger) {
             return trigger.attr('checked');

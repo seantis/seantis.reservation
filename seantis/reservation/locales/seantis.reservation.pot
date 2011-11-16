@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-11-16 15:05+0000\n"
+"POT-Creation-Date: 2011-11-16 15:42+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,11 +37,11 @@ msgstr ""
 msgid "Add"
 msgstr ""
 
-#: ./allocate.py:222
+#: ./allocate.py:228
 msgid "Allocate"
 msgstr ""
 
-#: ./allocate.py:150
+#: ./allocate.py:156
 msgid "Allocation"
 msgstr ""
 
@@ -49,7 +49,7 @@ msgstr ""
 msgid "An existing reservation would be affected by the requested change"
 msgstr ""
 
-#: ./allocate.py:235
+#: ./allocate.py:242
 #: ./reservation.py:75
 msgid "Cancel"
 msgstr ""
@@ -67,7 +67,7 @@ msgstr ""
 msgid "Days"
 msgstr ""
 
-#: ./allocate.py:313
+#: ./allocate.py:320
 #: ./reservation.py:118
 #: ./templates/manage_reservations.pt:22
 msgid "Delete"
@@ -89,13 +89,13 @@ msgstr ""
 msgid "Do you really want to remove the following timespans from the reservation?"
 msgstr ""
 
-#: ./allocate.py:279
+#: ./allocate.py:286
 #: ./resource.py:269
 #: ./timeframe.py:179
 msgid "Edit"
 msgstr ""
 
-#: ./allocate.py:248
+#: ./allocate.py:255
 msgid "Edit allocation"
 msgstr ""
 
@@ -137,7 +137,7 @@ msgstr ""
 msgid "Id"
 msgstr ""
 
-#: ./allocate.py:261
+#: ./allocate.py:268
 msgid "Invalid arguments"
 msgstr ""
 
@@ -198,20 +198,20 @@ msgstr ""
 msgid "Once"
 msgstr ""
 
-#: ./allocate.py:107
+#: ./allocate.py:113
 msgid "Partly available"
 msgstr ""
 
-#: ./allocate.py:118
+#: ./allocate.py:124
 #: ./resource.py:43
 msgid "Quota"
 msgstr ""
 
-#: ./allocate.py:131
+#: ./allocate.py:137
 msgid "Quota must be between 1 and 100"
 msgstr ""
 
-#: ./allocate.py:112
+#: ./allocate.py:118
 msgid "Raster"
 msgstr ""
 
@@ -224,7 +224,7 @@ msgstr ""
 msgid "Remove"
 msgstr ""
 
-#: ./allocate.py:308
+#: ./allocate.py:315
 msgid "Remove allocations"
 msgstr ""
 
@@ -285,6 +285,10 @@ msgstr ""
 msgid "Seantis Reservation Settings"
 msgstr ""
 
+#: ./allocate.py:107
+msgid "Seperately reservable"
+msgstr ""
+
 #: ./allocate.py:75
 #: ./reservation.py:31
 #: ./timeframe.py:20
@@ -299,7 +303,7 @@ msgstr ""
 msgid "Th"
 msgstr ""
 
-#: ./allocate.py:126
+#: ./allocate.py:132
 msgid "The allocation must be at least 5 minutes long"
 msgstr ""
 

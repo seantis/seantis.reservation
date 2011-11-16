@@ -13,8 +13,9 @@ seantis.contextmenu = function(event, element, calendar) {
         title: '',
         content: seantis.contextmenu.build(event),
         anchor: 'e',
-        event: 'hover',
-        aHide: false,
+        delay: 0,
+        event: 'click',
+        aHide: true,
         fadeIn: 100,
         fadeOut: 100,
         render: function(element) {
