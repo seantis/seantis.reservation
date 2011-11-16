@@ -12,10 +12,11 @@ seantis.contextmenu = function(event, element, calendar) {
     element.miniTip({
         title: '',
         content: seantis.contextmenu.build(event),
-        anchor: 'e',
+        anchor: 's',
         event: 'hover',
         aHide: false,
         fadeIn: 100,
+        fadeOut: 100,
         render: function(element) {
             $.each($('a', element), function(ix, link) {
                 var $link = $(link);
