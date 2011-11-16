@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-11-10 12:32+0000\n"
+"POT-Creation-Date: 2011-11-16 10:53+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,19 +17,19 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: seantis.reservation\n"
 
-#: ./utils.py:144
+#: ./utils.py:157
 msgid "%i Spots Available"
 msgstr ""
 
-#: ./utils.py:137
+#: ./utils.py:150
 msgid "%i%% Free"
 msgstr ""
 
-#: ./utils.py:142
+#: ./utils.py:155
 msgid "1 Spot Available"
 msgstr ""
 
-#: ./utils.py:77
+#: ./utils.py:91
 msgid "A conflicting allocation exists for the requested time period."
 msgstr ""
 
@@ -45,12 +45,12 @@ msgstr ""
 msgid "Allocation"
 msgstr ""
 
-#: ./utils.py:79
+#: ./utils.py:93
 msgid "An existing reservation would be affected by the requested change"
 msgstr ""
 
 #: ./allocate.py:235
-#: ./reserve.py:58
+#: ./reservation.py:75
 msgid "Cancel"
 msgstr ""
 
@@ -59,7 +59,7 @@ msgid "Daily"
 msgstr ""
 
 #: ./allocate.py:89
-#: ./reserve.py:19
+#: ./reservation.py:27
 msgid "Day"
 msgstr ""
 
@@ -67,12 +67,13 @@ msgstr ""
 msgid "Days"
 msgstr ""
 
-#: ./allocate.py:332
+#: ./allocate.py:313
+#: ./reservation.py:115
 #: ./timeframe.py:180
 msgid "Delete"
 msgstr ""
 
-#: ./resource.py:27
+#: ./resource.py:28
 msgid "Description"
 msgstr ""
 
@@ -80,7 +81,16 @@ msgstr ""
 msgid "Do you really want to remove the following allocations?"
 msgstr ""
 
-#: ./allocate.py:283
+#: ./reservation.py:110
+msgid "Do you really want to remove the following reservation?"
+msgstr ""
+
+#: ./reservation.py:112
+msgid "Do you really want to remove the following timespans from the reservation?"
+msgstr ""
+
+#: ./allocate.py:279
+#: ./resource.py:265
 #: ./timeframe.py:179
 msgid "Edit"
 msgstr ""
@@ -90,21 +100,24 @@ msgid "Edit allocation"
 msgstr ""
 
 #: ./allocate.py:79
-#: ./reserve.py:27
+#: ./reservation.py:35
 #: ./timeframe.py:24
 msgid "End"
 msgstr ""
 
-#: ./reserve.py:33
 #: ./timeframe.py:30
 msgid "End date before start date"
 msgstr ""
 
-#: ./resource.py:59
+#: ./resource.py:260
+msgid "Entry"
+msgstr ""
+
+#: ./resource.py:60
 msgid "First hour must be smaller than last hour"
 msgstr ""
 
-#: ./resource.py:32
+#: ./resource.py:33
 msgid "First hour of the day"
 msgstr ""
 
@@ -112,7 +125,7 @@ msgstr ""
 msgid "Fr"
 msgstr ""
 
-#: ./utils.py:135
+#: ./utils.py:148
 msgid "Free"
 msgstr ""
 
@@ -121,6 +134,7 @@ msgid "From"
 msgstr ""
 
 #: ./allocate.py:63
+#: ./resource.py:279
 msgid "Group"
 msgstr ""
 
@@ -128,40 +142,60 @@ msgstr ""
 msgid "Id"
 msgstr ""
 
-#: ./allocate.py:265
+#: ./allocate.py:261
 msgid "Invalid arguments"
 msgstr ""
 
-#: ./resource.py:52
+#: ./utils.py:101
+msgid "Invalid change. Your request may have already been processed earlier."
+msgstr ""
+
+#: ./resource.py:53
 msgid "Invalid first hour"
 msgstr ""
 
-#: ./resource.py:55
+#: ./resource.py:56
 msgid "Invalid last hour"
 msgstr ""
 
-#: ./resource.py:37
+#: ./resource.py:38
 msgid "Last hour of the day"
+msgstr ""
+
+#: ./resource.py:281
+msgid "List"
 msgstr ""
 
 #: ./allocate.py:28
 msgid "Mo"
 msgstr ""
 
-#: ./resource.py:23
+#: ./resource.py:24
 #: ./timeframe.py:16
 msgid "Name"
 msgstr ""
 
-#: ./utils.py:89
+#: ./utils.py:103
 msgid "No reservable slot found."
 msgstr ""
 
-#: ./utils.py:146
+#: ./reservation.py:184
+msgid "No reservations for this allocation"
+msgstr ""
+
+#: ./reservation.py:189
+msgid "No reservations for this group"
+msgstr ""
+
+#: ./utils.py:159
 msgid "No spots available"
 msgstr ""
 
-#: ./utils.py:133
+#: ./reservation.py:107
+msgid "No such reservation"
+msgstr ""
+
+#: ./utils.py:146
 msgid "Occupied"
 msgstr ""
 
@@ -174,7 +208,7 @@ msgid "Partly available"
 msgstr ""
 
 #: ./allocate.py:118
-#: ./resource.py:42
+#: ./resource.py:43
 msgid "Quota"
 msgstr ""
 
@@ -190,15 +224,44 @@ msgstr ""
 msgid "Recurrence"
 msgstr ""
 
-#: ./allocate.py:312
+#: ./resource.py:268
+msgid "Remove"
+msgstr ""
+
+#: ./allocate.py:308
 msgid "Remove allocations"
 msgstr ""
 
-#: ./utils.py:91
+#: ./reservation.py:88
+msgid "Remove reservation"
+msgstr ""
+
+#: ./reservation.py:41
+msgid "Reservation"
+msgstr ""
+
+#: ./settings.py:15
+msgid "Reservation throttling"
+msgstr ""
+
+#: ./resource.py:272
+msgid "Reservations"
+msgstr ""
+
+#: ./utils.py:105
 msgid "Reservations can't be made for more than 24 hours at a time"
 msgstr ""
 
-#: ./reserve.py:44
+#: ./reservation.py:186
+msgid "Reservations for allocation"
+msgstr ""
+
+#: ./reservation.py:191
+msgid "Reservations for group"
+msgstr ""
+
+#: ./reservation.py:64
+#: ./resource.py:262
 msgid "Reserve"
 msgstr ""
 
@@ -206,7 +269,7 @@ msgstr ""
 msgid "Resource"
 msgstr ""
 
-#: ./reserve.py:42
+#: ./reservation.py:62
 msgid "Resource reservation"
 msgstr ""
 
@@ -218,8 +281,16 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
+#: ./settings.py:29
+msgid "Seantis Reservation Control Panel"
+msgstr ""
+
+#: ./profiles/default/controlpanel.xml
+msgid "Seantis Reservation Settings"
+msgstr ""
+
 #: ./allocate.py:75
-#: ./reserve.py:23
+#: ./reservation.py:31
 #: ./timeframe.py:20
 msgid "Start"
 msgstr ""
@@ -236,24 +307,24 @@ msgstr ""
 msgid "The allocation must be at least 5 minutes long"
 msgstr ""
 
-#: ./utils.py:83
+#: ./utils.py:97
 msgid "The item does no longer exist."
+msgstr ""
+
+#: ./settings.py:16
+msgid "The number of minutes a user needs to wait between reservations"
 msgstr ""
 
 #: ./templates/remove_allocation.pt:14
 msgid "The requested allocations could not be found"
 msgstr ""
 
-#: ./utils.py:85
+#: ./utils.py:99
 msgid "The requested period is no longer available."
 msgstr ""
 
-#: ./utils.py:81
+#: ./utils.py:95
 msgid "The resource is being edited by someone else. Please try again."
-msgstr ""
-
-#: ./utils.py:87
-msgid "This record already exists."
 msgstr ""
 
 #: ./profiles/default/types/seantis.reservation.timeframe.xml
@@ -267,6 +338,10 @@ msgstr ""
 #: ./allocate.py:69
 #: ./templates/timeframes.pt:4
 msgid "Timeframes"
+msgstr ""
+
+#: ./utils.py:107
+msgid "Too many reservations in a short time. Wait for a moment before trying again."
 msgstr ""
 
 #: ./allocate.py:29

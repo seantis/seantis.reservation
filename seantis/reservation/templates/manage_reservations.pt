@@ -21,18 +21,19 @@
 
                 <a 
                     tal:attributes="href python: view.remove_all_url(group)"
-                    class="reservation-delete">
+                    class="reservation-delete" i18n:translate="">
                     Delete
                 </a>
             </div>
             <div tal:repeat="reservation python: group[1]" class="reservation-list">
                 
                 <span tal:content="python: view.display_start(reservation[2])"/>
+                &nbsp;-&nbsp;
                 <span tal:content="python: view.display_end(reservation[3])"/>
                 
                 <a 
                     tal:attributes="href python: view.remove_part_url(reservation)" 
-                    class="reservation-delete">
+                    class="reservation-delete" i18n:translate="">
                     Delete
                 </a>
             </div>
