@@ -1,7 +1,11 @@
 import re
 import time
+import json
 import collections
+import functools
 from collections import namedtuple
+from urlparse import urljoin
+from urllib import quote
 from itertools import tee, izip
 from uuid import UUID
 
@@ -12,9 +16,8 @@ from zope import i18n
 from zope import interface
 from Products.CMFCore.utils import getToolByName
 from z3c.form.interfaces import ActionExecutionError
+
 from seantis.reservation import error
-
-
 from seantis.reservation import _
 
 def overlaps(start, end, otherstart, otherend):
@@ -57,6 +60,11 @@ def get_current_language(context, request):
     context = aq_inner(context)
     portal_state = getMultiAdapter((context, request), name=u'plone_portal_state')
     return portal_state.language()
+
+def translator(context, request):
+    def curried(text):
+        return translate(context, request, text)
+    return curried
 
 def translate(context, request, text):
     lang = get_current_language(context, request)
@@ -236,3 +244,90 @@ def merge_reserved_slots(slots):
         merged.append(current)
 
     return merged
+
+class memoized(object):
+   """Decorator that caches a function's return value each time it is called.
+   If called later with the same arguments, the cached value is returned, and
+   not re-evaluated.
+   """
+   def __init__(self, func):
+      self.func = func
+      self.cache = {}
+   def __call__(self, *args):
+      try:
+         return self.cache[args]
+      except KeyError:
+         value = self.func(*args)
+         self.cache[args] = value
+         return value
+      except TypeError:
+         # uncachable -- for instance, passing a list as an argument.
+         # Better to not cache than to blow up entirely.
+         return self.func(*args)
+   def __repr__(self):
+      """Return the function's docstring."""
+      return self.func.__doc__
+   def __get__(self, obj, objtype):
+      """Support instance methods."""
+      return functools.partial(self.__call__, obj)
+
+def urlparam(base, url, params):
+    """Joins an url, adding parameters as query parameters."""
+    if not base.endswith('/'): base += '/'
+
+    urlquote = lambda fragment: quote(unicode(fragment).encode('utf-8'))
+    querypair = lambda pair: pair[0] + '=' + urlquote(pair[1])
+
+    query = '?' + '&'.join(map(querypair, params.items()))
+    return ''.join(reduce(urljoin, (base, url, query)))
+
+
+
+class EventMenu(object):
+    def __init__(self, resource, request, exposure):
+        self.resource = resource
+        self.base = resource.absolute_url_path()
+        self.request = request
+        self.translate = translator(resource, request)
+        self.groups = {}
+        self.order = []
+        self.exposure = exposure
+    
+    @memoized
+    def restricted_url(self, view):
+        """Returns a function which can be used to build an url with optional
+        parameters. The function only builds the url if the current user has
+        the right to do so.
+
+        """
+        base = self.resource.absolute_url_path()
+        is_exposed = self.exposure.for_views(self.resource, self.request)
+
+        def build(params):
+            if is_exposed(view):
+                return urlparam(base, view, params)
+            else:
+                return None
+
+        # return closure
+        return build
+
+    def add(self, group, name, view, params, target):
+        urlfactory = self.restricted_url(view)
+        if not urlfactory: return
+
+        group = self.translate(group)
+        name = self.translate(name)
+
+        if not group in self.groups:
+            self.groups[group] = []
+            self.order.append(group)
+
+        self.groups[group].append(dict(
+                name=name, 
+                url=urlfactory(params),
+                target=target
+            ))
+
+    def default(self, view, params):
+        self.default = urlparam(self.base, view, params)

@@ -234,40 +234,66 @@ class Slots(grok.View, CalendarRequest):
     def render(self):
         return CalendarRequest.render(self)
 
+    @property
+    def resource(self):
+        return self.context
+
+    @property
+    def scheduler(self):
+        return self.context.scheduler()
+
+    def menu(self, allocation):
+        """Returns the options for the js contextmenu for the given allocation."""
+        
+        items = utils.EventMenu(self.context, self.request, exposure)
+        has_reservations = self.scheduler.has_reservation_in_range(
+                allocation.start, allocation.end
+            )
+
+        start = utils.timestamp(allocation.display_start)
+        end = utils.timestamp(allocation.display_end)
+
+        # default link to be used when clicking the event
+        items.default('reserve', dict(start=start, end=end))
+
+        # menu entries for single items
+        entry_add = lambda n, v, p, t: items.add(_('Entry'), n, v, p, t)
+        
+        entry_add(_(u'Reserve'), 
+            'reserve', dict(start=start, end=end), 'overlay')
+
+        entry_add(_(u'Edit'), 
+            'edit-allocation', dict(id=allocation.id), 'overlay')
+
+        entry_add(_(u'Remove'), 
+            'remove-allocation', dict(id=allocation.id), 'overlay')
+
+        if has_reservations:
+            entry_add(_(u'Reservations'), 
+                'reservations', dict(id=allocation.id), 'inpage')
+
+        if not allocation.in_group:
+            return items
+
+        # menu entries for group items
+        group_add = lambda n, v, p, t: items.add(_('Group'), n, v, p, t)
+        
+        group_add(_(u'List'), 
+            'group', dict(name=allocation.group), 'overlay')
+
+        group_add(_(u'Remove'), 
+            'remove-allocation', dict(group=allocation.group), 'overlay')
+
+        if has_reservations:
+            group_add(_(u'Reservations'), 
+                'reservations', dict(group=allocation.group), 'inpage')
+
+        return items
+
     def events(self):
         resource = self.context
         scheduler = resource.scheduler()
 
-        # get a couple of factory methods which will either create an url
-        # or None depending on the permissions of the current user
-        def factory(view, urltemplate):
-            base = resource.absolute_url_path()
-            is_exposed = exposure.for_views(resource, self.request)
-
-            # strings need to be encoded and urlquoted
-            urlquote = lambda fragment: quote(unicode(fragment).encode('utf-8'))
-            quoted = lambda a: isinstance(a, basestring) and urlquote(a) or a
-
-            def build(*args):
-                if is_exposed(view):
-                    return base + urltemplate % tuple(map(quoted, args))
-                else:
-                    return None
-
-            # return closure
-            return build
-        
-        # prepare url factories
-        reserve = factory('reserve', '/reserve?start=%s&end=%s')
-        edit = factory('edit-allocation', '/edit-allocation?id=%i')
-        reservations = factory('reservations', '/reservations?id=%i')
-        group = factory('group', '/group?name=%s')
-        remove = factory('remove-allocation', '/remove-allocation?id=%i')
-        removegroup = factory('remove-allocation', '/remove-allocation?group=%s')
-        groupreservations = factory('reservations', '/reservations?group=%s')
-
-        # cache the following for the loop
-        groups = []
         is_exposed = exposure.for_allocations(resource, [resource])
 
         # get an event for each exposed allocation
@@ -279,24 +305,8 @@ class Slots(grok.View, CalendarRequest):
 
             start, end = alloc.display_start, alloc.display_end
             
-            # get url for single items
-            reserveurl = reserve(utils.timestamp(start), utils.timestamp(end))
-            editurl = edit(alloc.id)
-            removeurl = remove(alloc.id)
-            reservationsurl = reservations(alloc.id)
-
-            # get additional urls for items in groups
-            if (alloc.group in groups) or alloc.in_group:
-                
-                # cache the group for performance
-                groups.append(alloc.group) 
-
-                groupurl = group(alloc.group)
-                removegroupurl = removegroup(alloc.group)
-                groupreservationsurl = groupreservations(alloc.group)
-            else:
-                groupurl, removegroupurl, groupreservationsurl = None, None, None
-
+            # get the menu
+            menu = self.menu(alloc)
           
             # calculate the availability for title and class
             title, klass = utils.event_availability(
@@ -317,13 +327,9 @@ class Slots(grok.View, CalendarRequest):
                 start=start.isoformat(),
                 end=end.isoformat(),
                 className=klass,
-                url=reserveurl,
-                editurl=editurl,
-                groupurl=groupurl,
-                removeurl=removeurl,
-                removegroupurl=removegroupurl,
-                reservationsurl=reservationsurl,
-                groupreservationsurl=groupreservationsurl,
+                url=menu.default,
+                menu=menu.groups,
+                menuorder=menu.order,
                 allocation = alloc.id,
                 partitions = partitions,
                 group = alloc.group,

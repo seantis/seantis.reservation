@@ -651,6 +651,18 @@ class Scheduler(object):
 
         return query
 
+    def has_reservation_in_range(self, start, end):
+        query = all_allocations_in_range(start, end)
+        query = query.with_entities(Allocation.id)
+        query = query.filter(Allocation.mirror_of==self.uuid)
+        
+        subquery = query.subquery()
+        
+        query = Session.query(ReservedSlot.allocation_id)
+        query = query.filter(ReservedSlot.allocation_id.in_(subquery))
+
+        return query.first() and True or False
+
     @serialized
     def remove_reservation(self, reservation, start=None, end=None):
         if start and end:

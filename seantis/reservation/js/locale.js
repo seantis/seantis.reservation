@@ -72,40 +72,8 @@ seantis.locale.translate = function(html) {
 };
 
 seantis.locale.dictionary = {
-    'reserve' : [
-        'Reserve',
-        'Reservieren'
-    ],
     'free' : [
         'Free',
         'Frei'
-    ],
-    'edit' : [
-        'Edit',
-        'Bearbeiten'
-    ],
-    'showgroup' : [
-        'List',
-        'Auflisten'
-    ],
-    'remove' : [
-        'Remove',
-        'Löschen'
-    ],
-    'removegroup' : [
-        'Remove',
-        'Löschen'
-    ],
-    'entry' : [
-        'Entry',
-        'Eintrag'
-    ],
-    'group' : [
-        'Group',
-        'Gruppe'
-    ],
-    'reservations' : [
-        'Reservations',
-        'Reservationen'
     ]
 };

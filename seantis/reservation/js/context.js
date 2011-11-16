@@ -7,6 +7,8 @@ seantis.contextmenu = function(event, element, calendar) {
     if (!content)
         return;
         
+    var inline = $('#inline-page');
+
     element.miniTip({
         title: '',
         content: seantis.contextmenu.build(event),
@@ -15,16 +17,23 @@ seantis.contextmenu = function(event, element, calendar) {
         aHide: false,
         fadeIn: 100,
         render: function(element) {
-            //TODO generalize:
-            var links = $('a', element);
-            $.each(links, function(ix, link) {
+            $.each($('a', element), function(ix, link) {
                 var $link = $(link);
-                var url = $link.attr('href');
-                if (url.indexOf('reservations?') !== -1) {
-                    calendar.inline_init($link, url, '#content', $('#inline-page'));
-                } else {
-                    calendar.overlay_init($link);    
-                }    
+                var target = $link.attr('data-target');
+                switch (target) {
+                    
+                    case "overlay":
+                        calendar.overlay_init($link);    
+                        break;
+
+                    case "inpage":
+                        var url = $link.attr('href');
+                        calendar.inline_init($link, url, '#content', inline);
+                        break;
+
+                    default:
+                        break;
+                }
             });
         }
     });  
@@ -32,37 +41,22 @@ seantis.contextmenu = function(event, element, calendar) {
 
 seantis.contextmenu.build = function(event) {
     var title = _.template('<div><%= text %></div>');
-    var entry = _.template('<a class="seantis-reservation-reserve" href="<%= url %>"><%= text %></a>');
-    var locale = seantis.locale;
+    var entry = _.template('<a class="seantis-reservation-reserve" \
+                               data-target="<%= target %>" href="<%= url %>">\
+                               <%= name %></a>');
+
+    
     var html = '';
+    for (var i=0; i<event.menuorder.length; i++) {
 
-    if (event.url || event.editurl || event.removeurl) {
-        var single = [
-            title({text: locale('entry')}),
-            event.url && entry({text: locale('reserve'), url:event.url}),
-            event.editurl && entry({text: locale('edit'), url:event.editurl}),
-            event.removeurl && entry({text: locale('remove'), url:event.removeurl}),
-            event.reservationsurl && entry(
-                {text: locale('reservations'), url:event.reservationsurl}
-            )
-        ];
+        var group = event.menuorder[i];
+        
+        html += title({text:group});
+        for (var j=0; j<event.menu[group].length; j++) {
+            var item = event.menu[group][j];
 
-        html = single.join('');
-    }
-
-    if (event.groupurl || event.removegroupurl) {
-        var group = [
-            title({text: locale('group')}),
-            event.groupurl && entry({text: locale('showgroup'), url:   event.groupurl}),
-            event.removegroupurl && entry(
-                {text: locale('removegroup'), url: event.removegroupurl}
-            ),
-            event.groupreservationsurl && entry(
-                {text: locale('reservations'), url: event.groupreservationsurl}
-            )
-        ];    
-
-        html += group.join('');
+            html += entry(item);
+        }
     }
 
     return html;
