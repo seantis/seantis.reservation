@@ -57,7 +57,7 @@ seantis.calendars.defaults = {
                                 calendar.is_resizing = false;
                                 calendar.is_moving = false;
                                 calendar.element.fullCalendar('refetchEvents');
-                                if (onclose) onclose();
+                                if (onclose) _.defer(onclose);
                             },
                             onBeforeLoad: function() {
                                 seantis.formgroups.init();
@@ -69,6 +69,7 @@ seantis.calendars.defaults = {
                 // Sets a calendar element up with an inline load
                 calendar.inline_init = function(element, url, filter, target) {
                     var load = function(event) {
+                        
                         var fetch = function() {
                             $.get(url, function(data) {
                                 var result = $(filter, $(data));
@@ -77,13 +78,13 @@ seantis.calendars.defaults = {
                                 var links = $('a', target);
                                 $.each(links, function(ix, link) {
                                     calendar.overlay_init($(link), function() {
-                                        fetch();
+                                        _.defer(function(){fetch();});
                                     }); 
                                 });
                             });
                         };
 
-                        fetch();
+                        _.defer(function(){fetch();});
                         event.preventDefault();
                     };
 
@@ -156,7 +157,7 @@ seantis.calendars.defaults = {
 
         // Called when an event is resized or moved
         var moveEvent = function(event, calendar) {
-            var url = event.editurl;
+            var url = event.moveurl;
             url += '&start=' + event.start.getTime() / 1000;
             url += '&end=' + event.end.getTime() / 1000;
             
@@ -166,7 +167,7 @@ seantis.calendars.defaults = {
         // Called when a selection on the calendar is made
         var eventAdd = function(start, end, allDay, calendar) {
             if (!allDay) {
-                var url = calendar.allocateurl;
+                var url = calendar.addurl;
                 url += '?start=' + start.getTime() / 1000;
                 url += '&end=' + end.getTime() / 1000;
 

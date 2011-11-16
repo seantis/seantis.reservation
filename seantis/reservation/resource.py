@@ -132,11 +132,11 @@ class View(grok.View):
         this.seantis.calendars.push({
             id:'#%s',
             options:%s,
-            allocateurl:'%s',
+            addurl:'%s',
         })        
         """
         baseurl = resource.absolute_url_path()
-        allocateurl = baseurl + '/allocate'
+        addurl = baseurl + '/allocate'
         eventurl = baseurl + '/slots'
 
         options = {}
@@ -151,7 +151,7 @@ class View(grok.View):
         options['selectable'] = is_exposed('selectable')
         options['editable'] = is_exposed('editable')
 
-        return template % (resource.calendar_id, json.dumps(options), allocateurl)
+        return template % (resource.calendar_id, json.dumps(options), addurl)
 
     @property
     def calendar_count(self):
@@ -242,10 +242,13 @@ class Slots(grok.View, CalendarRequest):
     def scheduler(self):
         return self.context.scheduler()
 
-    def menu(self, allocation):
-        """Returns the options for the js contextmenu for the given allocation."""
+    def urls(self, allocation):
+        """Returns the options for the js contextmenu for the given allocation
+        as well as other links associated with the event.
+
+        """
         
-        items = utils.EventMenu(self.context, self.request, exposure)
+        items = utils.EventUrls(self.context, self.request, exposure)
         has_reservations = self.scheduler.has_reservation_in_range(
                 allocation.start, allocation.end
             )
@@ -254,10 +257,11 @@ class Slots(grok.View, CalendarRequest):
         end = utils.timestamp(allocation.display_end)
 
         # default link to be used when clicking the event
-        items.default('reserve', dict(start=start, end=end))
+        items.default_url('reserve', dict(start=start, end=end))
+        items.move_url('edit-allocation', dict(id=allocation.id))
 
         # menu entries for single items
-        entry_add = lambda n, v, p, t: items.add(_('Entry'), n, v, p, t)
+        entry_add = lambda n, v, p, t: items.menu_add(_('Entry'), n, v, p, t)
         
         entry_add(_(u'Reserve'), 
             'reserve', dict(start=start, end=end), 'overlay')
@@ -276,7 +280,7 @@ class Slots(grok.View, CalendarRequest):
             return items
 
         # menu entries for group items
-        group_add = lambda n, v, p, t: items.add(_('Group'), n, v, p, t)
+        group_add = lambda n, v, p, t: items.menu_add(_('Group'), n, v, p, t)
         
         group_add(_(u'List'), 
             'group', dict(name=allocation.group), 'overlay')
@@ -305,8 +309,8 @@ class Slots(grok.View, CalendarRequest):
 
             start, end = alloc.display_start, alloc.display_end
             
-            # get the menu
-            menu = self.menu(alloc)
+            # get the urls
+            urls = self.urls(alloc)
           
             # calculate the availability for title and class
             title, klass = utils.event_availability(
@@ -327,13 +331,14 @@ class Slots(grok.View, CalendarRequest):
                 start=start.isoformat(),
                 end=end.isoformat(),
                 className=klass,
-                url=menu.default,
-                menu=menu.groups,
-                menuorder=menu.order,
+                url=urls.default,
+                menu=urls.menu,
+                menuorder=urls.order,
                 allocation = alloc.id,
                 partitions = partitions,
                 group = alloc.group,
-                allDay=False
+                allDay=False,
+                moveurl=urls.move
             ))
         
         return events

@@ -85,7 +85,7 @@ def handle_action(action=None, success=None, message_handler=None):
 def form_error(msg):
     raise ActionExecutionError(interface.Invalid(msg))
 
-def handle_exception(ex, message_handler=form_error):
+def handle_exception(ex, message_handler=None):
     msg = None
     if type(ex) == error.OverlappingAllocationError:
         msg = _(u'A conflicting allocation exists for the requested time period.')
@@ -109,7 +109,10 @@ def handle_exception(ex, message_handler=form_error):
     if not msg:
         raise ex
 
-    message_handler(msg)
+    if message_handler:
+        message_handler(msg)
+    else:
+        form_error(msg)
 
 def is_uuid(obj):
     if isinstance(obj, basestring):
@@ -283,15 +286,17 @@ def urlparam(base, url, params):
 
 
 
-class EventMenu(object):
+class EventUrls(object):
     def __init__(self, resource, request, exposure):
         self.resource = resource
         self.base = resource.absolute_url_path()
         self.request = request
         self.translate = translator(resource, request)
-        self.groups = {}
+        self.menu = {}
         self.order = []
         self.exposure = exposure
+        self.default = ""
+        self.move = ""
     
     @memoized
     def restricted_url(self, view):
@@ -312,22 +317,25 @@ class EventMenu(object):
         # return closure
         return build
 
-    def add(self, group, name, view, params, target):
+    def menu_add(self, group, name, view, params, target):
         urlfactory = self.restricted_url(view)
         if not urlfactory: return
 
         group = self.translate(group)
         name = self.translate(name)
 
-        if not group in self.groups:
-            self.groups[group] = []
+        if not group in self.menu:
+            self.menu[group] = []
             self.order.append(group)
 
-        self.groups[group].append(dict(
+        self.menu[group].append(dict(
                 name=name, 
                 url=urlfactory(params),
                 target=target
             ))
 
-    def default(self, view, params):
+    def default_url(self, view, params):
         self.default = urlparam(self.base, view, params)
+
+    def move_url(self, view, params):
+        self.move = urlparam(self.base, view, params)
