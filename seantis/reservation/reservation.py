@@ -112,6 +112,9 @@ class ReservationRemoveForm(ResourceBaseForm):
             return _(u'Do you really want to remove '
                      u'the following timespans from the reservation?')
 
+    def name(self):
+        return utils.random_name()
+
     @button.buttonAndHandler(_(u'Delete'))
     @extract_action_data
     def delete(self, data):
@@ -131,11 +134,13 @@ class ReservationRemoveForm(ResourceBaseForm):
     def reservation_title(self):
         return self.reservation
 
-    def display_start(self, date):
-        return date.strftime('%d.%m.%Y %H:%M')
-
-    def display_end(self, date):
-        return (date + timedelta(microseconds=1)).strftime('%d.%m.%Y %H:%M')
+    def display_date(self, start, end):
+        end += timedelta(microseconds=1)
+        if start.date() == end.date():
+            return start.strftime('%d.%m.%Y %H:%M - ') + end.strftime('%H:%M')
+        else:
+            return start.strftime('%d.%m.%Y %H:%M - ') \
+                 + end.strftime('%d.%m.%Y %H:%M')
 
     @view.memoize
     def timespans(self):
@@ -178,6 +183,9 @@ class ManageReservations(grok.View):
         else:
             return u''
 
+    def name(self):
+        return utils.random_name()
+
     def title(self):
         if self.id:
             if not self.reservations():
@@ -202,11 +210,13 @@ class ManageReservations(grok.View):
                 utils.timestamp(reservation[3]+timedelta(microseconds=1))
             )
 
-    def display_start(self, date):
-        return date.strftime('%d.%m.%Y %H:%M')
-
-    def display_end(self, date):
-        return (date + timedelta(microseconds=1)).strftime('%d.%m.%Y %H:%M')
+    def display_date(self, start, end):
+        end += timedelta(microseconds=1)
+        if start.date() == end.date():
+            return start.strftime('%d.%m.%Y %H:%M - ') + end.strftime('%H:%M')
+        else:
+            return start.strftime('%d.%m.%Y %H:%M - ') \
+                 + end.strftime('%d.%m.%Y %H:%M')
 
     @view.memoize
     def reservations(self):

@@ -1,6 +1,6 @@
 import re
 import time
-import json
+import random
 import collections
 import functools
 from collections import namedtuple
@@ -339,3 +339,12 @@ class EventUrls(object):
 
     def move_url(self, view, params):
         self.move = urlparam(self.base, view, params)
+
+def random_name():
+    """Returns a random person name for demo purposes."""
+
+    firstnames = ['Anna', 'Barbara', 'Christine', 'Daniel', 'Edward', 'Gabriel']
+    lastnames = ['Aebischer', 'Brown', 'Curiger', 'Durrer', 'Enzlin', 'Gwerder']
+
+    return '%s %s' % (random.choice(firstnames), random.choice(lastnames))
+
