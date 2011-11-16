@@ -72,20 +72,22 @@ seantis.calendars.defaults = {
                     var load = function(event) {
                         
                         var fetch = function() {
+                            target.toggleClass('loading', true);
                             $.get(url, function(data) {
                                 var result = $(filter, $(data));
                                 target.html(result.html());
+                                
+                                target.toggleClass('loading', false);
 
-                                var links = $('a', target);
-                                $.each(links, function(ix, link) {
+                                $.each($('a', target), function(ix, link) {
                                     calendar.overlay_init($(link), function() {
-                                        _.defer(function(){fetch();});
+                                        fetch();
                                     }); 
                                 });
                             });
                         };
 
-                        _.defer(function(){fetch();});
+                        fetch();
                         event.preventDefault();
                     };
 
