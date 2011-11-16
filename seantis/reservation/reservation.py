@@ -194,9 +194,9 @@ class ManageReservations(grok.View):
             return _(u'Reservations for allocation')
         else:
             if not self.reservations():
-                return _(u'No reservations for this group')
+                return _(u'No reservations for this recurrence')
 
-            return _(u'Reservations for group')
+            return _(u'Reservations for recurrence')
 
     def remove_all_url(self, reservation):
         base = self.context.absolute_url()

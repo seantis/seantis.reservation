@@ -280,7 +280,7 @@ class Slots(grok.View, CalendarRequest):
             return items
 
         # menu entries for group items
-        group_add = lambda n, v, p, t: items.menu_add(_('Group'), n, v, p, t)
+        group_add = lambda n, v, p, t: items.menu_add(_('Recurrence'), n, v, p, t)
         
         group_add(_(u'List'), 
             'group', dict(name=allocation.group), 'overlay')

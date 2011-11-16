@@ -60,7 +60,7 @@ class IAllocation(form.Schema):
         )
 
     group = schema.Text(
-        title=_(u'Group'),
+        title=_(u'Recurrence'),
         default=u'',
         required=False
         )

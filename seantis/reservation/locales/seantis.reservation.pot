@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-11-16 10:53+0000\n"
+"POT-Creation-Date: 2011-11-16 15:05+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,15 +17,15 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: seantis.reservation\n"
 
-#: ./utils.py:157
+#: ./utils.py:160
 msgid "%i Spots Available"
 msgstr ""
 
-#: ./utils.py:150
+#: ./utils.py:153
 msgid "%i%% Free"
 msgstr ""
 
-#: ./utils.py:155
+#: ./utils.py:158
 msgid "1 Spot Available"
 msgstr ""
 
@@ -68,8 +68,8 @@ msgid "Days"
 msgstr ""
 
 #: ./allocate.py:313
-#: ./reservation.py:115
-#: ./timeframe.py:180
+#: ./reservation.py:118
+#: ./templates/manage_reservations.pt:22
 msgid "Delete"
 msgstr ""
 
@@ -90,7 +90,7 @@ msgid "Do you really want to remove the following timespans from the reservation
 msgstr ""
 
 #: ./allocate.py:279
-#: ./resource.py:265
+#: ./resource.py:269
 #: ./timeframe.py:179
 msgid "Edit"
 msgstr ""
@@ -109,7 +109,7 @@ msgstr ""
 msgid "End date before start date"
 msgstr ""
 
-#: ./resource.py:260
+#: ./resource.py:264
 msgid "Entry"
 msgstr ""
 
@@ -125,17 +125,12 @@ msgstr ""
 msgid "Fr"
 msgstr ""
 
-#: ./utils.py:148
+#: ./utils.py:151
 msgid "Free"
 msgstr ""
 
 #: ./allocate.py:93
 msgid "From"
-msgstr ""
-
-#: ./allocate.py:63
-#: ./resource.py:279
-msgid "Group"
 msgstr ""
 
 #: ./allocate.py:57
@@ -162,7 +157,7 @@ msgstr ""
 msgid "Last hour of the day"
 msgstr ""
 
-#: ./resource.py:281
+#: ./resource.py:285
 msgid "List"
 msgstr ""
 
@@ -179,15 +174,15 @@ msgstr ""
 msgid "No reservable slot found."
 msgstr ""
 
-#: ./reservation.py:184
+#: ./reservation.py:192
 msgid "No reservations for this allocation"
 msgstr ""
 
-#: ./reservation.py:189
-msgid "No reservations for this group"
+#: ./reservation.py:197
+msgid "No reservations for this recurrence"
 msgstr ""
 
-#: ./utils.py:159
+#: ./utils.py:162
 msgid "No spots available"
 msgstr ""
 
@@ -195,7 +190,7 @@ msgstr ""
 msgid "No such reservation"
 msgstr ""
 
-#: ./utils.py:146
+#: ./utils.py:149
 msgid "Occupied"
 msgstr ""
 
@@ -220,11 +215,12 @@ msgstr ""
 msgid "Raster"
 msgstr ""
 
-#: ./allocate.py:83
+#: ./allocate.py:63
+#: ./resource.py:283
 msgid "Recurrence"
 msgstr ""
 
-#: ./resource.py:268
+#: ./resource.py:272
 msgid "Remove"
 msgstr ""
 
@@ -244,7 +240,7 @@ msgstr ""
 msgid "Reservation throttling"
 msgstr ""
 
-#: ./resource.py:272
+#: ./resource.py:276
 msgid "Reservations"
 msgstr ""
 
@@ -252,16 +248,16 @@ msgstr ""
 msgid "Reservations can't be made for more than 24 hours at a time"
 msgstr ""
 
-#: ./reservation.py:186
+#: ./reservation.py:194
 msgid "Reservations for allocation"
 msgstr ""
 
-#: ./reservation.py:191
-msgid "Reservations for group"
+#: ./reservation.py:199
+msgid "Reservations for recurrence"
 msgstr ""
 
 #: ./reservation.py:64
-#: ./resource.py:262
+#: ./resource.py:266
 msgid "Reserve"
 msgstr ""
 
