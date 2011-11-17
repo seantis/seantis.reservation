@@ -181,7 +181,8 @@ class GroupView(grok.View):
             )
 
     def event_class(self, allocation):
-        return self.event_availability(allocation)[1]
+        base = 'fc-event fc-event-inner fc-event-skin groupListTime'
+        return base  + ' ' + self.event_availability(allocation)[1]
 
     def event_title(self, allocation):
         return self.event_availability(allocation)[0]

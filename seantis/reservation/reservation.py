@@ -35,6 +35,13 @@ class IReservation(interface.Interface):
         title=_(u'End')
         )
 
+class IGroupReservation(interface.Interface):
+
+    group = schema.Text(
+        title=_(u'Group'),
+        required=False
+        )
+
 class IRemoveReservation(interface.Interface):
 
     reservation = schema.Text(
@@ -75,6 +82,31 @@ class ReservationForm(ResourceBaseForm):
     @button.buttonAndHandler(_(u'Cancel'))
     def cancel(self, action):
         self.redirect_to_context()
+
+# class GroupReservationForm(ResourceBaseForm):
+#     permission = 'zope2.View'
+
+#     grok.name('reserve-group')
+#     grok.require(permission)
+
+#     fields = field.Fields(IGroupReservation)
+#     label = _(u'Recurrance reservation')
+
+#     template = ViewPageTemplateFile('templates/group_reserve.pt')
+
+#     hidden_fields = ['group']
+#     ignore_requirements = True
+
+#     @button.buttonAndHandler(_(u'reserve'))
+#     @extract_action_data
+#     def reserve(self, data):
+
+#         def reserve():
+#             self.context.scheduler().reserve(group=group)
+
+#     @button.buttonAndHandler(_(u'Cancel'))
+#     def cancel(self, action):
+#         self.redirect_to_context()
 
 class ReservationRemoveForm(ResourceBaseForm):
     permission = 'cmf.ManagePortal'

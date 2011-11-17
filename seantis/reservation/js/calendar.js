@@ -115,7 +115,7 @@ seantis.calendars.defaults = {
             }
 
             var free = _.template('<div style="height:<%= height %>%"></div>');
-            var used = _.template('<div style="height:<%= height %>%" class="calendarOccupied"></div>');
+            var used = _.template('<div style="height:<%= height %>%" class="calendar-occupied"></div>');
 
             var partitions = '';
             _.each(event.partitions, function(partition) {

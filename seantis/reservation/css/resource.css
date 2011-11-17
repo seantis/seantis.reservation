@@ -61,11 +61,6 @@
     width: 120px;
 }
 
-.groupEvent {
-    width:180px !important; 
-    float:left;
-}
-
 .event-unavailable, .event-unavailable .fc-event-skin, .event-unavailable .fc-event-head {
     background-color: #a1291e !important;
     border-color: #a1291e !important;
@@ -133,4 +128,21 @@ a.reservation-delete {
 
 #inline-page {
     margin-top: 20px;
+}
+
+.groupList {
+    overflow: auto;
+    max-height: 500px;
+}
+
+.groupListDay {
+    float: left;
+    width: 75px;
+    margin-bottom: 10px;
+}
+
+.groupListTime {
+    width:180px !important; 
+    float:left;
+    text-align: center;
 }

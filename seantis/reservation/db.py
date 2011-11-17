@@ -512,13 +512,20 @@ class Scheduler(object):
                 Session.delete(allocation)
 
     @serialized
-    def reserve(self, dates):
+    def reserve(self, dates=None, group=None):
         """ Tries to reserve a number of dates. If dates are found which are
-        already reserved, an AlreadyReservedError is thrown. If a reservation
-        is made between the availability check and the reservation an integrity
-        error will surface once the session is flushed.
+        already reserved, an AlreadyReservedError is thrown. If a another user
+        makes a reservation between the availability check and the reservation 
+        an integrity error will surface once the session is flushed.
 
         """
+        assert dates or group
+
+        if group:
+            query = Session.query(Allocation._start, Allocation._end)
+            query = query.filter(Allocation.group == group)
+            dates = query.all()
+
         dates = utils.pairs(dates)
         reservation = new_uuid()
         slots_to_reserve = []

@@ -2,36 +2,48 @@
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-      lang="en"
       metal:use-macro="context/main_template/macros/master"
-      i18n:domain="seantis.dir.facility">
+      i18n:domain="seantis.reservation"
+      lang="en">
 <body>
 
 <metal:main fill-slot="main">
-    <tal:main-macro metal:define-macro="main">
+    <tal:main-macro metal:define-macro="main" tal:define="
+      resetlink python: context.absolute_url() + '?reset=true';
+    ">
         <div tal:replace="structure provider:plone.abovecontenttitle" />
-        <a tal:attributes="href python: context.absolute_url() + '?reset=true'"><h1 class="documentFirstHeading" i18n:translate="">Group View</h1></a>
+        
+        <a tal:attributes="href resetlink">
+            <h1 class="documentFirstHeading" i18n:translate="">Group View</h1>
+        </a>
+        
         <div tal:replace="structure provider:plone.belowcontenttitle" />
-
         <div tal:replace="structure provider:plone.abovecontentbody" />
 
-        <div style="overflow:auto; max-height: 500px;">
-          <div tal:repeat="alloc view/allocations">
+        <div class="groupList">
+            <div tal:repeat="alloc view/allocations">
+                <tal:block define="
+                    day python: alloc.display_start.strftime('%d.%m.%Y');
+                    start python: alloc.display_start.strftime('%H:%M');
+                    end python: alloc.display_end.strftime('%H:%M');
+                    time string: ${start} - ${end};
+                    title python: view.event_title(alloc);
+                    eventclass python: view.event_class(alloc);
+                ">
 
-            <div style="float: left; width:75px; margin-bottom: 10px;" tal:content="python: alloc.display_start.strftime('%d.%m.%Y')"></div>
-              <div tal:attributes="class python: 'fc-event fc-event-inner fc-event-skin groupEvent ' + view.event_class(alloc)">
-                <div style="text-align: center;">
-                <span class="fc-event-time">
-                  <tal:block tal:content="python: alloc.display_start.strftime('%H:%M')" />
-                  &nbsp;-&nbsp;
-                  <tal:block tal:content="python: alloc.display_end.strftime('%H:%M')" />
-                </span>
-                <span class="fc-event-title" tal:content="python: view.event_title(alloc)"></span>
+                <div class="groupListDay" tal:content="day"></div>
+                
+                <div tal:attributes="class eventclass">    
+                    
+                    <span class="fc-event-time" tal:content="time"></span>
+                    <span class="fc-event-title" tal:content="title"></span>
+                    
                 </div>
-              </div>
 
-              <div style="clear:both;"></div>
-          </div>
+                <div style="clear:both;"></div>
+                
+                </tal:block>
+            </div>
         </div>
 
         <div tal:replace="structure provider:plone.belowcontentbody" />

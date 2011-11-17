@@ -10,27 +10,44 @@
 <metal:main fill-slot="main">
     <tal:main-macro metal:define-macro="main">
         <h1 class="documentFirstHeading" tal:content="view/label | nothing" />
-        <p tal:condition="python: len(view.allocations()) > 0" i18n:translate="">Do you really want to remove the following allocations?</p>
-        <p tal:condition="python: len(view.allocations()) == 0" i18n:translate="">The requested allocations could not be found</p>
-        <div style="overflow:auto; max-height: 500px;">
-         <div tal:repeat="alloc view/allocations">
-          <div style="float: left; width:75px; margin-bottom: 10px;" tal:content="python: alloc.display_start.strftime('%d.%m.%Y')"></div>
-            <div tal:attributes="class python: 'fc-event fc-event-inner fc-event-skin groupEvent ' + view.event_class(alloc)">
-              <div style="text-align: center;">
-                <span class="fc-event-time">
-                  <tal:block tal:content="python: alloc.display_start.strftime('%H:%M')" />
-                  &nbsp;-&nbsp;
-                  <tal:block tal:content="python: alloc.display_end.strftime('%H:%M')" />
-                </span>
-                <span class="fc-event-title" tal:content="python: view.event_title(alloc)"></span>
-              </div>
-            </div>
 
-            <div style="clear:both;"></div>
-          
-          </div>
+        <p tal:condition="python: len(view.allocations()) > 0" i18n:translate="">
+        Do you really want to remove the following allocations?
+        </p>
+        
+        <p tal:condition="python: len(view.allocations()) == 0" i18n:translate="">
+        The requested allocations could not be found
+        </p>
+        
+        <!-- TODO this is the same template as in group.pt.. DRY! -->
+        <div class="groupList">
+            <div tal:repeat="alloc view/allocations">
+                <tal:block define="
+                    day python: alloc.display_start.strftime('%d.%m.%Y');
+                    start python: alloc.display_start.strftime('%H:%M');
+                    end python: alloc.display_end.strftime('%H:%M');
+                    time string: ${start} - ${end};
+                    title python: view.event_title(alloc);
+                    eventclass python: view.event_class(alloc);
+                ">
+
+                <div class="groupListDay" tal:content="day"></div>
+                
+                <div tal:attributes="class eventclass">    
+                    
+                    <span class="fc-event-time" tal:content="time"></span>
+                    <span class="fc-event-title" tal:content="title"></span>
+                    
+                </div>
+
+                <div style="clear:both;"></div>
+                
+                </tal:block>
+            </div>
         </div>
-          <metal:block use-macro="context/@@ploneform-macros/titlelessform" />
+
+        <metal:block use-macro="context/@@ploneform-macros/titlelessform" />
+
     </tal:main-macro>
 </metal:main>
 </body>
