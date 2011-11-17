@@ -12,19 +12,9 @@
         <h1 class="documentFirstHeading" tal:content="view/label | nothing"></h1>
         <p tal:content="python: view.hint"></p>
 
-        <div class="reservation">
-            <tal:block repeat="timespan view/timespans">
-                <div class="reservation-title">
-                    <h3 tal:content="view/name"></h3>
-                </div>
-                
-                <div class="reservation-list" tal:content="
-                    python: view.display_date(timespan.start, timespan.end)
-                    ">
-                </div>
-            </tal:block>
+        <div class="limitedList">
+          <metal:block use-macro="context/@@reservations/macros/reservations" />
         </div>
-        
         <metal:block use-macro="context/@@ploneform-macros/titlelessform" />
     </tal:main-macro>
 </metal:main>

@@ -1,9 +1,6 @@
 from datetime import timedelta
-from itertools import groupby
 
 from five import grok
-from zope import schema
-from zope import interface
 from z3c.form import field
 from z3c.form import button
 from z3c.form.ptcompat import ViewPageTemplateFile
@@ -16,12 +13,13 @@ from seantis.reservation.interfaces import (
         IGroupReservation,
         IRemoveReservation
     )
-from seantis.reservation import db
+
 from seantis.reservation import _
 from seantis.reservation import utils
 from seantis.reservation.form import (
         ResourceBaseForm, 
         AllocationGroupView,
+        ReservationListView,
         extract_action_data
     )
 
@@ -80,7 +78,8 @@ class GroupReservationForm(ResourceBaseForm, AllocationGroupView):
     def cancel(self, action):
         self.redirect_to_context()
 
-class ReservationRemoveForm(ResourceBaseForm):
+
+class ReservationRemoveForm(ResourceBaseForm, ReservationListView):
     permission = 'cmf.ManagePortal'
 
     grok.name('remove-reservation')
@@ -94,6 +93,12 @@ class ReservationRemoveForm(ResourceBaseForm):
     hidden_fields = ['reservation', 'start', 'end']
     ignore_requirements = True
 
+    show_links = False
+
+    @property
+    def reservation(self):
+        return self.request.get('reservation')
+
     def defaults(self):
         return dict(
             reservation=unicode(self.reservation),
@@ -102,22 +107,16 @@ class ReservationRemoveForm(ResourceBaseForm):
         )
 
     @property
-    def reservation(self):
-        return self.request.get('reservation')
-
-    @property
     def hint(self):
-        if not self.timespans():
+        if not self.reservations():
             return _(u'No such reservation')
 
         if self.reservation and not all((self.start, self.end)):
-            return _(u'Do you really want to remove the following reservation?')
-        elif self.reservation and all((self.start, self.end)):
+            return _(u'Do you really want to remove the following reservations?')
+        
+        if self.reservation and all((self.start, self.end)):
             return _(u'Do you really want to remove '
                      u'the following timespans from the reservation?')
-
-    def name(self):
-        return utils.random_name()
 
     @button.buttonAndHandler(_(u'Delete'))
     @extract_action_data
@@ -134,39 +133,8 @@ class ReservationRemoveForm(ResourceBaseForm):
     def cancel(self, action):
         self.redirect_to_context()
 
-    @property
-    def reservation_title(self):
-        return self.reservation
 
-    def display_date(self, start, end):
-        end += timedelta(microseconds=1)
-        if start.date() == end.date():
-            return start.strftime('%d.%m.%Y %H:%M - ') + end.strftime('%H:%M')
-        else:
-            return start.strftime('%d.%m.%Y %H:%M - ') \
-                 + end.strftime('%d.%m.%Y %H:%M')
-
-    @view.memoize
-    def timespans(self):
-        if self.start and self.end:
-            slots = self.scheduler.reserved_slots_by_range(
-                    self.reservation, self.start, self.end
-                )
-        else:
-            slots = self.scheduler.reserved_slots(
-                    self.reservation
-                ).all()
-
-        return utils.merge_reserved_slots(slots)
-
-    def update(self, **kwargs):
-        if self.id or self.group:
-            self.fields['reservation'].field.default = self.reservation
-            self.fields['start'].field.default = self.start
-            self.fields['end'].field.default = self.end
-        super(ReservationRemoveForm, self).update(**kwargs)
-
-class ManageReservations(grok.View):
+class ReservationList(grok.View, ReservationListView):
     permission = "cmf.ManagePortal"
 
     grok.name('reservations')
@@ -174,7 +142,7 @@ class ManageReservations(grok.View):
 
     grok.context(IResourceBase)
 
-    template = grok.PageTemplateFile('templates/manage_reservations.pt')
+    template = grok.PageTemplateFile('templates/reservations.pt')
 
     @property
     def id(self):
@@ -187,9 +155,6 @@ class ManageReservations(grok.View):
         else:
             return u''
 
-    def name(self):
-        return utils.random_name()
-
     def title(self):
         if self.id:
             if not self.reservations():
@@ -201,44 +166,3 @@ class ManageReservations(grok.View):
                 return _(u'No reservations for this recurrence')
 
             return _(u'Reservations for recurrence')
-
-    def remove_all_url(self, reservation):
-        base = self.context.absolute_url()
-        return base + u'/remove-reservation?reservation=%s' % reservation[0]
-
-    def remove_part_url(self, reservation):
-        base = self.context.absolute_url()
-        return base + u'/remove-reservation?reservation=%s&start=%s&end=%s' % (
-                reservation[0], 
-                utils.timestamp(reservation[2]), 
-                utils.timestamp(reservation[3]+timedelta(microseconds=1))
-            )
-
-    def display_date(self, start, end):
-        end += timedelta(microseconds=1)
-        if start.date() == end.date():
-            return start.strftime('%d.%m.%Y %H:%M - ') + end.strftime('%H:%M')
-        else:
-            return start.strftime('%d.%m.%Y %H:%M - ') \
-                 + end.strftime('%d.%m.%Y %H:%M')
-
-    @view.memoize
-    def reservations(self):
-        scheduler = self.context.scheduler()
-
-        if self.id:
-            query = scheduler.reservations_for_allocation(self.id)
-        elif self.group:
-            query = scheduler.reservations_for_group(self.group)
-        else:
-            return None
-        
-        query = db.grouped_reservation_view(query)
-
-        keyfn = lambda result: result.reservation
-
-        results = {}
-        for key, values in groupby(query, key=keyfn):
-            results[key] = list(values)
-
-        return results

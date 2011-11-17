@@ -620,7 +620,7 @@ class Scheduler(object):
 
         return query
 
-    def reserved_slots(self, reservation):
+    def reserved_slots_by_reservation(self, reservation):
         """Returns all reserved slots of the given reservation."""
 
         assert reservation
@@ -646,13 +646,13 @@ class Scheduler(object):
 
         return slots
 
-    def reservations_for_group(self, group):
+    def reserved_slots_by_group(self, group):
         query = self.managed_reserved_slots()
         query = query.filter(Allocation.group == group)
 
         return query
 
-    def reservations_for_allocation(self, allocation_id):
+    def reserved_slots_by_allocation(self, allocation_id):
         master = self.allocation_by_id(allocation_id)
         mirrors = self.allocation_mirrors_by_master(master)
         ids = [master.id] + [m.id for m in mirrors]
@@ -679,7 +679,7 @@ class Scheduler(object):
         if start and end:
             slots = self.reserved_slots_by_range(reservation, start, end)
         else:
-            slots = self.reserved_slots(reservation)
+            slots = self.reserved_slots_by_reservation(reservation)
 
         for slot in slots:
             Session.delete(slot)

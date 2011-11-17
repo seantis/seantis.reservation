@@ -1,9 +1,11 @@
-from datetime import datetime
+from datetime import datetime, timedelta
+from itertools import groupby
 
 from five import grok
 from plone.directives import form
 from z3c.form import interfaces
 
+from seantis.reservation import db
 from seantis.reservation import utils
 from seantis.reservation.models import Allocation
 from seantis.reservation.interfaces import IResourceBase
@@ -142,8 +144,10 @@ class AllocationGroupView(object):
     """Combines functionality of different views which show groups 
     of allocations like in group.pt.
 
-    Should be used together with ResourceBaseForm as baseclass and the following
-    macro on the template:
+    The class with which it is used needs to offer the properties id and group
+    and the context needs to be set to resource.
+
+    Use the following macro to display:
 
     <metal:block use-macro="context/@@group/macros/grouplist" />
 
@@ -176,4 +180,84 @@ class AllocationGroupView(object):
     def event_title(self, allocation):
         return self.event_availability(allocation)[0]
 
+class ReservationListView(object):
+    """Combines functionality of different views which show reservations.
+
+    The class with which it is used needs to provide the resource as context.
+
+    The properties id and group must be implemented unless show_links is False
+
+    The property reservation can be implemented if it is desired to only show
+    one reservation.
+
+    The property start and end can be implemented if it is desired to only
+    show a subset of the reserved slots
+
+    Use the following macro to display:
+
+    <metal:block use-macro="context/@@reservations/macros/reservations" />
+
+    """
+
+    show_links = True
+
+    @property
+    def reservation(self):
+        return None
+
+    def reservation_info(self):
+        return utils.random_name()
+
+    def remove_all_url(self, reservation):
+        base = self.context.absolute_url()
+        return base + u'/remove-reservation?reservation=%s' % reservation[0]
+
+    def remove_part_url(self, reservation):
+        base = self.context.absolute_url()
+        return base + u'/remove-reservation?reservation=%s&start=%s&end=%s' % (
+                reservation[0], 
+                utils.timestamp(reservation[2]), 
+                utils.timestamp(reservation[3]+timedelta(microseconds=1))
+            )
+
+    def display_date(self, start, end):
+        end += timedelta(microseconds=1)
+        if start.date() == end.date():
+            return start.strftime('%d.%m.%Y %H:%M - ') + end.strftime('%H:%M')
+        else:
+            return start.strftime('%d.%m.%Y %H:%M - ') \
+                 + end.strftime('%d.%m.%Y %H:%M')
+
+    @utils.memoize
+    def reservations(self):
+        scheduler = self.context.scheduler()
+
+        if self.reservation:
+            query = scheduler.reserved_slots_by_reservation(self.reservation)
+        elif self.id:
+            query = scheduler.reserved_slots_by_allocation(self.id)
+        elif self.group:
+            query = scheduler.reserved_slots_by_group(self.group)
+        else:
+            return None
+
+        query = db.grouped_reservation_view(query)
+
+        keyfn = lambda result: result.reservation
+        
+        def filter_slot(slot):
+            allocation = scheduler.allocation_by_id(slot[1])
+            return allocation.overlaps(self.start, self.end)
+
+        if not hasattr(self, 'start') and not hasattr(self, 'end'):
+            filter_slot = lambda slot: True
+        elif not all((self.start, self.end)):
+            filter_slot = lambda slot: True
+
+        results = {}
+
+        for key, values in groupby(query, key=keyfn):
+            results[key] = [v for v in values if filter_slot(v)]
+
+        return results
     

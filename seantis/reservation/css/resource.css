@@ -130,7 +130,7 @@ a.reservation-delete {
     margin-top: 20px;
 }
 
-.groupList {
+.groupList, .limitedList {
     overflow: auto;
     max-height: 500px;
 }
