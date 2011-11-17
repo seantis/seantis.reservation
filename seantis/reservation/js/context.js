@@ -21,11 +21,16 @@ seantis.contextmenu = function(event, element, calendar) {
         render: function(element) {
             $.each($('a', element), function(ix, link) {
                 var $link = $(link);
+
+                $link.click(function() {
+                    element.miniTip({doHide:true});
+                });
+
                 var target = $link.attr('data-target');
                 switch (target) {
                     
                     case "overlay":
-                        calendar.overlay_init($link);    
+                        calendar.overlay_init($link);
                         break;
 
                     case "inpage":

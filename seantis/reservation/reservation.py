@@ -1,10 +1,8 @@
-from datetime import timedelta
-
 from five import grok
+
 from z3c.form import field
 from z3c.form import button
 from z3c.form.ptcompat import ViewPageTemplateFile
-from plone.memoize import view
 
 from seantis.reservation.throttle import throttled
 from seantis.reservation.interfaces import (

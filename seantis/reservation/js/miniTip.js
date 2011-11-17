@@ -1,7 +1,7 @@
 /*!
- * miniTip v1.4.2
+ * miniTip v1.4.3
  *
- * Updated: September 12, 2011
+ * Updated: September 20, 2011
  * Requires: jQuery v1.3+
  *
  * (c) 2011, James Simpson
@@ -27,7 +27,7 @@
             aHide:      true, // set to false to only hide when the mouse moves away from the anchor and tooltip
             maxW:       '250px', // max width of tooltip
             offset:     5, // offset in pixels of stem from anchor
-            hide:       false  // call $('#id').miniTip({hide: true}); to manually hide the tooltip
+            doHide:     false  // call $('#id').miniTip({hide: true}); to manually hide the tooltip
         },
         
             // merge the defaults with the user declared options
@@ -44,7 +44,7 @@
             tt_a = $('#miniTip_a');
         
         // manually hide the tooltip if $('#id').miniTip({hide: true}); is called
-        if (o.hide) {
+        if (o.doHide) {
             tt_w.stop(true,true).fadeOut(o.fadeOut);
             return false;
         }
@@ -104,18 +104,12 @@
                     o.aHide = true;
                 
                     // add the click event to the anchor
-                    el.click(function(event){
+                    el.click(function(){
                         // make sure we know this was activated by click
                         tt_w.attr('click', 't');
-
-                        if (window.miniTip_target !== el) {
-                            show();
-                            window.miniTip_target = el;
-                        } else {
-                            hide();
-                            window.miniTip_target = null;
-                        };
                         
+                        // show the tooltip, unless it is already showing, then close it
+                        if (tt_w.css('display') == 'none') show(); else hide();
                         return false;
                     });
                     
@@ -138,7 +132,8 @@
                         tt_t.html(o.title).show();
                     else
                         tt_t.hide();
-
+                        
+                    // call the render callback function
                     if (o.render) o.render(tt_w);
                     
                     // reset arrow position
