@@ -8,14 +8,17 @@ seantis.contextmenu = function(event, element, calendar) {
         return;
         
     var inline = $('#inline-page');
+    var trigger = seantis.contextmenu.simple(event) ? 'hover' : 'click';
+    var delay = trigger === 'hover' ? 200 : 0;
+    var aHide = trigger === 'hover' ? false : true;
 
     element.miniTip({
         title: '',
         content: seantis.contextmenu.build(event),
         anchor: 'e',
-        delay: 0,
-        event: 'click',
-        aHide: true,
+        delay: delay,
+        event: trigger,
+        aHide: aHide,
         fadeIn: 100,
         fadeOut: 100,
         render: function(element) {
@@ -42,6 +45,16 @@ seantis.contextmenu = function(event, element, calendar) {
     });  
 };
 
+seantis.contextmenu.simple = function(event) {
+    if (event.menuorder.length > 1) 
+        return false;
+
+    if (event.menu[event.menuorder[0]].length > 1)
+        return false;
+
+    return event.menu[event.menuorder[0]][0].url;    
+};
+
 seantis.contextmenu.close = function() {
     $.fn.miniTip({doHide:true});  
 };
@@ -52,13 +65,14 @@ seantis.contextmenu.build = function(event) {
                                data-target="<%= target %>" href="<%= url %>">\
                                <%= name %></a>');
 
+    var simple = seantis.contextmenu.simple(event);
     
     var html = '';
     for (var i=0; i<event.menuorder.length; i++) {
 
         var group = event.menuorder[i];
         
-        if (group.length > 0)
+        if (!simple && group.length > 0)
             html += title({text:group});
 
         for (var j=0; j<event.menu[group].length; j++) {

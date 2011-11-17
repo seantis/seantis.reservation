@@ -322,6 +322,9 @@ class EventUrls(object):
         urlfactory = self.restricted_url(view)
         if not urlfactory: return
 
+        url = urlfactory(params)
+        if not url: return
+
         group = self.translate(group)
         name = self.translate(name)
 
@@ -329,11 +332,7 @@ class EventUrls(object):
             self.menu[group] = []
             self.order.append(group)
 
-        self.menu[group].append(dict(
-                name=name, 
-                url=urlfactory(params),
-                target=target
-            ))
+        self.menu[group].append(dict(name=name, url=url, target=target))
 
     def default_url(self, view, params):
         self.default = urlparam(self.base, view, params)
