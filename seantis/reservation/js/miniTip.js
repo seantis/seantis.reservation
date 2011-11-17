@@ -104,12 +104,20 @@
                     o.aHide = true;
                 
                     // add the click event to the anchor
-                    el.click(function(){
+                    el.click(function(e){
                         // make sure we know this was activated by click
                         tt_w.attr('click', 't');
+
+                        if (tt_w.data('last_target') !== e.target) {
+                            // rerender the tooltip if the target changed
+                            show();
+                        } else {
+                            // show the tooltip, unless it is already showing, then close it
+                            if (tt_w.css('display') == 'none') show(); else hide();    
+                        }
+
+                        tt_w.data('last_target', e.target);
                         
-                        // show the tooltip, unless it is already showing, then close it
-                        if (tt_w.css('display') == 'none') show(); else hide();
                         return false;
                     });
                     
