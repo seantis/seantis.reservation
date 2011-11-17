@@ -9,6 +9,7 @@ from zope import interface
 from zope.schema.vocabulary import SimpleVocabulary
 from zope.schema.vocabulary import SimpleTerm
 
+from seantis.reservation import utils
 from seantis.reservation.raster import VALID_RASTER_VALUES
 from seantis.reservation import _
 
@@ -151,7 +152,7 @@ class IAllocation(form.Schema):
         )
 
     separately = schema.Bool(
-        title=_(u'Seperately reservable'),
+        title=_(u'Separately reservable'),
         required=False,
         default=False
         )
@@ -173,7 +174,10 @@ class IAllocation(form.Schema):
 
     @interface.invariant
     def isValidRange(Allocation):
-        start, end = get_date_range(Allocation)
+        start, end = utils.get_date_range(
+                Allocation.day, 
+                Allocation.start_time, Allocation.end_time
+            )
         
         if abs((end - start).seconds // 60) < 5:
             raise interface.Invalid(_(u'The allocation must be at least 5 minutes long'))
@@ -182,6 +186,12 @@ class IAllocation(form.Schema):
     def isValidQuota(Allocation):
         if not (1 <= Allocation.quota and Allocation.quota <= 100):
             raise interface.Invalid(_(u'Quota must be between 1 and 100'))
+
+    @interface.invariant
+    def isValidOption(Allocation):
+        if Allocation.recurring:
+            if Allocation.partly_available and not Allocation.separately:
+                raise interface.Invalid(_(u'Partly available allocations can only be reserved separately'))
 
 class ITimeframe(form.Schema):
 
@@ -219,7 +229,7 @@ class IReservation(interface.Interface):
 class IGroupReservation(interface.Interface):
 
     group = schema.Text(
-        title=_(u'Group'),
+        title=_(u'Recurrence'),
         required=False
         )
 
@@ -238,15 +248,4 @@ class IRemoveReservation(interface.Interface):
     end = schema.Datetime(
         title=_(u'End'),
         required=False
-        )
-
-def get_date_range(allocation):
-    start = datetime.combine(allocation.day, allocation.start_time)
-    end = datetime.combine(allocation.day, allocation.end_time)
-
-    # since the user can only one date with separate times it is assumed
-    # that an end before a start is meant for the following day
-    if end < start: end += timedelta(days=1)
-
-    return start, end
-    
+        )    

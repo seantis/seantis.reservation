@@ -142,8 +142,8 @@ class AllocationGroupView(object):
     """Combines functionality of different views which show groups 
     of allocations like in group.pt.
 
-    Should be used together with with classes that have the resource set as
-    their context using the following macro:
+    Should be used together with ResourceBaseForm as baseclass and the following
+    macro on the template:
 
     <metal:block use-macro="context/@@group/macros/grouplist" />
 
@@ -155,6 +155,8 @@ class AllocationGroupView(object):
             query = self.context.scheduler().allocations_by_group(self.group)
             query = query.order_by(Allocation._start)
             return query.all()
+        elif self.id:
+            return [self.context.scheduler().allocation_by_id(self.id)]
         else:
             return []
 

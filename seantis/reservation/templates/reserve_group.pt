@@ -16,7 +16,7 @@
         </p>
         
         <p tal:condition="python: len(view.allocations()) == 0" i18n:translate="">
-        The requested group could not be found
+        The requested recurrence could not be found
         </p>
         
         <metal:block use-macro="context/@@group/macros/grouplist" />

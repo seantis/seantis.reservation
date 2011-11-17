@@ -187,21 +187,34 @@ class Slots(grok.View, CalendarRequest):
         items.default_url('reserve', dict(start=start, end=end))
         items.move_url('edit-allocation', dict(id=allocation.id))
 
+        # Reservation
+        res_add = lambda n, v, p, t: items.menu_add(_(u'Reservations'), n, v, p, t)
+        if allocation.is_separate:
+
+            res_add(_(u'Reserve'), 
+                'reserve', dict(start=start, end=end), 'overlay')
+
+            if has_reservations:
+                res_add(_(u'Show'), 
+                    'reservations', dict(id=allocation.id), 'inpage')
+
+        else:
+
+            res_add(_(u'Reserve'),
+                'reserve-group', dict(group=allocation.group), 'overlay')
+
+            if has_reservations:
+                res_add(_(u'Show'), 
+                    'reservations', dict(group=allocation.group), 'inpage')
+
         # menu entries for single items
         entry_add = lambda n, v, p, t: items.menu_add(_('Entry'), n, v, p, t)
-        
-        entry_add(_(u'Reserve'), 
-            'reserve', dict(start=start, end=end), 'overlay')
 
         entry_add(_(u'Edit'), 
             'edit-allocation', dict(id=allocation.id), 'overlay')
 
         entry_add(_(u'Remove'), 
             'remove-allocation', dict(id=allocation.id), 'overlay')
-
-        if has_reservations:
-            entry_add(_(u'Reservations'), 
-                'reservations', dict(id=allocation.id), 'inpage')
 
         if not allocation.in_group:
             return items
@@ -214,10 +227,6 @@ class Slots(grok.View, CalendarRequest):
 
         group_add(_(u'Remove'), 
             'remove-allocation', dict(group=allocation.group), 'overlay')
-
-        if has_reservations:
-            group_add(_(u'Reservations'), 
-                'reservations', dict(group=allocation.group), 'inpage')
 
         return items
 

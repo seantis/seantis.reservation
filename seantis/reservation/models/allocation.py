@@ -185,6 +185,16 @@ class Allocation(ORMBase):
 
         return len(query.all()) > 1
 
+    @property
+    def is_separate(self):
+        if self.partly_available:
+            return True
+
+        if self.in_group:
+            return False
+
+        return True
+
     def availability_partitions(self):
         """Partitions the space between start and end into blocks of either
         free or reserved time. Each block has a percentage representing the

@@ -3,6 +3,7 @@ import time
 import random
 import collections
 import functools
+from datetime import datetime, timedelta
 from collections import namedtuple
 from urlparse import urljoin
 from urllib import quote
@@ -348,3 +349,12 @@ def random_name():
 
     return '%s %s' % (random.choice(firstnames), random.choice(lastnames))
 
+def get_date_range(day, start_time, end_time):
+    start = datetime.combine(day, start_time)
+    end = datetime.combine(day, end_time)
+
+    # since the user can only one date with separate times it is assumed
+    # that an end before a start is meant for the following day
+    if end < start: end += timedelta(days=1)
+
+    return start, end

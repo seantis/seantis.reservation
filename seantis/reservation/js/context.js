@@ -53,7 +53,9 @@ seantis.contextmenu.build = function(event) {
 
         var group = event.menuorder[i];
         
-        html += title({text:group});
+        if (group.length > 0)
+            html += title({text:group});
+
         for (var j=0; j<event.menu[group].length; j++) {
             var item = event.menu[group][j];
 

@@ -12,7 +12,7 @@ from z3c.form.browser.radio import RadioFieldWidget
 
 from seantis.reservation import _
 from seantis.reservation import utils
-from seantis.reservation.interfaces import IAllocation, days, get_date_range
+from seantis.reservation.interfaces import IAllocation, days
 from seantis.reservation.form import (
         ResourceBaseForm, 
         AllocationGroupView,
@@ -89,7 +89,7 @@ class AllocationAddForm(AllocationForm):
 
         """
 
-        start, end = get_date_range(data)
+        start, end = utils.get_date_range(data.day, data.start_time, data.end_time)
 
         if not data.recurring:
             return ((start, end))
@@ -101,10 +101,8 @@ class AllocationAddForm(AllocationForm):
                 until=data.recurrence_end,
             )
     
-        event = lambda d: (
-                datetime.combine(d, data.start_time),
-                datetime.combine(d, data.end_time)
-            )
+        event = lambda d:utils.get_date_range(d, data.start_time, data.end_time)
+        
         return [event(d) for d in rule]
 
     @button.buttonAndHandler(_(u'Allocate'))
@@ -174,7 +172,7 @@ class AllocationEditForm(AllocationForm):
 
         scheduler = self.context.scheduler()
 
-        start, end = get_date_range(data)
+        start, end = utils.get_date_range(data.day, data.start_time, data.end_time)
         
         args = (data.id, start, end, unicode(data.group or u''), data.quota)
         action = lambda: scheduler.move_allocation(*args)

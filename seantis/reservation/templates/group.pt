@@ -14,7 +14,7 @@
         <div tal:replace="structure provider:plone.abovecontenttitle" />
         
         <a tal:attributes="href resetlink">
-            <h1 class="documentFirstHeading" i18n:translate="">Group View</h1>
+            <h1 class="documentFirstHeading" i18n:translate="">Recurrence View</h1>
         </a>
         
         <div tal:replace="structure provider:plone.belowcontenttitle" />

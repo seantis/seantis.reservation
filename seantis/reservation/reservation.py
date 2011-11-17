@@ -25,8 +25,6 @@ from seantis.reservation.form import (
         extract_action_data
     )
 
-from seantis.reservation.allocate import get_date_range
-
 class ReservationForm(ResourceBaseForm):
     permission = 'zope2.View'
 
@@ -41,7 +39,7 @@ class ReservationForm(ResourceBaseForm):
     def reserve(self, data):
 
         def reserve(): 
-            start, end = get_date_range(data)
+            start, end = utils.get_date_range(data.day, data.start_time, data.end_time)
             self.context.scheduler().reserve((start, end))
 
         action = throttled(reserve, self.context, 'reserve')
@@ -68,7 +66,7 @@ class GroupReservationForm(ResourceBaseForm, AllocationGroupView):
     def defaults(self, **kwargs):
         return dict(group=self.group)
 
-    @button.buttonAndHandler(_(u'reserve'))
+    @button.buttonAndHandler(_(u'Reserve'))
     @extract_action_data
     def reserve(self, data):
 
