@@ -10,7 +10,12 @@ from z3c.form.ptcompat import ViewPageTemplateFile
 from plone.memoize import view
 
 from seantis.reservation.throttle import throttled
-from seantis.reservation.interfaces import IResourceBase
+from seantis.reservation.interfaces import (
+        IResourceBase,
+        IReservation,
+        IGroupReservation,
+        IRemoveReservation
+    )
 from seantis.reservation import db
 from seantis.reservation import _
 from seantis.reservation import utils
@@ -21,44 +26,6 @@ from seantis.reservation.form import (
     )
 
 from seantis.reservation.allocate import get_date_range
-
-class IReservation(interface.Interface):
-
-    day = schema.Date(
-        title=_(u'Day')
-        )
-
-    start_time = schema.Time(
-        title=_(u'Start')
-        )
-
-    end_time = schema.Time(
-        title=_(u'End')
-        )
-
-class IGroupReservation(interface.Interface):
-
-    group = schema.Text(
-        title=_(u'Group'),
-        required=False
-        )
-
-class IRemoveReservation(interface.Interface):
-
-    reservation = schema.Text(
-        title=_(u'Reservation'),
-        required=False
-        )
-
-    start = schema.Datetime(
-        title=_(u'Start'),
-        required=False
-        )
-        
-    end = schema.Datetime(
-        title=_(u'End'),
-        required=False
-        )
 
 class ReservationForm(ResourceBaseForm):
     permission = 'zope2.View'
@@ -98,12 +65,18 @@ class GroupReservationForm(ResourceBaseForm, AllocationGroupView):
     hidden_fields = ['group']
     ignore_requirements = True
 
+    def defaults(self, **kwargs):
+        return dict(group=self.group)
+
     @button.buttonAndHandler(_(u'reserve'))
     @extract_action_data
     def reserve(self, data):
 
         def reserve():
             self.context.scheduler().reserve(group=data.group)
+
+        action = throttled(reserve, self.context, 'reserve')
+        utils.handle_action(action=action, success=self.redirect_to_context)
 
     @button.buttonAndHandler(_(u'Cancel'))
     def cancel(self, action):

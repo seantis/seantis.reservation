@@ -202,6 +202,44 @@ class ITimeframe(form.Schema):
         if Timeframe.start > Timeframe.end:
             raise interface.Invalid(_(u'End date before start date'))
 
+class IReservation(interface.Interface):
+
+    day = schema.Date(
+        title=_(u'Day')
+        )
+
+    start_time = schema.Time(
+        title=_(u'Start')
+        )
+
+    end_time = schema.Time(
+        title=_(u'End')
+        )
+
+class IGroupReservation(interface.Interface):
+
+    group = schema.Text(
+        title=_(u'Group'),
+        required=False
+        )
+
+class IRemoveReservation(interface.Interface):
+
+    reservation = schema.Text(
+        title=_(u'Reservation'),
+        required=False
+        )
+
+    start = schema.Datetime(
+        title=_(u'Start'),
+        required=False
+        )
+        
+    end = schema.Datetime(
+        title=_(u'End'),
+        required=False
+        )
+
 def get_date_range(allocation):
     start = datetime.combine(allocation.day, allocation.start_time)
     end = datetime.combine(allocation.day, allocation.end_time)
