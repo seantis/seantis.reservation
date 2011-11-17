@@ -75,8 +75,14 @@ seantis.calendars.defaults = {
                             target.toggleClass('loading', true);
                             $.get(url, function(data) {
                                 var result = $(filter, $(data));
-                                target.html(result.html());
-                                
+                                var close = '<div id="inlineClose"></div>\
+                                             <div style="clear:both;"></div>';
+
+                                target.html(close + result.html());
+                                target.find('#inlineClose').click(function() {
+                                   target.html(''); 
+                                });
+
                                 target.toggleClass('loading', false);
 
                                 $.each($('a', target), function(ix, link) {

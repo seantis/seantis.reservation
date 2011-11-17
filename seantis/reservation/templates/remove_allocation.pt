@@ -19,7 +19,9 @@
         The requested allocations could not be found
         </p>
         
-        <metal:block use-macro="context/@@group/macros/grouplist" />
+        <div class="limitedList">
+          <metal:block use-macro="context/@@group/macros/grouplist" />
+        </div>
         <metal:block use-macro="context/@@ploneform-macros/titlelessform" />
 
     </tal:main-macro>

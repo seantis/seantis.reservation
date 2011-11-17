@@ -20,29 +20,31 @@
         <div tal:replace="structure provider:plone.belowcontenttitle" />
         <div tal:replace="structure provider:plone.abovecontentbody" />
 
-        <div class="groupList" metal:define-macro="grouplist">
-            <div tal:repeat="alloc view/allocations">
-                <tal:block define="
-                    day python: alloc.display_start.strftime('%d.%m.%Y');
-                    start python: alloc.display_start.strftime('%H:%M');
-                    end python: alloc.display_end.strftime('%H:%M');
-                    time string: ${start} - ${end};
-                    title python: view.event_title(alloc);
-                    eventclass python: view.event_class(alloc);
-                ">
+        <div class="limitedList">
+            <div metal:define-macro="grouplist">
+                <div tal:repeat="alloc view/allocations">
+                    <tal:block define="
+                        day python: alloc.display_start.strftime('%d.%m.%Y');
+                        start python: alloc.display_start.strftime('%H:%M');
+                        end python: alloc.display_end.strftime('%H:%M');
+                        time string: ${start} - ${end};
+                        title python: view.event_title(alloc);
+                        eventclass python: view.event_class(alloc);
+                    ">
 
-                <div class="groupListDay" tal:content="day"></div>
-                
-                <div tal:attributes="class eventclass">    
+                    <div class="groupListDay" tal:content="day"></div>
                     
-                    <span class="fc-event-time" tal:content="time"></span>
-                    <span class="fc-event-title" tal:content="title"></span>
+                    <div tal:attributes="class eventclass">    
+                        
+                        <span class="fc-event-time" tal:content="time"></span>
+                        <span class="fc-event-title" tal:content="title"></span>
+                        
+                    </div>
+
+                    <div style="clear:both;"></div>
                     
+                    </tal:block>
                 </div>
-
-                <div style="clear:both;"></div>
-                
-                </tal:block>
             </div>
         </div>
 

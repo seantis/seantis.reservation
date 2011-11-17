@@ -633,7 +633,7 @@ class Scheduler(object):
     def reserved_slots_by_range(self, reservation, start, end):
         assert start and end
 
-        query = self.reserved_slots(reservation)
+        query = self.reserved_slots_by_reservation(reservation)
         query = query.filter(start <= ReservedSlot.start)
         query = query.filter(ReservedSlot.end <= end)
 

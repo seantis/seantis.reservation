@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-11-17 11:18+0000\n"
+"POT-Creation-Date: 2011-11-17 14:16+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,19 +17,19 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: seantis.reservation\n"
 
-#: ./utils.py:160
+#: ./utils.py:161
 msgid "%i Spots Available"
 msgstr ""
 
-#: ./utils.py:153
+#: ./utils.py:154
 msgid "%i%% Free"
 msgstr ""
 
-#: ./utils.py:158
+#: ./utils.py:159
 msgid "1 Spot Available"
 msgstr ""
 
-#: ./utils.py:91
+#: ./utils.py:92
 msgid "A conflicting allocation exists for the requested time period."
 msgstr ""
 
@@ -37,7 +37,7 @@ msgstr ""
 msgid "Add"
 msgstr ""
 
-#: ./allocate.py:110
+#: ./allocate.py:108
 msgid "Allocate"
 msgstr ""
 
@@ -45,34 +45,34 @@ msgstr ""
 msgid "Allocation"
 msgstr ""
 
-#: ./utils.py:93
+#: ./utils.py:94
 msgid "An existing reservation would be affected by the requested change"
 msgstr ""
 
-#: ./allocate.py:124
-#: ./reservation.py:50
+#: ./allocate.py:122
+#: ./reservation.py:46
 msgid "Cancel"
 msgstr ""
 
-#: ./interfaces.py:28
+#: ./interfaces.py:29
 msgid "Daily"
 msgstr ""
 
-#: ./interfaces.py:136
+#: ./interfaces.py:137
 msgid "Day"
 msgstr ""
 
-#: ./interfaces.py:148
+#: ./interfaces.py:149
 msgid "Days"
 msgstr ""
 
-#: ./allocate.py:202
-#: ./reservation.py:124
-#: ./templates/manage_reservations.pt:22
+#: ./allocate.py:200
+#: ./reservation.py:121
+#: ./templates/reservations.pt:22
 msgid "Delete"
 msgstr ""
 
-#: ./interfaces.py:63
+#: ./interfaces.py:64
 msgid "Description"
 msgstr ""
 
@@ -80,8 +80,8 @@ msgstr ""
 msgid "Do you really want to remove the following allocations?"
 msgstr ""
 
-#: ./reservation.py:116
-msgid "Do you really want to remove the following reservation?"
+#: ./reservation.py:115
+msgid "Do you really want to remove the following reservations?"
 msgstr ""
 
 #: ./reservation.py:118
@@ -92,21 +92,21 @@ msgstr ""
 msgid "Do you want to reserve the following allocations?"
 msgstr ""
 
-#: ./allocate.py:168
+#: ./allocate.py:166
 #: ./resource.py:213
 #: ./timeframe.py:160
 msgid "Edit"
 msgstr ""
 
-#: ./allocate.py:137
+#: ./allocate.py:135
 msgid "Edit allocation"
 msgstr ""
 
-#: ./interfaces.py:126
+#: ./interfaces.py:127
 msgid "End"
 msgstr ""
 
-#: ./interfaces.py:209
+#: ./interfaces.py:213
 msgid "End date before start date"
 msgstr ""
 
@@ -114,47 +114,47 @@ msgstr ""
 msgid "Entry"
 msgstr ""
 
-#: ./interfaces.py:95
+#: ./interfaces.py:96
 msgid "First hour must be smaller than last hour"
 msgstr ""
 
-#: ./interfaces.py:68
+#: ./interfaces.py:69
 msgid "First hour of the day"
 msgstr ""
 
-#: ./interfaces.py:20
+#: ./interfaces.py:21
 msgid "Fr"
 msgstr ""
 
-#: ./utils.py:151
+#: ./utils.py:152
 msgid "Free"
 msgstr ""
 
-#: ./interfaces.py:140
+#: ./interfaces.py:141
 msgid "From"
 msgstr ""
 
-#: ./interfaces.py:104
+#: ./interfaces.py:105
 msgid "Id"
 msgstr ""
 
-#: ./allocate.py:150
+#: ./allocate.py:148
 msgid "Invalid arguments"
 msgstr ""
 
-#: ./utils.py:101
+#: ./utils.py:102
 msgid "Invalid change. Your request may have already been processed earlier."
 msgstr ""
 
-#: ./interfaces.py:88
+#: ./interfaces.py:89
 msgid "Invalid first hour"
 msgstr ""
 
-#: ./interfaces.py:91
+#: ./interfaces.py:92
 msgid "Invalid last hour"
 msgstr ""
 
-#: ./interfaces.py:73
+#: ./interfaces.py:74
 msgid "Last hour of the day"
 msgstr ""
 
@@ -162,68 +162,71 @@ msgstr ""
 msgid "List"
 msgstr ""
 
-#: ./interfaces.py:16
+#: ./resource.py:207
+msgid "Manage"
+msgstr ""
+
+#: ./interfaces.py:17
 msgid "Mo"
 msgstr ""
 
-#: ./interfaces.py:59
+#: ./interfaces.py:60
 msgid "Name"
 msgstr ""
 
-#: ./utils.py:103
+#: ./utils.py:104
 msgid "No reservable slot found."
 msgstr ""
 
-#: ./reservation.py:198
+#: ./reservation.py:161
 msgid "No reservations for this allocation"
 msgstr ""
 
-#: ./reservation.py:203
+#: ./reservation.py:166
 msgid "No reservations for this recurrence"
 msgstr ""
 
-#: ./utils.py:162
+#: ./utils.py:163
 msgid "No spots available"
 msgstr ""
 
-#: ./reservation.py:113
+#: ./reservation.py:112
 msgid "No such reservation"
 msgstr ""
 
-#: ./utils.py:149
+#: ./utils.py:150
 msgid "Occupied"
 msgstr ""
 
-#: ./interfaces.py:27
+#: ./interfaces.py:28
 msgid "Once"
 msgstr ""
 
-#: ./interfaces.py:160
+#: ./interfaces.py:161
 msgid "Partly available"
 msgstr ""
 
-#: ./interfaces.py:190
+#: ./interfaces.py:194
 msgid "Partly available allocations can only be reserved separately"
 msgstr ""
 
-#: ./interfaces.py:78
+#: ./interfaces.py:79
 msgid "Quota"
 msgstr ""
 
-#: ./interfaces.py:184
+#: ./interfaces.py:188
 msgid "Quota must be between 1 and 100"
 msgstr ""
 
-#: ./interfaces.py:165
+#: ./interfaces.py:166
 msgid "Raster"
 msgstr ""
 
-#: ./reservation.py:61
+#: ./reservation.py:57
 msgid "Recurrance reservation"
 msgstr ""
 
-#: ./interfaces.py:110
-#: ./resource.py:223
+#: ./interfaces.py:111
 msgid "Recurrence"
 msgstr ""
 
@@ -231,19 +234,23 @@ msgstr ""
 msgid "Recurrence View"
 msgstr ""
 
+#: ./resource.py:223
+msgid "Recurrences"
+msgstr ""
+
 #: ./resource.py:216
 msgid "Remove"
 msgstr ""
 
-#: ./allocate.py:197
+#: ./allocate.py:195
 msgid "Remove allocations"
 msgstr ""
 
-#: ./reservation.py:94
+#: ./reservation.py:91
 msgid "Remove reservation"
 msgstr ""
 
-#: ./interfaces.py:235
+#: ./interfaces.py:239
 msgid "Reservation"
 msgstr ""
 
@@ -255,19 +262,19 @@ msgstr ""
 msgid "Reservations"
 msgstr ""
 
-#: ./utils.py:105
+#: ./utils.py:106
 msgid "Reservations can't be made for more than 24 hours at a time"
 msgstr ""
 
-#: ./reservation.py:200
+#: ./reservation.py:163
 msgid "Reservations for allocation"
 msgstr ""
 
-#: ./reservation.py:205
+#: ./reservation.py:168
 msgid "Reservations for recurrence"
 msgstr ""
 
-#: ./reservation.py:39
+#: ./reservation.py:35
 #: ./resource.py:194
 msgid "Reserve"
 msgstr ""
@@ -276,11 +283,11 @@ msgstr ""
 msgid "Resource"
 msgstr ""
 
-#: ./reservation.py:37
+#: ./reservation.py:33
 msgid "Resource reservation"
 msgstr ""
 
-#: ./interfaces.py:21
+#: ./interfaces.py:22
 msgid "Sa"
 msgstr ""
 
@@ -296,7 +303,7 @@ msgstr ""
 msgid "Seantis Reservation Settings"
 msgstr ""
 
-#: ./interfaces.py:154
+#: ./interfaces.py:155
 msgid "Separately reservable"
 msgstr ""
 
@@ -304,23 +311,23 @@ msgstr ""
 msgid "Show"
 msgstr ""
 
-#: ./interfaces.py:122
+#: ./interfaces.py:123
 msgid "Start"
 msgstr ""
 
-#: ./interfaces.py:22
+#: ./interfaces.py:23
 msgid "Su"
 msgstr ""
 
-#: ./interfaces.py:19
+#: ./interfaces.py:20
 msgid "Th"
 msgstr ""
 
-#: ./interfaces.py:179
+#: ./interfaces.py:183
 msgid "The allocation must be at least 5 minutes long"
 msgstr ""
 
-#: ./utils.py:97
+#: ./utils.py:98
 msgid "The item does no longer exist."
 msgstr ""
 
@@ -332,7 +339,7 @@ msgstr ""
 msgid "The requested allocations could not be found"
 msgstr ""
 
-#: ./utils.py:99
+#: ./utils.py:100
 msgid "The requested period is no longer available."
 msgstr ""
 
@@ -340,7 +347,7 @@ msgstr ""
 msgid "The requested recurrence could not be found"
 msgstr ""
 
-#: ./utils.py:95
+#: ./utils.py:96
 msgid "The resource is being edited by someone else. Please try again."
 msgstr ""
 
@@ -352,24 +359,24 @@ msgstr ""
 msgid "Timeframe overlaps with '%s' in the current folder"
 msgstr ""
 
-#: ./interfaces.py:116
+#: ./interfaces.py:117
 #: ./templates/timeframes.pt:4
 msgid "Timeframes"
 msgstr ""
 
-#: ./utils.py:107
+#: ./utils.py:108
 msgid "Too many reservations in a short time. Wait for a moment before trying again."
 msgstr ""
 
-#: ./interfaces.py:17
+#: ./interfaces.py:18
 msgid "Tu"
 msgstr ""
 
-#: ./interfaces.py:144
+#: ./interfaces.py:145
 msgid "Until"
 msgstr ""
 
-#: ./interfaces.py:18
+#: ./interfaces.py:19
 msgid "We"
 msgstr ""
 

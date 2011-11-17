@@ -7,7 +7,7 @@
 .loading {
     background-image: url(/++resource++seantis.reservation.images/loading.gif);
     background-repeat: no-repeat;
-    background-position: center top;
+    background-position: center 20px;
     min-height: 10px;
 }
 
@@ -126,11 +126,7 @@ a.reservation-delete {
     padding: 5px 10px 5px 20px;
 }
 
-#inline-page {
-    margin-top: 20px;
-}
-
-.groupList, .limitedList {
+.limitedList {
     overflow: auto;
     max-height: 500px;
 }
@@ -145,4 +141,14 @@ a.reservation-delete {
     width:180px !important; 
     float:left;
     text-align: center;
+}
+
+#inlineClose {
+    background-image: url(../pb_close.png);
+    cursor: pointer;
+    position: relative;
+    height: 30px;
+    width: 30px;
+    float: right;
+    top: 35px;
 }

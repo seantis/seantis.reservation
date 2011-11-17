@@ -204,7 +204,7 @@ class Slots(grok.View, CalendarRequest):
                 'reserve-group', dict(group=allocation.group), 'overlay')
 
             if has_reservations:
-                res_add(_(u'Show'), 
+                res_add(_(u'Manage'), 
                     'reservations', dict(group=allocation.group), 'inpage')
 
         # menu entries for single items
@@ -220,7 +220,7 @@ class Slots(grok.View, CalendarRequest):
             return items
 
         # menu entries for group items
-        group_add = lambda n, v, p, t: items.menu_add(_('Recurrence'), n, v, p, t)
+        group_add = lambda n, v, p, t: items.menu_add(_('Recurrences'), n, v, p, t)
         
         group_add(_(u'List'), 
             'group', dict(name=allocation.group), 'overlay')
