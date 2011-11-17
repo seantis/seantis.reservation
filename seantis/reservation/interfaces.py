@@ -1,4 +1,33 @@
+from datetime import datetime, timedelta
+from dateutil import rrule
+
 from zope.interface import Interface
+from plone.directives import form
+from zope import schema
+from zope import interface
+
+from zope.schema.vocabulary import SimpleVocabulary
+from zope.schema.vocabulary import SimpleTerm
+
+from seantis.reservation.raster import VALID_RASTER_VALUES
+from seantis.reservation import _
+
+days = SimpleVocabulary(
+        [SimpleTerm(value=rrule.MO, title=_(u'Mo')),
+         SimpleTerm(value=rrule.TU, title=_(u'Tu')),
+         SimpleTerm(value=rrule.WE, title=_(u'We')),
+         SimpleTerm(value=rrule.TH, title=_(u'Th')),
+         SimpleTerm(value=rrule.FR, title=_(u'Fr')),
+         SimpleTerm(value=rrule.SA, title=_(u'Sa')),
+         SimpleTerm(value=rrule.SU, title=_(u'Su')),
+        ]
+    )
+    
+recurrence = SimpleVocabulary(
+        [SimpleTerm(value=False, title=_(u'Once')),
+         SimpleTerm(value=True, title=_(u'Daily')),
+        ]
+    )
 
 class IReservable(Interface):
     """Reservable object."""
@@ -23,3 +52,163 @@ class IReservationManager(Interface):
 
     def request(timespan):
         """Requests the resource at timespan and returns a reservation id."""
+
+class IResourceBase(form.Schema):
+
+    title = schema.TextLine(
+            title=_(u'Name')
+        )
+
+    description = schema.Text(
+            title=_(u'Description'),
+            required=False
+        )
+
+    first_hour = schema.Int(
+            title=_(u'First hour of the day'),
+            default=0
+        )
+
+    last_hour = schema.Int(
+            title=_(u'Last hour of the day'),
+            default=24
+        )
+
+    quota = schema.Int(
+            title=_(u'Quota'),
+            default=1
+        )
+
+    @interface.invariant
+    def isValidFirstLastHour(Resource):
+        in_valid_range = lambda h: 0 <= h and h <= 24
+        first_hour, last_hour = Resource.first_hour, Resource.last_hour
+        
+        if not in_valid_range(first_hour):
+            raise interface.Invalid(_(u'Invalid first hour'))
+
+        if not in_valid_range(last_hour):
+            raise interface.Invalid(_(u'Invalid last hour'))
+
+        if last_hour <= first_hour:
+            raise interface.Invalid(
+                    _(u'First hour must be smaller than last hour')
+                )                  
+
+class IResource(IResourceBase):
+    pass
+
+class IAllocation(form.Schema):
+
+    id = schema.Int(
+        title=_(u'Id'),
+        default=-1,
+        required=False
+        )
+
+    group = schema.Text(
+        title=_(u'Recurrence'),
+        default=u'',
+        required=False
+        )
+
+    timeframes = schema.Text(
+        title=_(u'Timeframes'),
+        default=u'',
+        required=False
+        )
+
+    start_time = schema.Time(
+        title=_(u'Start')
+        )
+
+    end_time = schema.Time(
+        title=_(u'End')
+        )
+
+    recurring = schema.Choice(
+        title=_(u'Recurrence'),
+        vocabulary=recurrence,
+        default=False
+        )
+
+    day = schema.Date(
+        title=_(u'Day'),
+        )
+
+    recurrence_start = schema.Date(
+        title=_(u'From'),
+        )
+
+    recurrence_end = schema.Date(
+        title=_(u'Until')
+        )
+
+    days = schema.List(
+        title=_(u'Days'),
+        value_type=schema.Choice(vocabulary=days),
+        required=False
+        )
+
+    separately = schema.Bool(
+        title=_(u'Seperately reservable'),
+        required=False,
+        default=False
+        )
+
+    partly_available = schema.Bool(
+        title=_(u'Partly available'),
+        default=False
+        )
+
+    raster = schema.Choice(
+        title=_(u'Raster'),
+        values=VALID_RASTER_VALUES,
+        default=30
+        )
+
+    quota = schema.Int(
+        title=_(u'Quota'),
+        )
+
+    @interface.invariant
+    def isValidRange(Allocation):
+        start, end = get_date_range(Allocation)
+        
+        if abs((end - start).seconds // 60) < 5:
+            raise interface.Invalid(_(u'The allocation must be at least 5 minutes long'))
+
+    @interface.invariant
+    def isValidQuota(Allocation):
+        if not (1 <= Allocation.quota and Allocation.quota <= 100):
+            raise interface.Invalid(_(u'Quota must be between 1 and 100'))
+
+class ITimeframe(form.Schema):
+
+    title = schema.TextLine(
+            title=_(u'Name')
+        )
+
+    start = schema.Date(
+            title=_(u'Start')
+        )
+
+    end = schema.Date(
+            title=_(u'End')
+        )
+
+    @interface.invariant
+    def isValidDateRange(Timeframe):
+        if Timeframe.start > Timeframe.end:
+            raise interface.Invalid(_(u'End date before start date'))
+
+def get_date_range(allocation):
+    start = datetime.combine(allocation.day, allocation.start_time)
+    end = datetime.combine(allocation.day, allocation.end_time)
+
+    # since the user can only one date with separate times it is assumed
+    # that an end before a start is meant for the following day
+    if end < start: end += timedelta(days=1)
+
+    return start, end
+    

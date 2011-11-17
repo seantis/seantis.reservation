@@ -20,7 +20,7 @@
         <div tal:replace="structure provider:plone.belowcontenttitle" />
         <div tal:replace="structure provider:plone.abovecontentbody" />
 
-        <div class="groupList">
+        <div class="groupList" metal:define-macro="grouplist">
             <div tal:repeat="alloc view/allocations">
                 <tal:block define="
                     day python: alloc.display_start.strftime('%d.%m.%Y');

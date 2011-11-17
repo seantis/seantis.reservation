@@ -248,7 +248,7 @@ def merge_reserved_slots(slots):
 
     return merged
 
-class memoized(object):
+class memoize(object):
    """Decorator that caches a function's return value each time it is called.
    If called later with the same arguments, the cached value is returned, and
    not re-evaluated.
@@ -298,7 +298,7 @@ class EventUrls(object):
         self.default = ""
         self.move = ""
     
-    @memoized
+    @memoize
     def restricted_url(self, view):
         """Returns a function which can be used to build an url with optional
         parameters. The function only builds the url if the current user has

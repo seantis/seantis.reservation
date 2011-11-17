@@ -1,69 +1,18 @@
 import json
-import time
-from urllib import quote
 from datetime import datetime
 
 from five import grok
-from plone.directives import form
 from plone.dexterity.content import Container
 from plone.uuid.interfaces import IUUID
 from plone.memoize import view
-from zope import schema
-from zope import interface
 
-from seantis.reservation.models import Allocation
 from seantis.reservation import exposure
 from seantis.reservation import utils
 from seantis.reservation.db import Scheduler
 from seantis.reservation import _
 from seantis.reservation.timeframe import timeframes_by_context
-
-class IResourceBase(form.Schema):
-
-    title = schema.TextLine(
-            title=_(u'Name')
-        )
-
-    description = schema.Text(
-            title=_(u'Description'),
-            required=False
-        )
-
-    first_hour = schema.Int(
-            title=_(u'First hour of the day'),
-            default=0
-        )
-
-    last_hour = schema.Int(
-            title=_(u'Last hour of the day'),
-            default=24
-        )
-
-    quota = schema.Int(
-            title=_(u'Quota'),
-            default=1
-        )
-
-    @interface.invariant
-    def isValidFirstLastHour(Resource):
-        in_valid_range = lambda h: 0 <= h and h <= 24
-        first_hour, last_hour = Resource.first_hour, Resource.last_hour
-        
-        if not in_valid_range(first_hour):
-            raise interface.Invalid(_(u'Invalid first hour'))
-
-        if not in_valid_range(last_hour):
-            raise interface.Invalid(_(u'Invalid last hour'))
-
-        if last_hour <= first_hour:
-            raise interface.Invalid(
-                    _(u'First hour must be smaller than last hour')
-                )
-                     
-
-class IResource(IResourceBase):
-    pass
-
+from seantis.reservation.form import AllocationGroupView
+from seantis.reservation.interfaces import IResourceBase
 
 class Resource(Container):
 
@@ -157,7 +106,8 @@ class View(grok.View):
     def calendar_count(self):
         return len(self.resources())
 
-class GroupView(grok.View):
+
+class GroupView(grok.View, AllocationGroupView):
     permission = 'zope2.View'
 
     grok.context(IResourceBase)
@@ -172,30 +122,6 @@ class GroupView(grok.View):
 
     def title(self):
         return self.group
-
-    @view.memoize
-    def event_availability(self, allocation):
-        context, request = self.context, self.request
-        return utils.event_availability(
-                context, request, context.scheduler(), allocation
-            )
-
-    def event_class(self, allocation):
-        base = 'fc-event fc-event-inner fc-event-skin groupListTime'
-        return base  + ' ' + self.event_availability(allocation)[1]
-
-    def event_title(self, allocation):
-        return self.event_availability(allocation)[0]
-
-    def allocations(self):
-        if not self.group:
-            return []
-
-        scheduler = self.context.scheduler()
-        query = scheduler.allocations_by_group(unicode(self.group))
-        query = query.order_by(Allocation._start)
-
-        return query
         
 
 class CalendarRequest(object):

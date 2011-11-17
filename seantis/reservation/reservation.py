@@ -10,12 +10,13 @@ from z3c.form.ptcompat import ViewPageTemplateFile
 from plone.memoize import view
 
 from seantis.reservation.throttle import throttled
-from seantis.reservation.resource import IResourceBase
+from seantis.reservation.interfaces import IResourceBase
 from seantis.reservation import db
 from seantis.reservation import _
 from seantis.reservation import utils
 from seantis.reservation.form import (
         ResourceBaseForm, 
+        AllocationGroupView,
         extract_action_data
     )
 
@@ -83,30 +84,30 @@ class ReservationForm(ResourceBaseForm):
     def cancel(self, action):
         self.redirect_to_context()
 
-# class GroupReservationForm(ResourceBaseForm):
-#     permission = 'zope2.View'
+class GroupReservationForm(ResourceBaseForm, AllocationGroupView):
+    permission = 'zope2.View'
 
-#     grok.name('reserve-group')
-#     grok.require(permission)
+    grok.name('reserve-group')
+    grok.require(permission)
 
-#     fields = field.Fields(IGroupReservation)
-#     label = _(u'Recurrance reservation')
+    fields = field.Fields(IGroupReservation)
+    label = _(u'Recurrance reservation')
 
-#     template = ViewPageTemplateFile('templates/group_reserve.pt')
+    template = ViewPageTemplateFile('templates/reserve_group.pt')
 
-#     hidden_fields = ['group']
-#     ignore_requirements = True
+    hidden_fields = ['group']
+    ignore_requirements = True
 
-#     @button.buttonAndHandler(_(u'reserve'))
-#     @extract_action_data
-#     def reserve(self, data):
+    @button.buttonAndHandler(_(u'reserve'))
+    @extract_action_data
+    def reserve(self, data):
 
-#         def reserve():
-#             self.context.scheduler().reserve(group=group)
+        def reserve():
+            self.context.scheduler().reserve(group=data.group)
 
-#     @button.buttonAndHandler(_(u'Cancel'))
-#     def cancel(self, action):
-#         self.redirect_to_context()
+    @button.buttonAndHandler(_(u'Cancel'))
+    def cancel(self, action):
+        self.redirect_to_context()
 
 class ReservationRemoveForm(ResourceBaseForm):
     permission = 'cmf.ManagePortal'

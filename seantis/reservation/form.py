@@ -3,11 +3,10 @@ from datetime import datetime
 from five import grok
 from plone.directives import form
 from z3c.form import interfaces
-from z3c.form import button
 
-from seantis.reservation import _
 from seantis.reservation import utils
-from seantis.reservation.resource import IResource
+from seantis.reservation.models import Allocation
+from seantis.reservation.interfaces import IResourceBase
 
 def extract_action_data(fn):
     """ Decorator which inserted after a buttonAndHandler directive will
@@ -46,7 +45,7 @@ class ResourceBaseForm(form.Form):
 
     """
     grok.baseclass()
-    grok.context(IResource)
+    grok.context(IResourceBase)
     ignoreContext = True
     
     hidden_fields = ['id']
@@ -138,3 +137,41 @@ class ResourceBaseForm(form.Form):
             self.fields[k].field.default = v
 
         super(ResourceBaseForm, self).update(**kwargs)
+
+class AllocationGroupView(object):
+    """Combines functionality of different views which show groups 
+    of allocations like in group.pt.
+
+    Should be used together with with classes that have the resource set as
+    their context using the following macro:
+
+    <metal:block use-macro="context/@@group/macros/grouplist" />
+
+    """
+
+    @utils.memoize
+    def allocations(self):
+        if self.group:
+            query = self.context.scheduler().allocations_by_group(self.group)
+            query = query.order_by(Allocation._start)
+            return query.all()
+        else:
+            return []
+
+    @utils.memoize
+    def event_availability(self, allocation):
+        return utils.event_availability(
+                self.context,
+                self.request,
+                self.context.scheduler(),
+                allocation
+            )
+
+    def event_class(self, allocation):
+        base = 'fc-event fc-event-inner fc-event-skin groupListTime'
+        return base  + ' ' + self.event_availability(allocation)[1]
+
+    def event_title(self, allocation):
+        return self.event_availability(allocation)[0]
+
+    

@@ -1,16 +1,9 @@
 import json
 from datetime import date
 from datetime import datetime
-from datetime import timedelta
 from dateutil import rrule
 
 from five import grok
-from plone.directives import form
-from plone.memoize import view
-from zope import schema
-from zope.schema.vocabulary import SimpleVocabulary
-from zope.schema.vocabulary import SimpleTerm
-from zope import interface
 from z3c.form import field
 from z3c.form import button
 from z3c.form.ptcompat import ViewPageTemplateFile
@@ -18,124 +11,13 @@ from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from z3c.form.browser.radio import RadioFieldWidget
 
 from seantis.reservation import _
-from seantis.reservation import error
 from seantis.reservation import utils
-from seantis.reservation.models import Allocation
-from seantis.reservation.raster import VALID_RASTER_VALUES
-from seantis.reservation.form import ResourceBaseForm, extract_action_data
-
-days = SimpleVocabulary(
-        [SimpleTerm(value=rrule.MO, title=_(u'Mo')),
-         SimpleTerm(value=rrule.TU, title=_(u'Tu')),
-         SimpleTerm(value=rrule.WE, title=_(u'We')),
-         SimpleTerm(value=rrule.TH, title=_(u'Th')),
-         SimpleTerm(value=rrule.FR, title=_(u'Fr')),
-         SimpleTerm(value=rrule.SA, title=_(u'Sa')),
-         SimpleTerm(value=rrule.SU, title=_(u'Su')),
-        ]
+from seantis.reservation.interfaces import IAllocation, days, get_date_range
+from seantis.reservation.form import (
+        ResourceBaseForm, 
+        AllocationGroupView,
+        extract_action_data,
     )
-    
-recurrence = SimpleVocabulary(
-        [SimpleTerm(value=False, title=_(u'Once')),
-         SimpleTerm(value=True, title=_(u'Daily')),
-        ]
-    )
-
-def get_date_range(allocation):
-    start = datetime.combine(allocation.day, allocation.start_time)
-    end = datetime.combine(allocation.day, allocation.end_time)
-
-    # since the user can only one date with separate times it is assumed
-    # that an end before a start is meant for the following day
-    if end < start: end += timedelta(days=1)
-
-    return start, end
-
-class IAllocation(form.Schema):
-
-    id = schema.Int(
-        title=_(u'Id'),
-        default=-1,
-        required=False
-        )
-
-    group = schema.Text(
-        title=_(u'Recurrence'),
-        default=u'',
-        required=False
-        )
-
-    timeframes = schema.Text(
-        title=_(u'Timeframes'),
-        default=u'',
-        required=False
-        )
-
-    start_time = schema.Time(
-        title=_(u'Start')
-        )
-
-    end_time = schema.Time(
-        title=_(u'End')
-        )
-
-    recurring = schema.Choice(
-        title=_(u'Recurrence'),
-        vocabulary=recurrence,
-        default=False
-        )
-
-    day = schema.Date(
-        title=_(u'Day'),
-        )
-
-    recurrence_start = schema.Date(
-        title=_(u'From'),
-        )
-
-    recurrence_end = schema.Date(
-        title=_(u'Until')
-        )
-
-    days = schema.List(
-        title=_(u'Days'),
-        value_type=schema.Choice(vocabulary=days),
-        required=False
-        )
-
-    separately = schema.Bool(
-        title=_(u'Seperately reservable'),
-        required=False,
-        default=False
-        )
-
-    partly_available = schema.Bool(
-        title=_(u'Partly available'),
-        default=False
-        )
-
-    raster = schema.Choice(
-        title=_(u'Raster'),
-        values=VALID_RASTER_VALUES,
-        default=30
-        )
-
-    quota = schema.Int(
-        title=_(u'Quota'),
-        )
-
-    @interface.invariant
-    def isValidRange(Allocation):
-        start, end = get_date_range(Allocation)
-        
-        if abs((end - start).seconds // 60) < 5:
-            raise interface.Invalid(_(u'The allocation must be at least 5 minutes long'))
-
-    @interface.invariant
-    def isValidQuota(Allocation):
-        if not (1 <= Allocation.quota and Allocation.quota <= 100):
-            raise interface.Invalid(_(u'Quota must be between 1 and 100'))
-
 
 class AllocationForm(ResourceBaseForm):
     grok.baseclass()
@@ -303,7 +185,7 @@ class AllocationEditForm(AllocationForm):
     def cancel(self, action):
         self.redirect_to_context()
 
-class AllocationRemoveForm(AllocationForm):
+class AllocationRemoveForm(AllocationForm, AllocationGroupView):
     permission = 'cmf.ManagePortal'
 
     grok.name('remove-allocation')
@@ -335,38 +217,8 @@ class AllocationRemoveForm(AllocationForm):
     def cancel(self, action):
         self.redirect_to_context()
 
-    @view.memoize
-    def allocations(self):
-        if self.group:
-            query = self.scheduler.allocations_by_group(self.group)
-            query = query.order_by(Allocation._start)
-            return query.all()
-        elif self.id:
-            try:
-                return [self.scheduler.allocation_by_id(self.id)]
-            except error.NoResultFound:
-                return []
-        else:
-            return []
-
     def update(self, **kwargs):
         if self.id or self.group:
             self.fields['id'].field.default = self.id
             self.fields['group'].field.default = self.group
         super(AllocationRemoveForm, self).update(**kwargs)
-
-    @view.memoize
-    def event_availability(self, allocation):
-        return utils.event_availability(
-                self.context,
-                self.request,
-                self.scheduler,
-                allocation
-            )
-
-    def event_class(self, allocation):
-        base = 'fc-event fc-event-inner fc-event-skin groupListTime'
-        return base  + ' ' + self.event_availability(allocation)[1]
-
-    def event_title(self, allocation):
-        return self.event_availability(allocation)[0]

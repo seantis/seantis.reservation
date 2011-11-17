@@ -15,7 +15,7 @@
   <property name="allowed_content_types"></property>
  
   <!-- schema interface -->
-  <property name="schema">seantis.reservation.resource.IResource</property> 
+  <property name="schema">seantis.reservation.interfaces.IResource</property> 
  
  <!-- class used for content items -->
  <property name="klass">seantis.reservation.resource.Resource</property>

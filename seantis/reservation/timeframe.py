@@ -5,29 +5,10 @@ from plone.app.layout.viewlets.interfaces import IBelowContentBody
 from plone.memoize import view
 from Products.CMFCore.utils import getToolByName
 from z3c.form import button
-from zope import schema, interface
 
 from seantis.reservation import _
+from seantis.reservation.interfaces import ITimeframe
 from seantis.reservation import utils
-
-class ITimeframe(form.Schema):
-
-    title = schema.TextLine(
-            title=_(u'Name')
-        )
-
-    start = schema.Date(
-            title=_(u'Start')
-        )
-
-    end = schema.Date(
-            title=_(u'End')
-        )
-
-    @interface.invariant
-    def isValidDateRange(Timeframe):
-        if Timeframe.start > Timeframe.end:
-            raise interface.Invalid(_(u'End date before start date'))
 
 # TODO cache all timeframe stuff for an hour or so.. no frequent updates needed
 
