@@ -108,7 +108,7 @@
                         // make sure we know this was activated by click
                         tt_w.attr('click', 't');
 
-                        if (tt_w.data('last_target') !== e.target) {
+                        if (tt_w.data('last_target') !== el) {
                             // rerender the tooltip if the target changed
                             show();
                         } else {
@@ -116,7 +116,7 @@
                             if (tt_w.css('display') == 'none') show(); else hide();    
                         }
 
-                        tt_w.data('last_target', e.target);
+                        tt_w.data('last_target', el);
                         
                         return false;
                     });

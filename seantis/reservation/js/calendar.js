@@ -62,6 +62,7 @@ seantis.calendars.defaults = {
                             },
                             onBeforeLoad: function() {
                                 seantis.formgroups.init();
+                                seantis.contextmenu.close();
                             } 
                         } 
                     });
@@ -94,6 +95,9 @@ seantis.calendars.defaults = {
                         };
 
                         fetch();
+                        
+                        seantis.contextmenu.close();
+
                         event.preventDefault();
                     };
 

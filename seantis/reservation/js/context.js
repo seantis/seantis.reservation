@@ -22,10 +22,6 @@ seantis.contextmenu = function(event, element, calendar) {
             $.each($('a', element), function(ix, link) {
                 var $link = $(link);
 
-                $link.click(function() {
-                    element.miniTip({doHide:true});
-                });
-
                 var target = $link.attr('data-target');
                 switch (target) {
                     
@@ -44,6 +40,10 @@ seantis.contextmenu = function(event, element, calendar) {
             });
         }
     });  
+};
+
+seantis.contextmenu.close = function() {
+    $.fn.miniTip({doHide:true});  
 };
 
 seantis.contextmenu.build = function(event) {
