@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-11-17 14:16+0000\n"
+"POT-Creation-Date: 2011-11-18 10:53+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,7 +50,7 @@ msgid "An existing reservation would be affected by the requested change"
 msgstr ""
 
 #: ./allocate.py:122
-#: ./reservation.py:46
+#: ./reservation.py:44
 msgid "Cancel"
 msgstr ""
 
@@ -67,7 +67,7 @@ msgid "Days"
 msgstr ""
 
 #: ./allocate.py:200
-#: ./reservation.py:121
+#: ./reservation.py:119
 #: ./templates/reservations.pt:22
 msgid "Delete"
 msgstr ""
@@ -80,11 +80,11 @@ msgstr ""
 msgid "Do you really want to remove the following allocations?"
 msgstr ""
 
-#: ./reservation.py:115
+#: ./reservation.py:113
 msgid "Do you really want to remove the following reservations?"
 msgstr ""
 
-#: ./reservation.py:118
+#: ./reservation.py:116
 msgid "Do you really want to remove the following timespans from the reservation?"
 msgstr ""
 
@@ -162,7 +162,7 @@ msgstr ""
 msgid "List"
 msgstr ""
 
-#: ./resource.py:207
+#: ./resource.py:198
 msgid "Manage"
 msgstr ""
 
@@ -178,11 +178,11 @@ msgstr ""
 msgid "No reservable slot found."
 msgstr ""
 
-#: ./reservation.py:161
+#: ./reservation.py:159
 msgid "No reservations for this allocation"
 msgstr ""
 
-#: ./reservation.py:166
+#: ./reservation.py:164
 msgid "No reservations for this recurrence"
 msgstr ""
 
@@ -190,7 +190,7 @@ msgstr ""
 msgid "No spots available"
 msgstr ""
 
-#: ./reservation.py:112
+#: ./reservation.py:110
 msgid "No such reservation"
 msgstr ""
 
@@ -222,7 +222,7 @@ msgstr ""
 msgid "Raster"
 msgstr ""
 
-#: ./reservation.py:57
+#: ./reservation.py:55
 msgid "Recurrance reservation"
 msgstr ""
 
@@ -246,7 +246,7 @@ msgstr ""
 msgid "Remove allocations"
 msgstr ""
 
-#: ./reservation.py:91
+#: ./reservation.py:89
 msgid "Remove reservation"
 msgstr ""
 
@@ -266,15 +266,15 @@ msgstr ""
 msgid "Reservations can't be made for more than 24 hours at a time"
 msgstr ""
 
-#: ./reservation.py:163
+#: ./reservation.py:161
 msgid "Reservations for allocation"
 msgstr ""
 
-#: ./reservation.py:168
+#: ./reservation.py:166
 msgid "Reservations for recurrence"
 msgstr ""
 
-#: ./reservation.py:35
+#: ./reservation.py:33
 #: ./resource.py:194
 msgid "Reserve"
 msgstr ""
@@ -283,7 +283,7 @@ msgstr ""
 msgid "Resource"
 msgstr ""
 
-#: ./reservation.py:33
+#: ./reservation.py:31
 msgid "Resource reservation"
 msgstr ""
 
@@ -305,10 +305,6 @@ msgstr ""
 
 #: ./interfaces.py:155
 msgid "Separately reservable"
-msgstr ""
-
-#: ./resource.py:198
-msgid "Show"
 msgstr ""
 
 #: ./interfaces.py:123

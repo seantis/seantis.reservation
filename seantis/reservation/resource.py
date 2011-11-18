@@ -195,7 +195,7 @@ class Slots(grok.View, CalendarRequest):
                 'reserve', dict(start=start, end=end), 'overlay')
 
             if has_reservations:
-                res_add(_(u'Show'), 
+                res_add(_(u'Manage'), 
                     'reservations', dict(id=allocation.id), 'inpage')
 
         else:

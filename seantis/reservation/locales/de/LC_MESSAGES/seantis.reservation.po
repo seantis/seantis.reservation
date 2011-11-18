@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-11-17 14:16+0000\n"
+"POT-Creation-Date: 2011-11-18 10:53+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -47,7 +47,7 @@ msgid "An existing reservation would be affected by the requested change"
 msgstr "Eine bestehende Reservation wäre durch die Änderung betroffen"
 
 #: ./allocate.py:122
-#: ./reservation.py:46
+#: ./reservation.py:44
 msgid "Cancel"
 msgstr "Abbrechen"
 
@@ -64,7 +64,7 @@ msgid "Days"
 msgstr "Tage"
 
 #: ./allocate.py:200
-#: ./reservation.py:121
+#: ./reservation.py:119
 #: ./templates/reservations.pt:22
 msgid "Delete"
 msgstr "Löschen"
@@ -77,11 +77,11 @@ msgstr "Beschreibung"
 msgid "Do you really want to remove the following allocations?"
 msgstr "Möchten Sie die folgenden Einteilungen wirklich löschen?"
 
-#: ./reservation.py:115
+#: ./reservation.py:113
 msgid "Do you really want to remove the following reservations?"
 msgstr "Möchten Sie die folgenden Reservation wirklich löschen?"
 
-#: ./reservation.py:118
+#: ./reservation.py:116
 msgid "Do you really want to remove the following timespans from the reservation?"
 msgstr "Möchten Sie die folgenden Zeiträume wirklich von der Reservation entfernen?"
 
@@ -159,7 +159,7 @@ msgstr "Letzte Stunde des Tages"
 msgid "List"
 msgstr "Auflisten"
 
-#: ./resource.py:207
+#: ./resource.py:198
 msgid "Manage"
 msgstr "Verwalten"
 
@@ -175,11 +175,11 @@ msgstr "Name"
 msgid "No reservable slot found."
 msgstr "Der gewünschte Zeitbereich ist bereits besetzt."
 
-#: ./reservation.py:161
+#: ./reservation.py:159
 msgid "No reservations for this allocation"
 msgstr "Keine Reservationen für diese Einteilung"
 
-#: ./reservation.py:166
+#: ./reservation.py:164
 msgid "No reservations for this recurrence"
 msgstr "Keine Reservationen für diese Wiederholung"
 
@@ -187,7 +187,7 @@ msgstr "Keine Reservationen für diese Wiederholung"
 msgid "No spots available"
 msgstr "Keine Plätze frei"
 
-#: ./reservation.py:112
+#: ./reservation.py:110
 msgid "No such reservation"
 msgstr "Unbekannte Reservation"
 
@@ -219,7 +219,7 @@ msgstr "Kontingent muss zwischen 1 und 100 liegen"
 msgid "Raster"
 msgstr "Raster"
 
-#: ./reservation.py:57
+#: ./reservation.py:55
 msgid "Recurrance reservation"
 msgstr "Wiederholung reservieren"
 
@@ -243,7 +243,7 @@ msgstr "Entfernen"
 msgid "Remove allocations"
 msgstr "Einteilungen entfernen"
 
-#: ./reservation.py:91
+#: ./reservation.py:89
 msgid "Remove reservation"
 msgstr "Reservation entfernen"
 
@@ -263,15 +263,15 @@ msgstr "Reservationen"
 msgid "Reservations can't be made for more than 24 hours at a time"
 msgstr "Reservationen können nicht über mehr als 24 Stunden gemacht werden"
 
-#: ./reservation.py:163
+#: ./reservation.py:161
 msgid "Reservations for allocation"
 msgstr "Reservationen für Einteilung"
 
-#: ./reservation.py:168
+#: ./reservation.py:166
 msgid "Reservations for recurrence"
 msgstr "Reservationen für Wiederholung"
 
-#: ./reservation.py:35
+#: ./reservation.py:33
 #: ./resource.py:194
 msgid "Reserve"
 msgstr "Reservieren"
@@ -280,7 +280,7 @@ msgstr "Reservieren"
 msgid "Resource"
 msgstr "Ressource"
 
-#: ./reservation.py:33
+#: ./reservation.py:31
 msgid "Resource reservation"
 msgstr "Reservation"
 
@@ -303,10 +303,6 @@ msgstr "Seantis Reservation Einstellungen"
 #: ./interfaces.py:155
 msgid "Separately reservable"
 msgstr "Separat reservierbar"
-
-#: ./resource.py:198
-msgid "Show"
-msgstr "Anzeigen"
 
 #: ./interfaces.py:123
 msgid "Start"
