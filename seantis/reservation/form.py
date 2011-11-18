@@ -205,6 +205,18 @@ class ReservationListView(object):
     def reservation(self):
         return None
 
+    @property
+    def highlight_group(self):
+        query = self.build_query()
+        if not query:
+            return
+
+        result = query.with_entities(Allocation.group).first()
+        if not result:
+            return
+
+        return result[0]
+
     def reservation_info(self):
         return utils.random_name()
 
@@ -228,19 +240,22 @@ class ReservationListView(object):
             return start.strftime('%d.%m.%Y %H:%M - ') \
                  + end.strftime('%d.%m.%Y %H:%M')
 
+    def build_query(self):
+        scheduler = self.context.scheduler()
+        if self.reservation:
+            return scheduler.reserved_slots_by_reservation(self.reservation)
+        elif self.id:
+            return scheduler.reserved_slots_by_allocation(self.id)
+        elif self.group:
+            return scheduler.reserved_slots_by_group(self.group)
+        else:
+            return None
+
     @utils.memoize
     def reservations(self):
         scheduler = self.context.scheduler()
 
-        if self.reservation:
-            query = scheduler.reserved_slots_by_reservation(self.reservation)
-        elif self.id:
-            query = scheduler.reserved_slots_by_allocation(self.id)
-        elif self.group:
-            query = scheduler.reserved_slots_by_group(self.group)
-        else:
-            return None
-
+        query = self.build_query()
         query = db.grouped_reservation_view(query)
 
         keyfn = lambda result: result.reservation

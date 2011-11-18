@@ -127,6 +127,23 @@ var CalendarGroups = function() {
 
                             });
 
+                            // if there are data-group elements hook them up
+                            // with the highlighting
+                            var groups = target.find('div[data-group]');
+                            
+                            groups.mouseenter(function() {
+                                console.log('hit');
+                                var group = $(this).attr('data-group');
+                                if (!_.isEmpty(group))
+                                    calendar.highlight_group(group, true);
+                            });
+
+                            groups.mouseleave(function() {
+                                var group = $(this).attr('data-group');
+                                if (!_.isEmpty(group))
+                                    calendar.highlight_group(group, false);
+                            })
+
                             // hide loading gif
                             target.toggleClass('loading', false);
                         });
@@ -136,6 +153,12 @@ var CalendarGroups = function() {
                         fetch();
                         seantis.contextmenu.close();
                         event.preventDefault();
+                    });
+                };
+
+                calendar.highlight_group = function(group, highlight) {
+                    _.each(calendar.groups.find(group), function(el) {
+                        el.toggleClass('groupSelection', highlight);  
                     });
                 };
 
@@ -248,18 +271,12 @@ var CalendarGroups = function() {
                 calendar.groups.clear();
             };
 
-            var highlight_group = function(event, highlight) {
-                _.each(calendar.groups.find(event.group), function(el) {
-                    el.toggleClass('groupSelection', highlight);  
-                });
-            };
-
             var mouseover = function(event) {
-                highlight_group(event, true);
+                calendar.highlight_group(event.group, true);
             };
 
             var mouseout = function(event) {
-               highlight_group(event, false);
+                calendar.highlight_group(event.group, false);
             };
 
             var options = {

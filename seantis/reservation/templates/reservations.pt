@@ -14,7 +14,12 @@
 <div id="reservation-info" metal:define-macro="reservations">
     <tal:block tal:repeat="group python: view.reservations().items()">
         
-        <div class="reservation">
+        <div class="reservation" 
+            tal:attributes="data-group python: view.highlight_group"
+            tal:define="
+                reservation python: group[0];
+                records python: group[1];
+            ">
             <div class="reservation-title">
                 
                 <h3 tal:content="view/reservation_info"></h3>
@@ -25,17 +30,19 @@
                    Delete
                 </a>
             </div>
-            <div tal:repeat="reservation python: group[1]" class="reservation-list">
-                
-                <span tal:content="
-                    python: view.display_date(reservation[2], reservation[3])
-                    ">
-                </span>
-                <a tal:condition="view/show_links"
-                   tal:attributes="href python: view.remove_part_url(reservation)" 
-                   class="reservation-delete" i18n:translate="">
-                   Delete
-                </a>
+            <div tal:repeat="record records" class="reservation-list">
+                <tal:block tal:define="
+                    start python: record[2];
+                    end python: record[3];
+                    daterange python: view.display_date(start, end);
+                    remove_url python: view.remove_part_url(record);
+                ">
+                    <span tal:content="daterange"></span>
+                    <a tal:condition="view/show_links" tal:attributes="href remove_url" 
+                       class="reservation-delete" i18n:translate="">
+                       Delete
+                    </a>
+                </tal:block>
             </div>
         </div>
 
