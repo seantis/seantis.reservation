@@ -9,7 +9,7 @@ seantis.calendars.defaults = {
         week: 'ddd d.M', // Mon 7.9
         day: 'dddd d.M'  // Monday 7.9
     },
-    firstDay: 1,
+    firstDay: 1
 };
 
 (function($) {
