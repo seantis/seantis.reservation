@@ -1,8 +1,5 @@
 <registry>
-    <records 
-        interface="seantis.reservation.settings.ISeantisReservationSettings" 
-        prefix="seantis.reservation.settings">
-    
+    <records interface="seantis.reservation.settings.ISeantisReservationSettings">
         <value key="throttle_minutes">5</value>
 
     </records>
