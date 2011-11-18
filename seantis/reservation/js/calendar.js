@@ -296,36 +296,59 @@ var CalendarGroups = function() {
         // the calendar from which the event originats is not called
         var all_calendars = function(originid, fn, arg) {
             _.each(seantis.calendars, function(calendar) {
-                if (calendar.id !== originid)
+                if (calendar.id !== originid) {
                     calendar.element.fullCalendar(fn, arg); 
+                }
             });
         };
 
-        // Generate the all calendars function
-        var get_all_calendars_fn = function(originid, fn, arg) {
-            return function() {
-                all_calendars(originid, fn, arg);  
-            };
+        // same as all_calendars but for scrolling
+        var scroll_calendars = function(originid, top, left) {
+            _.each(seantis.calendars, function(calendar) {
+                if (calendar.id !== originid) {
+                    var block = $('div > div > div > div', calendar.element);
+                    block.scrollTop(top)
+                    block.scrollLeft(left);
+                } 
+            });
         };
 
-        // Hook up the button synchronization
-        _.each(seantis.calendars, function(calendar) {
-            var id = calendar.id;
-            var element = calendar.element;
+        if (seantis.calendars.length) {
 
-            var prev = $('.fc-button-prev', element);
-            var next = $('.fc-button-next', element);
-            var month = $('.fc-button-month', element);
-            var week = $('.fc-button-agendaWeek', element);
-            var day = $('.fc-button-agendaDay', element);
-            var today = $('.fc-button-today', element);
+            var synced_buttons = {
+                '.fc-button-prev':['prev'],
+                '.fc-button-next':['next'],
+                '.fc-button-month':['changeView', 'month'],
+                '.fc-button-agendaWeek':['changeView', 'agendaWeek'],
+                '.fc-button-agendaDay':['changeView', 'agendaDay'],
+                '.fc-button-today':['today']
+            };
 
-            next.click(get_all_calendars_fn(id, 'next'));
-            prev.click(get_all_calendars_fn(id, 'prev'));
-            month.click(get_all_calendars_fn(id, 'changeView', 'month'));
-            week.click(get_all_calendars_fn(id, 'changeView', 'agendaWeek'));
-            day.click(get_all_calendars_fn(id, 'changeView', 'agendaDay'));
-            today.click(get_all_calendars_fn(id, 'today'));
-        });
-    });
+            _.each(seantis.calendars, function(calendar) {
+                var id = calendar.id;
+                var element = calendar.element;
+
+                //sync buttons
+                _.each(_.keys(synced_buttons), function(button, ix) {
+                    var fn = synced_buttons[button][0];
+                    var arg = synced_buttons[button][1];
+                    
+                    $(button, element).click(function() {
+                        all_calendars(id, fn, arg); 
+                    }); 
+                });
+
+                //sync scrolling
+
+                //the actual block with the overflow has no identity or class
+                //so there's no other way but to rely on the hierarchy
+                var block = $('div > div > div > div', calendar.element);
+                
+                block.scroll(function() {
+                    scroll_calendars(id, block.scrollTop(), block.scrollLeft()); 
+                });
+
+            });
+        } // end of calendars sync
+    }); // end of jquery ready
 })( jQuery );
