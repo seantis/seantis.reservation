@@ -12,102 +12,134 @@ seantis.calendars.defaults = {
     firstDay: 1
 };
 
-(function($) {
-    $(document).ready(function() {
-        if (!seantis.calendars.length)
+// Keeps a list of event elements and the event group to which they belong to
+var CalendarGroups = function() {
+    var groups = [];
+
+    // add a group and its element
+    this.add = function(group, element) {
+        if (_.isUndefined(group) || _.isEmpty(group))
             return;
 
-        seantis.calendars.init = function() {
+        groups.push({group:group, element:element});
+    };
+
+    // filter the list by the given group returning the elements of the result
+    this.find = function(group) {
+        var key = function(value) { return value.group == group; };
+        return _.pluck(_.filter(groups, key), 'element');
+    };
+
+    // empty the list
+    this.clear = function() {
+        groups.length = 0;  
+    };
+};
+
+(function($) {
+    $(document).ready(function() {
+
+        // only run if there are any calendars
+        if (!seantis.calendars.length) return;
+
+        // initializes all calendars on the site
+        var init = function() {
             _.each(seantis.calendars, function(calendar, index) {
+                
                 calendar.element = $(calendar.id);
                 calendar.index = index;
-                calendar.groups = [];
-
-                calendar.groups.add = function(group, element) {
-                    if (_.isUndefined(group) || _.isEmpty(group))
-                        return;
-
-                    this.push({group:group, element:element});
+                calendar.groups = new CalendarGroups();
+                
+                //indicate that the calendar an event is being resized or moved
+                calendar.is_resizing = false;
+                calendar.is_moving = false;
+                
+                // refetch the calendar events
+                calendar.refetch = function() { 
+                    calendar.element.fullCalendar('refetchEvents');
                 };
 
-                calendar.groups.clear = function() {
-                    this.length = 0;  
-                };
-
-                calendar.groups.find = function(group) {
-                    var key = function(value) { return value.group == group; };
-                    return _.pluck(_.filter(this, key), 'element');
-                };
-
-                // Sets an element up with an overlay
+                // Sets an element on the calendar up with an overlay
                 calendar.overlay_init = function(element, onclose) {
-                    var calendar = this;
-                    var element = element;
+                    var on_close = function() {
+                        calendar.is_resizing = false;
+                        calendar.is_moving = false;
+                        calendar.refetch();
+
+                        if (onclose) _.defer(onclose);
+                    };
+
+                    var before_load = function() {
+                        seantis.formgroups.init();
+                        seantis.contextmenu.close();
+                    };
+
+                    var after_post = function(el) {
+                        seantis.formgroups.init(el);
+                    };
+
                     element.prepOverlay({
                         subtype: 'ajax', 
                         filter:  common_content_filter,
                         formselector: 'form', 
                         closeselector: '[name=form.buttons.cancel]',
                         noform: 'close',
-                        afterpost: function(el) {
-                            seantis.formgroups.init(el);
-                        },
+                        afterpost: after_post,
                         config: { 
-                            onClose: function() {
-                                calendar.is_resizing = false;
-                                calendar.is_moving = false;
-                                calendar.element.fullCalendar('refetchEvents');
-                                
-                                if (onclose) _.defer(onclose);
-                            },
-                            onBeforeLoad: function() {
-                                seantis.formgroups.init();
-                                seantis.contextmenu.close();
-                            } 
-                        } 
+                            onClose: on_close, 
+                            onBeforeLoad: before_load
+                        }
                     });
                 };
 
-                // Sets a calendar element up with an inline load
+                // Sets a an element on the calendar up with an inline load
                 calendar.inline_init = function(element, url, filter, target) {
-                    var load = function(event) {
-                        
-                        var fetch = function() {
-                            target.toggleClass('loading', true);
-                            $.get(url, function(data) {
-                                var result = $(filter, $(data));
-                                var close = '<div id="inlineClose"></div>\
-                                             <div style="clear:both;"></div>';
 
-                                target.html(close + result.html());
-                                target.find('#inlineClose').click(function() {
-                                   target.html(''); 
-                                });
+                    //fetches the requested url
+                    var fetch = function() {
+                        // show loading gif
+                        target.toggleClass('loading', true);
 
-                                target.toggleClass('loading', false);
+                        // load the page
+                        $.get(url, function(data) {
+                            var result = $(filter, $(data));
 
-                                $.each($('a', target), function(ix, link) {
-                                    calendar.overlay_init($(link), function() {
-                                        fetch();
-                                    }); 
-                                });
+                            // add a close button in front of the result
+                            var close = '<div id="inlineClose"></div>\
+                                         <div style="clear:both;"></div>';
+
+                            target.html(close + result.html());
+
+                            // hookup the close button
+                            target.find('#inlineClose').click(function() {
+                               target.html(''); 
                             });
-                        };
 
-                        fetch();
-                        
-                        seantis.contextmenu.close();
+                            // setup all links with overlays, refetching
+                            // the loaded page once the overlay is closed
+                            $.each($('a', target), function(ix, link) {
 
-                        event.preventDefault();
+                                // use the calendar overlay so the calendar
+                                // is reloaded as well
+                                calendar.overlay_init($(link), function() {
+                                    fetch();
+                                }); 
+
+                            });
+
+                            // hide loading gif
+                            target.toggleClass('loading', false);
+                        });
                     };
 
-                    element.click(load);
+                    element.click(function(event) {
+                        fetch();
+                        seantis.contextmenu.close();
+                        event.preventDefault();
+                    });
                 };
 
-                calendar.is_resizing = false;
-                calendar.is_moving = false;
-
-                // Shows the previously set form overlay
+                // initializes and then shows the overlay
                 calendar.overlay_show = function(url) {
                     var link = $('<a href="' + url + '"></a>');
                     this.overlay_init(link);
@@ -115,18 +147,21 @@ seantis.calendars.defaults = {
                 };
 
             });
-        };
+        }(); // run init immediatly
 
-        var renderPartitions = function(event, element, calendar) {
+        // renders the occupied partitions on an event
+        var render_partitions = function(event, element, calendar) {
             
             // if the event is being moved, don't render the partitions
             if (event.is_moving) {
                 return;
             }
 
-            var free = _.template('<div style="height:<%= height %>%"></div>');
-            var used = _.template('<div style="height:<%= height %>%" class="calendar-occupied"></div>');
+            var free = _.template('<div style="height:<%= height %>"></div>');
+            var used = _.template('<div style="height:<%= height %>" class="calendar-occupied"></div>');
+            var partition_block = _.template('<div style="height:<%= height %>" <%= partitions %></div>');
 
+            // build the individual partitions
             var partitions = '';
             _.each(event.partitions, function(partition) {
                 var reserved = partition[1];
@@ -145,12 +180,12 @@ seantis.calendars.defaults = {
                 event.height = height;
             }
 
-            partitions = '<div style="height:' + height + 'px;">' + partitions + '</div>';
-
-            $('.fc-event-bg', element).wrapInner(partitions);
+            // render the whole block
+            var html = partition_block({height:height, partitions:partitions});
+            $('.fc-event-bg', element).wrapInner(html);
         };
 
-        var renderEvent = function(event, element, calendar) {
+        var render_event = function(event, element, calendar) {
             // Don't perform the following operations immediatly, but 
             // only once the ui thread is idle
             _.defer(function() {
@@ -161,7 +196,7 @@ seantis.calendars.defaults = {
                 seantis.contextmenu(event, element, calendar);
 
                 // Add partitions
-                renderPartitions(event, element, calendar);
+                render_partitions(event, element, calendar);
 
                 // Init overlay for the click on the event
                 if (seantis.contextmenu.simple(event))
@@ -169,8 +204,8 @@ seantis.calendars.defaults = {
             });
         };
 
-        // Called when an event is resized or moved
-        var moveEvent = function(event, calendar) {
+        // move an event
+        var move_event = function(event, calendar) {
             var url = event.moveurl;
             url += '&start=' + event.start.getTime() / 1000;
             url += '&end=' + event.end.getTime() / 1000;
@@ -178,30 +213,27 @@ seantis.calendars.defaults = {
             calendar.overlay_show(url);
         };
 
-        // Called when a selection on the calendar is made
-        var eventAdd = function(start, end, allDay, calendar) {
+        // add an event made by a selection
+        var add_event = function(start, end, allDay, calendar) {
             if (!allDay) {
                 var url = calendar.addurl;
                 url += '?start=' + start.getTime() / 1000;
                 url += '&end=' + end.getTime() / 1000;
 
                 calendar.overlay_show(url);
-            };
+            }
         };
-
-        // Setup the supporting structure
-        seantis.calendars.init();
 
         // Hookup the fullcalendar
         _.each(seantis.calendars, function(cal) {
             var calendar = cal;
 
             var add = function(start, end, allDay) {
-                eventAdd(start, end, allDay, calendar);  
+                add_event(start, end, allDay, calendar);  
             };
 
             var move = function(event) {
-                moveEvent(event, calendar);
+                move_event(event, calendar);
             };
 
             var prerender = function(event, element) {
@@ -209,7 +241,7 @@ seantis.calendars.defaults = {
             };
 
             var render = function(event, element) {
-                renderEvent(event, element, calendar);
+                render_event(event, element, calendar);
             };
 
             var loading = function(loading, view) {
@@ -220,7 +252,7 @@ seantis.calendars.defaults = {
                 _.each(calendar.groups.find(event.group), function(el) {
                     el.toggleClass('groupSelection', highlight);  
                 });
-            }
+            };
 
             var mouseover = function(event) {
                 highlight_group(event, true);
@@ -228,7 +260,7 @@ seantis.calendars.defaults = {
 
             var mouseout = function(event) {
                highlight_group(event, false);
-            }
+            };
 
             var options = {
                 header: {

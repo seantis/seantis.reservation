@@ -8,7 +8,7 @@ seantis.contextmenu = function(event, element, calendar) {
         
     // if the menu only has one possible link it is displayed like a tooltip
     // indicating what action will be executed when the event is clicked
-    // (see renderEvent in calendar.js)
+    // (see render_event in calendar.js)
     var trigger = seantis.contextmenu.simple(event) ? 'hover' : 'click';
     var delay = trigger === 'hover' ? 200 : 0;
     var aHide = trigger === 'hover' ? false : true;
