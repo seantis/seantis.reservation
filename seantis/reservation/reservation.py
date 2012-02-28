@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from five import grok
 
 from z3c.form import field
@@ -164,3 +166,15 @@ class ReservationList(grok.View, ReservationListView):
                 return _(u'No reservations for this recurrence')
 
             return _(u'Reservations for recurrence')
+
+    def remove_all_url(self, reservation):
+        base = self.context.absolute_url()
+        return base + u'/remove-reservation?reservation=%s' % reservation[0]
+
+    def remove_part_url(self, reservation):
+        base = self.context.absolute_url()
+        return base + u'/remove-reservation?reservation=%s&start=%s&end=%s' % (
+                reservation[0], 
+                utils.timestamp(reservation[2]), 
+                utils.timestamp(reservation[3]+timedelta(microseconds=1))
+            )

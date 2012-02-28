@@ -202,11 +202,12 @@ class ReservationListView(object):
     show_links = True
 
     @property
-    def reservation(self):
-        return None
-
-    @property
     def highlight_group(self):
+        """ Returns the group id to highlight when hovering over any result.
+        As there is no reservation view with multiple groups, only one result
+        can be returned. 
+
+        """
         query = self.build_query()
         if not query:
             return
@@ -218,21 +219,14 @@ class ReservationListView(object):
         return result[0]
 
     def reservation_info(self):
+        """ Returns the registration information to be printed
+        on the header of the reservation. 
+
+        """
         return utils.random_name()
 
-    def remove_all_url(self, reservation):
-        base = self.context.absolute_url()
-        return base + u'/remove-reservation?reservation=%s' % reservation[0]
-
-    def remove_part_url(self, reservation):
-        base = self.context.absolute_url()
-        return base + u'/remove-reservation?reservation=%s&start=%s&end=%s' % (
-                reservation[0], 
-                utils.timestamp(reservation[2]), 
-                utils.timestamp(reservation[3]+timedelta(microseconds=1))
-            )
-
     def display_date(self, start, end):
+        """ Formates the date range given for display. """
         end += timedelta(microseconds=1)
         if start.date() == end.date():
             return start.strftime('%d.%m.%Y %H:%M - ') + end.strftime('%H:%M')
@@ -241,6 +235,7 @@ class ReservationListView(object):
                  + end.strftime('%d.%m.%Y %H:%M')
 
     def build_query(self):
+        """ Gets the query depending on the instance members. """
         scheduler = self.context.scheduler()
         if self.reservation:
             return scheduler.reserved_slots_by_reservation(self.reservation)
@@ -253,6 +248,7 @@ class ReservationListView(object):
 
     @utils.memoize
     def reservations(self):
+        """ Returns a dictionary of reservations, keyed by reservation uid. """
         scheduler = self.context.scheduler()
 
         query = self.build_query()
