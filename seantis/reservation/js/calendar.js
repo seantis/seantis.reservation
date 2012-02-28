@@ -180,9 +180,9 @@ var CalendarGroups = function() {
                 return;
             }
 
-            var free = _.template('<div style="height:<%= height %>"></div>');
-            var used = _.template('<div style="height:<%= height %>" class="calendar-occupied"></div>');
-            var partition_block = _.template('<div style="height:<%= height %>" <%= partitions %></div>');
+            var free = _.template('<div style="height:<%= height %>%;"></div>');
+            var used = _.template('<div style="height:<%= height %>%;" class="calendar-occupied"></div>');
+            var partition_block = _.template('<div style="height:<%= height %>px;"><%= partitions %></div>');
 
             // build the individual partitions
             var partitions = '';
