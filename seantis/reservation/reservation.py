@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, date, time
 
 from five import grok
 
@@ -23,6 +23,22 @@ from seantis.reservation.form import (
         extract_action_data
     )
 
+from seantis.reservation.error import NoResultFound
+
+class ReservationUrls(object):
+
+    def remove_all_url(self, reservation):
+        base = self.context.absolute_url()
+        return base + u'/remove-reservation?reservation=%s' % reservation[0]
+
+    def remove_part_url(self, reservation):
+        base = self.context.absolute_url()
+        return base + u'/remove-reservation?reservation=%s&start=%s&end=%s' % (
+                reservation[0], 
+                utils.timestamp(reservation[2]), 
+                utils.timestamp(reservation[3]+timedelta(microseconds=1))
+            )
+
 class ReservationForm(ResourceBaseForm):
     permission = 'zope2.View'
 
@@ -32,12 +48,48 @@ class ReservationForm(ResourceBaseForm):
     fields = field.Fields(IReservation)
     label = _(u'Resource reservation')
 
+    def defaults(self, **kwargs):
+        return dict(id=self.id)
+
+    def allocation(self, id):
+        return self.context.scheduler().allocation_by_id(id)
+
+    def strptime(self, value):
+        if not value:
+            return None
+
+        if not isinstance(value, basestring):
+            return value
+
+        return time(*map(int, value.split(':')))
+
+    def validate(self, data):
+        try:
+            metadata = self.metadata(data)
+            self.disabled_fields = metadata.keys()
+
+            day = date(*metadata['day'])
+            start_time = self.strptime(
+                metadata.get('start_time', data.start_time)
+            )
+            end_time = self.strptime(
+                metadata.get('end_time', data.end_time)
+            )
+
+            start, end = utils.get_date_range(day, start_time, end_time)
+            if not self.allocation(data.id).contains(start, end):
+                utils.form_error(_(u'Reservation out of bounds'))
+
+            return start, end
+        except NoResultFound:
+            utils.form_error(_(u'Invalid reservation request'))
+
     @button.buttonAndHandler(_(u'Reserve'))
     @extract_action_data
     def reserve(self, data):
+        start, end = self.validate(data)
 
         def reserve(): 
-            start, end = utils.get_date_range(data.day, data.start_time, data.end_time)
             self.context.scheduler().reserve((start, end))
 
         action = throttled(reserve, self.context, 'reserve')
@@ -46,6 +98,15 @@ class ReservationForm(ResourceBaseForm):
     @button.buttonAndHandler(_(u'Cancel'))
     def cancel(self, action):
         self.redirect_to_context()
+
+    def update(self, **kwargs):
+        if self.id:
+            if self.allocation(self.id).partly_available:
+                self.disabled_fields = ['day']
+            else:
+                self.disabled_fields = ['day', 'start_time', 'end_time']
+
+        super(ReservationForm, self).update(**kwargs)
 
 class GroupReservationForm(ResourceBaseForm, AllocationGroupView):
     permission = 'zope2.View'
@@ -79,7 +140,7 @@ class GroupReservationForm(ResourceBaseForm, AllocationGroupView):
         self.redirect_to_context()
 
 
-class ReservationRemoveForm(ResourceBaseForm, ReservationListView):
+class ReservationRemoveForm(ResourceBaseForm, ReservationListView, ReservationUrls):
     permission = 'cmf.ManagePortal'
 
     grok.name('remove-reservation')
@@ -134,7 +195,7 @@ class ReservationRemoveForm(ResourceBaseForm, ReservationListView):
         self.redirect_to_context()
 
 
-class ReservationList(grok.View, ReservationListView):
+class ReservationList(grok.View, ReservationListView, ReservationUrls):
     permission = "cmf.ManagePortal"
 
     grok.name('reservations')
@@ -166,15 +227,3 @@ class ReservationList(grok.View, ReservationListView):
                 return _(u'No reservations for this recurrence')
 
             return _(u'Reservations for recurrence')
-
-    def remove_all_url(self, reservation):
-        base = self.context.absolute_url()
-        return base + u'/remove-reservation?reservation=%s' % reservation[0]
-
-    def remove_part_url(self, reservation):
-        base = self.context.absolute_url()
-        return base + u'/remove-reservation?reservation=%s&start=%s&end=%s' % (
-                reservation[0], 
-                utils.timestamp(reservation[2]), 
-                utils.timestamp(reservation[3]+timedelta(microseconds=1))
-            )

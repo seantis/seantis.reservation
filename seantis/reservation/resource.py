@@ -192,7 +192,7 @@ class Slots(grok.View, CalendarRequest):
         if allocation.is_separate:
 
             res_add(_(u'Reserve'), 
-                'reserve', dict(start=start, end=end), 'overlay')
+                'reserve', dict(id=allocation.id, start=start, end=end), 'overlay')
 
             if has_reservations:
                 res_add(_(u'Manage'), 

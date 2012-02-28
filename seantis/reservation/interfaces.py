@@ -214,16 +214,31 @@ class ITimeframe(form.Schema):
 
 class IReservation(interface.Interface):
 
+    id = schema.Int(
+        title=_(u'Id'),
+        default=-1,
+        required=False
+        )
+
+    metadata = schema.TextLine(
+        title=_(u'Metadata'),
+        default=u'',
+        required=False
+        )
+
     day = schema.Date(
-        title=_(u'Day')
+        title=_(u'Day'),
+        required=False
         )
 
     start_time = schema.Time(
-        title=_(u'Start')
+        title=_(u'Start'),
+        required=False
         )
 
     end_time = schema.Time(
-        title=_(u'End')
+        title=_(u'End'),
+        required=False
         )
 
 class IGroupReservation(interface.Interface):

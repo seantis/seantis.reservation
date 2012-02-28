@@ -1,3 +1,5 @@
+import json
+
 from datetime import datetime, timedelta
 from itertools import groupby
 
@@ -50,7 +52,9 @@ class ResourceBaseForm(form.Form):
     grok.context(IResourceBase)
     ignoreContext = True
     
-    hidden_fields = ['id']
+    disabled_fields = []
+    hidden_fields = ['id', 'metadata']
+
     ignore_requirements = False
 
     def updateWidgets(self):
@@ -65,6 +69,27 @@ class ResourceBaseForm(form.Form):
         if self.ignore_requirements:
             self.widgets.hasRequiredFields = False
 
+        self.disableFields()
+
+    def disableFields(self):
+        # Disable fields
+        for field in self.disabled_fields:
+            if field in self.widgets:
+                self.widgets[field].disabled = 'disabled'
+
+        # Disabled fields are not submitted later, so we store the values
+        # of the widgets in a hidden field, using the metadata field
+        # which must exist for this to work
+        if self.disabled_fields:
+            assert 'metadata' in self.widgets
+
+            metadata = dict()
+            for field in self.disabled_fields:
+                if field in self.widgets:
+                    metadata[field] = self.widgets[field].value
+
+            self.widgets['metadata'].value = json.dumps(metadata)
+
     def defaults(self):
         return {}
 
@@ -76,6 +101,11 @@ class ResourceBaseForm(form.Form):
     def scheduler(self):
         """ Returns the scheduler of the resource. """
         return self.context.scheduler()
+
+    def metadata(self, data):
+        if hasattr(data, 'metadata'):
+            return json.loads(data.metadata)
+        return None
 
     @property
     @from_timestamp
@@ -140,6 +170,8 @@ class ResourceBaseForm(form.Form):
 
         super(ResourceBaseForm, self).update(**kwargs)
 
+        self.disableFields()
+
 class AllocationGroupView(object):
     """Combines functionality of different views which show groups 
     of allocations like in group.pt.
@@ -200,6 +232,10 @@ class ReservationListView(object):
     """
 
     show_links = True
+
+    @property
+    def reservation(self):
+        return None
 
     @property
     def highlight_group(self):

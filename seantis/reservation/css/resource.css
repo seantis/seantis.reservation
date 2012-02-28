@@ -156,3 +156,10 @@ a.reservation-delete {
     float: right;
     top: 35px;
 }
+
+div.error {
+    background-color: #FDC;
+    border: 1px solid red;
+    padding: 4px 4px;
+    font-size: 10px;
+}
