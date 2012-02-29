@@ -38,7 +38,8 @@ class TestScheduler(IntegrationTestCase):
 
         # reserve half of the slots
         time = (datetime(2011, 1, 1, 15), datetime(2011, 1, 1, 15, 30))
-        reservation, slots = sc.reserve(time)
+        token = sc.reserve(time)
+        slots = sc.confirm_reservation(token)
 
         self.assertEqual(len(slots), 2)
 
@@ -47,7 +48,7 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(len(remaining), 2)
         self.assertEqual(remaining, possible_dates[2:])
 
-        reserved_slots = sc.reserved_slots_by_reservation(reservation).all()
+        reserved_slots = sc.reserved_slots_by_reservation(token).all()
         self.assertEqual(slots, reserved_slots)
 
         # try to illegally move the slot
@@ -75,7 +76,7 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(len(remaining), 0)
 
         # remove the reservation
-        sc.remove_reservation(reservation)
+        sc.remove_reservation(token)
 
         remaining = allocation.free_slots()
         self.assertEqual(len(remaining), 2)
@@ -127,7 +128,9 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(partitions[0][1], False)
 
         start, end = datetime(2011, 1, 1, 8, 30), datetime(2011, 1, 1, 9, 00)
-        sc.reserve((start, end))
+
+        token = sc.reserve((start, end))
+        sc.confirm_reservation(token)
 
         partitions = allocation.availability_partitions()
         self.assertEqual(len(partitions), 3)
@@ -163,7 +166,8 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(slot[0], allocation.start)
         self.assertEqual(slot[1], allocation.end)
 
-        sc.reserve((datetime(2011, 1, 1, 16, 0), datetime(2011, 1, 1, 18, 0)))
+        token = sc.reserve((datetime(2011, 1, 1, 16, 0), datetime(2011, 1, 1, 18, 0)))
+        sc.confirm_reservation(token)
         self.assertRaises(AlreadyReservedError, sc.reserve, 
                 (datetime(2011, 1, 1, 8, 0), datetime(2011, 1, 1, 9, 0))
             )
@@ -184,7 +188,7 @@ class TestScheduler(IntegrationTestCase):
 
         # the same reservation can now be made ten times
         for i in range(0, 10):
-            sc.reserve((start, end))
+            sc.confirm_reservation(sc.reserve((start, end)))
 
         # the 11th time it'll fail
         self.assertRaises(AlreadyReservedError, sc.reserve, [(start, end)])
@@ -202,8 +206,12 @@ class TestScheduler(IntegrationTestCase):
         # we can do ten reservations if every reservation only occupies half
         # of the allocation
         for i in range(0, 5):
-            other.reserve((datetime(2011, 1, 1, 15, 0), datetime(2011, 1, 1, 15, 30)))
-            other.reserve((datetime(2011, 1, 1, 15, 30), datetime(2011, 1, 1, 16, 0)))
+            other.confirm_reservation(
+                other.reserve((datetime(2011, 1, 1, 15, 0), datetime(2011, 1, 1, 15, 30)))
+            )
+            other.confirm_reservation(
+                other.reserve((datetime(2011, 1, 1, 15, 30), datetime(2011, 1, 1, 16, 0)))
+            )
 
         self.assertRaises(AlreadyReservedError, other.reserve,
                 ((datetime(2011, 1, 1, 15, 30), datetime(2011, 1, 1, 16, 0)))
@@ -233,15 +241,16 @@ class TestScheduler(IntegrationTestCase):
 
         allocation = sc.allocate(daterange)[0]
 
-        reservation, slots = sc.reserve(daterange)
+        reservation = sc.reserve(daterange)
+        slots = sc.confirm_reservation(reservation)
         self.assertTrue([True for s in slots if s.resource == sc.uuid])
         
-        slots = sc.reserve(daterange)[1]
+        slots = sc.confirm_reservation(sc.reserve(daterange))
         self.assertFalse([False for s in slots if s.resource == sc.uuid])
 
         sc.remove_reservation(reservation)
 
-        slots = sc.reserve(daterange)[1]
+        slots = sc.confirm_reservation(sc.reserve(daterange))
         self.assertTrue([True for s in slots if s.resource == sc.uuid])
 
         self.assertRaises(
@@ -266,17 +275,17 @@ class TestScheduler(IntegrationTestCase):
         masters = len([m for m in mirrors if m.is_master])
         self.assertEqual(masters, 0)
 
-        sc.reserve(daterange)
+        sc.confirm_reservation(sc.reserve(daterange))
         mirrors = sc.allocation_mirrors_by_master(allocation)
         imaginary = len([m for m in mirrors if m.is_transient])
         self.assertEqual(imaginary, 2)
 
-        sc.reserve(daterange)
+        sc.confirm_reservation(sc.reserve(daterange))
         mirrors = sc.allocation_mirrors_by_master(allocation)
         imaginary = len([m for m in mirrors if m.is_transient])
         self.assertEqual(imaginary, 1)
 
-        sc.reserve(daterange)
+        sc.confirm_reservation(sc.reserve(daterange))
         mirrors = sc.allocation_mirrors_by_master(allocation)
         imaginary = len([m for m in mirrors if m.is_transient])
         self.assertEqual(imaginary, 0)
@@ -293,7 +302,10 @@ class TestScheduler(IntegrationTestCase):
 
         reservations = []
         for i in range(0, 5):
-            reservations.append(sc.reserve(daterange)[0])
+            reservations.append(sc.reserve(daterange))
+
+        for r in reservations:
+            sc.confirm_reservation(r)
 
         mirrors = sc.allocation_mirrors_by_master(master)
 
@@ -329,13 +341,16 @@ class TestScheduler(IntegrationTestCase):
 
         sc.change_quota(master, 7)
         
-        sc.reserve(daterange)[0]
-        r2 = sc.reserve(daterange)[0]
-        r3 = sc.reserve(daterange)[0]
-        r4 = sc.reserve(daterange)[0]
-        r5 = sc.reserve(daterange)[0]
-        r6 = sc.reserve(daterange)[0]
-        r7 = sc.reserve(daterange)[0]
+        sc.reserve(daterange)
+        r2 = sc.reserve(daterange)
+        r3 = sc.reserve(daterange)
+        r4 = sc.reserve(daterange)
+        r5 = sc.reserve(daterange)
+        r6 = sc.reserve(daterange)
+        r7 = sc.reserve(daterange)
+
+        for r in [r2, r3, r4, r5, r6, r7]:
+            sc.confirm_reservation(r)
 
         a2 = sc.allocations_by_reservation(r2).one().id
         a3 = sc.allocations_by_reservation(r3).one().id
@@ -369,19 +384,28 @@ class TestScheduler(IntegrationTestCase):
         sc = Scheduler(new_uuid())
         a = sc.allocate((start, end), raster=15, partly_available=True)[0]
 
-        sc.reserve((datetime(2011, 1, 1, 15, 0), datetime(2011, 1, 1, 15, 15)))
+        sc.confirm_reservation(
+            sc.reserve((datetime(2011, 1, 1, 15, 0), datetime(2011, 1, 1, 15, 15)))
+        )
+
         self.assertEqual(a.availability, 75.0)
         self.assertEqual(a.availability, sc.availability())
         
-        sc.reserve((datetime(2011, 1, 1, 15, 45), datetime(2011, 1, 1, 16, 0)))
+        sc.confirm_reservation(
+            sc.reserve((datetime(2011, 1, 1, 15, 45), datetime(2011, 1, 1, 16, 0)))
+        )
         self.assertEqual(a.availability, 50.0)
         self.assertEqual(a.availability, sc.availability())
 
-        sc.reserve((datetime(2011, 1, 1, 15, 15), datetime(2011, 1, 1, 15, 30)))
+        sc.confirm_reservation(
+            sc.reserve((datetime(2011, 1, 1, 15, 15), datetime(2011, 1, 1, 15, 30)))
+        )
         self.assertEqual(a.availability, 25.0)
         self.assertEqual(a.availability, sc.availability())
 
-        sc.reserve((datetime(2011, 1, 1, 15, 30), datetime(2011, 1, 1, 15, 45)))
+        sc.confirm_reservation(
+            sc.reserve((datetime(2011, 1, 1, 15, 30), datetime(2011, 1, 1, 15, 45)))
+        )
         self.assertEqual(a.availability, 0.0)
         self.assertEqual(a.availability, sc.availability())
 
@@ -391,17 +415,25 @@ class TestScheduler(IntegrationTestCase):
         
         self.assertEqual(a.availability, 100.0) # master only!
 
-        sc.reserve((start, end))
+        sc.confirm_reservation(
+            sc.reserve((start, end))
+        )
 
         self.assertEqual(75.0, sc.availability())
 
         self.assertEqual(a.availability, 0.0) # master only!
 
-        sc.reserve((start, end))
+        sc.confirm_reservation(
+            sc.reserve((start, end))
+        )
         self.assertEqual(50.0, sc.availability())        
 
-        sc.reserve((start, end))
+        sc.confirm_reservation(
+            sc.reserve((start, end))
+        )
         self.assertEqual(25.0, sc.availability())
 
-        sc.reserve((start, end))
+        sc.confirm_reservation(
+            sc.reserve((start, end))
+        )
         self.assertEqual(0.0, sc.availability())

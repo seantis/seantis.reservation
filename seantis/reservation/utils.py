@@ -88,25 +88,7 @@ def form_error(msg):
     raise ActionExecutionError(interface.Invalid(msg))
 
 def handle_exception(ex, message_handler=None):
-    msg = None
-    if type(ex) == error.OverlappingAllocationError:
-        msg = _(u'A conflicting allocation exists for the requested time period.')
-    if type(ex) == error.AffectedReservationError:
-        msg = _(u'An existing reservation would be affected by the requested change')
-    if type(ex) == error.TransactionRollbackError:
-        msg = _(u'The resource is being edited by someone else. Please try again.')
-    if type(ex) == error.NoResultFound:
-        msg = _(u'The item does no longer exist.')
-    if type(ex) == error.AlreadyReservedError:
-        msg = _(u'The requested period is no longer available.')
-    if type(ex) == error.IntegrityError:
-        msg =_(u'Invalid change. Your request may have already been processed earlier.')
-    if type(ex) == error.NotReservableError:
-        msg =_(u'No reservable slot found.')
-    if type(ex) == error.ReservationTooLong:
-        msg =_(u"Reservations can't be made for more than 24 hours at a time")
-    if type(ex) == error.ThrottleBlock:
-        msg =_(u'Too many reservations in a short time. Wait for a moment before trying again.')
+    msg = error.errormap.get(type(ex))
 
     if not msg:
         raise ex

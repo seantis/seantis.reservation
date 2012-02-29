@@ -49,7 +49,7 @@ def add_something(resource=None):
     allocation = Allocation(raster=15, resource=resource)
     allocation.start = datetime(2011, 1, 1, 15)
     allocation.end = datetime(2011, 1, 1, 15, 59)
-    allocation.group = 'test'
+    allocation.group = uuid()
 
     Session.add(allocation)
 
@@ -99,7 +99,7 @@ class TestSession(IntegrationTestCase):
         try:
             def change_allocation():
                 allocation = Session.query(Allocation).one()
-                allocation.group = unicode(uuid())
+                allocation.group = uuid()
 
             t1 = ExceptionThread(serialized_call(change_allocation))
             t2 = ExceptionThread(serialized_call(change_allocation))

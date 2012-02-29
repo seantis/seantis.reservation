@@ -1,11 +1,9 @@
 from sqlalchemy import types
 from sqlalchemy.schema import Column
-from sqlalchemy.schema import ForeignKey
 from sqlalchemy.schema import Index
 
 from seantis.reservation import ORMBase
 from seantis.reservation.models import customtypes
-from seantis.reservation.models.allocation import Allocation
 
 class Reservation(ORMBase):
     """Describes a pending or confirmed reservation and may as such act as
@@ -29,6 +27,11 @@ class Reservation(ORMBase):
     target = Column(
         customtypes.GUID(),
         nullable=False,
+    )
+
+    target_type = Column(
+        types.Enum(u'group', u'allocation', name='reservation_target_type'),
+        nullable=False
     )
 
     start = Column(

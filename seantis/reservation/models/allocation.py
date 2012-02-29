@@ -2,6 +2,7 @@ from datetime import timedelta
 from itertools import groupby
 
 from sqlalchemy import types
+from sqlalchemy.sql import and_, or_
 from sqlalchemy.schema import Column
 from sqlalchemy.schema import Index
 from sqlalchemy.schema import UniqueConstraint
@@ -11,12 +12,12 @@ from sqlalchemy.orm.util import has_identity
 from seantis.reservation import ORMBase
 from seantis.reservation import utils
 from seantis.reservation.models import customtypes
+from seantis.reservation.models.reservation import Reservation
 from seantis.reservation.raster import rasterize_span
 from seantis.reservation.raster import rasterize_start
 from seantis.reservation.raster import rasterize_end
 from seantis.reservation.raster import iterate_span
 from seantis.reservation import Session
-
 
 class Allocation(ORMBase):
     """Describes a timespan within which one or many timeslots can be reserved.
@@ -54,6 +55,7 @@ class Allocation(ORMBase):
         allocation.group = self.group
         allocation.quota = self.quota
         allocation.partly_available = self.partly_available
+        allocation.waiting_list_spots = self.waiting_list_spots
         allocation._start = self._start
         allocation._end = self._end
         allocation._raster = self._raster
@@ -168,6 +170,26 @@ class Allocation(ORMBase):
     def has_unlimited_waiting_list(self):
         return self.waiting_list_spots == -1
 
+    def waiting_list_count(self, start=None, end=None):
+        if not (start and end):
+            start, end = self.start, self.end
+        
+        start, end = rasterize_span(start, end, self.raster)
+
+        query = Session.query(Reservation.id)
+        query = query.filter(Reservation.target == self.group)
+        query = query.filter(Reservation.status == u'pending')
+        query = query.filter(or_(
+            and_(
+                Reservation.start==None, Reservation.end==None
+            ),
+            and_(
+                start<=Reservation.start, Reservation.end<=end
+            )
+        ))
+
+        return query.count()
+
     @property
     def availability(self):
         """Returns the availability in percent."""
@@ -259,7 +281,8 @@ class Allocation(ORMBase):
     @property
     def is_transient(self):
         """True if the allocation does not exist in the database, and is not 
-        about to be written to the database.
+        about to be written to the database. If an allocation is transient it
+        means that the given instance only exists in memory.
 
         See:
         http://www.sqlalchemy.org/docs/orm/session.html#quickie-intro-to-object-states

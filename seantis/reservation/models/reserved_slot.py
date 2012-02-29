@@ -52,13 +52,13 @@ class ReservedSlot(ORMBase):
             )
     )
 
-    reservation = Column(
+    reservation_token = Column(
         customtypes.GUID(),
         nullable = False
     )
 
     __table_args__ = (
-            Index('reservation_resource_ix', 'reservation', 'reservation'), 
+            Index('reservation_resource_ix', 'reservation_token', 'resource'), 
         )
 
     def display_start(self):
