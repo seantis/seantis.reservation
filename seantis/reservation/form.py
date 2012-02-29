@@ -90,6 +90,17 @@ class ResourceBaseForm(form.Form):
 
             self.widgets['metadata'].value = json.dumps(metadata)
 
+    def get_data(self, data, key):
+        """ Return the key of the given data dictionary (GenericDict), 
+        consulting the metadata dictionary.
+
+        """
+        metadata = self.metadata(data)
+        if metadata and key in metadata:
+            return metadata.get(key)
+
+        return hasattr(data, key) and getattr(data, key) or None
+
     def defaults(self):
         return {}
 

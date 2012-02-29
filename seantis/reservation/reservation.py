@@ -65,16 +65,15 @@ class ReservationForm(ResourceBaseForm):
 
     def validate(self, data):
         try:
-            metadata = self.metadata(data)
-            self.disabled_fields = metadata.keys()
 
-            day = date(*metadata['day'])
-            start_time = self.strptime(
-                metadata.get('start_time', data.start_time)
-            )
-            end_time = self.strptime(
-                metadata.get('end_time', data.end_time)
-            )
+            # using disabled fields means we have to reset those using
+            # the metadata set by ResourceBaseForm and we also need
+            # to wrap the calls to data to first consult the metadata
+            self.disabled_fields = self.metadata(data).keys()
+
+            day = date(*self.get_data(data, 'day'))
+            start_time = self.strptime(self.get_data(data, 'start_time'))
+            end_time = self.strptime(self.get_data(data, 'end_time'))
 
             start, end = utils.get_date_range(day, start_time, end_time)
             if not self.allocation(data.id).contains(start, end):
