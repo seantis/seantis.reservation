@@ -1,5 +1,6 @@
 import re
 import time
+import json
 import random
 import collections
 import functools
@@ -130,6 +131,12 @@ def get_resource_by_uuid(context, uuid):
     catalog = getToolByName(context, 'portal_catalog')
     results = catalog(UID=uuid)
     return len(results) == 1 and results[0] or None
+
+class UUIDEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, UUID):
+            return unicode(obj)
+        return json.JSONEncoder.default(self, obj)
 
 def event_class(availability):
     if availability == 0:

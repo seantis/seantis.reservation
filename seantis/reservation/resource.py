@@ -146,7 +146,7 @@ class CalendarRequest(object):
 
         events = self.events()
         
-        return json.dumps(events)
+        return json.dumps(events, cls=utils.UUIDEncoder)
 
     def events(self):
         raise NotImplementedError
