@@ -31,6 +31,12 @@ class Allocation(ORMBase):
     group = Column(customtypes.GUID(), nullable=False)
     quota = Column(types.Integer(), default=1)
     partly_available = Column(types.Boolean(), default=False)
+    waiting_list_spots = Column(types.Integer(), default=0)
+
+    # waiting list spots are interpreted like this:
+    # -1 = unlimited spots on the waiting list
+    # 0 = no spots on the waiting list
+    # >0 = n spots on the waiting list
 
     _start = Column(types.DateTime(), nullable=False)
     _end = Column(types.DateTime(), nullable=False)
@@ -153,6 +159,14 @@ class Allocation(ORMBase):
                 return False
 
         return True
+
+    @property
+    def has_waiting_list(self):
+        return self.waiting_list_spots != 0
+
+    @property
+    def has_unlimited_waiting_list(self):
+        return self.waiting_list_spots == -1
 
     @property
     def availability(self):
