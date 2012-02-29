@@ -89,7 +89,8 @@ class ReservationForm(ResourceBaseForm):
         start, end = self.validate(data)
 
         def reserve(): 
-            self.context.scheduler().reserve((start, end))
+            token = self.context.scheduler().reserve((start, end))
+            self.context.scheduler().confirm_reservation(token)
 
         action = throttled(reserve, self.context, 'reserve')
         utils.handle_action(action=action, success=self.redirect_to_context)

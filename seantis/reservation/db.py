@@ -49,13 +49,13 @@ def grouped_reservation_view(query):
 
     """
     query = query.with_entities(
-            ReservedSlot.reservation, 
+            ReservedSlot.reservation_token, 
             Allocation.id,
             func.min(ReservedSlot.start),
             func.max(ReservedSlot.end)
         )
-    query = query.group_by(ReservedSlot.reservation, Allocation.id)
-    query = query.order_by(ReservedSlot.reservation, 'min_1', Allocation.id)
+    query = query.group_by(ReservedSlot.reservation_token, Allocation.id)
+    query = query.order_by(ReservedSlot.reservation_token, 'min_1', Allocation.id)
 
     return query
 
@@ -640,12 +640,25 @@ class Scheduler(object):
         return slots_to_reserve
 
     @serialized
-    def remove_reservation(self, token):
-        
-        slots = self.reserved_slots_by_reservation(token)
+    def remove_reservation(self, token, start=None, end=None):
+
+        if not (start and end):
+            slots = self.reserved_slots_by_reservation(token)
+        else:
+            slots = self.reserved_slots_by_range(token, start, end)
 
         for slot in slots:
             Session.delete(slot)
+
+        slots_left = self.reserved_slots_by_reservation(token)
+        if not slots_left.count():
+
+            reservations = Session.query(Reservation).filter(
+                Reservation.token==token
+            )
+        
+            for r in reservations:
+                Session.delete(r)
 
     def find_spot(self, master_allocation, start, end):
         """ Returns the first free allocation spot amongst the master and the

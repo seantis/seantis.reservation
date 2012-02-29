@@ -301,7 +301,7 @@ class ReservationListView(object):
         query = self.build_query()
         query = db.grouped_reservation_view(query)
 
-        keyfn = lambda result: result.reservation
+        keyfn = lambda result: result.reservation_token
         
         def filter_slot(slot):
             allocation = scheduler.allocation_by_id(slot[1])
