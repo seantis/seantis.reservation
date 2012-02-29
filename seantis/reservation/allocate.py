@@ -114,7 +114,8 @@ class AllocationAddForm(AllocationForm):
                 raster=data.raster,
                 quota=data.quota,
                 partly_available=data.partly_available,
-                grouped= not data.separately
+                grouped= not data.separately,
+                waiting_list_spots=data.waiting_list_spots
             )
         
         utils.handle_action(action=action, success=self.redirect_to_context)
@@ -130,7 +131,13 @@ class AllocationEditForm(AllocationForm):
     grok.require(permission)
 
     fields = field.Fields(IAllocation).select(
-            'id', 'group', 'start_time', 'end_time', 'day', 'quota',
+            'id', 
+            'group', 
+            'start_time', 
+            'end_time', 
+            'day', 
+            'quota', 
+            'waiting_list_spots'
         )
     label = _(u'Edit allocation')
 
@@ -160,6 +167,9 @@ class AllocationEditForm(AllocationForm):
             self.fields['end_time'].field.default = end.time()
             self.fields['day'].field.default = start.date()
             self.fields['quota'].field.default = allocation.quota
+            
+            self.fields['waiting_list_spots'].field.default \
+            = allocation.waiting_list_spots
 
         super(AllocationEditForm, self).update(**kwargs)
 
@@ -174,7 +184,14 @@ class AllocationEditForm(AllocationForm):
 
         start, end = utils.get_date_range(data.day, data.start_time, data.end_time)
         
-        args = (data.id, start, end, unicode(data.group or u''), data.quota)
+        args = (
+            data.id, 
+            start, 
+            end, 
+            unicode(data.group or u''), 
+            data.quota, 
+            data.waiting_list_spots
+        )
         action = lambda: scheduler.move_allocation(*args)
         
         utils.handle_action(action=action, success=self.redirect_to_context)
