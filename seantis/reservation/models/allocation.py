@@ -6,7 +6,6 @@ from sqlalchemy.schema import Column
 from sqlalchemy.schema import Index
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.orm import object_session 
-from sqlalchemy.orm import relationship
 from sqlalchemy.orm.util import has_identity 
 
 from seantis.reservation import ORMBase
