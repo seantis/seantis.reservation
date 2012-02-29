@@ -386,7 +386,7 @@ class Scheduler(object):
 
     def allocation_by_id(self, id):
         query = Session.query(Allocation)
-        query = query.filter(Allocation.resource == self.uuid)
+        query = query.filter(Allocation.mirror_of == self.uuid)
         query = query.filter(Allocation.id == id)
         return query.one()
 
@@ -437,7 +437,7 @@ class Scheduler(object):
 
     def dates_by_group(self, group):
         query = Session.query(Allocation._start, Allocation._end)
-        query.filter(Allocation.group == group)
+        query = query.filter(Allocation.group == group)
         return query.all()
 
     def render_allocation(self, allocation):
@@ -611,7 +611,7 @@ class Scheduler(object):
         for reservation in query:
 
             if reservation.target_type == u'group':
-                dates = self.dates_by_group(reservation.group)
+                dates = self.dates_by_group(reservation.target)
             else:
                 dates = ((reservation.start, reservation.end),)
 

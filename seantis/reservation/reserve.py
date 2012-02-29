@@ -130,7 +130,8 @@ class GroupReservationForm(ResourceBaseForm, AllocationGroupView):
     def reserve(self, data):
 
         def reserve():
-            self.context.scheduler().reserve(group=data.group)
+            token = self.context.scheduler().reserve(group=data.group)
+            self.context.scheduler().confirm_reservation(token)
 
         action = throttled(reserve, self.context, 'reserve')
         utils.handle_action(action=action, success=self.redirect_to_context)
