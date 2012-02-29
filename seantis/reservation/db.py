@@ -518,17 +518,33 @@ class Scheduler(object):
                 Session.delete(allocation)
 
     @serialized
-    def reserve(self, dates=None, group=None): 
+    def reserve(self, dates=None, group=None):
+        """ First step of the reservation.
+
+        Seantis.reservation uses a two-step reservation process. The first
+        step is reserving what is either an open spot or a place on the
+        waiting list.
+
+        The second step is to actually write out the reserved slots, which
+        is done by confirming an existing reservation.
+
+        Most checks are done in the reserve functions. The confirm step
+        only fails if there's no open spot.
+
+        This function returns a reservation token which can be used to
+        confirm the reservation in confirm_reservation.
+
+        """
 
         assert (dates or group) and not (dates and group)
-
-        # first, ensure that the reservation records can be created
 
         if group:
             dates = self.dates_by_group(group)
 
         dates = utils.pairs(dates)
 
+        # First, the request is checked for saneness. If any requested
+        # date cannot be reserved the request as a whole fails.
         for start, end in dates:
 
             # are the parameters valid?
@@ -538,6 +554,7 @@ class Scheduler(object):
             if start > end or (end - start).seconds < 5 * 60:
                 raise ReservationParametersInvalid
 
+            # can all allocations be reserved?
             for allocation in self.reservation_targets(start, end):
 
                 # is the user trying to reserve something invisible?
@@ -551,9 +568,10 @@ class Scheduler(object):
                     if not allocation.has_waiting_list:
                         raise AlreadyReservedError
 
+                # there's a spot..
                 else:
-
                     # no waiting list = 1 spot in the reservation list
+                    # (this would be a pending reservation request)
                     if not allocation.has_waiting_list:
                         if allocation.waiting_list_count(start, end) >= 1:
                             raise FullWaitingList
@@ -563,12 +581,16 @@ class Scheduler(object):
                         continue
 
                     # is the limit reached?
-                    if allocation.waiting_list_count(start, end) > allocation.waiting_list_spots:
+                    count = allocation.waiting_list_count(start, end)
+                    if count > allocation.waiting_list_spots:
                         raise FullWaitingList
 
         # ok, we're good to go
         token = new_uuid()
         
+        # groups are reserved by group-identifier - so all members of a group
+        # or none of them. As such there's no start / end date which is defined
+        # implicitly by the allocation
         if group:
             reservation = Reservation()
             reservation.token = token
@@ -591,23 +613,33 @@ class Scheduler(object):
 
                     groups.append(allocation.group)
 
+            # check if no group reservation is made with this request.
             # reserve by group in this case (or make this function
             # do that automatically)
-            assert len(groups) == len(set(groups))
+            assert len(groups) == len(set(groups)), 'wrongly trying to reserve a group'
 
         return token
 
     @serialized
     def confirm_reservation(self, reservation_token):
+        """ This function confirms an existing reservation and writes the
+        reserved slots accordingly.
 
+        Returns a list with the reserved slots.
+
+        """
+
+        # get the reservation 
         query = Session.query(Reservation)
         query = query.filter(Reservation.token == reservation_token)
 
         if not query.count():
             raise InvalidReservationToken
 
+        # write out the slots
         slots_to_reserve = []
 
+        # we must expect multiple reservation entries per token in the near future
         for reservation in query:
 
             if reservation.target_type == u'group':
@@ -626,9 +658,12 @@ class Scheduler(object):
                         slot.resource = allocation.resource
                         slot.reservation_token = reservation_token
 
+                        # the slots are written with the allocation
                         allocation.reserved_slots.append(slot)
                         slots_to_reserve.append(slot)
 
+                    # the allocation may be a fake one, in which case we
+                    # must make it realz yo
                     if allocation.is_transient:
                         Session.add(allocation)
 
@@ -641,6 +676,15 @@ class Scheduler(object):
 
     @serialized
     def remove_reservation(self, token, start=None, end=None):
+        """ Removes all reserved slots of the given reservation token.
+
+        Optionnaly, only slots between start and end are deleted. Once all slots 
+        are deleted the reservation itself is deleted.
+
+        This implies of course that a reservation record may not be that
+        consistent with the reserved slots. TODO?
+
+        """
 
         if not (start and end):
             slots = self.reserved_slots_by_reservation(token)
@@ -650,6 +694,7 @@ class Scheduler(object):
         for slot in slots:
             Session.delete(slot)
 
+        # remove the reservation if there's nothing left of it
         slots_left = self.reserved_slots_by_reservation(token)
         if not slots_left.count():
 
