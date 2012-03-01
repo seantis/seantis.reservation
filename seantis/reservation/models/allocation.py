@@ -32,8 +32,8 @@ class Allocation(ORMBase):
     group = Column(customtypes.GUID(), nullable=False)
     quota = Column(types.Integer(), default=1)
     partly_available = Column(types.Boolean(), default=False)
-    waiting_list_spots = Column(types.Integer(), default=0)
 
+    waitinglist_spots = Column(types.Integer(), default=0)
     # waiting list spots are interpreted like this:
     # -1 = unlimited spots on the waiting list
     # 0 = no spots on the waiting list
@@ -55,7 +55,7 @@ class Allocation(ORMBase):
         allocation.group = self.group
         allocation.quota = self.quota
         allocation.partly_available = self.partly_available
-        allocation.waiting_list_spots = self.waiting_list_spots
+        allocation.waitinglist_spots = self.waitinglist_spots
         allocation._start = self._start
         allocation._end = self._end
         allocation._raster = self._raster
@@ -163,40 +163,27 @@ class Allocation(ORMBase):
         return True
 
     @property
-    def has_waiting_list(self):
-        return self.waiting_list_spots != 0
+    def has_waitinglist(self):
+        return self.waitinglist_spots != 0
 
     @property
-    def has_unlimited_waiting_list(self):
-        return self.waiting_list_spots == -1
+    def has_unlimited_waitinglist(self):
+        return self.waitinglist_spots == -1
 
-    def waiting_list_count(self, start=None, end=None):
-        if not (start and end):
-            start, end = self.start, self.end
-        
-        start, end = rasterize_span(start, end, self.raster)
-
+    def pending_reservations(self):
         query = Session.query(Reservation.id)
         query = query.filter(Reservation.target == self.group)
         query = query.filter(Reservation.status == u'pending')
-        query = query.filter(or_(
-            and_(
-                Reservation.start==None, Reservation.end==None
-            ),
-            and_(
-                start<=Reservation.start, Reservation.end<=end
-            )
-        ))
 
         return query.count()
 
-    def waiting_list_open_count(self, start=None, end=None):
+    def open_waitinglist_spots(self):
 
-        if self.has_unlimited_waiting_list:
+        if self.has_unlimited_waitinglist:
             return -1
 
-        used = self.waiting_list_count(start, end)
-        available = self.waiting_list_spots
+        used = self.pending_reservations()
+        available = self.waitinglist_spots
 
         return available - used
 

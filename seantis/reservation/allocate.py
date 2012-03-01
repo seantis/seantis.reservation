@@ -115,7 +115,7 @@ class AllocationAddForm(AllocationForm):
                 quota=data.quota,
                 partly_available=data.partly_available,
                 grouped= not data.separately,
-                waiting_list_spots=data.waiting_list_spots
+                waitinglist_spots=data.waitinglist_spots
             )
         
         utils.handle_action(action=action, success=self.redirect_to_context)
@@ -137,7 +137,7 @@ class AllocationEditForm(AllocationForm):
             'end_time', 
             'day', 
             'quota', 
-            'waiting_list_spots'
+            'waitinglist_spots'
         )
     label = _(u'Edit allocation')
 
@@ -168,8 +168,8 @@ class AllocationEditForm(AllocationForm):
             self.fields['day'].field.default = start.date()
             self.fields['quota'].field.default = allocation.quota
             
-            self.fields['waiting_list_spots'].field.default \
-            = allocation.waiting_list_spots
+            self.fields['waitinglist_spots'].field.default \
+            = allocation.waitinglist_spots
 
         super(AllocationEditForm, self).update(**kwargs)
 
@@ -190,7 +190,7 @@ class AllocationEditForm(AllocationForm):
             end, 
             unicode(data.group or u''), 
             data.quota, 
-            data.waiting_list_spots
+            data.waitinglist_spots
         )
         action = lambda: scheduler.move_allocation(*args)
         

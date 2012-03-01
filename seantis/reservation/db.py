@@ -167,7 +167,7 @@ class Scheduler(object):
 
     @serialized
     def allocate(self, dates, raster=15, quota=None, 
-                 partly_available=False, grouped=False, waiting_list_spots=0):
+                 partly_available=False, grouped=False, waitinglist_spots=0):
         """Allocates a spot in the calendar.
 
         An allocation defines a timerange which can be reserved. No reservations
@@ -220,7 +220,7 @@ class Scheduler(object):
             allocation.quota = quota
             allocation.mirror_of = self.uuid
             allocation.partly_available = partly_available
-            allocation.waiting_list_spots = waiting_list_spots
+            allocation.waitinglist_spots = waitinglist_spots
 
             if grouped:
                 allocation.group = group
@@ -456,7 +456,7 @@ class Scheduler(object):
 
     @serialized
     def move_allocation(self, master_id, new_start=None, new_end=None, 
-                            group=None, new_quota=None, waiting_list_spots=0):
+                            group=None, new_quota=None, waitinglist_spots=0):
 
         assert master_id
         assert any([new_start and new_end, group, new_quota])
@@ -496,7 +496,7 @@ class Scheduler(object):
             change.start = new.start
             change.end = new.end
             change.group = group or master.group
-            change.waiting_list_spots = waiting_list_spots
+            change.waitinglist_spots = waitinglist_spots
 
     @serialized
     def remove_allocation(self, id=None, group=None):
@@ -565,8 +565,8 @@ class Scheduler(object):
                     
                     # no waiting list = 1 possible spot x quota in the reservation list
                     # (this would be pending reservation requests)
-                    if not allocation.has_waiting_list:
-                        if allocation.waiting_list_count(start, end) == allocation.quota:
+                    if not allocation.has_waitinglist:
+                        if allocation.pending_reservations() == allocation.quota:
                             raise AlreadyReservedError
                         else:
                             continue
@@ -574,14 +574,14 @@ class Scheduler(object):
                 else: # fully reserved
                     
                     # is there a waiting list?
-                    if not allocation.has_waiting_list:
+                    if not allocation.has_waitinglist:
                         raise AlreadyReservedError
 
                 # is the limit reached?
-                if allocation.has_unlimited_waiting_list:
+                if allocation.has_unlimited_waitinglist:
                     continue
                 
-                if allocation.waiting_list_open_count(start, end) == 0:
+                if allocation.open_waitinglist_spots() == 0:
                     raise FullWaitingList
 
         # ok, we're good to go

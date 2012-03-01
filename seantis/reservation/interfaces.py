@@ -172,7 +172,8 @@ class IAllocation(form.Schema):
         title=_(u'Quota'),
         )
 
-    waiting_list_spots = schema.Int(
+    
+    waitinglist_spots = schema.Int(
         title=_(u'Waiting List Spots'),
         default=0,
         )

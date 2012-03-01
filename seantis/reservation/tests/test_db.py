@@ -92,37 +92,37 @@ class TestScheduler(IntegrationTestCase):
         dates = (start, end)
 
         # let's create an allocation with three spots in the waiting list
-        allocation = sc.allocate(dates, waiting_list_spots=1)[0]
-        self.assertEqual(allocation.waiting_list_open_count(), 1)
+        allocation = sc.allocate(dates, waitinglist_spots=1)[0]
+        self.assertEqual(allocation.open_waitinglist_spots(), 1)
 
         # first reservation should work
         confirmed_token = sc.reserve(dates)
         self.assertTrue(allocation.is_available(start, end))
         
         # which results in a full waiting list (as the reservation is pending)
-        self.assertEqual(allocation.waiting_list_open_count(), 0)
+        self.assertEqual(allocation.open_waitinglist_spots(), 0)
 
         # as well as it's confirmation
         sc.confirm_reservation(confirmed_token)
         self.assertFalse(allocation.is_available(start, end))
 
         # this leaves one waiting list spot
-        self.assertEqual(allocation.waiting_list_open_count(), 1)
+        self.assertEqual(allocation.open_waitinglist_spots(), 1)
 
         # at this point we can only reserve, not confirm
         waiting_token = sc.reserve(dates)
         self.assertRaises(AlreadyReservedError, sc.confirm_reservation, waiting_token)
 
         # the waiting list should be full now
-        self.assertEqual(allocation.waiting_list_open_count(), 0)
+        self.assertEqual(allocation.open_waitinglist_spots(), 0)
 
         # we may now get rid of the existing confirmed reservation
         sc.remove_reservation(confirmed_token)
-        self.assertEqual(allocation.waiting_list_open_count(), 0)
+        self.assertEqual(allocation.open_waitinglist_spots(), 0)
 
         # which should allow us to confirm the reservation in the waiting list
         sc.confirm_reservation(waiting_token)
-        self.assertEqual(allocation.waiting_list_open_count(), 1)
+        self.assertEqual(allocation.open_waitinglist_spots(), 1)
 
     @serialized
     def test_waitlist_group(self):
@@ -139,7 +139,7 @@ class TestScheduler(IntegrationTestCase):
                 )
             )
         
-        allocations = sc.allocate(dates, grouped=True, waiting_list_spots=2)
+        allocations = sc.allocate(dates, grouped=True, waitinglist_spots=2)
         self.assertEqual(len(allocations), 5)
 
         group = allocations[0].group
@@ -174,9 +174,9 @@ class TestScheduler(IntegrationTestCase):
         end = datetime(2012, 4, 6, 23, 0)
         dates = (start, end)
 
-        allocation = sc.allocate(dates, waiting_list_spots=0)[0]
-        self.assertEqual(allocation.waiting_list_open_count(), 0)
-        self.assertEqual(allocation.waiting_list_count(), 0)
+        allocation = sc.allocate(dates, waitinglist_spots=0)[0]
+        self.assertEqual(allocation.open_waitinglist_spots(), 0)
+        self.assertEqual(allocation.pending_reservations(), 0)
 
         # the first reservation kinda gets us in a waiting list, though
         # this time there can be only one spot in the list as long as there's
@@ -203,23 +203,23 @@ class TestScheduler(IntegrationTestCase):
         # in this example the waiting list will kick in only after
         # the quota has been filled
 
-        allocation = sc.allocate(dates, quota=2, waiting_list_spots=2)[0]
-        self.assertEqual(allocation.waiting_list_open_count(), 2)
+        allocation = sc.allocate(dates, quota=2, waitinglist_spots=2)[0]
+        self.assertEqual(allocation.open_waitinglist_spots(), 2)
 
         t1 = sc.reserve(dates)
         t2 = sc.reserve(dates)
         
-        self.assertEqual(allocation.waiting_list_open_count(), 0)
+        self.assertEqual(allocation.open_waitinglist_spots(), 0)
 
         sc.confirm_reservation(t1)
         sc.confirm_reservation(t2)
 
-        self.assertEqual(allocation.waiting_list_open_count(), 2)
+        self.assertEqual(allocation.open_waitinglist_spots(), 2)
 
         t3 = sc.reserve(dates)
         t4 = sc.reserve(dates)
 
-        self.assertEqual(allocation.waiting_list_open_count(), 0)
+        self.assertEqual(allocation.open_waitinglist_spots(), 0)
 
         self.assertRaises(FullWaitingList, sc.reserve, dates)
         self.assertRaises(AlreadyReservedError, sc.confirm_reservation, t3)
