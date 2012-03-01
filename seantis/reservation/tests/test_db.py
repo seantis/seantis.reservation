@@ -125,6 +125,48 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(allocation.waiting_list_open_count(), 1)
 
     @serialized
+    def test_waitlist_group(self):
+        from dateutil.rrule import rrule, DAILY, MO
+
+        sc = Scheduler(new_uuid())
+        days = list(rrule(DAILY, count=5, byweekday=(MO,), dtstart=datetime(2012,1,1)))
+        dates = []
+        for d in days:
+            dates.append(
+                (
+                    datetime(d.year, d.month, d.day, 15, 0), 
+                    datetime(d.year, d.month, d.day, 16, 0)
+                )
+            )
+        
+        allocations = sc.allocate(dates, grouped=True, waiting_list_spots=2)
+        self.assertEqual(len(allocations), 5)
+
+        group = allocations[0].group
+
+        # reserving groups is no different than single allocations
+        maintoken = sc.reserve(group=group)
+        sc.confirm_reservation(maintoken)
+
+        token = sc.reserve(group=group)
+        self.assertRaises(AlreadyReservedError, sc.confirm_reservation, token)
+
+        token = sc.reserve(group=group)
+        self.assertRaises(AlreadyReservedError, sc.confirm_reservation, token)
+
+        self.assertRaises(FullWaitingList, sc.reserve, None, group)
+
+        # the only thing changing is the fact that removing part of the reservation
+        # does not delete the reservation record
+        sc.remove_reservation(maintoken, allocations[0].start, allocations[0].end)
+
+        self.assertRaises(AlreadyReservedError, sc.confirm_reservation, token)
+
+        sc.remove_reservation(maintoken)
+
+        sc.confirm_reservation(token)        
+
+    @serialized
     def test_no_waitlist(self):
         sc = Scheduler(new_uuid())
 
