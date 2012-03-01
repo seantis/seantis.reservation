@@ -78,6 +78,7 @@ supported they need to be tested first!
 """
 import re
 import threading
+import functools
 
 from five import grok
 
@@ -296,6 +297,7 @@ def serialized_call(fn):
     means of talking to the database).
 
     """
+    @functools.wraps(fn)
     def wrapper(*args, **kwargs):
 
         util = getUtility(ISessionUtility)
@@ -322,6 +324,7 @@ def serialized_call(fn):
 
 def serialized(fn):
     """ A decorator to apply to any class method that needs to be serialized. """
+    @functools.wraps(fn)
     def wrapper(self, *args, **kwargs):
         return serialized_call(fn)(self, *args, **kwargs)
 

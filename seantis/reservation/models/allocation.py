@@ -190,6 +190,16 @@ class Allocation(ORMBase):
 
         return query.count()
 
+    def waiting_list_open_count(self, start=None, end=None):
+
+        if self.has_unlimited_waiting_list:
+            return -1
+
+        used = self.waiting_list_count(start, end)
+        available = self.waiting_list_spots
+
+        return available - used
+
     @property
     def availability(self):
         """Returns the availability in percent."""

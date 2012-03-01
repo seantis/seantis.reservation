@@ -196,7 +196,7 @@ class Scheduler(object):
         """
         dates = utils.pairs(dates)
 
-        group = unicode(new_uuid())
+        group = new_uuid()
         quota = quota or self.quota
 
         # Make sure that this span does not overlap another master
@@ -225,7 +225,7 @@ class Scheduler(object):
             if grouped:
                 allocation.group = group
             else:
-                allocation.group = unicode(new_uuid())
+                allocation.group = new_uuid()
                 
             allocations.append(allocation)
 
@@ -558,35 +558,31 @@ class Scheduler(object):
                 raise ReservationParametersInvalid
 
             # can all allocations be reserved?
-            for allocation in self.reservation_targets(start, end):
+            for allocation in self.allocations_in_range(start, end):
 
-                # is the user trying to reserve something invisible?
-                if not self.is_exposed(allocation):
-                    raise NotReservableError
+                # is there a free spot?
+                if self.find_spot(allocation, start, end):
+                    
+                    # no waiting list = 1 possible spot x quota in the reservation list
+                    # (this would be pending reservation requests)
+                    if not allocation.has_waiting_list:
+                        if allocation.waiting_list_count(start, end) == allocation.quota:
+                            raise AlreadyReservedError
+                        else:
+                            continue
 
-                # is the spot already reserved?
-                if not allocation.is_available(start, end):
-
-                    # if it is already, is there a waiting list?
+                else: # fully reserved
+                    
+                    # is there a waiting list?
                     if not allocation.has_waiting_list:
                         raise AlreadyReservedError
 
-                # there's a spot..
-                else:
-                    # no waiting list = 1 spot in the reservation list
-                    # (this would be a pending reservation request)
-                    if not allocation.has_waiting_list:
-                        if allocation.waiting_list_count(start, end) >= 1:
-                            raise FullWaitingList
-
-                    # is the waiting list limited?
-                    if allocation.has_unlimited_waiting_list:
-                        continue
-
-                    # is the limit reached?
-                    count = allocation.waiting_list_count(start, end)
-                    if count > allocation.waiting_list_spots:
-                        raise FullWaitingList
+                # is the limit reached?
+                if allocation.has_unlimited_waiting_list:
+                    continue
+                
+                if allocation.waiting_list_open_count(start, end) == 0:
+                    raise FullWaitingList
 
         # ok, we're good to go
         token = new_uuid()
@@ -604,11 +600,12 @@ class Scheduler(object):
         else:
             groups = []
             for start, end in dates:
-                for allocation in self.reservation_targets(start, end):
+                for allocation in self.allocations_in_range(start, end):
                     reservation = Reservation()
                     reservation.token = token
-                    reservation.start = start
-                    reservation.end = end
+                    reservation.start, reservation.end = rasterize_span(
+                        start, end, allocation.raster
+                    )
                     reservation.target = allocation.group
                     reservation.status = u'pending'
                     reservation.target_type = u'allocation'
@@ -653,6 +650,10 @@ class Scheduler(object):
             for start, end in dates:
 
                 for allocation in self.reservation_targets(start, end):
+
+                    # is the user trying to reserve something invisible?
+                    if not self.is_exposed(allocation):
+                        raise NotReservableError
 
                     for slot_start, slot_end in allocation.all_slots(start, end):
                         slot = ReservedSlot()

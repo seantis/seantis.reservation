@@ -7,6 +7,8 @@ from seantis.reservation.error import OverlappingAllocationError
 from seantis.reservation.error import AffectedReservationError
 from seantis.reservation.error import AlreadyReservedError
 from seantis.reservation.error import ReservationTooLong
+from seantis.reservation.error import NotReservableError
+from seantis.reservation.error import FullWaitingList
 from seantis.reservation import utils
 from seantis.reservation.session import serialized
 
@@ -80,6 +82,106 @@ class TestScheduler(IntegrationTestCase):
 
         remaining = allocation.free_slots()
         self.assertEqual(len(remaining), 2)
+
+    @serialized
+    def test_waitlist(self):
+        sc = Scheduler(new_uuid())
+
+        start = datetime(2012, 2, 29, 15, 0)
+        end = datetime(2012, 2, 29, 19, 0)
+        dates = (start, end)
+
+        # let's create an allocation with three spots in the waiting list
+        allocation = sc.allocate(dates, waiting_list_spots=1)[0]
+        self.assertEqual(allocation.waiting_list_open_count(), 1)
+
+        # first reservation should work
+        confirmed_token = sc.reserve(dates)
+        self.assertTrue(allocation.is_available(start, end))
+        
+        # which results in a full waiting list (as the reservation is pending)
+        self.assertEqual(allocation.waiting_list_open_count(), 0)
+
+        # as well as it's confirmation
+        sc.confirm_reservation(confirmed_token)
+        self.assertFalse(allocation.is_available(start, end))
+
+        # this leaves one waiting list spot
+        self.assertEqual(allocation.waiting_list_open_count(), 1)
+
+        # at this point we can only reserve, not confirm
+        waiting_token = sc.reserve(dates)
+        self.assertRaises(AlreadyReservedError, sc.confirm_reservation, waiting_token)
+
+        # the waiting list should be full now
+        self.assertEqual(allocation.waiting_list_open_count(), 0)
+
+        # we may now get rid of the existing confirmed reservation
+        sc.remove_reservation(confirmed_token)
+        self.assertEqual(allocation.waiting_list_open_count(), 0)
+
+        # which should allow us to confirm the reservation in the waiting list
+        sc.confirm_reservation(waiting_token)
+        self.assertEqual(allocation.waiting_list_open_count(), 1)
+
+    @serialized
+    def test_no_waitlist(self):
+        sc = Scheduler(new_uuid())
+
+        start = datetime(2012, 4, 6, 22, 0)
+        end = datetime(2012, 4, 6, 23, 0)
+        dates = (start, end)
+
+        allocation = sc.allocate(dates, waiting_list_spots=0)[0]
+        self.assertEqual(allocation.waiting_list_open_count(), 0)
+        self.assertEqual(allocation.waiting_list_count(), 0)
+
+        # the first reservation kinda gets us in a waiting list, though
+        # this time there can be only one spot in the list as long as there's
+        # no reservation
+
+        token = sc.reserve(dates) 
+        sc.confirm_reservation(token)
+
+        # it is now that we should have a problem reserving
+        self.assertRaises(AlreadyReservedError, sc.reserve, dates)
+
+        # until we delete the existing reservation
+        sc.remove_reservation(token)
+        sc.reserve(dates)
+
+    @serialized
+    def test_quota_waitlist(self):
+        sc = Scheduler(new_uuid())
+
+        start = datetime(2012, 3, 4, 2, 0)
+        end = datetime(2012, 3, 4, 3, 0)
+        dates = (start, end)
+
+        # in this example the waiting list will kick in only after
+        # the quota has been filled
+
+        allocation = sc.allocate(dates, quota=2, waiting_list_spots=2)[0]
+        self.assertEqual(allocation.waiting_list_open_count(), 2)
+
+        t1 = sc.reserve(dates)
+        t2 = sc.reserve(dates)
+        
+        self.assertEqual(allocation.waiting_list_open_count(), 0)
+
+        sc.confirm_reservation(t1)
+        sc.confirm_reservation(t2)
+
+        self.assertEqual(allocation.waiting_list_open_count(), 2)
+
+        t3 = sc.reserve(dates)
+        t4 = sc.reserve(dates)
+
+        self.assertEqual(allocation.waiting_list_open_count(), 0)
+
+        self.assertRaises(FullWaitingList, sc.reserve, dates)
+        self.assertRaises(AlreadyReservedError, sc.confirm_reservation, t3)
+        self.assertRaises(AlreadyReservedError, sc.confirm_reservation, t4)
 
     def test_userlimits(self):
         # ensure that no user can make a reservation for more than 24 hours at 
