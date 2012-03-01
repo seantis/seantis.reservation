@@ -171,6 +171,24 @@ class Allocation(ORMBase):
         return self.waitinglist_spots == -1
 
     def pending_reservations(self):
+        """ Returns the number of pending reservations. 
+
+        This is not necessarily the same as the number of used spots in the 
+        waitinglist as allocations without a waitinglist may still have pending 
+        reservations up to the set quota. 
+
+        The reason is that non-waitinglist allocations still use the two-phase
+        reservation with the first phase being pending reservations.
+
+        For those, there are no spots in the waiting list, but pending reservations
+        up to the number of open quota spots may still be added.
+
+        For allocations with a waiting list the pending reservations equal the
+        number of used spots in the waiting list. This ensures that a waitinglist
+        of 100 never has more than 100 entries, no matter if we count the spots toward
+        the list or toward the unused quota.
+
+        """
         query = Session.query(Reservation.id)
         query = query.filter(Reservation.target == self.group)
         query = query.filter(Reservation.status == u'pending')
