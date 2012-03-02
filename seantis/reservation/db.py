@@ -1,6 +1,5 @@
 from uuid import UUID
 from uuid import uuid4 as new_uuid
-from uuid import uuid5 as new_uuid_mirror
 from datetime import datetime, MINYEAR, MAXYEAR
 from itertools import groupby
 
@@ -123,11 +122,6 @@ def availability_by_day(start, end, resources, is_exposed):
 
     return days
 
-# TODO cache this incrementally
-def generate_uuids(uuid, quota):
-    mirror = lambda n: new_uuid_mirror(uuid, str(n))
-    return [mirror(n) for n in xrange(1, quota)]
-
 class Scheduler(object):
     """Used to manage a resource as well as all connected mirrors. 
 
@@ -138,7 +132,7 @@ class Scheduler(object):
     do not really exist as seantis.reservation.resource types in plone (unlike
     the master). Instead they have their own resource uuids which are calculated
     by creating new uuids from the master's uuid and the number of the mirror.
-    (See generate_uuids).
+    (See utils.generate_uuids).
 
     The reason for this mechanism is to ensure two things:
 
@@ -369,7 +363,7 @@ class Scheduler(object):
         
         # generate the keylist (the allocation resources may be unordered)
         keylist = [master.resource]
-        keylist.extend(generate_uuids(master.resource, master.quota))
+        keylist.extend(utils.generate_uuids(master.resource, master.quota))
         
         # prefill the map
         reordered = dict(((k, None) for k in keylist))
@@ -413,29 +407,7 @@ class Scheduler(object):
         return query.one()
 
     def allocation_mirrors_by_master(self, master):
-        if master.quota == 1: return []
-
-        query = Session.query(Allocation)
-        query = query.filter(Allocation._start == master._start)
-        query = query.filter(Allocation.id != master.id)
-        
-        existing = query.all()
-        existing = dict([(e.resource, e) for e in existing])
-
-        imaginary = master.quota - len(existing)
-        
-        mirrors = []
-        for uuid in generate_uuids(master.resource, master.quota):
-            if uuid in existing:
-                mirrors.append(existing[uuid])
-            elif imaginary:
-                allocation = master.copy()
-                allocation.resource = uuid
-                mirrors.append(allocation)
-
-                imaginary -= 1
-
-        return mirrors
+        return [s for s in master.siblings() if not s.is_master]
 
     def dates_by_group(self, group):
         query = Session.query(Allocation._start, Allocation._end)

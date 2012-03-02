@@ -304,3 +304,44 @@ class Allocation(ORMBase):
         """True if the allocation is a master allocation."""
 
         return self.resource == self.mirror_of
+
+    def siblings(self, imaginary=True):
+        """Returns the master/mirrors group this allocation is part of. 
+
+        If 'imaginary' is true, inexistant mirrors are created on the fly.
+        those mirrors are transient (see self.is_transient)
+
+        """
+
+        # this function should always have itself in the result
+        if not imaginary and self.is_transient:
+            assert False, 'the resulting list would not contain this allocation'
+
+        if self.quota == 1:
+            assert(self.is_master)
+            return [self]
+
+        query = Session.query(Allocation)
+        query = query.filter(Allocation.mirror_of == self.mirror_of)
+        query = query.filter(Allocation._start == self._start)
+
+        existing = dict(((e.resource, e) for e in query))
+
+        master = self.is_master and self or existing[self.mirror_of]
+        existing[master.resource] = master
+
+        uuids = utils.generate_uuids(master.resource, master.quota)
+        imaginary = imaginary and (master.quota - len(existing)) or 0
+
+        siblings = [master]
+        for uuid in uuids:
+            if uuid in existing:
+                siblings.append(existing[uuid])
+            elif imaginary > 0:
+                allocation = master.copy()
+                allocation.resource = uuid
+                siblings.append(allocation)
+
+                imaginary -= 1
+        
+        return siblings

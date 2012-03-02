@@ -415,9 +415,11 @@ class TestScheduler(IntegrationTestCase):
         mirrors = sc.allocation_mirrors_by_master(allocation)
         imaginary = len([m for m in mirrors if m.is_transient])
         self.assertEqual(imaginary, 2)
+        self.assertEqual(len(allocation.siblings()),3)
 
         masters = len([m for m in mirrors if m.is_master])
         self.assertEqual(masters, 0)
+        self.assertEqual(len([s for s in allocation.siblings(imaginary=False)]),1)
 
         sc.confirm_reservation(sc.reserve(daterange))
         mirrors = sc.allocation_mirrors_by_master(allocation)
@@ -433,6 +435,7 @@ class TestScheduler(IntegrationTestCase):
         mirrors = sc.allocation_mirrors_by_master(allocation)
         imaginary = len([m for m in mirrors if m.is_transient])
         self.assertEqual(imaginary, 0)
+        self.assertEqual(len(mirrors) + 1, len(allocation.siblings()))
 
     @serialized
     def test_quota_changes(self):
@@ -476,6 +479,12 @@ class TestScheduler(IntegrationTestCase):
         self.assertTrue(master.is_available())
         mirrors = sc.allocation_mirrors_by_master(master)
         self.assertEqual(0, len([m for m in mirrors if not m.is_available()]))
+
+        # this is a good time to check if the siblings function from the allocation
+        # acts the same on each mirror and master
+        siblings = master.siblings()
+        for s in siblings:
+            self.assertEqual(s.siblings(), siblings)
 
         # let's do another round, adding 7 reservations and removing the three
         # in the middle, which should result in a reordering:

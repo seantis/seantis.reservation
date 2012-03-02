@@ -10,6 +10,7 @@ from urlparse import urljoin
 from urllib import quote
 from itertools import tee, izip
 from uuid import UUID
+from uuid import uuid5 as new_uuid_mirror
 
 from App.config import getConfiguration
 from Acquisition import aq_inner
@@ -121,6 +122,11 @@ def is_uuid(obj):
         return re.match(_uuid_regex, unicode(obj))
     
     return isinstance(obj, UUID)
+
+# TODO cache this incrementally
+def generate_uuids(uuid, quota):
+    mirror = lambda n: new_uuid_mirror(uuid, str(n))
+    return [mirror(n) for n in xrange(1, quota)]
 
 def get_resource_by_uuid(context, uuid):
     """Returns the zodb object with the given uuid."""
@@ -289,8 +295,6 @@ def urlparam(base, url, params):
 
     query = '?' + '&'.join(map(querypair, params.items()))
     return ''.join(reduce(urljoin, (base, url, query)))
-
-
 
 class EventUrls(object):
     def __init__(self, resource, request, exposure):
