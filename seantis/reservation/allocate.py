@@ -67,7 +67,8 @@ class AllocationAddForm(AllocationForm):
             'recurrence_start': recurrence_start,
             'recurrence_end': recurrence_end,
             'timeframes': self.json_timeframes(),
-            'days': default_days
+            'days': default_days,
+            'waitinglist_spots': self.scheduler.quota
         }
 
     def timeframes(self):

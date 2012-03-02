@@ -22,6 +22,7 @@ from seantis.reservation.session import serialized
 from seantis.reservation.raster import rasterize_span
 from seantis.reservation import utils
 from seantis.reservation import Session
+from seantis.reservation import settings
     
 def all_allocations_in_range(start, end):
     # Query version of utils.overlaps
@@ -159,9 +160,11 @@ class Scheduler(object):
         self.is_exposed = is_exposed or (lambda allocation: True)
         self.quota = quota
 
+        self.must_confirm_reservation = settings.get('confirm_reservation', default=True)
+
     @serialized
     def allocate(self, dates, raster=15, quota=None, 
-                 partly_available=False, grouped=False, waitinglist_spots=0):
+                 partly_available=False, grouped=False, waitinglist_spots=None):
         """Allocates a spot in the calendar.
 
         An allocation defines a timerange which can be reserved. No reservations
@@ -192,6 +195,7 @@ class Scheduler(object):
 
         group = new_uuid()
         quota = quota or self.quota
+        waitinglist_spots = waitinglist_spots or quota
 
         # Make sure that this span does not overlap another master
         for start, end in dates:
@@ -203,6 +207,9 @@ class Scheduler(object):
             existing = query.first()
             if existing:
                 raise OverlappingAllocationError(start, end, existing)
+
+        # ensure that the waitinglist is at least as big as the quota
+        assert waitinglist_spots >= quota
         
         # Write the master allocations
         allocations = []
@@ -279,6 +286,10 @@ class Scheduler(object):
         """
 
         assert new_quota > 0, "Quota must be greater than 0"
+
+        if new_quota > master.waitinglist_spots:
+            for s in master.siblings():
+                s.waitinglist_spots = new_quota
 
         if new_quota == master.quota:
             return
@@ -428,10 +439,13 @@ class Scheduler(object):
 
     @serialized
     def move_allocation(self, master_id, new_start=None, new_end=None, 
-                            group=None, new_quota=None, waitinglist_spots=0):
+                            group=None, new_quota=None, waitinglist_spots=None):
 
         assert master_id
         assert any([new_start and new_end, group, new_quota])
+
+        waitinglist_spots = waitinglist_spots or new_quota
+        assert waitinglist_spots >= new_quota
 
         # Find allocation
         master = self.allocation_by_id(master_id)
@@ -532,26 +546,15 @@ class Scheduler(object):
             # can all allocations be reserved?
             for allocation in self.allocations_in_range(start, end):
 
-                # is there a free spot?
-                if self.find_spot(allocation, start, end):
-                    
-                    # no waiting list = 1 possible spot x quota in the reservation list
-                    # (this would be pending reservation requests)
-                    if not allocation.has_waitinglist:
-                        if allocation.pending_reservations() == allocation.quota:
-                            raise AlreadyReservedError
-                        else:
-                            continue
+                assert allocation.is_master
 
-                else: # fully reserved
-                    
-                    # is there a waiting list?
-                    if not allocation.has_waitinglist:
+                if self.must_confirm_reservation:
+                    if not allocation.open_waitinglist_spots():
+                        raise FullWaitingList
+
+                else:
+                    if not self.find_spot(allocation, start, end):
                         raise AlreadyReservedError
-
-                # is the limit reached?
-                if allocation.open_waitinglist_spots() == 0:
-                    raise FullWaitingList
 
         # ok, we're good to go
         token = new_uuid()

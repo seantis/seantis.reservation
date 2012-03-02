@@ -21,9 +21,12 @@ class ISeantisReservationSettings(Interface):
         description=_(u'If true each reservation needs to be confirmed manually. This needs to be true to enable waiting lists.')
     )
 
-def get(name):
+def get(name, default=None):
     registry = getUtility(IRegistry)
-    settings = registry.forInterface(ISeantisReservationSettings)
+    try:
+        settings = registry.forInterface(ISeantisReservationSettings)
+    except KeyError:
+        return default
     assert hasattr(settings, name), "Unknown setting: %s" % name
     return getattr(settings, name)
 

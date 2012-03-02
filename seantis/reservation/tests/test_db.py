@@ -287,6 +287,7 @@ class TestScheduler(IntegrationTestCase):
 
     def test_partly(self):
         sc = Scheduler(new_uuid())
+        sc.must_confirm_reservation = False
 
         allocations = sc.allocate(
                 (
@@ -319,6 +320,7 @@ class TestScheduler(IntegrationTestCase):
     @serialized
     def test_quotas(self):
         sc = Scheduler(new_uuid(), quota=10)
+        sc.must_confirm_reservation = False
         
         start = datetime(2011, 1, 1, 15, 0)
         end = datetime(2011, 1, 1, 16, 0)
@@ -336,8 +338,8 @@ class TestScheduler(IntegrationTestCase):
 
         # the 11th time it'll fail
         self.assertRaises(AlreadyReservedError, sc.reserve, [(start, end)])
-
         other = Scheduler(new_uuid(), quota=5)
+        other.must_confirm_reservation = False
 
         # setup an allocation with five spots
         allocations = other.allocate(

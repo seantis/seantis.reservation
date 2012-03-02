@@ -1,7 +1,6 @@
 import unittest2 as unittest
 
 from seantis.reservation import setuphandlers
-from seantis.reservation import Session
 from seantis.reservation.session import getUtility, ISessionUtility
 
 from seantis.reservation.testing import SQL_INTEGRATION_TESTING
