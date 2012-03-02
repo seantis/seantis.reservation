@@ -43,6 +43,7 @@ def request_id_as_int(string):
     return int(''.join(re.findall(_requestid_expr, string)))
 
 def compare_link(resources):
+    """Builds the compare link for the given list of resources"""
     if len(resources) < 2:
             return ''
 
@@ -55,6 +56,7 @@ def compare_link(resources):
     return link.rstrip('&')
 
 def dictionary_to_namedtuple(dictionary):
+    """Creates a named tuple using the given dictionary"""
     return namedtuple('GenericDict', dictionary.keys())(**dictionary)
 
 def get_current_language(context, request):
@@ -64,15 +66,27 @@ def get_current_language(context, request):
     return portal_state.language()
 
 def translator(context, request):
+    """Returns a function which takes a single string and translates it using
+    the curried values for context & request.
+
+    """
     def curried(text):
         return translate(context, request, text)
     return curried
 
 def translate(context, request, text):
+    """Translates the given text using context & request."""
     lang = get_current_language(context, request)
     return i18n.translate(text, target_language=lang)
 
 def handle_action(action=None, success=None, message_handler=None):
+    """Calls 'action' and then 'success' if everything went well or
+    'message_handler' with a message if an exception happened.
+
+    If no message_handler is given, an ActionExecutionError is raised
+    with the message attached.
+
+    """
     try:
         result = None
         if action: result = action()
@@ -98,29 +112,31 @@ def handle_exception(ex, message_handler=None):
     else:
         form_error(msg)
 
+_uuid_regex = re.compile('[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}')
 def is_uuid(obj):
+    """Returns true if the given obj is a uuid. The obj may be a string
+    or of type UUID. If it's a string, the uuid is checked with a regex.
+    """
     if isinstance(obj, basestring):
-
-        regex = re.compile(
-            '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}'
-        )
-
-        return re.match(regex, unicode(obj))
+        return re.match(_uuid_regex, unicode(obj))
     
     return isinstance(obj, UUID)
 
 def get_resource_by_uuid(context, uuid):
+    """Returns the zodb object with the given uuid."""
     catalog = getToolByName(context, 'portal_catalog')
     results = catalog(UID=uuid)
     return len(results) == 1 and results[0] or None
 
 class UUIDEncoder(json.JSONEncoder):
+    """Encodes UUID objects as string in JSON."""
     def default(self, obj):
         if isinstance(obj, UUID):
             return unicode(obj)
         return json.JSONEncoder.default(self, obj)
 
 def event_class(availability):
+    """Returns the event class to be used depending on the availability."""
     if availability == 0:
         return 'event-unavailable'
     elif availability == 100:
@@ -338,6 +354,7 @@ def random_name():
     return '%s %s' % (random.choice(firstnames), random.choice(lastnames))
 
 def get_date_range(day, start_time, end_time):
+    """Returns the date-range of a date a start and an end time."""
     start = datetime.combine(day, start_time)
     end = datetime.combine(day, end_time)
 

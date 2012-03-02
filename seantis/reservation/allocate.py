@@ -12,6 +12,7 @@ from z3c.form.browser.radio import RadioFieldWidget
 
 from seantis.reservation import _
 from seantis.reservation import utils
+from seantis.reservation import settings
 from seantis.reservation.interfaces import IAllocation, days
 from seantis.reservation.form import (
         ResourceBaseForm, 
@@ -24,6 +25,18 @@ class AllocationForm(ResourceBaseForm):
     hidden_fields = ['id', 'group', 'timeframes']
 
     template = ViewPageTemplateFile('templates/allocate.pt')
+
+    def update(self, **kwargs):
+        
+        # hide the waiting list setting if the reservations are not confirmed
+        # manually by the user
+        if settings.get('confirm_reservation'):
+            self.hidden_fields = list(set(self.hidden_fields) - set(['waitinglist_spots']))
+        else:
+            self.hidden_fields.append('waitinglist_spots')
+            self.hidden_fields = list(set(self.hidden_fields))
+
+        super(AllocationForm, self).update(**kwargs)
 
 class AllocationAddForm(AllocationForm):
     permission = 'cmf.ManagePortal'
@@ -150,6 +163,7 @@ class AllocationEditForm(AllocationForm):
 
     def update(self, **kwargs):
         """ Fills the defaults depending on the POST arguments given. """
+
         if not self.id:
             self.status = utils.translate(self.context, self.request, 
                     _(u'Invalid arguments')
