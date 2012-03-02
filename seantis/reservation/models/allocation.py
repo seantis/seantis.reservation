@@ -203,7 +203,7 @@ class Allocation(ORMBase):
         used = self.pending_reservations()
         available = self.waitinglist_spots
 
-        return available - used
+        return max(available - used, 0)
 
     @property
     def availability(self):
