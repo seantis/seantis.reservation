@@ -578,9 +578,6 @@ class Scheduler(object):
                         raise AlreadyReservedError
 
                 # is the limit reached?
-                if allocation.has_unlimited_waitinglist:
-                    continue
-                
                 if allocation.open_waitinglist_spots() == 0:
                     raise FullWaitingList
 

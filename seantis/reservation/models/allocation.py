@@ -35,8 +35,7 @@ class Allocation(ORMBase):
 
     waitinglist_spots = Column(types.Integer(), default=0)
     # waiting list spots are interpreted like this:
-    # -1 = unlimited spots on the waiting list
-    # 0 = no spots on the waiting list
+    # <1 = no spots on the waiting list
     # >0 = n spots on the waiting list
 
     _start = Column(types.DateTime(), nullable=False)
@@ -166,10 +165,6 @@ class Allocation(ORMBase):
     def has_waitinglist(self):
         return self.waitinglist_spots != 0
 
-    @property
-    def has_unlimited_waitinglist(self):
-        return self.waitinglist_spots == -1
-
     def pending_reservations(self):
         """ Returns the number of pending reservations. 
 
@@ -196,9 +191,6 @@ class Allocation(ORMBase):
         return query.count()
 
     def open_waitinglist_spots(self):
-
-        if self.has_unlimited_waitinglist:
-            return -1
 
         used = self.pending_reservations()
         available = self.waitinglist_spots

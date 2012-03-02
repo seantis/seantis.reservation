@@ -171,7 +171,6 @@ class IAllocation(form.Schema):
     quota = schema.Int(
         title=_(u'Quota'),
         )
-
     
     waitinglist_spots = schema.Int(
         title=_(u'Waiting List Spots'),
@@ -192,6 +191,11 @@ class IAllocation(form.Schema):
     def isValidQuota(Allocation):
         if not (1 <= Allocation.quota and Allocation.quota <= 100):
             raise interface.Invalid(_(u'Quota must be between 1 and 100'))
+
+    @interface.invariant
+    def isValidWaitinglist(Allocation):
+        if not (0 <= Allocation.waitinglist_spots and Allocation.waitinglist_spots <= 100):
+            raise interface.Invalid(_(u'Waitinglist must be between 0 and 100'))
 
     @interface.invariant
     def isValidOption(Allocation):
