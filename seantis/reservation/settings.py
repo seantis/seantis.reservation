@@ -16,17 +16,10 @@ class ISeantisReservationSettings(Interface):
         description=_(u'The number of minutes a user needs to wait between reservations')
     )
 
-    confirm_reservation = schema.Bool(
-        title=_(u"Confirm Reservation"),
-        description=_(u'If true each reservation needs to be confirmed manually. This needs to be true to enable waiting lists.')
-    )
-
 def get(name, default=None):
     registry = getUtility(IRegistry)
-    try:
-        settings = registry.forInterface(ISeantisReservationSettings)
-    except KeyError:
-        return default
+    settings = registry.forInterface(ISeantisReservationSettings)
+    
     assert hasattr(settings, name), "Unknown setting: %s" % name
     return getattr(settings, name)
 

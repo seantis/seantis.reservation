@@ -171,6 +171,11 @@ class IAllocation(form.Schema):
     quota = schema.Int(
         title=_(u'Quota'),
         )
+
+    confirm_reservation = schema.Bool(
+        title=_(u'Confirm reservation'),
+        default=False
+        )
     
     waitinglist_spots = schema.Int(
         title=_(u'Waiting List Spots'),

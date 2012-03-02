@@ -153,7 +153,7 @@ def event_class(availability):
 def event_availability(context, request, scheduler, allocation):
     a = allocation
     title = lambda msg: translate(context, request, msg)
-    
+
     availability = scheduler.availability(a.start, a.end)
 
     if a.partly_available:
@@ -173,7 +173,12 @@ def event_availability(context, request, scheduler, allocation):
         else:
             text = title(_(u'No spots available'))
 
-    return text, event_class(availability)
+    if allocation.confirm_reservation:
+        hint_availability = int(allocation.open_waitinglist_spots() / float(allocation.waitinglist_spots) * 100.0)
+    else:
+        hint_availability = availability
+
+    return text, event_class(hint_availability)
 
 def flatten(l):
     """Generator for flattening irregularly nested lists. 'Borrowed' from here:

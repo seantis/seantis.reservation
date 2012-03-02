@@ -26,18 +26,6 @@ class AllocationForm(ResourceBaseForm):
 
     template = ViewPageTemplateFile('templates/allocate.pt')
 
-    def update(self, **kwargs):
-        
-        # hide the waiting list setting if the reservations are not confirmed
-        # manually by the user
-        if settings.get('confirm_reservation'):
-            self.hidden_fields = list(set(self.hidden_fields) - set(['waitinglist_spots']))
-        else:
-            self.hidden_fields.append('waitinglist_spots')
-            self.hidden_fields = list(set(self.hidden_fields))
-
-        super(AllocationForm, self).update(**kwargs)
-
 class AllocationAddForm(AllocationForm):
     permission = 'cmf.ManagePortal'
 
@@ -129,7 +117,8 @@ class AllocationAddForm(AllocationForm):
                 quota=data.quota,
                 partly_available=data.partly_available,
                 grouped= not data.separately,
-                waitinglist_spots=data.waitinglist_spots
+                waitinglist_spots=data.waitinglist_spots,
+                confirm_reservation=data.confirm_reservation
             )
         
         utils.handle_action(action=action, success=self.redirect_to_context)
@@ -151,7 +140,8 @@ class AllocationEditForm(AllocationForm):
             'end_time', 
             'day', 
             'quota', 
-            'waitinglist_spots'
+            'confirm_reservation',
+            'waitinglist_spots',
         )
     label = _(u'Edit allocation')
 
@@ -182,7 +172,8 @@ class AllocationEditForm(AllocationForm):
             self.fields['end_time'].field.default = end.time()
             self.fields['day'].field.default = start.date()
             self.fields['quota'].field.default = allocation.quota
-            
+            self.fields['confirm_reservation'].field.default \
+            = allocation.confirm_reservation
             self.fields['waitinglist_spots'].field.default \
             = allocation.waitinglist_spots
 

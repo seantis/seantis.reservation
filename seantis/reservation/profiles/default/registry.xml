@@ -1,6 +1,5 @@
 <registry>
     <records interface="seantis.reservation.settings.ISeantisReservationSettings">
         <value key="throttle_minutes">1</value>
-        <value key="confirm_reservation">True</value>
     </records>
 </registry>

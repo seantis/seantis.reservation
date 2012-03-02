@@ -160,11 +160,9 @@ class Scheduler(object):
         self.is_exposed = is_exposed or (lambda allocation: True)
         self.quota = quota
 
-        self.must_confirm_reservation = settings.get('confirm_reservation', default=True)
-
     @serialized
-    def allocate(self, dates, raster=15, quota=None, 
-                 partly_available=False, grouped=False, waitinglist_spots=None):
+    def allocate(self, dates, raster=15, quota=None, partly_available=False, 
+                 grouped=False, waitinglist_spots=None, confirm_reservation=True):
         """Allocates a spot in the calendar.
 
         An allocation defines a timerange which can be reserved. No reservations
@@ -222,6 +220,7 @@ class Scheduler(object):
             allocation.mirror_of = self.uuid
             allocation.partly_available = partly_available
             allocation.waitinglist_spots = waitinglist_spots
+            allocation.confirm_reservation = confirm_reservation
 
             if grouped:
                 allocation.group = group
@@ -439,7 +438,9 @@ class Scheduler(object):
 
     @serialized
     def move_allocation(self, master_id, new_start=None, new_end=None, 
-                            group=None, new_quota=None, waitinglist_spots=None):
+                            group=None, new_quota=None, waitinglist_spots=None,
+                            confirm_reservation=None
+                            ):
 
         assert master_id
         assert any([new_start and new_end, group, new_quota])
@@ -483,6 +484,7 @@ class Scheduler(object):
             change.end = new.end
             change.group = group or master.group
             change.waitinglist_spots = waitinglist_spots
+            change.confirm_reservation = confirm_reservation
 
     @serialized
     def remove_allocation(self, id=None, group=None):
@@ -548,7 +550,7 @@ class Scheduler(object):
 
                 assert allocation.is_master
 
-                if self.must_confirm_reservation:
+                if allocation.confirm_reservation:
                     if not allocation.open_waitinglist_spots():
                         raise FullWaitingList
 

@@ -88,11 +88,11 @@ class ReservationForm(ResourceBaseForm):
     @extract_action_data
     def reserve(self, data):
         start, end = self.validate(data)
+        autoconfirm = not self.allocation(data.id).confirm_reservation
 
         def reserve(): 
             token = self.context.scheduler().reserve((start, end))
-
-            if not settings.get('confirm_reservation'):
+            if autoconfirm:
                 self.context.scheduler().confirm_reservation(token)
 
         action = throttled(reserve, self.context, 'reserve')

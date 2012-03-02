@@ -287,14 +287,14 @@ class TestScheduler(IntegrationTestCase):
 
     def test_partly(self):
         sc = Scheduler(new_uuid())
-        sc.must_confirm_reservation = False
 
         allocations = sc.allocate(
                 (
                     datetime(2011, 1, 1, 8, 0),
                     datetime(2011, 1, 1, 18, 0)
                 ),
-                partly_available = False
+                partly_available = False,
+                confirm_reservation = False
             )
 
         self.assertEqual(1, len(allocations))
@@ -320,13 +320,12 @@ class TestScheduler(IntegrationTestCase):
     @serialized
     def test_quotas(self):
         sc = Scheduler(new_uuid(), quota=10)
-        sc.must_confirm_reservation = False
         
         start = datetime(2011, 1, 1, 15, 0)
         end = datetime(2011, 1, 1, 16, 0)
 
         # setup an allocation with ten spots
-        allocations = sc.allocate((start, end), raster=15, quota=10)
+        allocations = sc.allocate((start, end), raster=15, quota=10, confirm_reservation=False)
         allocation = allocations[0]
 
         # which should give us ten allocations (-1 as the master is not counted)
@@ -339,11 +338,10 @@ class TestScheduler(IntegrationTestCase):
         # the 11th time it'll fail
         self.assertRaises(AlreadyReservedError, sc.reserve, [(start, end)])
         other = Scheduler(new_uuid(), quota=5)
-        other.must_confirm_reservation = False
 
         # setup an allocation with five spots
         allocations = other.allocate(
-                [(start, end)], raster=15, quota=5, partly_available=True
+                [(start, end)], raster=15, quota=5, partly_available=True, confirm_reservation=False
             )
         allocation = allocations[0]
 
