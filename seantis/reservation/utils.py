@@ -173,7 +173,7 @@ def event_availability(context, request, scheduler, allocation):
         else:
             text = title(_(u'No spots available'))
 
-    if allocation.confirm_reservation:
+    if allocation.approve:
         open_spots = allocation.open_waitinglist_spots()
         hint_availability = int( open_spots / float(allocation.waitinglist_spots) * 100.0)
         if open_spots:

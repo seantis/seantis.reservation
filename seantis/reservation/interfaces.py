@@ -172,8 +172,8 @@ class IAllocation(form.Schema):
         title=_(u'Quota'),
         )
 
-    confirm_reservation = schema.Bool(
-        title=_(u'Confirm reservation'),
+    approve = schema.Bool(
+        title=_(u'Approve reservation requests'),
         default=False
         )
     

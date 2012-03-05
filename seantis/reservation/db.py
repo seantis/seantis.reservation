@@ -162,7 +162,7 @@ class Scheduler(object):
 
     @serialized
     def allocate(self, dates, raster=15, quota=None, partly_available=False, 
-                 grouped=False, waitinglist_spots=None, confirm_reservation=True):
+                 grouped=False, waitinglist_spots=None, approve=True):
         """Allocates a spot in the calendar.
 
         An allocation defines a timerange which can be reserved. No reservations
@@ -194,7 +194,7 @@ class Scheduler(object):
         group = new_uuid()
         quota = quota or self.quota
         waitinglist_spots = waitinglist_spots or quota
-        waitinglist_spots = confirm_reservation and waitinglist_spots or 0
+        waitinglist_spots = approve and waitinglist_spots or 0
 
         # Make sure that this span does not overlap another master
         for start, end in dates:
@@ -208,7 +208,7 @@ class Scheduler(object):
                 raise OverlappingAllocationError(start, end, existing)
 
         # ensure that the waitinglist is at least as big as the quota
-        assert not confirm_reservation or waitinglist_spots >= quota
+        assert not approve or waitinglist_spots >= quota
         
         # Write the master allocations
         allocations = []
@@ -221,7 +221,7 @@ class Scheduler(object):
             allocation.mirror_of = self.uuid
             allocation.partly_available = partly_available
             allocation.waitinglist_spots = waitinglist_spots
-            allocation.confirm_reservation = confirm_reservation
+            allocation.approve = approve
 
             if grouped:
                 allocation.group = group
@@ -438,16 +438,15 @@ class Scheduler(object):
         return availability_by_range(start, end, [self.uuid], self.is_exposed)
 
     @serialized
-    def move_allocation(self, master_id, new_start=None, new_end=None, 
-                            group=None, new_quota=None, waitinglist_spots=None,
-                            confirm_reservation=None
-                            ):
+    def move_allocation(self, master_id, new_start=None, new_end=None, group=None, 
+                        new_quota=None, waitinglist_spots=None, approve=None):
 
         assert master_id
         assert any([new_start and new_end, group, new_quota])
 
         waitinglist_spots = waitinglist_spots or new_quota
-        assert waitinglist_spots >= new_quota
+        waitinglist_spots = approve and waitinglist_spots or 0
+        assert not approve or waitinglist_spots >= new_quota
 
         # Find allocation
         master = self.allocation_by_id(master_id)
@@ -485,7 +484,7 @@ class Scheduler(object):
             change.end = new.end
             change.group = group or master.group
             change.waitinglist_spots = waitinglist_spots
-            change.confirm_reservation = confirm_reservation
+            change.approve = approve
 
     @serialized
     def remove_allocation(self, id=None, group=None):
@@ -524,7 +523,7 @@ class Scheduler(object):
         only fails if there's no open spot.
 
         This function returns a reservation token which can be used to
-        confirm the reservation in confirm_reservation.
+        approve the reservation in approve_reservation.
 
         """
 
@@ -551,7 +550,7 @@ class Scheduler(object):
 
                 assert allocation.is_master
 
-                if allocation.confirm_reservation:
+                if allocation.approve:
                     if not allocation.open_waitinglist_spots():
                         raise FullWaitingList
 
@@ -596,7 +595,7 @@ class Scheduler(object):
         return token
 
     @serialized
-    def confirm_reservation(self, reservation_token):
+    def approve_reservation(self, reservation_token):
         """ This function confirms an existing reservation and writes the
         reserved slots accordingly.
 

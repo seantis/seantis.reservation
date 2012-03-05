@@ -16,7 +16,7 @@ from seantis.reservation.interfaces import (
 
 from seantis.reservation import _
 from seantis.reservation import utils
-from seantis.reservation import settings
+from seantis.reservation import db
 from seantis.reservation.form import (
         ResourceBaseForm, 
         AllocationGroupView,
@@ -88,12 +88,12 @@ class ReservationForm(ResourceBaseForm):
     @extract_action_data
     def reserve(self, data):
         start, end = self.validate(data)
-        autoconfirm = not self.allocation(data.id).confirm_reservation
+        autoconfirm = not self.allocation(data.id).approve
 
         def reserve(): 
             token = self.context.scheduler().reserve((start, end))
             if autoconfirm:
-                self.context.scheduler().confirm_reservation(token)
+                self.context.scheduler().approve_reservation(token)
 
         action = throttled(reserve, self.context, 'reserve')
         utils.handle_action(action=action, success=self.redirect_to_context)
@@ -132,11 +132,12 @@ class GroupReservationForm(ResourceBaseForm, AllocationGroupView):
     @extract_action_data
     def reserve(self, data):
 
+        autoconfirm = not db.allocations_by_group(data.group).first().approve
+
         def reserve():
             token = self.context.scheduler().reserve(group=data.group)
-
-            if not settings.get('confirm_reservation'):
-                self.context.scheduler().confirm_reservation(token)
+            if autoconfirm:
+                self.context.scheduler().approve_reservation(token)
 
         action = throttled(reserve, self.context, 'reserve')
         utils.handle_action(action=action, success=self.redirect_to_context)

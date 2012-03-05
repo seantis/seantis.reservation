@@ -118,7 +118,7 @@ class AllocationAddForm(AllocationForm):
                 partly_available=data.partly_available,
                 grouped= not data.separately,
                 waitinglist_spots=data.waitinglist_spots,
-                confirm_reservation=data.confirm_reservation
+                approve=data.approve
             )
         
         utils.handle_action(action=action, success=self.redirect_to_context)
@@ -140,7 +140,7 @@ class AllocationEditForm(AllocationForm):
             'end_time', 
             'day', 
             'quota', 
-            'confirm_reservation',
+            'approve',
             'waitinglist_spots',
         )
     label = _(u'Edit allocation')
@@ -172,8 +172,8 @@ class AllocationEditForm(AllocationForm):
             self.fields['end_time'].field.default = end.time()
             self.fields['day'].field.default = start.date()
             self.fields['quota'].field.default = allocation.quota
-            self.fields['confirm_reservation'].field.default \
-            = allocation.confirm_reservation
+            self.fields['approve'].field.default \
+            = allocation.approve
             self.fields['waitinglist_spots'].field.default \
             = allocation.waitinglist_spots
 

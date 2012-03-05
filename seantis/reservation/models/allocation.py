@@ -32,7 +32,7 @@ class Allocation(ORMBase):
     group = Column(customtypes.GUID(), nullable=False)
     quota = Column(types.Integer(), default=1)
     partly_available = Column(types.Boolean(), default=False)
-    confirm_reservation = Column(types.Boolean(), default=True)
+    approve = Column(types.Boolean(), default=True)
 
     waitinglist_spots = Column(types.Integer(), default=0)
     # waiting list spots are interpreted like this:
@@ -55,7 +55,7 @@ class Allocation(ORMBase):
         allocation.group = self.group
         allocation.quota = self.quota
         allocation.partly_available = self.partly_available
-        allocation.confirm_reservation = self.confirm_reservation
+        allocation.approve = self.approve
         allocation.waitinglist_spots = self.waitinglist_spots
         allocation._start = self._start
         allocation._end = self._end
