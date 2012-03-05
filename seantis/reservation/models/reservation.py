@@ -55,5 +55,5 @@ class Reservation(ORMBase):
     )
 
     __table_args__ = (
-        Index('status_token_ix', 'status', 'token'),
+        Index('target_status_ix', 'status', 'target', 'id'),
     )
