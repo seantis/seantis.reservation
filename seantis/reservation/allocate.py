@@ -196,7 +196,8 @@ class AllocationEditForm(AllocationForm):
             end, 
             unicode(data.group or u''), 
             data.quota, 
-            data.waitinglist_spots
+            data.waitinglist_spots,
+            data.approve
         )
         action = lambda: scheduler.move_allocation(*args)
         
