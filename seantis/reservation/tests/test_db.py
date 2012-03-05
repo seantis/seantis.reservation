@@ -125,6 +125,27 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(allocation.open_waitinglist_spots(), 1)
 
     @serialized
+    def test_no_bleed(self):
+        """ Ensures that two allocations close to each other are not mistaken
+        when using scheduler.reserve. If they do then they bleed over, hence the name.
+
+        """
+        sc = Scheduler(new_uuid())
+        
+        d1 = (datetime(2011, 1, 1, 15, 0), datetime(2011, 1, 1, 16,0))
+        d2 = (datetime(2011, 1, 1, 16, 0), datetime(2011, 1, 1, 17, 0))
+        
+        a1 = sc.allocate(d1)[0]
+        a2 = sc.allocate(d2)[0]
+
+        self.assertFalse(a1.overlaps(*d2))
+        self.assertFalse(a2.overlaps(*d1))
+
+        # expect no exceptions
+        sc.reserve(d2)
+        sc.reserve(d1)
+
+    @serialized
     def test_waitlist_group(self):
         from dateutil.rrule import rrule, DAILY, MO
 

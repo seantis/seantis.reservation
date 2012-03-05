@@ -37,6 +37,7 @@ def is_valid_raster(raster):
 
 def rasterize_start(date, raster):
     """Get a date and snap it to the beginning of the raster."""
+    
     assert(is_valid_raster(raster))
 
     delta = timedelta(minutes=date.minute % raster, 

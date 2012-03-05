@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from seantis.reservation.tests import IntegrationTestCase
 

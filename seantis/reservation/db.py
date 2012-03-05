@@ -22,7 +22,6 @@ from seantis.reservation.session import serialized
 from seantis.reservation.raster import rasterize_span
 from seantis.reservation import utils
 from seantis.reservation import Session
-from seantis.reservation import settings
     
 def all_allocations_in_range(start, end):
     # Query version of utils.overlaps
@@ -576,6 +575,10 @@ class Scheduler(object):
             # can all allocations be reserved?
             for allocation in self.allocations_in_range(start, end):
 
+                # start and end are not rasterized, so we need this check
+                if not allocation.overlaps(start, end):
+                    continue
+
                 assert allocation.is_master
 
                 if allocation.approve:
@@ -603,6 +606,10 @@ class Scheduler(object):
             groups = []
             for start, end in dates:
                 for allocation in self.allocations_in_range(start, end):
+
+                    if not allocation.overlaps(start, end):
+                        continue
+
                     reservation = Reservation()
                     reservation.token = token
                     reservation.start, reservation.end = rasterize_span(
