@@ -194,6 +194,9 @@ class Allocation(ORMBase):
 
     def open_waitinglist_spots(self):
 
+        if not self.confirm_reservation:
+            return 0
+            
         used = self.pending_reservations()
         available = self.waitinglist_spots
 
