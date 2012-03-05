@@ -146,6 +146,14 @@ seantis.formgroups.init = function(el) {
         ]
     });
 
+    add({
+        name: "approve",
+        trigger: find('#form-widgets-approve-0'),
+        fields: [
+            find('#formfield-form-widgets-waitinglist_spots')
+        ]
+    });
+
     seantis.formgroups.add_utility_links(find);
 };
 
