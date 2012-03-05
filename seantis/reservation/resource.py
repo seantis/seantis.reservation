@@ -253,14 +253,6 @@ class Slots(grok.View, CalendarRequest):
                     resource, self.request, scheduler, alloc
                 )
 
-            if alloc.confirm_reservation:
-                waitinglist_spots = alloc.open_waitinglist_spots()
-                if waitinglist_spots:
-                    title += '\n%i requests until block' % waitinglist_spots
-                else:
-                    title += '\nwaitinglist is full, come back later'
-
-
             if not alloc.partly_available:
                 # TODO get rid of this workaround
                 # (it's about showing a used partition when the master is
