@@ -194,6 +194,7 @@ class Scheduler(object):
         group = new_uuid()
         quota = quota or self.quota
         waitinglist_spots = waitinglist_spots or quota
+        waitinglist_spots = confirm_reservation and waitinglist_spots or 0
 
         # Make sure that this span does not overlap another master
         for start, end in dates:
@@ -207,7 +208,7 @@ class Scheduler(object):
                 raise OverlappingAllocationError(start, end, existing)
 
         # ensure that the waitinglist is at least as big as the quota
-        assert waitinglist_spots >= quota
+        assert not confirm_reservation or waitinglist_spots >= quota
         
         # Write the master allocations
         allocations = []

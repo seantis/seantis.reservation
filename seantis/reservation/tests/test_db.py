@@ -176,6 +176,7 @@ class TestScheduler(IntegrationTestCase):
 
         allocation = sc.allocate(dates, confirm_reservation=False)[0]
 
+        self.assertEqual(allocation.has_waitinglist, False)
         self.assertEqual(allocation.open_waitinglist_spots(), 0)
         self.assertEqual(allocation.pending_reservations(), 0)
 
