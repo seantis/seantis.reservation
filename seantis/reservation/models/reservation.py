@@ -4,8 +4,9 @@ from sqlalchemy.schema import Index
 
 from seantis.reservation import ORMBase
 from seantis.reservation.models import customtypes
+from seantis.reservation.models.other import OtherModels
 
-class Reservation(ORMBase):
+class Reservation(ORMBase, OtherModels):
     """Describes a pending or confirmed reservation and may as such act as
     a list of confirmed reservations or a waiting list.
 

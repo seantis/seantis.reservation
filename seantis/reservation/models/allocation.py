@@ -12,14 +12,14 @@ from sqlalchemy.orm.util import has_identity
 from seantis.reservation import ORMBase
 from seantis.reservation import utils
 from seantis.reservation.models import customtypes
-from seantis.reservation.models.reservation import Reservation
 from seantis.reservation.raster import rasterize_span
 from seantis.reservation.raster import rasterize_start
 from seantis.reservation.raster import rasterize_end
 from seantis.reservation.raster import iterate_span
 from seantis.reservation import Session
+from seantis.reservation.models.other import OtherModels
 
-class Allocation(ORMBase):
+class Allocation(ORMBase, OtherModels):
     """Describes a timespan within which one or many timeslots can be reserved.
 
     """
@@ -186,6 +186,7 @@ class Allocation(ORMBase):
         the list or toward the unused quota.
 
         """
+        Reservation = self.models.Reservation
         query = Session.query(Reservation.id)
         query = query.filter(Reservation.target == self.group)
         query = query.filter(Reservation.status == u'pending')
