@@ -10,38 +10,71 @@
 <metal:main fill-slot="main">
 <tal:main-macro metal:define-macro="main">
       
-<h1 class="documentFirstHeading" tal:content="view/title"/>
-<div id="reservation-info" metal:define-macro="reservations">
+<h1 class="documentFirstHeading" i18n:translate="">Confirmed Reservations</h1>
+<div id="reservation-info" metal:define-macro="confirmed_reservations">
     <tal:block tal:repeat="group python: view.confirmed_reservations().items()">
         
         <div class="reservation" 
             tal:attributes="data-group python: view.highlight_group"
             tal:define="
-                reservation python: group[0];
-                records python: group[1];
+                token python: group[0];
+                reservations python: group[1];
             ">
             <div class="reservation-title">
                 
-                <h3 tal:content="view/reservation_info"></h3>
+                <h3 tal:content="python: view.reservation_info(token)"></h3>
 
-                <a tal:condition="view/show_links"
-                   tal:attributes="href python: view.remove_all_url(group)"
+                  <a tal:condition="view/show_links"
+                   tal:attributes="href python: view.remove_all_url(token)"
                    class="reservation-delete" i18n:translate="">
                    Delete
                 </a>
             </div>
-            <div tal:repeat="record records" class="reservation-list">
-                <tal:block tal:define="
-                    start python: record[2];
-                    end python: record[3];
-                    daterange python: view.display_date(start, end);
-                    remove_url python: view.remove_part_url(record);
-                ">
-                    <span tal:content="daterange"></span>
-                    <a tal:condition="view/show_links" tal:attributes="href remove_url" 
-                       class="reservation-delete" i18n:translate="">
-                       Delete
-                    </a>
+            <div tal:repeat="reservation reservations" class="reservation-list">
+                <tal:block tal:repeat="timespan python: reservation.timespans()">
+                    <tal:block tal:define="
+                    start python: timespan[0];
+                    end python: timespan[1];
+                    display python: view.display_date(start, end);
+                    ">
+                      <div tal:content="display"></div>
+                    </tal:block>
+                </tal:block>
+            </div>
+        </div>
+
+    </tal:block>
+</div>
+
+<h1 class="documentFirstHeading" i18n:translate="">Pending Reservations</h1>
+<div id="reservation-info" metal:define-macro="pending_reservations">
+    <tal:block tal:repeat="group python: view.pending_reservations().items()">
+        
+        <div class="reservation" 
+            tal:attributes="data-group python: view.highlight_group"
+            tal:define="
+                token python: group[0];
+                reservations python: group[1];
+            ">
+            <div class="reservation-title">
+                
+                <h3 tal:content="python: view.reservation_info(token)"></h3>
+
+                  <a tal:condition="view/show_links"
+                   tal:attributes="href python: view.confirm_all_url(token)"
+                   class="reservation-delete" i18n:translate="">
+                   Approve
+                  </a>
+            </div>
+            <div tal:repeat="reservation reservations" class="reservation-list">
+                <tal:block tal:repeat="timespan python: reservation.timespans()">
+                    <tal:block tal:define="
+                    start python: timespan[0];
+                    end python: timespan[1];
+                    display python: view.display_date(start, end);
+                    ">
+                      <div tal:content="display"></div>
+                    </tal:block>
                 </tal:block>
             </div>
         </div>
