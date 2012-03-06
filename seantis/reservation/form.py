@@ -299,6 +299,9 @@ class ReservationListView(object):
         scheduler = self.context.scheduler()
 
         query = self.build_query()
+        if not query: 
+            return {}
+        
         query = db.grouped_reservation_view(query)
 
         keyfn = lambda result: result.reservation_token
