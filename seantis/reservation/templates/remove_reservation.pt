@@ -13,7 +13,7 @@
         <p tal:content="python: view.hint"></p>
 
         <div class="limitedList">
-          <metal:block use-macro="context/@@reservations/macros/confirmed_reservations" />
+          <metal:block use-macro="context/@@reservations/macros/approved_reservations" />
         </div>
         <metal:block use-macro="context/@@ploneform-macros/titlelessform" />
     </tal:main-macro>

@@ -544,9 +544,9 @@ class Scheduler(object):
         waiting list.
 
         The second step is to actually write out the reserved slots, which
-        is done by confirming an existing reservation.
+        is done by approving an existing reservation.
 
-        Most checks are done in the reserve functions. The confirm step
+        Most checks are done in the reserve functions. The approval step
         only fails if there's no open spot.
 
         This function returns a reservation token which can be used to
@@ -633,7 +633,7 @@ class Scheduler(object):
 
     @serialized
     def approve_reservation(self, reservation_token):
-        """ This function confirms an existing reservation and writes the
+        """ This function approves an existing reservation and writes the
         reserved slots accordingly.
 
         Returns a list with the reserved slots.
@@ -682,7 +682,7 @@ class Scheduler(object):
                     if allocation.is_transient:
                         Session.add(allocation)
 
-            reservation.status = u'confirmed'
+            reservation.status = u'approved'
 
         if not slots_to_reserve:
             raise NotReservableError

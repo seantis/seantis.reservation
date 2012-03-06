@@ -11,7 +11,8 @@ from seantis.reservation.interfaces import (
         IResourceBase,
         IReservation,
         IGroupReservation,
-        IRemoveReservation
+        IRemoveReservation,
+        IApproveReservation,
     )
 
 from seantis.reservation import _
@@ -28,17 +29,13 @@ from seantis.reservation.error import NoResultFound
 
 class ReservationUrls(object):
 
-    def remove_all_url(self, reservation):
+    def remove_all_url(self, token):
         base = self.context.absolute_url()
-        return base + u'/remove-reservation?reservation=%s' % reservation[0]
+        return base + u'/remove-reservation?reservation=%s' % token
 
-    def remove_part_url(self, reservation):
+    def approve_all_url(self, token):
         base = self.context.absolute_url()
-        return base + u'/remove-reservation?reservation=%s&start=%s&end=%s' % (
-                reservation[0], 
-                utils.timestamp(reservation[2]), 
-                utils.timestamp(reservation[3]+timedelta(microseconds=1))
-            )
+        return base + u'/approve-reservation?reservation=%s' % token
 
 class ReservationForm(ResourceBaseForm):
     permission = 'zope2.View'
@@ -88,11 +85,11 @@ class ReservationForm(ResourceBaseForm):
     @extract_action_data
     def reserve(self, data):
         start, end = self.validate(data)
-        autoconfirm = not self.allocation(data.id).approve
+        autoapprove = not self.allocation(data.id).approve
 
         def reserve(): 
             token = self.context.scheduler().reserve((start, end))
-            if autoconfirm:
+            if autoapprove:
                 self.context.scheduler().approve_reservation(token)
 
         action = throttled(reserve, self.context, 'reserve')
@@ -132,12 +129,13 @@ class GroupReservationForm(ResourceBaseForm, AllocationGroupView):
     @extract_action_data
     def reserve(self, data):
 
-        autoconfirm = not db.allocations_by_group(data.group).first().approve
+        sc = self.context.scheduler()
+        autoapprove = not sc.allocations_by_group(data.group).first().approve
 
         def reserve():
-            token = self.context.scheduler().reserve(group=data.group)
-            if autoconfirm:
-                self.context.scheduler().approve_reservation(token)
+            token = sc.reserve(group=data.group)
+            if autoapprove:
+                sc.approve_reservation(token)
 
         action = throttled(reserve, self.context, 'reserve')
         utils.handle_action(action=action, success=self.redirect_to_context)
@@ -146,6 +144,50 @@ class GroupReservationForm(ResourceBaseForm, AllocationGroupView):
     def cancel(self, action):
         self.redirect_to_context()
 
+class ReservationApproveForm(ResourceBaseForm, ReservationListView, ReservationUrls):
+    permission = 'cmf.ManagePortal'
+
+    grok.name('approve-reservation')
+    grok.require(permission)
+
+    fields = field.Fields(IApproveReservation)
+    template = ViewPageTemplateFile('templates/approve_reservation.pt')
+
+    label = _(u'Approve reservation')
+
+    hidden_fields = ['reservation']
+    ignore_requirements = True
+
+    show_links = False
+
+    @property
+    def reservation(self):
+        return self.request.get('reservation')
+
+    def defaults(self):
+        return dict(
+            reservation=unicode(self.reservation)
+        )
+
+    @property
+    def hint(self):
+        if not self.pending_reservations():
+            return _(u'No such reservation')
+
+        return _(u'Do you really want to approve the following reservations?')
+
+    @button.buttonAndHandler(_(u'Approve'))
+    @extract_action_data
+    def approve(self, data):
+
+        scheduler = self.scheduler
+        action = lambda: scheduler.approve_reservation(data.reservation)
+
+        utils.handle_action(action=action, success=self.redirect_to_context)
+
+    @button.buttonAndHandler(_(u'Cancel'))
+    def cancel(self, action):
+        self.redirect_to_context()
 
 class ReservationRemoveForm(ResourceBaseForm, ReservationListView, ReservationUrls):
     permission = 'cmf.ManagePortal'
@@ -176,7 +218,7 @@ class ReservationRemoveForm(ResourceBaseForm, ReservationListView, ReservationUr
 
     @property
     def hint(self):
-        if not self.confirmed_reservations():
+        if not self.approved_reservations():
             return _(u'No such reservation')
 
         if self.reservation and not all((self.start, self.end)):
@@ -222,9 +264,3 @@ class ReservationList(grok.View, ReservationListView, ReservationUrls):
             return unicode(self.request['group'].decode('utf-8'))
         else:
             return u''
-
-    def title(self):
-        if not self.confirmed_reservations():
-            return _(u'No confirmed reservations')
-
-        return _(u'Confirmed reservations')

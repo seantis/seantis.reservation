@@ -96,31 +96,31 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(allocation.open_waitinglist_spots(), 1)
 
         # first reservation should work
-        confirmed_token = sc.reserve(dates)
+        approval_token = sc.reserve(dates)
         self.assertTrue(allocation.is_available(start, end))
         
         # which results in a full waiting list (as the reservation is pending)
         self.assertEqual(allocation.open_waitinglist_spots(), 0)
 
-        # as well as it's confirmation
-        sc.approve_reservation(confirmed_token)
+        # as well as it's approval
+        sc.approve_reservation(approval_token)
         self.assertFalse(allocation.is_available(start, end))
 
         # this leaves one waiting list spot
         self.assertEqual(allocation.open_waitinglist_spots(), 1)
 
-        # at this point we can only reserve, not confirm
+        # at this point we can only reserve, not approve
         waiting_token = sc.reserve(dates)
         self.assertRaises(AlreadyReservedError, sc.approve_reservation, waiting_token)
 
         # the waiting list should be full now
         self.assertEqual(allocation.open_waitinglist_spots(), 0)
 
-        # we may now get rid of the existing confirmed reservation
-        sc.remove_reservation(confirmed_token)
+        # we may now get rid of the existing approved reservation
+        sc.remove_reservation(approval_token)
         self.assertEqual(allocation.open_waitinglist_spots(), 0)
 
-        # which should allow us to confirm the reservation in the waiting list
+        # which should allow us to approve the reservation in the waiting list
         sc.approve_reservation(waiting_token)
         self.assertEqual(allocation.open_waitinglist_spots(), 1)
 

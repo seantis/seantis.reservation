@@ -10,9 +10,9 @@
 <metal:main fill-slot="main">
 <tal:main-macro metal:define-macro="main">
       
-<h1 class="documentFirstHeading" i18n:translate="">Confirmed Reservations</h1>
-<div id="reservation-info" metal:define-macro="confirmed_reservations">
-    <tal:block tal:repeat="group python: view.confirmed_reservations().items()">
+<h1 class="documentFirstHeading" i18n:translate="">Approved Reservations</h1>
+<div class="reservation-info reservation-approve" metal:define-macro="approved_reservations">
+    <tal:block tal:repeat="group python: view.approved_reservations().items()">
         
         <div class="reservation" 
             tal:attributes="data-group python: view.highlight_group"
@@ -47,7 +47,7 @@
 </div>
 
 <h1 class="documentFirstHeading" i18n:translate="">Pending Reservations</h1>
-<div id="reservation-info" metal:define-macro="pending_reservations">
+<div class="reservation-info reservation-pending" metal:define-macro="pending_reservations">
     <tal:block tal:repeat="group python: view.pending_reservations().items()">
         
         <div class="reservation" 
@@ -61,7 +61,7 @@
                 <h3 tal:content="python: view.reservation_info(token)"></h3>
 
                   <a tal:condition="view/show_links"
-                   tal:attributes="href python: view.confirm_all_url(token)"
+                   tal:attributes="href python: view.approve_all_url(token)"
                    class="reservation-delete" i18n:translate="">
                    Approve
                   </a>

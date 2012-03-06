@@ -9,8 +9,7 @@ from seantis.reservation.models import customtypes
 from seantis.reservation.models.other import OtherModels
 
 class Reservation(ORMBase, OtherModels):
-    """Describes a pending or confirmed reservation and may as such act as
-    a list of confirmed reservations or a waiting list.
+    """Describes a pending or approved reservation.
 
     """
 
@@ -53,7 +52,7 @@ class Reservation(ORMBase, OtherModels):
     )
 
     status = Column(
-        types.Enum(u'pending', u'confirmed', name="reservation_status"), 
+        types.Enum(u'pending', u'approved', name="reservation_status"), 
         nullable=False
     )
 
@@ -66,20 +65,21 @@ class Reservation(ORMBase, OtherModels):
         Index('target_status_ix', 'status', 'target', 'id'),
     )
 
-    def siblings(self):
-        query = Session.query(Reservation)
-        query = query.filter(Reservation.token == self.token)
-
-        return query
-
     def allocations(self):
-        targets = [s.target for s in self.siblings()]
-        
         Allocation = self.models.Allocation
         query = Session.query(Allocation)
-        query = query.filter(Allocation.group.in_(targets))
+        query = query.filter(Allocation.group == self.target)
 
         return query
+
+    def timespans(self, start=None, end=None):
+
+        if self.target_type == u'allocation':
+            return [(self.start, self.end)]
+        elif self.target_type == u'group':
+            return [(a.display_start, a.display_end) for a in self.allocations()]
+        else:
+            raise NotImplementedError
 
     @property
     def title(self):

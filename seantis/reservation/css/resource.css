@@ -100,8 +100,8 @@ id selector we need quite the selectors to get a higher weight...*/
 .reservation-title h3,
 #content .reservation-title a,
 #content .reservation-title a:visited,
-#reservation-info .reservation-title a,
-#reservation-info .reservation-title a:visited {
+#content .reservation-info .reservation-title a,
+#content .reservation-info .reservation-title a:visited {
     font-size: 1em !important;
     font-weight: normal !important;
     display: inline;
@@ -111,9 +111,13 @@ id selector we need quite the selectors to get a higher weight...*/
     border-color: white !important;
 }
 
-#reservation-info .reservation-title a:hover,
+#content .reservation-info .reservation-title a:hover,
 #content .reservation-title a:hover {
     color: #75AD0A !important;
+}
+
+#content .reservation-info {
+    margin: -15px auto 30px auto;   
 }
 
 a.reservation-delete {

@@ -2,7 +2,7 @@ import json
 
 from datetime import datetime, timedelta
 from collections import defaultdict
-from itertools import groupby
+from itertools import groupby, ifilter
 
 from five import grok
 from plone.directives import form
@@ -10,7 +10,7 @@ from z3c.form import interfaces
 
 from seantis.reservation import db
 from seantis.reservation import utils
-from seantis.reservation.models import Allocation
+from seantis.reservation.models import Allocation, Reservation
 from seantis.reservation.interfaces import IResourceBase
 
 def extract_action_data(fn):
@@ -256,22 +256,21 @@ class ReservationListView(object):
         can be returned. 
 
         """
-        query = self.build_query()
-        if not query:
-            return
+        return u''
 
-        result = query.with_entities(Allocation.group).first()
-        if not result:
-            return
-
-        return result[0]
-
-    def reservation_info(self):
+    def reservation_info(self, token):
         """ Returns the registration information to be printed
         on the header of the reservation. 
 
         """
-        return utils.random_name()
+
+        if token in self.pending_reservations():
+            return self.pending_reservations()[token][0].title
+
+        if token in self.approved_reservations():
+            return self.approved_reservations()[token][0].title
+
+        return u''
 
     def display_date(self, start, end):
         """ Formates the date range given for display. """
@@ -282,33 +281,22 @@ class ReservationListView(object):
             return start.strftime('%d.%m.%Y %H:%M - ') \
                  + end.strftime('%d.%m.%Y %H:%M')
 
-    def build_query(self):
-        """ Gets the query depending on the instance members. """
-        scheduler = self.context.scheduler()
-        if self.reservation:
-            return scheduler.reserved_slots_by_reservation(self.reservation)
-        elif self.id:
-            return scheduler.reserved_slots_by_allocation(self.id)
-        elif self.group:
-            return scheduler.reserved_slots_by_group(self.group)
-        else:
-            return None
-
-    @utils.memoize
-    def reservations(self):
+    def reservations(self, status):
         """ Returns all reservations relevant to this list in a dictionary
         keyed by reservation token. 
 
         """
         scheduler = self.context.scheduler()
         if self.reservation:
-            query = scheduler.pending_reservations_by_token(self.reservation)
+            query = scheduler.reservations_by_token(self.reservation)
         elif self.id:
-            query = scheduler.pending_reservations_by_allocation(self.id)
+            query = scheduler.reservations_by_allocation(self.id)
         elif self.group:
-            query = scheduler.pending_reservations_by_group(self.group)
+            query = scheduler.reservations_by_group(self.group)
         else:
             return {}
+
+        query = query.filter(Reservation.status == status)
 
         reservations = defaultdict(list)
         for r in query.all():
@@ -317,30 +305,37 @@ class ReservationListView(object):
         return reservations
 
     @utils.memoize
-    def confirmed_reservations(self):
+    def pending_reservations(self):
         """ Returns a dictionary of reservations, keyed by reservation uid. """
-        scheduler = self.context.scheduler()
 
-        query = self.build_query()
-        if not query: 
-            return {}
+        return self.reservations(status=u'pending')
+
+    @utils.memoize
+    def approved_reservations(self):
+        """ Returns a dictionary of reservations, keyed by reservation uid. """
+
+        return self.reservations(status=u'approved')
+
+        # query = self.build_query()
+        # if not query: 
+        #     return {}
         
-        query = db.grouped_reservation_view(query)
+        # query = db.grouped_reservation_view(query)
 
-        keyfn = lambda result: result.reservation_token
+        # keyfn = lambda result: result.reservation_token
         
-        def filter_slot(slot):
-            allocation = scheduler.allocation_by_id(slot[1])
-            return allocation.overlaps(self.start, self.end)
+        # def filter_slot(slot):
+        #     allocation = scheduler.allocation_by_id(slot[1])
+        #     return allocation.overlaps(self.start, self.end)
 
-        if not hasattr(self, 'start') and not hasattr(self, 'end'):
-            filter_slot = lambda slot: True
-        elif not all((self.start, self.end)):
-            filter_slot = lambda slot: True
+        # if not hasattr(self, 'start') and not hasattr(self, 'end'):
+        #     filter_slot = lambda slot: True
+        # elif not all((self.start, self.end)):
+        #     filter_slot = lambda slot: True
 
-        results = {}
+        # results = {}
 
-        for key, values in groupby(query, key=keyfn):
-            results[key] = [v for v in values if filter_slot(v)]
+        # for key, values in groupby(query, key=keyfn):
+        #     results[key] = [v for v in values if filter_slot(v)]
 
-        return results
+        # return results
