@@ -34,6 +34,11 @@ class Reservation(ORMBase):
         nullable=False
     )
 
+    resource = Column(
+        customtypes.GUID(),
+        nullable=False
+    )
+
     start = Column(
         types.DateTime(),
         nullable=True

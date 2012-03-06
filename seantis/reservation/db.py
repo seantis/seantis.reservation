@@ -601,6 +601,7 @@ class Scheduler(object):
             reservation.target = group
             reservation.status = u'pending'
             reservation.target_type = u'group'
+            reservation.resource = self.uuid
             Session.add(reservation)
         else:
             groups = []
@@ -618,6 +619,7 @@ class Scheduler(object):
                     reservation.target = allocation.group
                     reservation.status = u'pending'
                     reservation.target_type = u'allocation'
+                    reservation.resource = self.uuid
                     Session.add(reservation)
 
                     groups.append(allocation.group)
