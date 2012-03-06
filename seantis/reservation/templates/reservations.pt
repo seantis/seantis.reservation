@@ -12,7 +12,7 @@
       
 <h1 class="documentFirstHeading" tal:content="view/title"/>
 <div id="reservation-info" metal:define-macro="reservations">
-    <tal:block tal:repeat="group python: view.reservations().items()">
+    <tal:block tal:repeat="group python: view.confirmed_reservations().items()">
         
         <div class="reservation" 
             tal:attributes="data-group python: view.highlight_group"

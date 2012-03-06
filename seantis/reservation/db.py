@@ -821,14 +821,25 @@ class Scheduler(object):
 
         return query
 
-    def has_reservation_in_range(self, start, end):
-        query = all_allocations_in_range(start, end)
-        query = query.with_entities(Allocation.id)
-        query = query.filter(Allocation.mirror_of==self.uuid)
+    def managed_reservations(self):
+        query = Session.query(Reservation)
+        query = query.filter(Reservation.resource == self.uuid)
         
-        subquery = query.subquery()
-        
-        query = Session.query(ReservedSlot.allocation_id)
-        query = query.filter(ReservedSlot.allocation_id.in_(subquery))
+        return query
 
-        return query.first() and True or False
+    def reservations_by_token(self, token):
+        query = self.managed_reservations()
+        query = query.filter(Reservation.token == token)
+    
+        return query
+
+    def reservations_by_group(self, group):
+        query = self.managed_reservations()
+        query = query.filter(Reservation.target == group)
+
+        return query
+
+    def reservations_by_allocation(self, allocation_id):
+        master = self.allocation_by_id(allocation_id)
+
+        return self.reservations_by_group(master.group)

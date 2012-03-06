@@ -1,6 +1,7 @@
 import json
 
 from datetime import datetime, timedelta
+from collections import defaultdict
 from itertools import groupby
 
 from five import grok
@@ -295,6 +296,28 @@ class ReservationListView(object):
 
     @utils.memoize
     def reservations(self):
+        """ Returns all reservations relevant to this list in a dictionary
+        keyed by reservation token. 
+
+        """
+        scheduler = self.context.scheduler()
+        if self.reservation:
+            query = scheduler.pending_reservations_by_token(self.reservation)
+        elif self.id:
+            query = scheduler.pending_reservations_by_allocation(self.id)
+        elif self.group:
+            query = scheduler.pending_reservations_by_group(self.group)
+        else:
+            return {}
+
+        reservations = defaultdict(list)
+        for r in query.all():
+            reservations[r.token].append(r)
+
+        return reservations
+
+    @utils.memoize
+    def confirmed_reservations(self):
         """ Returns a dictionary of reservations, keyed by reservation uid. """
         scheduler = self.context.scheduler()
 
@@ -321,4 +344,3 @@ class ReservationListView(object):
             results[key] = [v for v in values if filter_slot(v)]
 
         return results
-    

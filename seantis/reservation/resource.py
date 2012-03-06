@@ -176,9 +176,6 @@ class Slots(grok.View, CalendarRequest):
         """
         
         items = utils.EventUrls(self.context, self.request, exposure)
-        has_reservations = self.scheduler.has_reservation_in_range(
-                allocation.start, allocation.end
-            )
 
         start = utils.timestamp(allocation.display_start)
         end = utils.timestamp(allocation.display_end)
@@ -194,18 +191,16 @@ class Slots(grok.View, CalendarRequest):
             res_add(_(u'Reserve'), 
                 'reserve', dict(id=allocation.id, start=start, end=end), 'overlay')
 
-            if has_reservations:
-                res_add(_(u'Manage'), 
-                    'reservations', dict(id=allocation.id), 'inpage')
+            res_add(_(u'Manage'), 
+                'reservations', dict(id=allocation.id), 'inpage')
 
         else:
 
             res_add(_(u'Reserve'),
                 'reserve-group', dict(group=allocation.group), 'overlay')
 
-            if has_reservations:
-                res_add(_(u'Manage'), 
-                    'reservations', dict(group=allocation.group), 'inpage')
+            res_add(_(u'Manage'), 
+                'reservations', dict(group=allocation.group), 'inpage')
 
         # menu entries for single items
         entry_add = lambda n, v, p, t: items.menu_add(_('Entry'), n, v, p, t)

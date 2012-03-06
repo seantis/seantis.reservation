@@ -176,7 +176,7 @@ class ReservationRemoveForm(ResourceBaseForm, ReservationListView, ReservationUr
 
     @property
     def hint(self):
-        if not self.reservations():
+        if not self.confirmed_reservations():
             return _(u'No such reservation')
 
         if self.reservation and not all((self.start, self.end)):
@@ -224,13 +224,7 @@ class ReservationList(grok.View, ReservationListView, ReservationUrls):
             return u''
 
     def title(self):
-        if self.id:
-            if not self.reservations():
-                return _(u'No reservations for this allocation')
+        if not self.confirmed_reservations():
+            return _(u'No confirmed reservations')
 
-            return _(u'Reservations for allocation')
-        else:
-            if not self.reservations():
-                return _(u'No reservations for this recurrence')
-
-            return _(u'Reservations for recurrence')
+        return _(u'Confirmed reservations')

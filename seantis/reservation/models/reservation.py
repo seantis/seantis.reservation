@@ -2,7 +2,9 @@ from sqlalchemy import types
 from sqlalchemy.schema import Column
 from sqlalchemy.schema import Index
 
+from seantis.reservation import utils
 from seantis.reservation import ORMBase
+from seantis.reservation import Session
 from seantis.reservation.models import customtypes
 from seantis.reservation.models.other import OtherModels
 
@@ -63,3 +65,22 @@ class Reservation(ORMBase, OtherModels):
     __table_args__ = (
         Index('target_status_ix', 'status', 'target', 'id'),
     )
+
+    def siblings(self):
+        query = Session.query(Reservation)
+        query = query.filter(Reservation.token == self.token)
+
+        return query
+
+    def allocations(self):
+        targets = [s.target for s in self.siblings()]
+        
+        Allocation = self.models.Allocation
+        query = Session.query(Allocation)
+        query = query.filter(Allocation.group.in_(targets))
+
+        return query
+
+    @property
+    def title(self):
+        return utils.random_name()
