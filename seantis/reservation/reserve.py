@@ -37,6 +37,10 @@ class ReservationUrls(object):
         base = self.context.absolute_url()
         return base + u'/approve-reservation?reservation=%s' % token
 
+    def deny_all_url(self, token):
+        base = self.context.absolute_url()
+        return base + u'/deny-reservation?reservation=%s' % token
+
 class ReservationForm(ResourceBaseForm):
     permission = 'zope2.View'
 
@@ -144,31 +148,42 @@ class GroupReservationForm(ResourceBaseForm, AllocationGroupView):
     def cancel(self, action):
         self.redirect_to_context()
 
-class ReservationApproveForm(ResourceBaseForm, ReservationListView, ReservationUrls):
-    permission = 'cmf.ManagePortal'
-
-    grok.name('approve-reservation')
-    grok.require(permission)
+class ReservationDecisionForm(ResourceBaseForm, ReservationListView, ReservationUrls):
+    
+    grok.baseclass()
 
     fields = field.Fields(IApproveReservation)
-    template = ViewPageTemplateFile('templates/approve_reservation.pt')
-
-    label = _(u'Approve reservation')
 
     hidden_fields = ['reservation']
     ignore_requirements = True
+
+    template = ViewPageTemplateFile('templates/decide_reservation.pt')
 
     show_links = False
     data = None
 
     @property
     def reservation(self):
-        return self.request.get('reservation') or self.data.reservation
+        data = self.data
+        return self.request.get('reservation', (data and data.reservation or None))
 
     def defaults(self):
         return dict(
             reservation=unicode(self.reservation)
         )
+
+    @button.buttonAndHandler(_(u'Cancel'))
+    def cancel(self, action):
+        self.redirect_to_context()
+
+class ReservationApprovalForm(ReservationDecisionForm):
+    
+    permission = 'cmf.ManagePortal'
+    
+    grok.name('approve-reservation')
+    grok.require(permission)
+
+    label = _(u'Approve reservation')
 
     @property
     def hint(self):
@@ -188,9 +203,32 @@ class ReservationApproveForm(ResourceBaseForm, ReservationListView, ReservationU
 
         utils.handle_action(action=action, success=self.redirect_to_context)
 
-    @button.buttonAndHandler(_(u'Cancel'))
-    def cancel(self, action):
-        self.redirect_to_context()
+class ReservationDenialForm(ReservationDecisionForm):
+
+    permission = 'cmf.ManagePortal'
+    
+    grok.name('deny-reservation')
+    grok.require(permission)
+
+    label = _(u'Deny reservation')
+
+    @property
+    def hint(self):
+        if not self.pending_reservations():
+            return _(u'No such reservation')
+
+        return _(u'Do you really want to deny the following reservations?')
+
+    @button.buttonAndHandler(_(u'Deny'))
+    @extract_action_data
+    def approve(self, data):
+
+        self.data = data
+
+        scheduler = self.scheduler
+        action = lambda: scheduler.deny_reservation(data.reservation)
+
+        utils.handle_action(action=action, success=self.redirect_to_context)
 
 class ReservationRemoveForm(ResourceBaseForm, ReservationListView, ReservationUrls):
     permission = 'cmf.ManagePortal'

@@ -690,6 +690,21 @@ class Scheduler(object):
         return slots_to_reserve
 
     @serialized
+    def deny_reservation(self, reservation_token):
+        """ Denies a pending reservation, removing it from the records (and
+            in the future sending out an email..).
+
+        """
+        query = Session.query(Reservation)
+        query = query.filter(Reservation.token == reservation_token)
+        query = query.filter(Reservation.status == u'pending')
+
+        if not query.count():
+            raise InvalidReservationToken
+
+        query.delete();
+
+    @serialized
     def remove_reservation(self, token, start=None, end=None):
         """ Removes all reserved slots of the given reservation token.
 

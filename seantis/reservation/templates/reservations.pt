@@ -62,10 +62,17 @@
                     <h3 tal:content="python: view.reservation_info(token)"></h3>
 
                       <a tal:condition="view/show_links"
+                       tal:attributes="href python: view.deny_all_url(token)"
+                       class="reservation-delete" i18n:translate="">
+                       Deny
+                      </a>
+
+                      <a tal:condition="view/show_links"
                        tal:attributes="href python: view.approve_all_url(token)"
                        class="reservation-delete" i18n:translate="">
                        Approve
                       </a>
+
                 </div>
                 <div tal:repeat="reservation reservations" class="reservation-list">
                     <tal:block tal:repeat="timespan python: reservation.timespans()">
