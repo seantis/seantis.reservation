@@ -159,10 +159,11 @@ class ReservationApproveForm(ResourceBaseForm, ReservationListView, ReservationU
     ignore_requirements = True
 
     show_links = False
+    data = None
 
     @property
     def reservation(self):
-        return self.request.get('reservation')
+        return self.request.get('reservation') or self.data.reservation
 
     def defaults(self):
         return dict(
@@ -179,6 +180,8 @@ class ReservationApproveForm(ResourceBaseForm, ReservationListView, ReservationU
     @button.buttonAndHandler(_(u'Approve'))
     @extract_action_data
     def approve(self, data):
+
+        self.data = data
 
         scheduler = self.scheduler
         action = lambda: scheduler.approve_reservation(data.reservation)
