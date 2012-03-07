@@ -102,6 +102,7 @@ var CalendarGroups = function() {
 
                     //fetches the requested url
                     var fetch = function() {
+                        
                         // show loading gif
                         target.toggleClass('loading', true);
 
@@ -121,15 +122,10 @@ var CalendarGroups = function() {
                                window.seantis_inline = null;
                             });
 
-                            // setup all links with overlays, refetching
-                            // the loaded page once the overlay is closed
+                            // setup all links with overlays
                             $.each($('a', target), function(ix, link) {
 
-                                // use the calendar overlay so the calendar
-                                // is reloaded as well
-                                calendar.overlay_init($(link), function() {
-                                    fetch();
-                                }); 
+                                calendar.overlay_init($(link)); 
 
                             });
 
