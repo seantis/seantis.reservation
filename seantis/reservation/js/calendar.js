@@ -66,6 +66,11 @@ var CalendarGroups = function() {
                         calendar.is_moving = false;
                         calendar.refetch();
 
+                        // reload the inline view if it exists
+                        if (window.seantis_inline) {
+                            window.seantis_inline.fetch();
+                        }
+
                         if (onclose) _.defer(onclose);
                     };
 
@@ -113,6 +118,7 @@ var CalendarGroups = function() {
                             // hookup the close button
                             target.find('#inlineClose').click(function() {
                                target.html(''); 
+                               window.seantis_inline = null;
                             });
 
                             // setup all links with overlays, refetching
@@ -149,6 +155,9 @@ var CalendarGroups = function() {
                     };
 
                     element.click(function(event) {
+                        window.seantis_inline = { 
+                            fetch: fetch
+                        };
                         fetch();
                         seantis.contextmenu.close();
                         event.preventDefault();
