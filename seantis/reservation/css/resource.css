@@ -7,7 +7,7 @@
 .loading {
     background-image: url(/++resource++seantis.reservation.images/loading.gif);
     background-repeat: no-repeat;
-    background-position: center 20px;
+    background-position: center 12px;
     min-height: 30px;
 }
 
@@ -95,6 +95,10 @@
     padding-top: 5px;
 }
 
+.reservation-pending .reservation-title {
+    background-color: #888;   
+}
+
 /*Since the default plone theme uses !important in conjunction with an 
 id selector we need quite the selectors to get a higher weight...*/
 .reservation-title h3,
@@ -117,7 +121,25 @@ id selector we need quite the selectors to get a higher weight...*/
 }
 
 #content .reservation-info {
-    margin: -15px auto 30px auto;   
+    margin: -15px auto 50px auto;   
+}
+
+#content .inline-reservations {
+    border-top: solid 1px #dedede;
+    margin: 0;
+    padding: 0 10px;
+    background-color: white;     
+}
+
+#content #inline-page {
+    border: solid 1px #dedede;
+    background-color: #eee; 
+    margin-top: 20px;  
+    min-height: 32px;
+}
+
+#content #inline-page h2 {
+     margin-top: 10px;   
 }
 
 a.reservation-delete {
@@ -152,13 +174,14 @@ a.reservation-delete {
 }
 
 #inlineClose {
-    background-image: url(../pb_close.png);
+    background: url(../pb_close.png) no-repeat;
     cursor: pointer;
     position: relative;
-    height: 30px;
+    height: 36px;
     width: 30px;
     float: right;
-    top: 35px;
+    top: 3px;
+    right: 3px
 }
 
 div.error {
@@ -166,4 +189,12 @@ div.error {
     border: 1px solid red;
     padding: 4px 4px;
     font-size: 10px;
+}
+
+.splitscreen {
+    width: 49%;
+    float: left;
+}
+.splitscreen:first-child {
+    padding-right: 15px;
 }

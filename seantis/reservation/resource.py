@@ -191,16 +191,13 @@ class Slots(grok.View, CalendarRequest):
             res_add(_(u'Reserve'), 
                 'reserve', dict(id=allocation.id, start=start, end=end), 'overlay')
 
-            res_add(_(u'Manage'), 
-                'reservations', dict(id=allocation.id), 'inpage')
-
         else:
 
             res_add(_(u'Reserve'),
                 'reserve-group', dict(group=allocation.group), 'overlay')
 
-            res_add(_(u'Manage'), 
-                'reservations', dict(group=allocation.group), 'inpage')
+        res_add(_(u'Manage'), 
+            'reservations', dict(group=allocation.group), 'inpage')
 
         # menu entries for single items
         entry_add = lambda n, v, p, t: items.menu_add(_('Entry'), n, v, p, t)

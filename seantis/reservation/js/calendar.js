@@ -132,7 +132,6 @@ var CalendarGroups = function() {
                             var groups = target.find('div[data-group]');
                             
                             groups.mouseenter(function() {
-                                console.log('hit');
                                 var group = $(this).attr('data-group');
                                 if (!_.isEmpty(group))
                                     calendar.highlight_group(group, true);

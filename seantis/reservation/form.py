@@ -256,7 +256,7 @@ class ReservationListView(object):
         can be returned. 
 
         """
-        return u''
+        return hasattr(self, 'group') and self.group or u''
 
     def reservation_info(self, token):
         """ Returns the registration information to be printed
