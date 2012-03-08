@@ -252,3 +252,7 @@ a.event-full-waitinglist.event-fully-booked .fc-event-head {
         display: none !important;
     }
 }
+
+.fc-event-title {
+    line-height: 14px;    
+}
