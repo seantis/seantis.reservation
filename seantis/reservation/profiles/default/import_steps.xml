@@ -1,9 +1,11 @@
 <?xml version="1.0"?>
 <import-steps>
+  
   <import-step id="seantis.reservation.dbsetup"
                version="20110909-01"
                handler="seantis.reservation.setuphandlers.dbsetup"
                title="DB Setup">
   Creates the tables in the database
   </import-step>
+
 </import-steps>

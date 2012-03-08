@@ -30,11 +30,8 @@ recurrence = SimpleVocabulary(
         ]
     )
 
-class IReservable(Interface):
-    """Reservable object."""
-
-    def uid(self):
-        """Returns a unique key for the resource."""
+class IReservationFormSet(interface.Interface):
+    pass
 
 class IResourceBase(form.Schema):
 
