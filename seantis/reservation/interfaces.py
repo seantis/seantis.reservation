@@ -1,11 +1,19 @@
 from datetime import datetime, timedelta
 from dateutil import rrule
 
+from five import grok
+
 from zope.interface import Interface
 from plone.directives import form
+from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from zope import schema
 from zope import interface
+from plone.dexterity.interfaces import IDexterityFTI
 
+from plone.dexterity.utils import schemaNameToPortalType as getname
+from zope.component import getAllUtilitiesRegisteredFor as getallutils
+
+from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary
 from zope.schema.vocabulary import SimpleTerm
 
@@ -29,6 +37,17 @@ recurrence = SimpleVocabulary(
          SimpleTerm(value=True, title=_(u'Daily')),
         ]
     )
+
+@grok.provider(IContextSourceBinder)
+def form_interfaces(context):
+    dutils = getallutils(IDexterityFTI)
+    behavior = 'seantis.reservation.interfaces.IReservationFormSet'
+    interfaces = [(u.title, u.lookupSchema()) for u in dutils if behavior in u.behaviors]
+    
+    def get_term(item):
+        return SimpleTerm(title=item[0], value=getname(item[1].__name__))
+
+    return SimpleVocabulary(map(get_term, interfaces))
 
 class IReservationFormSet(interface.Interface):
     pass
@@ -58,6 +77,16 @@ class IResourceBase(form.Schema):
             title=_(u'Quota'),
             default=1
         )
+
+    formsets = schema.List(
+            title=_(u'Formsets'),
+            value_type=schema.Choice(
+                source=form_interfaces,
+            ),
+            required=False
+        )
+        
+    form.widget(formsets=CheckBoxFieldWidget)
 
     @interface.invariant
     def isValidFirstLastHour(Resource):
