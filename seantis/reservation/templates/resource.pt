@@ -23,7 +23,8 @@
         <div tal:replace="structure provider:plone.abovecontentbody" />
 
         <div class="documentContent" 
-            tal:define="multicalendar python: view.calendar_count == 1">
+            tal:define="multicalendar python: view.calendar_count == 1"
+            tal:attributes="class python: view.calendar_count == 1 and 'singlecalendar' or 'multicalendar'">
 
             <!-- single calendar -->
             <tal:block 
@@ -41,6 +42,17 @@
                     <p tal:content="description" />
                     <div tal:attributes="id calendar_id"></div>
 
+                    <div class="legend">
+                        <div class="icon-fully-booked">
+                            <tal:block i18n:translate="">Fully booked</tal:block>
+                        </div>
+                        
+                        <div class="icon-full-waitinglist">
+                            <tal:block i18n:translate="">Full waitinglist</tal:block>
+                        </div>
+                    </div>
+
+                    <div style="clear: both;"></div>
                 </div>
             </tal:block>
 
@@ -58,6 +70,17 @@
                     <h1 tal:content="title" class="documentFirstHeading"></h1>
                     <div tal:attributes="id calendar_id"></div>
 
+                    <div class="legend">
+                        <div class="icon-fully-booked">
+                            <tal:block i18n:translate="">Fully booked</tal:block>
+                        </div>
+                        
+                        <div class="icon-full-waitinglist">
+                            <tal:block i18n:translate="">Full waitinglist</tal:block>
+                        </div>
+                    </div>
+
+                    <div style="clear: both;"></div>
                 </div>
 
                 <div tal:condition="repeat/resource/odd" style="clear: both;"></div>
@@ -65,6 +88,7 @@
         </div>
 
         <div style="clear: both"></div>
+
         <div id="inline-page">
         </div>
 
