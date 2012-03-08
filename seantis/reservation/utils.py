@@ -173,17 +173,26 @@ def event_availability(context, request, scheduler, allocation):
         else:
             text = title(_(u'No spots available'))
 
+    if availability == 0:
+        klass = 'event-fully-booked'
+    else:
+        klass = ''
+
     if allocation.approve:
         open_spots = allocation.open_waitinglist_spots()
         hint_availability = int( open_spots / float(allocation.waitinglist_spots) * 100.0)
         if open_spots:
-            text += '\n' + (title(_(u'%i spots left in the waitinglist')) % open_spots)
+            if open_spots == 1:
+                text += '\n' + title(_(u'1 Waitinglist Spot'))
+            else:
+                text += '\n' + (title(_(u'%i Waitinglist Spots')) % open_spots)
         else:
-            text += '\n' + title(_(u'Waitinglist full'))
+            text += '\n' + title(_(u'Full Waitinglist'))
+            klass = ('event-full-waitinglist' + ' ' + klass).strip()
     else:
         hint_availability = availability
 
-    return text, event_class(hint_availability)
+    return text, (klass + ' ' + event_class(hint_availability)).strip()
 
 def flatten(l):
     """Generator for flattening irregularly nested lists. 'Borrowed' from here:
