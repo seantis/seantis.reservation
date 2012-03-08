@@ -215,18 +215,6 @@ a.event-full-waitinglist.event-fully-booked .fc-event-head {
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACMAAAARCAYAAABXaxX/AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6Qzk4N0M2MTM2MTJBMTFFMUI2QURCNTJCMEU4MTI4MUQiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6Qzk4N0M2MTQ2MTJBMTFFMUI2QURCNTJCMEU4MTI4MUQiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpDOTg3QzYxMTYxMkExMUUxQjZBREI1MkIwRTgxMjgxRCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpDOTg3QzYxMjYxMkExMUUxQjZBREI1MkIwRTgxMjgxRCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PlQ5f6AAAASXSURBVHjazFV7TJVlGP99l8OBAxjncKcQmLGJgkhzLAYLXFAtW4YsJyzH1ExyY6tWk2UXrZHFLNogsPmHM0CrdRmNpqICCyimkyWmtOQiGsjlCEcOnMM5363nOwfOjcvsP5+z93u+733P+zy/9/dcXkZRFDwswuIhEl59lGwK9ZrkWPb9NaHyAY6TA+2SArOdtQzc5ytNgvyer4Gmq0bXe3276QMieq+kyI/JsgxJBkRVS+q7ApG0e0iQRIXm5cvlrySmu8D4yIHkaOmwRscwMhHHCbSBlXURou1dk0kj0fqHy51MVpTSgvTgsP/DxqHv+jZ4MbMxSvJc/9Rfx2FimpAzzkjKrB94TmL0GvGNZ/KeWhYMndIBpHHgJDEi0ulFCKQFSXBrmltYK8sohyBIWi8wJrMXGKS9UIq8+FX4d/guTtXXg+d52Phg6PynAmhZ3WxbGoyzGIrW7XkgVmbnCKAoeedMWLxXzkxm5+802PtbEEsg9ry+H6uCdHhkXS7Ofbbdun5t7LLlp+aGKqc7xh8IzIubDLD7gimbqACrZgiNgyHlvdbbVzJFbRj0gSL04TGYETmC+A8lsu7m0w1pdpmSr44rBU9MpBR/5TImzoNRpTArAt93jmF7ZqRr7seuMRQ86f42Ts8tZsZDNFVDOQPhdV9k5heXQOGdjAUpFpxtqERVX+YQBUkNlXWpkwoEhpKY8osc/zEOjmPxU9c4GNbdQxovEWv0Hw15TnpUB7uwNBitKCm7rUHbdqa8U4HGr4ugwBkRhn4xu1sx1XN5myQOvsZAOk7TlqXCpO7gOQb56eHkeAJb0yO8mPH87huZhijKi8AwcyJbaPCLrTlz7Al00+G7CxthnQXsxIFIbjc316Ahshr24b4vZzk/taKO0vjElxmFbPNEQ9OVCWLGqR2O5qk5W10BbdcJyKP9YMKikRqyhWYz3GCidLNboxnjiX1vF+C3exyuWxQIcwTCDodOuVqLDdPfImnHq9AmrIe1p1l/vf38x6a/e820vcoFhk6pXi8aAvFcWjguUEPMTXW3nbZjRxF6pwmJRXsX7CC4/SLO52pK8y4IVQ68dUkVP5wqnsTYjTPoGiH+pxjYyI06hBkgvrsSaze/BP/+NjAnC6Eb+BkJcaGswihvejKjdltnB2ccQFRRtTpaeoywtdbi8WxfO3os2HEwwzEMy2t16OgyIvllC3rv66CIlAN2Jzv66SH4RyUAz7/lju+haHAyE+8FRhSdOUNH3JwShra/jMhJdjNz8d6dFe04wLCJuQcHW+s+ChB2obHhEp9cmA3Gw4k5JAaWP39F4C/7YbOOOjLXPM1B4jCyKGcoTMmrg3B30oo1kQEYHJ1x3U0IjVrRzkICHzGk5lbHMrJf642Z8pYj32zhNDoD1aSGahUG/xwm8vcOPj4sgCpFA/OEiFtjDF2hSo13NSmdh0/f3GiX5EC1f6hDojwSHBejiIzIfAR2nUOcwW1ncIwl+HKNb2mb53XJkpfgjKXs2u2RfXRFxUkcO0xAan2r6fNdSVkr99wsdO5YXXbtlqcdufbZZtFh5z8BBgC/OEUgB01VRwAAAABJRU5ErkJggg==);
 }
 
-@media all and (max-width: 900px) {
-    .singlecalendar .fc-event-head {
-        background-image: none !important;   
-    }
-}
-
-@media all and (max-width: 2000px) {
-    .multicalendar .fc-event-head {
-        background-image: none !important;   
-    }
-}
-
 .legend {
      float:right;   
      background-color: #e4f3ff;
@@ -243,4 +231,24 @@ a.event-full-waitinglist.event-fully-booked .fc-event-head {
     background-position: left;
     padding-left: 18px;
     padding-right: 10px;  
+}
+
+@media all and (max-width: 900px) {
+    .singlecalendar .fc-event-head {
+        background-image: none !important;   
+    }
+
+    .singlecalendar .legend {
+        display: none !important;
+    }
+}
+
+@media all and (max-width: 2000px) {
+    .multicalendar .fc-event-head {
+        background-image: none !important;   
+    }
+
+    .multicalendar .legend {
+        display: none !important;
+    }
 }
