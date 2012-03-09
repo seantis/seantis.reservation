@@ -12,6 +12,8 @@ from itertools import tee, izip
 from uuid import UUID
 from uuid import uuid5 as new_uuid_mirror
 
+from plone.dexterity.utils import SchemaNameEncoder
+
 from App.config import getConfiguration
 from Acquisition import aq_inner
 from zope.component import getMultiAdapter
@@ -22,6 +24,8 @@ from z3c.form.interfaces import ActionExecutionError
 
 from seantis.reservation import error
 from seantis.reservation import _
+
+dexterity_encoder = SchemaNameEncoder()
 
 def overlaps(start, end, otherstart, otherend):
     if otherstart <= start and start <= otherend:

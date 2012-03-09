@@ -91,19 +91,19 @@ class AllocationAddForm(AllocationForm):
 
         """
 
-        start, end = utils.get_date_range(data.day, data.start_time, data.end_time)
+        start, end = utils.get_date_range(data['day'], data['start_time'], data['end_time'])
 
-        if not data.recurring:
+        if not data['recurring']:
             return ((start, end))
 
         rule = rrule.rrule(
                 rrule.DAILY,
-                byweekday=data.days,
-                dtstart=data.recurrence_start, 
-                until=data.recurrence_end,
+                byweekday=data['days'],
+                dtstart=data['recurrence_start'], 
+                until=data['recurrence_end'],
             )
     
-        event = lambda d:utils.get_date_range(d, data.start_time, data.end_time)
+        event = lambda d:utils.get_date_range(d, data['start_time'], data['end_time'])
         
         return [event(d) for d in rule]
 
@@ -113,12 +113,12 @@ class AllocationAddForm(AllocationForm):
         dates = self.get_dates(data)
 
         action = lambda: self.scheduler.allocate(dates, 
-                raster=data.raster,
-                quota=data.quota,
-                partly_available=data.partly_available,
-                grouped= not data.separately,
-                waitinglist_spots=data.waitinglist_spots,
-                approve=data.approve
+                raster=data['raster'],
+                quota=data['quota'],
+                partly_available=data['partly_available'],
+                grouped= not data['separately'],
+                waitinglist_spots=data['waitinglist_spots'],
+                approve=data['approve']
             )
         
         utils.handle_action(action=action, success=self.redirect_to_context)
@@ -188,16 +188,16 @@ class AllocationEditForm(AllocationForm):
 
         scheduler = self.context.scheduler()
 
-        start, end = utils.get_date_range(data.day, data.start_time, data.end_time)
+        start, end = utils.get_date_range(data['day'], data['start_time'], data['end_time'])
         
         args = (
-            data.id, 
+            data['id'], 
             start, 
             end, 
-            unicode(data.group or u''), 
-            data.quota, 
-            data.waitinglist_spots,
-            data.approve
+            unicode(data['group'] or u''), 
+            data['quota'], 
+            data['waitinglist_spots'],
+            data['approve']
         )
         action = lambda: scheduler.move_allocation(*args)
         
@@ -228,10 +228,10 @@ class AllocationRemoveForm(AllocationForm, AllocationGroupView):
         # TODO since we can't trust the id here there should be another check
         # to make sure the user has the right to work with it. 
 
-        assert bool(data.id) != bool(data.group), "Either id or group, not both"
+        assert bool(data['id']) != bool(data['group']), "Either id or group, not both"
 
         scheduler = self.scheduler
-        action = lambda: scheduler.remove_allocation(id=data.id, group=data.group)
+        action = lambda: scheduler.remove_allocation(id=data['id'], group=data['group'])
         
         utils.handle_action(action=action, success=self.redirect_to_context)
 

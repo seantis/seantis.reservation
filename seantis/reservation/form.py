@@ -3,6 +3,7 @@ import json
 from datetime import datetime, timedelta
 from collections import defaultdict
 from itertools import groupby, ifilter
+from functools import wraps
 
 from five import grok
 from plone.directives import form
@@ -15,9 +16,11 @@ from seantis.reservation.interfaces import IResourceBase
 
 def extract_action_data(fn):
     """ Decorator which inserted after a buttonAndHandler directive will
-    put the extracted data into a named tuple for easier access. 
+    extract the data if possible or return before calling the decorated function
 
     """
+
+    @wraps(fn)
     def wrapper(self, action):
         data, errors = self.extractData()
 
@@ -25,7 +28,7 @@ def extract_action_data(fn):
             self.status = self.formErrorsMessage
             return
 
-        return fn(self, utils.dictionary_to_namedtuple(data))
+        return fn(self, data)
 
     return wrapper
 
@@ -34,6 +37,8 @@ def from_timestamp(fn):
     from a timestamp to datetime. 
 
     """
+
+    @wraps(fn)
     def converter(self, *args, **kwargs):
         date = None
         try:
@@ -115,8 +120,8 @@ class ResourceBaseForm(form.Form):
         return self.context.scheduler()
 
     def metadata(self, data):
-        if hasattr(data, 'metadata'):
-            return json.loads(data.metadata)
+        if 'metadata' in data:
+            return json.loads(data['metadata'])
         return None
 
     @property
@@ -179,6 +184,10 @@ class ResourceBaseForm(form.Form):
         other_defaults = self.defaults()
         for k, v in other_defaults.items():
             self.fields[k].field.default = v
+
+        # call plone.autoform if it is used as a mixin in a child-class
+        if hasattr(self, 'updateFields'):
+            self.updateFields()
 
         super(ResourceBaseForm, self).update(**kwargs)
 

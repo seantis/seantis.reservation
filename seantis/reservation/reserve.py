@@ -44,7 +44,7 @@ class ReservationUrls(object):
         base = self.context.absolute_url()
         return base + u'/deny-reservation?reservation=%s' % token
 
-class ReservationForm(AutoExtensibleForm, ResourceBaseForm):
+class ReservationForm(ResourceBaseForm, AutoExtensibleForm):
     permission = 'zope2.View'
 
     grok.name('reserve')
@@ -92,7 +92,7 @@ class ReservationForm(AutoExtensibleForm, ResourceBaseForm):
             end_time = self.strptime(self.get_data(data, 'end_time'))
 
             start, end = utils.get_date_range(day, start_time, end_time)
-            if not self.allocation(data.id).contains(start, end):
+            if not self.allocation(data['id']).contains(start, end):
                 utils.form_error(_(u'Reservation out of bounds'))
 
             return start, end
@@ -103,7 +103,7 @@ class ReservationForm(AutoExtensibleForm, ResourceBaseForm):
     @extract_action_data
     def reserve(self, data):
         start, end = self.validate(data)
-        autoapprove = not self.allocation(data.id).approve
+        autoapprove = not self.allocation(data['id']).approve
 
         def reserve(): 
             token = self.context.scheduler().reserve((start, end))
@@ -148,10 +148,10 @@ class GroupReservationForm(ResourceBaseForm, AllocationGroupView):
     def reserve(self, data):
 
         sc = self.context.scheduler()
-        autoapprove = not sc.allocations_by_group(data.group).first().approve
+        autoapprove = not sc.allocations_by_group(data['group']).first().approve
 
         def reserve():
-            token = sc.reserve(group=data.group)
+            token = sc.reserve(group=data['group'])
             if autoapprove:
                 sc.approve_reservation(token)
 
@@ -179,7 +179,7 @@ class ReservationDecisionForm(ResourceBaseForm, ReservationListView, Reservation
     @property
     def reservation(self):
         data = self.data
-        return self.request.get('reservation', (data and data.reservation or None))
+        return self.request.get('reservation', (data and data['reservation'] or None))
 
     def defaults(self):
         return dict(
@@ -213,7 +213,7 @@ class ReservationApprovalForm(ReservationDecisionForm):
         self.data = data
 
         scheduler = self.scheduler
-        action = lambda: scheduler.approve_reservation(data.reservation)
+        action = lambda: scheduler.approve_reservation(data['reservation'])
 
         utils.handle_action(action=action, success=self.redirect_to_context)
 
@@ -240,7 +240,7 @@ class ReservationDenialForm(ReservationDecisionForm):
         self.data = data
 
         scheduler = self.scheduler
-        action = lambda: scheduler.deny_reservation(data.reservation)
+        action = lambda: scheduler.deny_reservation(data['reservation'])
 
         utils.handle_action(action=action, success=self.redirect_to_context)
 
@@ -289,7 +289,7 @@ class ReservationRemoveForm(ResourceBaseForm, ReservationListView, ReservationUr
 
         scheduler = self.scheduler
         action = lambda: scheduler.remove_reservation(
-                data.reservation, data.start, data.end
+                data['reservation'], data['start'], data['end']
             )
 
         utils.handle_action(action=action, success=self.redirect_to_context)
