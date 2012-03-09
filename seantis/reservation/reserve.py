@@ -1,10 +1,14 @@
-from datetime import timedelta, date, time
+from datetime import date, time
 
 from five import grok
+
+from plone.dexterity.interfaces import IDexterityFTI
+from zope.component import queryUtility
 
 from z3c.form import field
 from z3c.form import button
 from z3c.form.ptcompat import ViewPageTemplateFile
+from plone.autoform.form import AutoExtensibleForm
 
 from seantis.reservation.throttle import throttled
 from seantis.reservation.interfaces import (
@@ -17,7 +21,6 @@ from seantis.reservation.interfaces import (
 
 from seantis.reservation import _
 from seantis.reservation import utils
-from seantis.reservation import db
 from seantis.reservation.form import (
         ResourceBaseForm, 
         AllocationGroupView,
@@ -41,7 +44,7 @@ class ReservationUrls(object):
         base = self.context.absolute_url()
         return base + u'/deny-reservation?reservation=%s' % token
 
-class ReservationForm(ResourceBaseForm):
+class ReservationForm(AutoExtensibleForm, ResourceBaseForm):
     permission = 'zope2.View'
 
     grok.name('reserve')
@@ -49,6 +52,17 @@ class ReservationForm(ResourceBaseForm):
 
     fields = field.Fields(IReservation)
     label = _(u'Resource reservation')
+
+    schema = IReservation
+
+    @property
+    def additionalSchemata(self):
+        scs = []
+        for ptype in self.context.formsets:
+             fti = queryUtility(IDexterityFTI, name=ptype)
+             if fti:
+                scs.append(fti.lookupSchema())
+        return scs
 
     def defaults(self, **kwargs):
         return dict(id=self.id)
