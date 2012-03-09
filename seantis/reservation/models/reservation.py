@@ -81,6 +81,27 @@ class Reservation(ORMBase, OtherModels):
         else:
             raise NotImplementedError
 
+    def flat_data(self, dictionary):
+        result = []
+
+        for key, val in dictionary.items():
+            if type(val) == dict:
+                result.extend(self.flat_data(val))
+            else:
+                result.append((key, val))
+
+        return result
+
     @property
     def title(self):
-        return utils.random_name()
+        data = self.data
+        if not data: return ''
+
+        flat = self.flat_data(data)
+        parts = []
+        
+        for key, value in flat:
+            if key in ('first_name', 'last_name'):
+                parts.append(value)
+        
+        return ' '.join(parts)

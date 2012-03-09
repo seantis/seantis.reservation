@@ -106,7 +106,7 @@ class ReservationForm(ResourceBaseForm, AutoExtensibleForm):
         autoapprove = not self.allocation(data['id']).approve
 
         def reserve(): 
-            token = self.context.scheduler().reserve((start, end))
+            token = self.context.scheduler().reserve((start, end), data=data)
             if autoapprove:
                 self.context.scheduler().approve_reservation(token)
 

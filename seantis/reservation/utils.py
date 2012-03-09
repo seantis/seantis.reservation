@@ -27,6 +27,33 @@ from seantis.reservation import _
 
 dexterity_encoder = SchemaNameEncoder()
 
+def additional_data_dictionary(data):
+
+    if not data:
+        return dict()
+    
+    result = dict()
+
+    def add_key(dictionary, key, keypart):
+        parts = keypart.split('.')
+        if len(parts) == 1:
+            dictionary[keypart] = data[key]
+        else:
+            add_key(dictionary.setdefault(parts[0], dict()), key, '.'.join(parts[1:]))
+
+    for key, val in data.items():
+        key = dexterity_encoder.decode(key.replace('_0_', '.'))
+        key = key.replace('reservations.', '')
+
+        data[key] = val
+
+        if not '.' in key:
+            continue
+
+        add_key(result, key, key)
+
+    return result
+
 def overlaps(start, end, otherstart, otherend):
     if otherstart <= start and start <= otherend:
         return True

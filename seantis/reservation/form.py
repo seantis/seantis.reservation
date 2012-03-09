@@ -105,7 +105,7 @@ class ResourceBaseForm(form.Form):
         if metadata and key in metadata:
             return metadata.get(key)
 
-        return hasattr(data, key) and getattr(data, key) or None
+        return data.get(key)
 
     def defaults(self):
         return {}
