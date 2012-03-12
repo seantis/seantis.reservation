@@ -107,8 +107,12 @@ class ReservationForm(ResourceBaseForm, AutoExtensibleForm):
 
         def reserve(): 
             token = self.context.scheduler().reserve((start, end), data=data)
+            
             if autoapprove:
                 self.context.scheduler().approve_reservation(token)
+                self.flash(_(u'Reservation successful'))
+            else:
+                self.flash(_(u'Added to waitinglist'))
 
         action = throttled(reserve, self.context, 'reserve')
         utils.handle_action(action=action, success=self.redirect_to_context)

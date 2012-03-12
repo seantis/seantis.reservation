@@ -417,3 +417,6 @@ def get_date_range(day, start_time, end_time):
     if end < start: end += timedelta(days=1)
 
     return start, end
+
+def flash(context, message, type='info'):
+    context.plone_utils.addPortalMessage(message, type)

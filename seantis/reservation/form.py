@@ -172,6 +172,9 @@ class ResourceBaseForm(form.Form):
         
         return u''
 
+    def flash(self, message, type='info'):
+        utils.flash(self.context, message, type)
+
     def update(self, **kwargs):
         start, end = self.start, self.end
         if start and end:

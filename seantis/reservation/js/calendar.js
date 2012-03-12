@@ -36,6 +36,35 @@ var CalendarGroups = function() {
     };
 };
 
+// Shows portalMessages swallowed by the prepOverlay mechanism
+// on the parent page
+var parent = $(window.document);
+var show_popup_message = function(soup) {
+    // all portal messages are in the same DOM (no iframe), so get the first
+    var target = parent.find('dl.portalMessage:first');
+    var messages = soup.find('dl.portalMessage');
+
+    // filter out the ones without any text
+    messages = _.filter(messages, function(m) {
+        return !_.isEmpty($(m).find('dd').text());
+    });
+
+    if (!messages.length)
+        return;
+
+    messages = $(messages);
+    
+    var show = function() {
+        target.after(messages);
+    };
+    var hide = function() {
+        messages.remove();
+    };
+
+    _.delay(show, 0);
+    _.delay(hide, 4000);
+};
+
 (function($) {
     $(document).ready(function() {
 
@@ -81,6 +110,7 @@ var CalendarGroups = function() {
 
                     var after_post = function(el) {
                         seantis.formgroups.init(el);
+                        show_popup_message(el);
                     };
 
                     element.prepOverlay({
@@ -143,7 +173,7 @@ var CalendarGroups = function() {
                                 var group = $(this).attr('data-group');
                                 if (!_.isEmpty(group))
                                     calendar.highlight_group(group, false);
-                            })
+                            });
 
                             // hide loading gif
                             target.toggleClass('loading', false);
@@ -328,9 +358,9 @@ var CalendarGroups = function() {
             _.each(seantis.calendars, function(calendar) {
                 if (calendar.id !== originid) {
                     var block = $('div > div > div > div', calendar.element);
-                    block.scrollTop(top)
+                    block.scrollTop(top);
                     block.scrollLeft(left);
-                } 
+                }
             });
         };
 
