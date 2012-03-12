@@ -180,21 +180,24 @@ class Slots(grok.View, CalendarRequest):
         start = utils.timestamp(allocation.display_start)
         end = utils.timestamp(allocation.display_end)
 
-        # default link to be used when clicking the event
-        items.default_url('reserve', dict(start=start, end=end))
         items.move_url('edit-allocation', dict(id=allocation.id))
 
         # Reservation
         res_add = lambda n, v, p, t: items.menu_add(_(u'Reservations'), n, v, p, t)
         if allocation.is_separate:
-
-            res_add(_(u'Reserve'), 
-                'reserve', dict(id=allocation.id, start=start, end=end), 'overlay')
-
+            res_add(_(u'Reserve'), 'reserve', 
+                dict(id=allocation.id, start=start, end=end), 'overlay'
+            )
+            items.default_url('reserve', 
+                dict(id=allocation.id, start=start, end=end)
+            )
         else:
-
-            res_add(_(u'Reserve'),
-                'reserve-group', dict(group=allocation.group), 'overlay')
+            res_add(_(u'Reserve'), 'reserve-group', 
+                dict(group=allocation.group), 'overlay'
+            )
+            items.default_url('reserve', 
+                dict(group=allocation.group)
+            )
 
         res_add(_(u'Manage'), 
             'reservations', dict(group=allocation.group), 'inpage')

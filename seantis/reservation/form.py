@@ -97,7 +97,7 @@ class ResourceBaseForm(form.Form):
             self.widgets['metadata'].value = json.dumps(metadata)
 
     def get_data(self, data, key):
-        """ Return the key of the given data dictionary (GenericDict), 
+        """ Return the key of the given data dictionary, 
         consulting the metadata dictionary.
 
         """
@@ -120,9 +120,10 @@ class ResourceBaseForm(form.Form):
         return self.context.scheduler()
 
     def metadata(self, data):
-        if 'metadata' in data:
-            return json.loads(data['metadata'])
-        return None
+        metadata = data.get('metadata')
+        if metadata:
+            return json.loads(metadata)
+        return dict()
 
     @property
     @from_timestamp
