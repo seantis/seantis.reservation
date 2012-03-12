@@ -54,10 +54,12 @@ var get_popup_messages = function(soup) {
     messages = $(messages);
     
     var show = function() {
+        messages.hide();
         target.after(messages);
+        messages.fadeIn('slow');
     };
     var hide = function() {
-        messages.remove();
+        messages.fadeOut('slow');
     };
 
     return {show:show, hide:hide};
@@ -98,7 +100,7 @@ var show_popup_messages = function(get_result) {
                 // Sets an element on the calendar up with an overlay
                 calendar.overlay_init = function(element, onclose) {
                     var popups = null;
-                    
+
                     var on_close = function() {
                         calendar.is_resizing = false;
                         calendar.is_moving = false;

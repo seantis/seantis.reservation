@@ -112,7 +112,8 @@ class AllocationAddForm(AllocationForm):
     def allocate(self,data):
         dates = self.get_dates(data)
 
-        action = lambda: self.scheduler.allocate(dates, 
+        def allocate(): 
+            self.scheduler.allocate(dates, 
                 raster=data['raster'],
                 quota=data['quota'],
                 partly_available=data['partly_available'],
@@ -120,8 +121,9 @@ class AllocationAddForm(AllocationForm):
                 waitinglist_spots=data['waitinglist_spots'],
                 approve=data['approve']
             )
+            self.flash(_(u'Allocation added'))
         
-        utils.handle_action(action=action, success=self.redirect_to_context)
+        utils.handle_action(action=allocate, success=self.redirect_to_context)
 
     @button.buttonAndHandler(_(u'Cancel'))
     def cancel(self, action):
@@ -199,9 +201,11 @@ class AllocationEditForm(AllocationForm):
             data['waitinglist_spots'],
             data['approve']
         )
-        action = lambda: scheduler.move_allocation(*args)
+        def edit(): 
+            scheduler.move_allocation(*args)
+            self.flash(_(u'Allocation saved'))
         
-        utils.handle_action(action=action, success=self.redirect_to_context)
+        utils.handle_action(action=edit, success=self.redirect_to_context)
 
     @button.buttonAndHandler(_(u'Cancel'))
     def cancel(self, action):
@@ -231,9 +235,11 @@ class AllocationRemoveForm(AllocationForm, AllocationGroupView):
         assert bool(data['id']) != bool(data['group']), "Either id or group, not both"
 
         scheduler = self.scheduler
-        action = lambda: scheduler.remove_allocation(id=data['id'], group=data['group'])
+        def delete():
+            scheduler.remove_allocation(id=data['id'], group=data['group'])
+            self.flash(_(u'Allocation removed'))
         
-        utils.handle_action(action=action, success=self.redirect_to_context)
+        utils.handle_action(action=delete, success=self.redirect_to_context)
 
     @button.buttonAndHandler(_(u'Cancel'))
     def cancel(self, action):
