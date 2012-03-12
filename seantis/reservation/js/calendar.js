@@ -38,10 +38,9 @@ var CalendarGroups = function() {
 
 // Shows portalMessages swallowed by the prepOverlay mechanism
 // on the parent page
-var parent = $(window.document);
-var show_popup_message = function(soup) {
+var get_popup_messages = function(soup) {
     // all portal messages are in the same DOM (no iframe), so get the first
-    var target = parent.find('dl.portalMessage:first');
+    var target = $('dl.portalMessage:first');
     var messages = soup.find('dl.portalMessage');
 
     // filter out the ones without any text
@@ -61,8 +60,16 @@ var show_popup_message = function(soup) {
         messages.remove();
     };
 
-    _.delay(show, 0);
-    _.delay(hide, 4000);
+    return {show:show, hide:hide};
+};
+
+// call with the result of get_popup_messages to show / hide
+var show_popup_messages = function(get_result) {
+    if (!get_result)
+        return;
+
+    setTimeout(get_result.show, 0);
+    setTimeout(get_result.hide, 4000);
 };
 
 (function($) {
@@ -90,6 +97,8 @@ var show_popup_message = function(soup) {
 
                 // Sets an element on the calendar up with an overlay
                 calendar.overlay_init = function(element, onclose) {
+                    var popups = null;
+                    
                     var on_close = function() {
                         calendar.is_resizing = false;
                         calendar.is_moving = false;
@@ -98,6 +107,10 @@ var show_popup_message = function(soup) {
                         // reload the inline view if it exists
                         if (window.seantis_inline) {
                             window.seantis_inline.fetch();
+                        }
+
+                        if (popups) {
+                            show_popup_messages(popups);
                         }
 
                         if (onclose) _.defer(onclose);
@@ -110,7 +123,7 @@ var show_popup_message = function(soup) {
 
                     var after_post = function(el) {
                         seantis.formgroups.init(el);
-                        show_popup_message(el);
+                        popups = get_popup_messages(el);
                     };
 
                     element.prepOverlay({

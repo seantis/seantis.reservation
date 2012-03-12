@@ -156,8 +156,12 @@ class GroupReservationForm(ResourceBaseForm, AllocationGroupView):
 
         def reserve():
             token = sc.reserve(group=data['group'])
+
             if autoapprove:
                 sc.approve_reservation(token)
+                self.flash(_(u'Reservation successful'))
+            else:
+                self.flash(_(u'Added to waitinglist'))
 
         action = throttled(reserve, self.context, 'reserve')
         utils.handle_action(action=action, success=self.redirect_to_context)
@@ -217,9 +221,11 @@ class ReservationApprovalForm(ReservationDecisionForm):
         self.data = data
 
         scheduler = self.scheduler
-        action = lambda: scheduler.approve_reservation(data['reservation'])
+        def approve():
+            scheduler.approve_reservation(data['reservation'])
+            self.flash(_(u'Reservation confirmed'))
 
-        utils.handle_action(action=action, success=self.redirect_to_context)
+        utils.handle_action(action=approve, success=self.redirect_to_context)
 
 class ReservationDenialForm(ReservationDecisionForm):
 
@@ -239,14 +245,16 @@ class ReservationDenialForm(ReservationDecisionForm):
 
     @button.buttonAndHandler(_(u'Deny'))
     @extract_action_data
-    def approve(self, data):
+    def deny(self, data):
 
         self.data = data
 
         scheduler = self.scheduler
-        action = lambda: scheduler.deny_reservation(data['reservation'])
+        def deny():
+            scheduler.deny_reservation(data['reservation'])
+            self.flash(_(u'Reservation denied'))
 
-        utils.handle_action(action=action, success=self.redirect_to_context)
+        utils.handle_action(action=deny, success=self.redirect_to_context)
 
 class ReservationRemoveForm(ResourceBaseForm, ReservationListView, ReservationUrls):
     permission = 'cmf.ManagePortal'
@@ -292,11 +300,13 @@ class ReservationRemoveForm(ResourceBaseForm, ReservationListView, ReservationUr
     def delete(self, data):
 
         scheduler = self.scheduler
-        action = lambda: scheduler.remove_reservation(
+        def delete():
+            scheduler.remove_reservation(
                 data['reservation'], data['start'], data['end']
             )
+            self.flash(_(u'Reservation removed'))
 
-        utils.handle_action(action=action, success=self.redirect_to_context)
+        utils.handle_action(action=delete, success=self.redirect_to_context)
 
     @button.buttonAndHandler(_(u'Cancel'))
     def cancel(self, action):
