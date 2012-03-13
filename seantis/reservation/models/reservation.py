@@ -61,6 +61,11 @@ class Reservation(ORMBase, OtherModels):
         nullable=True
     )
 
+    email = Column(
+        types.Unicode(254),
+        nullable=False
+    )
+
     __table_args__ = (
         Index('target_status_ix', 'status', 'target', 'id'),
     )
@@ -95,13 +100,13 @@ class Reservation(ORMBase, OtherModels):
     @property
     def title(self):
         data = self.data
-        if not data: return ''
+        if not data: return self.email
 
         flat = self.flat_data(data)
-        parts = []
+        parts = [self.email]
         
         for key, value in flat:
             if key in ('first_name', 'last_name'):
-                parts.append(value)
+                parts.append(value or u'')
         
         return ' '.join(parts)

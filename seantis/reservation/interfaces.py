@@ -21,6 +21,8 @@ from seantis.reservation import utils
 from seantis.reservation.raster import VALID_RASTER_VALUES
 from seantis.reservation import _
 
+from seantis.reservation.email import EmailField
+
 days = SimpleVocabulary(
         [SimpleTerm(value=rrule.MO, title=_(u'Mo')),
          SimpleTerm(value=rrule.TU, title=_(u'Tu')),
@@ -263,11 +265,21 @@ class IReservation(interface.Interface):
         required=False
         )
 
+    email = EmailField(
+        title=_(u'Email'),
+        required=True
+        )
+
 class IGroupReservation(interface.Interface):
 
     group = schema.Text(
         title=_(u'Recurrence'),
         required=False
+        )
+
+    email = EmailField(
+        title=_(u'Email'),
+        required=True
         )
 
 class IRemoveReservation(interface.Interface):

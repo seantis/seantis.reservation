@@ -106,7 +106,8 @@ class ReservationForm(ResourceBaseForm, AutoExtensibleForm):
         autoapprove = not self.allocation(data['id']).approve
 
         def reserve(): 
-            token = self.context.scheduler().reserve((start, end), data=data)
+            email = data['email']
+            token = self.context.scheduler().reserve(email, (start, end), data=data)
             
             if autoapprove:
                 self.context.scheduler().approve_reservation(token)
@@ -155,7 +156,8 @@ class GroupReservationForm(ResourceBaseForm, AllocationGroupView):
         autoapprove = not sc.allocations_by_group(data['group']).first().approve
 
         def reserve():
-            token = sc.reserve(group=data['group'])
+            email = data['email']
+            token = sc.reserve(email, group=data['group'])
 
             if autoapprove:
                 sc.approve_reservation(token)

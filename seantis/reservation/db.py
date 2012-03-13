@@ -20,6 +20,7 @@ from seantis.reservation.error import ReservationParametersInvalid
 from seantis.reservation.error import InvalidReservationToken
 from seantis.reservation.session import serialized
 from seantis.reservation.raster import rasterize_span
+from seantis.reservation.email import validate_email
 from seantis.reservation import utils
 from seantis.reservation import Session
     
@@ -536,7 +537,7 @@ class Scheduler(object):
                 Session.delete(allocation)
 
     @serialized
-    def reserve(self, dates=None, group=None, data=None):
+    def reserve(self, email, dates=None, group=None, data=None):
         """ First step of the reservation.
 
         Seantis.reservation uses a two-step reservation process. The first
@@ -555,6 +556,8 @@ class Scheduler(object):
         """
 
         assert (dates or group) and not (dates and group)
+
+        validate_email(email)
 
         if group:
             dates = self.dates_by_group(group)
@@ -604,6 +607,7 @@ class Scheduler(object):
             reservation.target_type = u'group'
             reservation.resource = self.uuid
             reservation.data = additional_data
+            reservation.email = email
             Session.add(reservation)
         else:
             groups = []
@@ -623,6 +627,7 @@ class Scheduler(object):
                     reservation.target_type = u'allocation'
                     reservation.resource = self.uuid
                     reservation.data = additional_data
+                    reservation.email = email
                     Session.add(reservation)
 
                     groups.append(allocation.group)
