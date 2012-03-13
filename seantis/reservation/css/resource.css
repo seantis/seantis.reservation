@@ -256,3 +256,31 @@ a.event-full-waitinglist.event-fully-booked .fc-event-head {
 .fc-event-title {
     line-height: 14px;    
 }
+
+.reservation-data, .reservation-timespans {
+     float:left;
+     width: 50%;
+}
+
+.reservation-data {
+    line-height: 1.35em;   
+}
+
+.reservation-data span.label {
+    font-weight: normal;
+    color: #555;
+    display: inline-block;
+    min-width: 70px;
+}
+
+.reservation-list .block-title {
+    font-size: 1em;
+    font-weight: bold;   
+    color: #222;
+    padding-top: 3px;
+    padding-bottom: 1px;
+}
+
+.reservation-data {
+    padding-bottom: 5px;    
+}

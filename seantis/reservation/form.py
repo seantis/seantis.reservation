@@ -285,6 +285,23 @@ class ReservationListView(object):
 
         return u''
 
+    def extended_info(self, token):
+        """ Returns the extended info dictionary to be printed in the detail view. """
+
+        if token in self.pending_reservations():
+            return self.pending_reservations()[token][0].data
+
+        if token in self.approved_reservations():
+            return self.approved_reservations()[token][0].data
+
+        return dict()
+
+    def sorted_info_keys(self, token):
+        data = self.extended_info(token)
+        items = [(d[0], d[1]['desc']) for d in data.items()]
+
+        return [i[0] for i in sorted(items, key=lambda k: k[1])]
+
     def display_date(self, start, end):
         """ Formates the date range given for display. """
         end += timedelta(microseconds=1)
@@ -328,27 +345,3 @@ class ReservationListView(object):
         """ Returns a dictionary of reservations, keyed by reservation uid. """
 
         return self.reservations(status=u'approved')
-
-        # query = self.build_query()
-        # if not query: 
-        #     return {}
-        
-        # query = db.grouped_reservation_view(query)
-
-        # keyfn = lambda result: result.reservation_token
-        
-        # def filter_slot(slot):
-        #     allocation = scheduler.allocation_by_id(slot[1])
-        #     return allocation.overlaps(self.start, self.end)
-
-        # if not hasattr(self, 'start') and not hasattr(self, 'end'):
-        #     filter_slot = lambda slot: True
-        # elif not all((self.start, self.end)):
-        #     filter_slot = lambda slot: True
-
-        # results = {}
-
-        # for key, values in groupby(query, key=keyfn):
-        #     results[key] = [v for v in values if filter_slot(v)]
-
-        # return results

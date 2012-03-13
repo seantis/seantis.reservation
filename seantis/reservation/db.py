@@ -594,7 +594,6 @@ class Scheduler(object):
 
         # ok, we're good to go
         token = new_uuid()
-        additional_data = utils.additional_data_dictionary(data)
         
         # groups are reserved by group-identifier - so all members of a group
         # or none of them. As such there's no start / end date which is defined
@@ -606,7 +605,7 @@ class Scheduler(object):
             reservation.status = u'pending'
             reservation.target_type = u'group'
             reservation.resource = self.uuid
-            reservation.data = additional_data
+            reservation.data = data
             reservation.email = email
             Session.add(reservation)
         else:
@@ -626,7 +625,7 @@ class Scheduler(object):
                     reservation.status = u'pending'
                     reservation.target_type = u'allocation'
                     reservation.resource = self.uuid
-                    reservation.data = additional_data
+                    reservation.data = data
                     reservation.email = email
                     Session.add(reservation)
 

@@ -54,14 +54,19 @@ class ReservationForm(ResourceBaseForm, AutoExtensibleForm):
     label = _(u'Resource reservation')
 
     schema = IReservation
+    fti = None
 
     @property
     def additionalSchemata(self):
         scs = []
+        self.fti = dict()
         for ptype in self.context.formsets:
              fti = queryUtility(IDexterityFTI, name=ptype)
              if fti:
-                scs.append(fti.lookupSchema())
+                schema = fti.lookupSchema()
+                scs.append(schema)
+                
+                self.fti[ptype] = (fti.title, schema)
         return scs
 
     def defaults(self, **kwargs):
@@ -107,7 +112,12 @@ class ReservationForm(ResourceBaseForm, AutoExtensibleForm):
 
         def reserve(): 
             email = data['email']
-            token = self.context.scheduler().reserve(email, (start, end), data=data)
+            additional_data = utils.additional_data_dictionary(
+                data, self.fti
+            )
+            token = self.context.scheduler().reserve(
+                email, (start, end), data=additional_data
+            )
             
             if autoapprove:
                 self.context.scheduler().approve_reservation(token)

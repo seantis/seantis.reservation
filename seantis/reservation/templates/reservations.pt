@@ -31,7 +31,19 @@
                        Delete
                     </a>
                 </div>
-                <div tal:repeat="reservation reservations" class="reservation-list">
+                 <div tal:repeat="reservation reservations" class="reservation-list">
+                  <div class="reservation-data">
+                    <tal:block tal:repeat="key python: view.sorted_info_keys(token)">
+                      <tal:block tal:define="interface python: view.extended_info(token)[key]">
+                        <div class="block-title" tal:content="python: interface['desc']"></div>
+                        <div tal:repeat="value python: interface['values']">
+                          <span class="label" tal:content="python: value['desc']"></span><span tal:content="python: value['value']"></span>
+                        </div>
+                      </tal:block>
+                    </tal:block>
+                  </div>
+                  <div class="reservation-timespans">
+                    <div class="block-title" i18n:translate="">Concerned Dates</div>
                     <tal:block tal:repeat="timespan python: reservation.timespans()">
                         <tal:block tal:define="
                         start python: timespan[0];
@@ -41,6 +53,8 @@
                           <div tal:content="display"></div>
                         </tal:block>
                     </tal:block>
+                  </div>
+                  <div style="clear: both;"></div>
                 </div>
             </div>
 
@@ -75,6 +89,18 @@
 
                 </div>
                 <div tal:repeat="reservation reservations" class="reservation-list">
+                  <div class="reservation-data">
+                    <tal:block tal:repeat="key python: view.sorted_info_keys(token)">
+                      <tal:block tal:define="interface python: view.extended_info(token)[key]">
+                        <div class="block-title" tal:content="python: interface['desc']"></div>
+                        <div tal:repeat="value python: interface['values']">
+                          <span class="label" tal:content="python: value['desc']"></span><span tal:content="python: value['value']"></span>
+                        </div>
+                      </tal:block>
+                    </tal:block>
+                  </div>
+                  <div class="reservation-timespans">
+                    <div class="block-title" i18n:translate="">Concerned Dates</div>
                     <tal:block tal:repeat="timespan python: reservation.timespans()">
                         <tal:block tal:define="
                         start python: timespan[0];
@@ -84,6 +110,8 @@
                           <div tal:content="display"></div>
                         </tal:block>
                     </tal:block>
+                  </div>
+                  <div style="clear: both;"></div>
                 </div>
             </div>
 

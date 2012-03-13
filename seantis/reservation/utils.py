@@ -27,30 +27,40 @@ from seantis.reservation import _
 
 dexterity_encoder = SchemaNameEncoder()
 
-def additional_data_dictionary(data):
+def additional_data_dictionary(data, fti):
 
-    if not data:
-        return dict()
-    
     result = dict()
 
-    def add_key(dictionary, key, keypart):
-        parts = keypart.split('.')
-        if len(parts) == 1:
-            dictionary[keypart] = data[key]
-        else:
-            add_key(dictionary.setdefault(parts[0], dict()), key, '.'.join(parts[1:]))
+    def values(iface):
+        name = iface.getName()
 
-    for key, val in data.items():
-        key = dexterity_encoder.decode(key.replace('_0_', '.'))
-        key = key.replace('reservations.', '')
+        for key in data:
+            if not key.startswith(name):
+                continue
 
-        data[key] = val
+            value = data[key]
 
-        if not '.' in key:
+            if not value:
+                continue
+
+            subkey = key.replace(name + '.', '')
+            desc = iface.getDescriptionFor(subkey).title
+
+            yield dict(key=subkey, desc=desc, value=value)
+
+    for key, info in fti.items():
+        desc, iface = info[0], info[1]
+
+        record = dict()
+        record['desc'] = desc
+        record['interface'] = iface.getName()
+
+        record['values'] = list(values(iface))
+
+        if not record['values']:
             continue
 
-        add_key(result, key, key)
+        result[key] = record
 
     return result
 
