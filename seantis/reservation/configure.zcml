@@ -1,5 +1,6 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
     xmlns:five="http://namespaces.zope.org/five"
     xmlns:grok="http://namespaces.zope.org/grok"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
@@ -46,6 +47,17 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
     provides=".interfaces.IReservationFormSet"
     />
     
+<!-- Email field registration -->
+<utility zcml:condition="installed plone.schemaeditor"
+    name="seantis.reservation.email.EmailField"
+    component=".EmailFieldFactory"
+    />
+    
+<utility zcml:condition="installed plone.supermodel"
+    name="seantis.reservation.email.EmailField"
+    component=".EmailFieldHandler"
+    />
+
 <!-- Resources -->
 <browser:resourceDirectory name="seantis.reservation.images" directory="images"/>
 <browser:resourceDirectory name="seantis.reservation.js" directory="js"/>
