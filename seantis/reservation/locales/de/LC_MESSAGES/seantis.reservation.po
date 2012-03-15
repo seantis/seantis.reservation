@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-03-08 13:23+0000\n"
+"POT-Creation-Date: 2012-03-15 08:07+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,23 +14,23 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: DOMAIN\n"
 
-#: ./utils.py:172
+#: ./utils.py:213
 msgid "%i Spots Available"
 msgstr "%i Plätze verfügbar"
 
-#: ./utils.py:188
+#: ./utils.py:229
 msgid "%i Waitinglist Spots"
 msgstr "%i Wartelisten-Plätze"
 
-#: ./utils.py:165
+#: ./utils.py:206
 msgid "%i%% Free"
 msgstr "%i%% Frei"
 
-#: ./utils.py:170
+#: ./utils.py:211
 msgid "1 Spot Available"
 msgstr "Ein Platz verfügbar"
 
-#: ./utils.py:186
+#: ./utils.py:227
 msgid "1 Waitinglist Spot"
 msgstr "Ein Warteliste-Platz"
 
@@ -42,6 +42,10 @@ msgstr "Es existiert bereits eine Einteilung für den gewählten Zeitraum"
 msgid "Add"
 msgstr "Hinzufügen"
 
+#: ./reserve.py:126
+msgid "Added to waitinglist"
+msgstr "In Warteliste eingetragen"
+
 #: ./allocate.py:110
 msgid "Allocate"
 msgstr "Einteilen"
@@ -50,20 +54,32 @@ msgstr "Einteilen"
 msgid "Allocation"
 msgstr "Einteilung"
 
+#: ./allocate.py:124
+msgid "Allocation added"
+msgstr "Einteilung hinzugefügt"
+
+#: ./allocate.py:240
+msgid "Allocation removed"
+msgstr "Einteilung entfernt"
+
+#: ./allocate.py:206
+msgid "Allocation saved"
+msgstr "Einteilung gespeichert"
+
 #: ./error.py:55
 msgid "An existing reservation would be affected by the requested change"
 msgstr "Eine bestehende Reservation wäre durch die Änderung betroffen"
 
-#: ./reserve.py:195
-#: ./templates/reservations.pt:70
+#: ./reserve.py:229
+#: ./templates/reservations.pt:84
 msgid "Approve"
 msgstr "Zulassen"
 
-#: ./reserve.py:186
+#: ./reserve.py:220
 msgid "Approve reservation"
 msgstr "Reservation zulassen"
 
-#: ./interfaces.py:155
+#: ./interfaces.py:186
 msgid "Approve reservation requests"
 msgstr "Reservations-Anfragen manuell bestätigen"
 
@@ -71,47 +87,51 @@ msgstr "Reservations-Anfragen manuell bestätigen"
 msgid "Approved Reservations"
 msgstr "Zugelassene Reservationen"
 
-#: ./allocate.py:126
-#: ./reserve.py:102
+#: ./allocate.py:128
+#: ./reserve.py:131
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: ./interfaces.py:29
+#: ./templates/reservations.pt:46
+msgid "Concerned Dates"
+msgstr "Betroffene Daten"
+
+#: ./interfaces.py:39
 msgid "Daily"
 msgstr "Täglich"
 
-#: ./interfaces.py:116
+#: ./interfaces.py:147
 msgid "Day"
 msgstr "Tag"
 
-#: ./interfaces.py:128
+#: ./interfaces.py:159
 msgid "Days"
 msgstr "Tage"
 
-#: ./allocate.py:224
-#: ./reserve.py:272
+#: ./allocate.py:228
+#: ./reserve.py:310
 #: ./templates/reservations.pt:28
 msgid "Delete"
 msgstr "Löschen"
 
-#: ./reserve.py:222
-#: ./templates/reservations.pt:64
+#: ./reserve.py:258
+#: ./templates/reservations.pt:78
 msgid "Deny"
 msgstr "Ablehnen"
 
-#: ./reserve.py:213
+#: ./reserve.py:249
 msgid "Deny reservation"
 msgstr "Reservation ablehnen"
 
-#: ./interfaces.py:43
+#: ./interfaces.py:64
 msgid "Description"
 msgstr "Beschreibung"
 
-#: ./reserve.py:193
+#: ./reserve.py:227
 msgid "Do you really want to approve the following reservations?"
 msgstr "Möchten Sie die folgende Reservation wirklich zulassen?"
 
-#: ./reserve.py:220
+#: ./reserve.py:256
 msgid "Do you really want to deny the following reservations?"
 msgstr "Möchten Sie die folgende Reservation wirklich ablehnen?"
 
@@ -119,11 +139,11 @@ msgstr "Möchten Sie die folgende Reservation wirklich ablehnen?"
 msgid "Do you really want to remove the following allocations?"
 msgstr "Möchten Sie die folgenden Einteilungen wirklich löschen?"
 
-#: ./reserve.py:266
+#: ./reserve.py:304
 msgid "Do you really want to remove the following reservations?"
 msgstr "Möchten Sie die folgenden Reservation wirklich löschen?"
 
-#: ./reserve.py:269
+#: ./reserve.py:307
 msgid "Do you really want to remove the following timespans from the reservation?"
 msgstr "Möchten Sie die folgenden Zeiträume wirklich von der Reservation entfernen?"
 
@@ -131,49 +151,58 @@ msgstr "Möchten Sie die folgenden Zeiträume wirklich von der Reservation entfe
 msgid "Do you want to reserve the following allocations?"
 msgstr "Möchten Sie die folgenden Einteilungen reservieren?"
 
-#: ./allocate.py:182
-#: ./resource.py:205
+#: ./allocate.py:184
+#: ./resource.py:208
 #: ./timeframe.py:160
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: ./allocate.py:146
+#: ./allocate.py:148
 msgid "Edit allocation"
 msgstr "Einteilung bearbeiten"
 
-#: ./interfaces.py:106
+#: ./email.py:30
+#: ./interfaces.py:269
+msgid "Email"
+msgstr "Email"
+
+#: ./interfaces.py:137
 msgid "End"
 msgstr "Ende"
 
-#: ./interfaces.py:206
+#: ./interfaces.py:237
 msgid "End date before start date"
 msgstr "Ende vor Start"
 
-#: ./resource.py:203
+#: ./resource.py:206
 msgid "Entry"
 msgstr "Eintrag"
 
-#: ./interfaces.py:75
+#: ./interfaces.py:106
 msgid "First hour must be smaller than last hour"
 msgstr "Die erste Stunde muss kleiner als die letzte Stunde sein"
 
-#: ./interfaces.py:48
+#: ./interfaces.py:69
 msgid "First hour of the day"
 msgstr "Erste Stunde des Tages"
 
-#: ./interfaces.py:21
+#: ./interfaces.py:84
+msgid "Formsets"
+msgstr "Teilformulare"
+
+#: ./interfaces.py:31
 msgid "Fr"
 msgstr "Fr"
 
-#: ./utils.py:163
+#: ./utils.py:204
 msgid "Free"
 msgstr "Frei"
 
-#: ./interfaces.py:120
+#: ./interfaces.py:151
 msgid "From"
 msgstr "Von"
 
-#: ./utils.py:190
+#: ./utils.py:231
 msgid "Full Waitinglist"
 msgstr "Warteliste voll"
 
@@ -185,11 +214,11 @@ msgstr "Warteliste voll"
 msgid "Fully booked"
 msgstr "Ausgebucht"
 
-#: ./interfaces.py:84
+#: ./interfaces.py:115
 msgid "Id"
 msgstr "Id"
 
-#: ./allocate.py:160
+#: ./allocate.py:162
 msgid "Invalid arguments"
 msgstr "Ungültige Argumente"
 
@@ -197,39 +226,43 @@ msgstr "Ungültige Argumente"
 msgid "Invalid change. Your request may have already been processed earlier."
 msgstr "Ungültige Änderung. Ihre Anfrage wurde möglicherweise schon bearbeitet."
 
-#: ./interfaces.py:68
+#: ./email.py:16
+msgid "Invalid email address"
+msgstr "Ungültige Email Adresse"
+
+#: ./interfaces.py:99
 msgid "Invalid first hour"
 msgstr "Ungültige erste Stunde"
 
-#: ./interfaces.py:71
+#: ./interfaces.py:102
 msgid "Invalid last hour"
 msgstr "Ungültige letzte Stunde"
 
-#: ./reserve.py:86
+#: ./reserve.py:105
 msgid "Invalid reservation request"
 msgstr "Ungültige Reservations-Anfrage"
 
-#: ./interfaces.py:53
+#: ./interfaces.py:74
 msgid "Last hour of the day"
 msgstr "Letzte Stunde des Tages"
 
-#: ./resource.py:217
+#: ./resource.py:220
 msgid "List"
 msgstr "Auflisten"
 
-#: ./resource.py:199
+#: ./resource.py:202
 msgid "Manage"
 msgstr "Verwalten"
 
-#: ./interfaces.py:217
+#: ./interfaces.py:248
 msgid "Metadata"
 msgstr "Metadaten"
 
-#: ./interfaces.py:17
+#: ./interfaces.py:27
 msgid "Mo"
 msgstr "Mo"
 
-#: ./interfaces.py:39
+#: ./interfaces.py:60
 msgid "Name"
 msgstr "Name"
 
@@ -237,51 +270,51 @@ msgstr "Name"
 msgid "No reservable slot found."
 msgstr "Der gewünschte Zeitbereich ist bereits besetzt."
 
-#: ./utils.py:174
+#: ./utils.py:215
 msgid "No spots available"
 msgstr "Keine Plätze frei"
 
-#: ./reserve.py:191
+#: ./reserve.py:225
 msgid "No such reservation"
 msgstr "Unbekannte Reservation"
 
-#: ./utils.py:161
+#: ./utils.py:202
 msgid "Occupied"
 msgstr "Besetzt"
 
-#: ./interfaces.py:28
+#: ./interfaces.py:38
 msgid "Once"
 msgstr "Einmalig"
 
-#: ./interfaces.py:140
+#: ./interfaces.py:171
 msgid "Partly available"
 msgstr "Teilweise verfügbar"
 
-#: ./interfaces.py:187
+#: ./interfaces.py:218
 msgid "Partly available allocations can only be reserved separately"
 msgstr "Teilweise verfügbare Einteilungen können nur "
 
-#: ./templates/reservations.pt:51
+#: ./templates/reservations.pt:65
 msgid "Pending Reservations"
 msgstr "Offene Reservationen"
 
-#: ./interfaces.py:58
+#: ./interfaces.py:79
 msgid "Quota"
 msgstr "Kontingent"
 
-#: ./interfaces.py:176
+#: ./interfaces.py:207
 msgid "Quota must be between 1 and 100"
 msgstr "Kontingent muss zwischen 1 und 100 liegen"
 
-#: ./interfaces.py:145
+#: ./interfaces.py:176
 msgid "Raster"
 msgstr "Raster"
 
-#: ./reserve.py:122
+#: ./reserve.py:151
 msgid "Recurrance reservation"
 msgstr "Wiederholung reservieren"
 
-#: ./interfaces.py:90
+#: ./interfaces.py:121
 msgid "Recurrence"
 msgstr "Wiederholung"
 
@@ -289,35 +322,51 @@ msgstr "Wiederholung"
 msgid "Recurrence View"
 msgstr "Auflistung der Wiederholung"
 
-#: ./resource.py:215
+#: ./resource.py:218
 msgid "Recurrences"
 msgstr "Wiederholungen"
 
-#: ./resource.py:208
+#: ./resource.py:211
 msgid "Remove"
 msgstr "Entfernen"
 
-#: ./allocate.py:219
+#: ./allocate.py:223
 msgid "Remove allocations"
 msgstr "Einteilungen entfernen"
 
-#: ./reserve.py:242
+#: ./reserve.py:280
 msgid "Remove reservation"
 msgstr "Reservation entfernen"
 
-#: ./interfaces.py:247
+#: ./interfaces.py:288
 msgid "Reservation"
 msgstr "Reservation"
 
-#: ./reserve.py:82
+#: ./reserve.py:238
+msgid "Reservation confirmed"
+msgstr "Reservation bestätigt"
+
+#: ./reserve.py:267
+msgid "Reservation denied"
+msgstr "Reservation abgelehnt"
+
+#: ./reserve.py:101
 msgid "Reservation out of bounds"
 msgstr "Reservation ausserhalb des gültigen Bereichs"
+
+#: ./reserve.py:319
+msgid "Reservation removed"
+msgstr "Reservation entfernt"
+
+#: ./reserve.py:124
+msgid "Reservation successful"
+msgstr "Reservation erfolgreich"
 
 #: ./settings.py:15
 msgid "Reservation throttling"
 msgstr "Reservations Limit"
 
-#: ./resource.py:188
+#: ./resource.py:186
 msgid "Reservations"
 msgstr "Reservationen"
 
@@ -325,8 +374,8 @@ msgstr "Reservationen"
 msgid "Reservations can't be made for more than 24 hours at a time"
 msgstr "Reservationen können nicht über mehr als 24 Stunden gemacht werden"
 
-#: ./reserve.py:88
-#: ./resource.py:191
+#: ./reserve.py:107
+#: ./resource.py:188
 msgid "Reserve"
 msgstr "Reservieren"
 
@@ -334,11 +383,11 @@ msgstr "Reservieren"
 msgid "Resource"
 msgstr "Ressource"
 
-#: ./reserve.py:51
+#: ./reserve.py:54
 msgid "Resource reservation"
 msgstr "Reservation"
 
-#: ./interfaces.py:22
+#: ./interfaces.py:32
 msgid "Sa"
 msgstr "Sa"
 
@@ -354,23 +403,23 @@ msgstr "Seantis Reservation Kontrollzentrum"
 msgid "Seantis Reservation Settings"
 msgstr "Seantis Reservation Einstellungen"
 
-#: ./interfaces.py:134
+#: ./interfaces.py:165
 msgid "Separately reservable"
 msgstr "Separat reservierbar"
 
-#: ./interfaces.py:102
+#: ./interfaces.py:133
 msgid "Start"
 msgstr "Start"
 
-#: ./interfaces.py:23
+#: ./interfaces.py:33
 msgid "Su"
 msgstr "So"
 
-#: ./interfaces.py:20
+#: ./interfaces.py:30
 msgid "Th"
 msgstr "Do"
 
-#: ./interfaces.py:171
+#: ./interfaces.py:202
 msgid "The allocation must be at least 5 minutes long"
 msgstr "Die Einteilung muss mindestens 5 minuten lang sein"
 
@@ -392,7 +441,7 @@ msgstr "Die Anzahl Minuten die zwischen einer Reservation eines Users verstriche
 
 #: ./templates/remove_allocation.pt:18
 msgid "The requested allocations could not be found"
-msgstr "Die gewnüschten Einteilungen konnten nicht gefunden werden"
+msgstr "Die gewünschten Einteilungen konnten nicht gefunden werden"
 
 #: ./error.py:82
 msgid "The requested period is no longer available and the waiting list is full."
@@ -418,7 +467,7 @@ msgstr "Belegungsperiode"
 msgid "Timeframe overlaps with '%s' in the current folder"
 msgstr "Belegungsperiode überschneidet sich mit '%s'"
 
-#: ./interfaces.py:96
+#: ./interfaces.py:127
 #: ./templates/timeframes.pt:4
 msgid "Timeframes"
 msgstr "Belegungsperioden"
@@ -427,23 +476,23 @@ msgstr "Belegungsperioden"
 msgid "Too many reservations in a short time. Wait for a moment before trying again."
 msgstr "Zu viele Reservationen in einer kurzen Zeit. Bitte warten Sie für einen Moment befor Sie es wieder probieren."
 
-#: ./interfaces.py:18
+#: ./interfaces.py:28
 msgid "Tu"
 msgstr "Di"
 
-#: ./interfaces.py:124
+#: ./interfaces.py:155
 msgid "Until"
 msgstr "Bis"
 
-#: ./interfaces.py:160
+#: ./interfaces.py:191
 msgid "Waiting List Spots"
 msgstr "Wartelistenplätze"
 
-#: ./interfaces.py:181
+#: ./interfaces.py:212
 msgid "Waitinglist length must be between the quota and 100"
 msgstr "Die Warteliste muss mindestens so gross wie das Kontingent und kleiner als 100 sein"
 
-#: ./interfaces.py:19
+#: ./interfaces.py:29
 msgid "We"
 msgstr "Mi"
 
