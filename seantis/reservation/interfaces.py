@@ -1,9 +1,7 @@
-from datetime import datetime, timedelta
 from dateutil import rrule
 
 from five import grok
 
-from zope.interface import Interface
 from plone.directives import form
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from zope import schema

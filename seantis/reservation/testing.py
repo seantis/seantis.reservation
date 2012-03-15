@@ -5,6 +5,8 @@ from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import PLONE_FIXTURE 
 from plone.app.testing import IntegrationTesting
 from plone.app.testing import FunctionalTesting
+from plone.app.testing import applyProfile
+from plone.app.testing import quickInstallProduct
 from plone.testing import z2
 from zope.configuration import xmlconfig
 from seantis.reservation import test_database
@@ -39,6 +41,12 @@ class SqlLayer(PloneSandboxLayer):
         )
 
         z2.installProduct(app, 'seantis.reservation')
+
+    def setUpPloneSite(self, portal):
+
+        quickInstallProduct(portal, 'plone.app.dexterity')
+        quickInstallProduct(portal, 'seantis.reservation')
+        applyProfile(portal, 'seantis.reservation:default')
 
     def tearDownZope(self, app):
         z2.uninstallProduct(app, 'seantis.reservation')
