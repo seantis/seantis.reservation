@@ -189,10 +189,6 @@ class ResourceBaseForm(form.Form):
         for k, v in other_defaults.items():
             self.fields[k].field.default = v
 
-        # call plone.autoform if it is used as a mixin in a child-class
-        if hasattr(self, 'updateFields'):
-            self.updateFields()
-
         super(ResourceBaseForm, self).update(**kwargs)
 
         self.disableFields()

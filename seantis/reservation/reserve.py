@@ -7,6 +7,7 @@ from zope.component import queryUtility
 
 from z3c.form import field
 from z3c.form import button
+from z3c.form import group
 from z3c.form.ptcompat import ViewPageTemplateFile
 from plone.autoform.form import AutoExtensibleForm
 
@@ -56,10 +57,15 @@ class ReservationForm(ResourceBaseForm, AutoExtensibleForm):
     schema = IReservation
     fti = None
 
+    autoGroups = True
+    enable_form_tabbing = True
+    default_fieldset_label = _(u'General Information')
+
     @property
     def additionalSchemata(self):
         scs = []
         self.fti = dict()
+
         for ptype in self.context.formsets:
              fti = queryUtility(IDexterityFTI, name=ptype)
              if fti:
@@ -67,6 +73,7 @@ class ReservationForm(ResourceBaseForm, AutoExtensibleForm):
                 scs.append(schema)
                 
                 self.fti[ptype] = (fti.title, schema)
+
         return scs
 
     def defaults(self, **kwargs):
@@ -140,6 +147,12 @@ class ReservationForm(ResourceBaseForm, AutoExtensibleForm):
                 self.disabled_fields = ['day', 'start_time', 'end_time']
 
         super(ReservationForm, self).update(**kwargs)
+        super(AutoExtensibleForm, self).update(**kwargs)
+
+        # update the label with the title stored in self.fti
+        for i in range(len(self.groups)):
+            key = self.groups[i].label.split('_0_')[-1]
+            self.groups[i].label = self.fti[key][0]
 
 class GroupReservationForm(ResourceBaseForm, AllocationGroupView):
     permission = 'zope2.View'
