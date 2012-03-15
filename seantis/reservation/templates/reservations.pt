@@ -73,7 +73,7 @@
                 ">
                 <div class="reservation-title">
                     <h3>
-                      <b><tal:block content="repeat/group/number"></tal:block></b>&nbsp;
+                      <b tal:condition="python: view.show_links"><tal:block content="repeat/group/number"></tal:block></b>&nbsp;
                       <tal:block tal:content="python: view.reservation_info(token)"></tal:block>
                     </h3>
 
