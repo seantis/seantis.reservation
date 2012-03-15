@@ -164,15 +164,14 @@ class Allocation(ORMBase, OtherModels):
         return True
 
     @property
-    def has_waitinglist(self):
-        return self.waitinglist_spots != 0
-
     def pending_reservations(self):
-        """ Returns the number of pending reservations. 
+        """ Returns the pending reservations query for this allocation.
+        As the pending reservations target the group and not a specific allocation
+        this function returns the same value for masters and mirrors.
 
-        This is not necessarily the same as the number of used spots in the 
-        waitinglist as allocations without a waitinglist may still have pending 
-        reservations up to the set quota. 
+        The number of pending_reservations is not necessarily the same as the 
+        number of used spots in the waitinglist as allocations without a 
+        waitinglist may still have pending reservations up to the set quota. 
 
         The reason is that non-waitinglist allocations still use the two-phase
         reservation with the first phase being pending reservations.
@@ -191,12 +190,12 @@ class Allocation(ORMBase, OtherModels):
         query = query.filter(Reservation.target == self.group)
         query = query.filter(Reservation.status == u'pending')
 
-        return query.count()
+        return query
 
     def open_waitinglist_spots(self):
 
-        used = self.pending_reservations()
-        available = self.waitinglist_spots
+        used = self.pending_reservations.count()
+        available = self.approve and self.waitinglist_spots or 0
 
         return max(available - used, 0)
 

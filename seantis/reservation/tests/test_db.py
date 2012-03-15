@@ -199,9 +199,8 @@ class TestScheduler(IntegrationTestCase):
 
         allocation = sc.allocate(dates, approve=False)[0]
 
-        self.assertEqual(allocation.has_waitinglist, False)
         self.assertEqual(allocation.open_waitinglist_spots(), 0)
-        self.assertEqual(allocation.pending_reservations(), 0)
+        self.assertEqual(allocation.pending_reservations.count(), 0)
 
         # the first reservation kinda gets us in a waiting list, though
         # this time there can be only one spot in the list as long as there's
@@ -213,7 +212,7 @@ class TestScheduler(IntegrationTestCase):
         # it is now that we should have a problem reserving
         self.assertRaises(AlreadyReservedError, sc.reserve, reservation_email, dates)
         self.assertEqual(allocation.open_waitinglist_spots(), 0)
-        self.assertEqual(allocation.pending_reservations(), 0)
+        self.assertEqual(allocation.pending_reservations.count(), 0)
 
         # until we delete the existing reservation
         sc.remove_reservation(token)

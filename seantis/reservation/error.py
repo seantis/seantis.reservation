@@ -19,6 +19,9 @@ class AffectedReservationError(ReservationError):
     def __init__(self, existing):
         self.existing = existing
 
+class AffectedPendingReservationError(AffectedReservationError):
+    pass
+
 class AlreadyReservedError(ReservationError):
     pass
 
@@ -53,6 +56,9 @@ errormap = {
 
     AffectedReservationError:
     _(u'An existing reservation would be affected by the requested change'),
+
+    AffectedPendingReservationError:
+    _(u'A pending reservation would be affected by the requested change'),
 
     TransactionRollbackError:
     _(u'The resource is being edited by someone else. Please try again.'),

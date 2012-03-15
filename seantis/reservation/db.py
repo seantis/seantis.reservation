@@ -12,6 +12,7 @@ from seantis.reservation.models import ReservedSlot
 from seantis.reservation.models import Reservation
 from seantis.reservation.error import OverlappingAllocationError
 from seantis.reservation.error import AffectedReservationError
+from seantis.reservation.error import AffectedPendingReservationError
 from seantis.reservation.error import AlreadyReservedError
 from seantis.reservation.error import NotReservableError
 from seantis.reservation.error import ReservationTooLong
@@ -221,8 +222,7 @@ class Scheduler(object):
 
         group = new_uuid()
         quota = quota or self.quota
-        waitinglist_spots = waitinglist_spots or quota
-        waitinglist_spots = approve and waitinglist_spots or 0
+        waitinglist_spots = approve and waitinglist_spots or quota
 
         # Make sure that this span does not overlap another master
         for start, end in dates:
@@ -472,8 +472,7 @@ class Scheduler(object):
         assert master_id
         assert any([new_start and new_end, group, new_quota])
 
-        waitinglist_spots = waitinglist_spots or new_quota
-        waitinglist_spots = approve and waitinglist_spots or 0
+        waitinglist_spots = approve and waitinglist_spots or new_quota
         assert not approve or waitinglist_spots >= new_quota
 
         # Find allocation
@@ -495,14 +494,28 @@ class Scheduler(object):
                 raise OverlappingAllocationError(new.start, new.end, existing)
 
         for change in changing:
+
             if change.partly_available:
+                # confirmed reservations
                 for reservation in change.reserved_slots:
                     if not new.contains(reservation.start, reservation.end):
                         raise AffectedReservationError(reservation)
+
+                # pending reservations
+                if change.is_master: # (mirrors return the same values)
+                    for pending in change.pending_reservations:
+                        if not new.contains(pending.start, pending.end):
+                            raise AffectedPendingReservationError(pending)
+
             else:
+                # confirmed reservations
                 if change.start != new.start or change.end != new.end:
                     if len(change.reserved_slots):
                         raise AffectedReservationError(change.reserved_slots[0])
+
+                    if change.is_master and change.pending_reservations.count():
+                        raise AffectedPendingReservationError(change.pending_reservations[0])
+                        
 
         if new_quota is not None:
             self.change_quota(master, new_quota)
