@@ -72,8 +72,10 @@
                     reservations python: group[1];
                 ">
                 <div class="reservation-title">
-                    
-                    <h3 tal:content="python: view.reservation_info(token)"></h3>
+                    <h3>
+                      <b><tal:block content="repeat/group/number"></tal:block></b>&nbsp;
+                      <tal:block tal:content="python: view.reservation_info(token)"></tal:block>
+                    </h3>
 
                       <a tal:condition="view/show_links"
                        tal:attributes="href python: view.deny_all_url(token)"
