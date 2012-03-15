@@ -298,9 +298,12 @@ class ReservationListView(object):
 
     def sorted_info_keys(self, token):
         data = self.extended_info(token)
-        items = [(d[0], d[1]['desc']) for d in data.items()]
+        items = [(d[0], d[1]['values'][0]['sortkey']) for d in data.items()]
 
         return [i[0] for i in sorted(items, key=lambda k: k[1])]
+
+    def sorted_values(self, values):
+        return sorted(values, key=lambda v: v['sortkey'])
 
     def display_date(self, start, end):
         """ Formates the date range given for display. """

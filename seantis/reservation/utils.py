@@ -45,8 +45,10 @@ def additional_data_dictionary(data, fti):
 
             subkey = key.replace(name + '.', '')
             desc = iface.getDescriptionFor(subkey).title
+            sortkey = iface.get(subkey).order
 
-            yield dict(key=subkey, desc=desc, value=value)
+            yield dict(key=subkey, desc=desc, value=value, sortkey=sortkey)
+
 
     for key, info in fti.items():
         desc, iface = info[0], info[1]
@@ -54,7 +56,6 @@ def additional_data_dictionary(data, fti):
         record = dict()
         record['desc'] = desc
         record['interface'] = iface.getName()
-
         record['values'] = list(values(iface))
 
         if not record['values']:
