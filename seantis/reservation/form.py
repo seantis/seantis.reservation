@@ -330,10 +330,14 @@ class ReservationListView(object):
             return {}
 
         query = query.filter(Reservation.status == status)
+        query.order_by(Reservation.id)
 
-        reservations = defaultdict(list)
+        reservations = utils.OrderedDict()
         for r in query.all():
-            reservations[r.token].append(r)
+            if r.token in reservations:
+                reservations[r.token].append(r)
+            else:
+                reservations[r.token] = [r]
 
         return reservations
 

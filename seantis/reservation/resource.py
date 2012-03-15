@@ -56,6 +56,13 @@ class View(grok.View):
 
         return resources
 
+    def title(self, resource):
+        if hasattr(resource, 'parent'):
+            return ' - '.join((resource.parent().title, resource.title))
+        else:
+            return resource.title
+
+
     def javascript(self):
         template = """
         <script type="text/javascript">

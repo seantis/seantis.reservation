@@ -25,6 +25,12 @@ from z3c.form.interfaces import ActionExecutionError
 from seantis.reservation import error
 from seantis.reservation import _
 
+try:
+    from collections import OrderedDict #python >= 2.7
+except ImportError:
+    from ordereddict import OrderedDict #python < 2.7
+
+
 dexterity_encoder = SchemaNameEncoder()
 
 def additional_data_dictionary(data, fti):

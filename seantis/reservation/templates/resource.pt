@@ -32,8 +32,7 @@
                 repeat="resource view/resources">
                 
                 <div tal:define="
-                    parent      python: resource.parent();
-                    title       python: parent.title + ' - ' + resource.title;
+                    title       python: view.title(resource);
                     description resource/description;
                     calendar_id resource/calendar_id;
                     ">
@@ -62,8 +61,7 @@
                 repeat="resource view/resources">
                 
                 <div class="multiCalendarContainer" tal:define="
-                    parent      python: resource.parent();
-                    title       python: parent.title + ' - ' + resource.title;
+                    title       python: view.title(resource);
                     calendar_id resource/calendar_id;
                     ">
 
