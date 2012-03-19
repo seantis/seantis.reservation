@@ -128,6 +128,34 @@ var show_popup_messages = function(get_result) {
                         popups = get_popup_messages(el);
                     };
 
+                    // After every post the form tabs need to be reactivated.
+                    // The only way I could find is the following hack
+
+                    // Handle the update, making sure that a repeated call
+                    // of the function does go to nowhere for 100ms
+                    var update_el = null;
+                    window.seantis_tab_update = false;
+                    var update_tabs = function() {
+                        if (window.seantis_tab_update) {
+                            return;
+                        }
+                        window.seantis_tab_update = true;
+                        
+                        if ($.fn.ploneTabInit) {
+                            update_el.ploneTabInit();
+                        }
+
+                        setTimeout(function() { 
+                            window.seantis_tab_update = false; 
+                        }, 100);
+                    };
+
+                    // Bind to the form load event which is called multiple times
+                    $(document).bind('formOverlayLoadSuccess', function(e, overlay, form, api, pb, ajax_parent) {
+                        update_el = ajax_parent;
+                        update_tabs();
+                    });
+
                     element.prepOverlay({
                         subtype: 'ajax', 
                         filter:  common_content_filter,
