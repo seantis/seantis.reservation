@@ -24,8 +24,6 @@ class AllocationForm(ResourceBaseForm):
     grok.baseclass()
     hidden_fields = ['id', 'group', 'timeframes']
 
-    template = ViewPageTemplateFile('templates/allocate.pt')
-
 class AllocationAddForm(AllocationForm):
     permission = 'cmf.ManagePortal'
 

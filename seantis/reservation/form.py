@@ -14,6 +14,8 @@ from seantis.reservation import utils
 from seantis.reservation.models import Allocation, Reservation
 from seantis.reservation.interfaces import IResourceBase
 
+from z3c.form.ptcompat import ViewPageTemplateFile
+
 def extract_action_data(fn):
     """ Decorator which inserted after a buttonAndHandler directive will
     extract the data if possible or return before calling the decorated function
@@ -63,6 +65,8 @@ class ResourceBaseForm(form.Form):
 
     ignore_requirements = False
 
+    template = ViewPageTemplateFile('templates/form.pt')
+
     def updateWidgets(self):
         super(ResourceBaseForm, self).updateWidgets()
 
@@ -78,6 +82,7 @@ class ResourceBaseForm(form.Form):
         self.disableFields()
 
     def disableFields(self):
+
         # Disable fields
         for field in self.disabled_fields:
             if field in self.widgets:

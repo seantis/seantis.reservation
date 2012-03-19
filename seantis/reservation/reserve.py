@@ -93,7 +93,6 @@ class ReservationForm(ResourceBaseForm, AutoExtensibleForm):
 
     def validate(self, data):
         try:
-
             # using disabled fields means we have to reset those using
             # the metadata set by ResourceBaseForm and we also need
             # to wrap the calls to data to first consult the metadata
@@ -137,9 +136,11 @@ class ReservationForm(ResourceBaseForm, AutoExtensibleForm):
 
     @button.buttonAndHandler(_(u'Cancel'))
     def cancel(self, action):
-        self.redirect_to_context()
+        self.redirect_to_context() 
 
     def update(self, **kwargs):
+        super(AutoExtensibleForm, self).update(**kwargs)
+
         if self.id:
             if self.allocation(self.id).partly_available:
                 self.disabled_fields = ['day']
@@ -147,7 +148,6 @@ class ReservationForm(ResourceBaseForm, AutoExtensibleForm):
                 self.disabled_fields = ['day', 'start_time', 'end_time']
 
         super(ReservationForm, self).update(**kwargs)
-        super(AutoExtensibleForm, self).update(**kwargs)
 
         # update the label with the title stored in self.fti
         for i in range(len(self.groups)):

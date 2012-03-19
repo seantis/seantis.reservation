@@ -101,7 +101,7 @@ var show_popup_messages = function(get_result) {
                 calendar.overlay_init = function(element, onclose) {
                     var popups = null;
 
-                    var on_close = function() {
+                    var on_close = function(e) {
                         calendar.is_resizing = false;
                         calendar.is_moving = false;
                         calendar.refetch();
@@ -126,6 +126,17 @@ var show_popup_messages = function(get_result) {
                     var after_post = function(el) {
                         seantis.formgroups.init(el);
                         popups = get_popup_messages(el);
+
+                        // z3cform renders views with widget-only errors
+                        // with an empty field.error div
+                        // it makes the forms have too much white space, so
+                        // remove it here
+                        el.find('div.field.error').each(function(ix, _field) {
+                            var field = $(_field);
+                            if (field.children().length === 0) {
+                                field.remove();
+                            }
+                        });
                     };
 
                     // After every post the form tabs need to be reactivated.

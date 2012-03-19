@@ -285,29 +285,50 @@ a.event-full-waitinglist.event-fully-booked .fc-event-head {
     padding-bottom: 5px;    
 }
 
-.overlay fieldset {
+body fieldset {
     border: 1px solid #bbb;
 }
 
-.overlay fieldset legend {
+body fieldset legend {
     font-weight: normal;
     padding: 0 10px;
     color: #343434;
 }
 
-.overlay .field {
+body .field {
     margin-bottom: 0;
 }
 
-.overlay .field input {
+body .field input {
     margin-bottom: 0.5em;   
 }
 
-.overlay .field:last-child input {
+body .field:last-child input {
     margin-bottom: 0;
 }
 
-.overlay .enableFormTabbing fieldset {
+body .enableFormTabbing fieldset {
     border: none;
     padding: 0 0 10px 2px;
+}
+
+body .fieldErrorBox .error {
+    margin-bottom: 5px   
+}
+
+body div.error {
+    font-size: 12px;   
+
+    padding-left: 10px;
+}
+
+body div.field.error {
+    background-color: white;   
+    padding-left: 0;
+    border: none;
+}
+
+body .portalMessage {
+    font-size: 12px;
+    margin: 0 0 8px;   
 }
