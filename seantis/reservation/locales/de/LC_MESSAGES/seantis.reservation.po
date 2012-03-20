@@ -300,7 +300,7 @@ msgstr "Teilweise verfügbar"
 
 #: ./interfaces.py:216
 msgid "Partly available allocations can only be reserved separately"
-msgstr "Teilweise verfügbare Einteilungen können nur "
+msgstr "Teilweise verfügbare Einteilungen können nur separat reserviert werden"
 
 #: ./templates/reservations.pt:65
 msgid "Pending Reservations"
