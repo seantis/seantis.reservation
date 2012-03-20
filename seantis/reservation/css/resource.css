@@ -157,7 +157,8 @@ a.reservation-delete {
 
 .limitedList {
     overflow: auto;
-    max-height: 500px;
+    max-height: 150px;
+    max-width: 300px;
 }
 
 .groupListDay {
