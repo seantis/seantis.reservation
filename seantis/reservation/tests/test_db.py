@@ -12,7 +12,7 @@ from seantis.reservation.error import FullWaitingList
 from seantis.reservation import utils
 from seantis.reservation.session import serialized
 
-reservation_email = 'test@example.com'
+reservation_email = u'test@example.com'
 
 class TestScheduler(IntegrationTestCase):
 
