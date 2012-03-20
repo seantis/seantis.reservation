@@ -8,6 +8,7 @@ from functools import wraps
 from five import grok
 from plone.directives import form
 from z3c.form import interfaces
+from z3c.form import field
 
 from seantis.reservation import db
 from seantis.reservation import utils
@@ -15,6 +16,7 @@ from seantis.reservation.models import Allocation, Reservation
 from seantis.reservation.interfaces import IResourceBase
 
 from z3c.form.ptcompat import ViewPageTemplateFile
+from plone.z3cform.fieldsets import utils as z3cutils
 
 def extract_action_data(fn):
     """ Decorator which inserted after a buttonAndHandler directive will
@@ -51,7 +53,8 @@ def from_timestamp(fn):
 
     return converter
 
-class ResourceBaseForm(form.Form):
+from z3c.form.group import GroupForm
+class ResourceBaseForm(GroupForm, form.Form):
     """Baseform for all forms that work with resources as their context. 
     Provides helpful functions to all of them.
 
@@ -65,15 +68,17 @@ class ResourceBaseForm(form.Form):
 
     ignore_requirements = False
 
+    fixed_fields = None
+
     template = ViewPageTemplateFile('templates/form.pt')
 
     def updateWidgets(self):
         super(ResourceBaseForm, self).updateWidgets()
 
         # Hide fields found in self.hidden_fields
-        for field in self.hidden_fields:
-            if field in self.widgets:
-                self.widgets[field].mode = interfaces.HIDDEN_MODE
+        for f in self.hidden_fields:
+            if f in self.widgets:
+                self.widgets[f].mode = interfaces.HIDDEN_MODE
         
         # Forces the wigets to completely ignore requirements 
         if self.ignore_requirements:
@@ -84,9 +89,9 @@ class ResourceBaseForm(form.Form):
     def disableFields(self):
 
         # Disable fields
-        for field in self.disabled_fields:
-            if field in self.widgets:
-                self.widgets[field].disabled = 'disabled'
+        for f in self.disabled_fields:
+            if f in self.widgets:
+                self.widgets[f].disabled = 'disabled'
 
         # Disabled fields are not submitted later, so we store the values
         # of the widgets in a hidden field, using the metadata field
@@ -95,9 +100,9 @@ class ResourceBaseForm(form.Form):
             assert 'metadata' in self.widgets
 
             metadata = dict()
-            for field in self.disabled_fields:
-                if field in self.widgets:
-                    metadata[field] = self.widgets[field].value
+            for f in self.disabled_fields:
+                if f in self.widgets:
+                    metadata[f] = self.widgets[f].value
 
             self.widgets['metadata'].value = json.dumps(metadata)
 
@@ -180,7 +185,18 @@ class ResourceBaseForm(form.Form):
     def flash(self, message, type='info'):
         utils.flash(self.context, message, type)
 
+    def updateFields(self):
+        self.form.groups = []
+        
+        if not hasattr(self, 'additionalSchemata'):
+            return
+
+        for prefix, group, schema in self.additionalSchemata:
+            z3cutils.add(self.form, field.Fields(schema, prefix=prefix), group=group)
+
     def update(self, **kwargs):
+        self.updateFields()
+
         start, end = self.start, self.end
         if start and end:
             if 'day' in self.fields:

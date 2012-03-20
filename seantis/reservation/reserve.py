@@ -9,7 +9,6 @@ from z3c.form import field
 from z3c.form import button
 from z3c.form import group
 from z3c.form.ptcompat import ViewPageTemplateFile
-from plone.autoform.form import AutoExtensibleForm
 
 from seantis.reservation.throttle import throttled
 from seantis.reservation.interfaces import (
@@ -45,7 +44,7 @@ class ReservationUrls(object):
         base = self.context.absolute_url()
         return base + u'/deny-reservation?reservation=%s' % token
 
-class ReservationForm(ResourceBaseForm, AutoExtensibleForm):
+class ReservationForm(ResourceBaseForm):
     permission = 'zope2.View'
 
     grok.name('reserve')
@@ -54,7 +53,6 @@ class ReservationForm(ResourceBaseForm, AutoExtensibleForm):
     fields = field.Fields(IReservation)
     label = _(u'Resource reservation')
 
-    schema = IReservation
     fti = None
 
     autoGroups = True
@@ -70,7 +68,7 @@ class ReservationForm(ResourceBaseForm, AutoExtensibleForm):
              fti = queryUtility(IDexterityFTI, name=ptype)
              if fti:
                 schema = fti.lookupSchema()
-                scs.append(schema)
+                scs.append((ptype, fti.title, schema))
                 
                 self.fti[ptype] = (fti.title, schema)
 
@@ -139,8 +137,6 @@ class ReservationForm(ResourceBaseForm, AutoExtensibleForm):
         self.redirect_to_context() 
 
     def update(self, **kwargs):
-        super(AutoExtensibleForm, self).update(**kwargs)
-
         if self.id:
             if self.allocation(self.id).partly_available:
                 self.disabled_fields = ['day']
@@ -148,11 +144,6 @@ class ReservationForm(ResourceBaseForm, AutoExtensibleForm):
                 self.disabled_fields = ['day', 'start_time', 'end_time']
 
         super(ReservationForm, self).update(**kwargs)
-
-        # update the label with the title stored in self.fti
-        for i in range(len(self.groups)):
-            key = self.groups[i].label.split('_0_')[-1]
-            self.groups[i].label = self.fti[key][0]
 
 class GroupReservationForm(ResourceBaseForm, AllocationGroupView):
     permission = 'zope2.View'
@@ -168,8 +159,27 @@ class GroupReservationForm(ResourceBaseForm, AllocationGroupView):
     hidden_fields = ['group']
     ignore_requirements = True
 
+    autoGroups = True
+    enable_form_tabbing = True
+    default_fieldset_label = _(u'General Information')
+
     def defaults(self, **kwargs):
         return dict(group=self.group)
+
+    @property
+    def additionalSchemata(self):
+        scs = []
+        self.fti = dict()
+
+        for ptype in self.context.formsets:
+             fti = queryUtility(IDexterityFTI, name=ptype)
+             if fti:
+                schema = fti.lookupSchema()
+                scs.append((ptype, fti.title, schema))
+                
+                self.fti[ptype] = (fti.title, schema)
+
+        return scs
 
     @button.buttonAndHandler(_(u'Reserve'))
     @extract_action_data
@@ -180,7 +190,11 @@ class GroupReservationForm(ResourceBaseForm, AllocationGroupView):
 
         def reserve():
             email = data['email']
-            token = sc.reserve(email, group=data['group'])
+            additional_data = utils.additional_data_dictionary(
+                data, self.fti
+            )
+
+            token = sc.reserve(email, group=data['group'], data=additional_data)
 
             if autoapprove:
                 sc.approve_reservation(token)

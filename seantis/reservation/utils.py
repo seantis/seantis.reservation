@@ -36,25 +36,18 @@ dexterity_encoder = SchemaNameEncoder()
 def additional_data_dictionary(data, fti):
 
     result = dict()
+    used_data = dict([(k, v) for k, v in data.items() if v])
 
-    def values(iface):
-        name = iface.getName()
-
-        for key in data:
-            if not key.startswith(name):
+    def values(iface, ifacekey):
+        for key, value in used_data.items():
+            if not key.startswith(ifacekey + '.'):
                 continue
 
-            value = data[key]
-
-            if not value:
-                continue
-
-            subkey = key.replace(name + '.', '')
+            subkey = key.split('.')[1]
             desc = iface.getDescriptionFor(subkey).title
             sortkey = iface.get(subkey).order
 
             yield dict(key=subkey, desc=desc, value=value, sortkey=sortkey)
-
 
     for key, info in fti.items():
         desc, iface = info[0], info[1]
@@ -62,7 +55,7 @@ def additional_data_dictionary(data, fti):
         record = dict()
         record['desc'] = desc
         record['interface'] = iface.getName()
-        record['values'] = list(values(iface))
+        record['values'] = list(values(iface, key))
 
         if not record['values']:
             continue
