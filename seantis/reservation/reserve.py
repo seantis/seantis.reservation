@@ -92,6 +92,17 @@ class ReservationForm(ResourceBaseForm, ReservationSchemata):
 
         return scs
 
+    @property
+    def disabled_fields(self):
+        disabled = ['day']
+        try:
+            if self.id and not self.allocation(self.id).partly_available:
+                disabled = ['day', 'start_time', 'end_time']
+        except DirtyReadOnlySession:
+            pass
+
+        return disabled
+
     def defaults(self, **kwargs):
         return dict(id=self.id)
 
@@ -109,15 +120,11 @@ class ReservationForm(ResourceBaseForm, ReservationSchemata):
 
     def validate(self, data):
         try:
-            # using disabled fields means we have to reset those using
-            # the metadata set by ResourceBaseForm and we also need
-            # to wrap the calls to data to first consult the metadata
-            self.disabled_fields = self.metadata(data).keys()
 
             day = self.get_data(data, 'day')
             if hasattr(day, '__iter__'):
                 day = date(*self.get_data(data, 'day'))
-                
+
             start_time = self.strptime(self.get_data(data, 'start_time'))
             end_time = self.strptime(self.get_data(data, 'end_time'))
 

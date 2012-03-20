@@ -36,6 +36,8 @@ var CalendarGroups = function() {
     };
 };
 
+var popups = null;
+
 // Shows portalMessages swallowed by the prepOverlay mechanism
 // on the parent page
 var get_popup_messages = function(soup) {
@@ -60,6 +62,7 @@ var get_popup_messages = function(soup) {
     };
     var hide = function() {
         messages.fadeOut('slow');
+        popups = null;
     };
 
     return {show:show, hide:hide};
@@ -106,8 +109,6 @@ var show_popup_messages = function(get_result) {
 
                 // Sets an element on the calendar up with an overlay
                 calendar.overlay_init = function(element, onclose) {
-                    var popups = null;
-
                     var on_formload_success = function(e, parent, form) {
                         if ($.fn.ploneTabInit) {
                             parent.ploneTabInit();

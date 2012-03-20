@@ -545,6 +545,9 @@ class Scheduler(object):
             if len(allocation.reserved_slots) > 0:
                 raise AffectedReservationError(allocation.reserved_slots[0])
 
+            if allocation.pending_reservations.count():
+                raise AffectedPendingReservationError(allocation.pending_reservations[0])
+
         for allocation in allocations:
             if not allocation.is_transient:
                 Session.delete(allocation)
