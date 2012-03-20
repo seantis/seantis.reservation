@@ -183,8 +183,7 @@ class SessionUtility(grok.GlobalUtility):
     def is_readonly(self):
         return self.threadstore.current is self.threadstore.readonly
 
-    @property
-    def is_serial_dirty(self):
+    def is_serial_dirty(self, reset=False):
         """Returns true if the serial session was used (flushed). False if
         it was reset (rollback, commited). 
 
@@ -193,7 +192,12 @@ class SessionUtility(grok.GlobalUtility):
 
         """
         serial = self.threadstore.serial.registry()
-        return hasattr(serial, '_was_used') and serial._was_used
+        dirty = hasattr(serial, '_was_used') and serial._was_used
+
+        if dirty and reset:
+            serial._was_used = False
+
+        return dirty
 
     def create_session(self, isolation_level):
         """Creates a session with the given isolation level. 
@@ -260,7 +264,7 @@ class SessionUtility(grok.GlobalUtility):
         serial session (which leads to the same result in a way, but is explicit).
 
         """
-        if self.is_readonly and self.is_serial_dirty:
+        if self.is_readonly and self.is_serial_dirty(reset=True):
             raise error.DirtyReadOnlySession
 
         return self.threadstore.current

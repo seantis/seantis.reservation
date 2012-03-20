@@ -19,6 +19,7 @@ from seantis.reservation.interfaces import (
         IApproveReservation,
     )
 
+from seantis.reservation.error import DirtyReadOnlySession
 from seantis.reservation import _
 from seantis.reservation import utils
 from seantis.reservation.form import (
@@ -111,6 +112,7 @@ class ReservationForm(ResourceBaseForm):
     @button.buttonAndHandler(_(u'Reserve'))
     @extract_action_data
     def reserve(self, data):
+        print 'reserve'
         start, end = self.validate(data)
         autoapprove = not self.allocation(data['id']).approve
 
@@ -137,13 +139,16 @@ class ReservationForm(ResourceBaseForm):
         self.redirect_to_context() 
 
     def update(self, **kwargs):
+        
         super(ReservationForm, self).update(**kwargs)
 
-        if self.id:
-            if self.allocation(self.id).partly_available:
-                self.disabled_fields = ['day']
-            else:
+        self.disabled_fields = ['day']
+
+        try:
+            if self.id and not self.allocation(self.id).partly_available:
                 self.disabled_fields = ['day', 'start_time', 'end_time']
+        except DirtyReadOnlySession:
+            pass
 
         self.disableFields()
 
