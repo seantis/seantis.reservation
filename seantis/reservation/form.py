@@ -1,7 +1,6 @@
 import json
 
 from datetime import datetime, timedelta
-from collections import defaultdict
 from itertools import groupby, ifilter
 from functools import wraps
 
@@ -9,8 +8,10 @@ from five import grok
 from plone.directives import form
 from z3c.form import interfaces
 from z3c.form import field
+from z3c.form import button
+from z3c.form.group import GroupForm
 
-from seantis.reservation import db
+from seantis.reservation import _
 from seantis.reservation import utils
 from seantis.reservation.models import Allocation, Reservation
 from seantis.reservation.interfaces import IResourceBase
@@ -53,7 +54,6 @@ def from_timestamp(fn):
 
     return converter
 
-from z3c.form.group import GroupForm
 class ResourceBaseForm(GroupForm, form.Form):
     """Baseform for all forms that work with resources as their context. 
     Provides helpful functions to all of them.
@@ -61,14 +61,12 @@ class ResourceBaseForm(GroupForm, form.Form):
     """
     grok.baseclass()
     grok.context(IResourceBase)
-    ignoreContext = True
     
-    disabled_fields = []
-    hidden_fields = ['id', 'metadata']
-
+    ignoreContext = True
     ignore_requirements = False
 
-    fixed_fields = None
+    disabled_fields = []
+    hidden_fields = ['id', 'metadata']
 
     template = ViewPageTemplateFile('templates/form.pt')
 

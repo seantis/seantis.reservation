@@ -45,7 +45,24 @@ class ReservationUrls(object):
         base = self.context.absolute_url()
         return base + u'/deny-reservation?reservation=%s' % token
 
-class ReservationForm(ResourceBaseForm):
+class ReservationSchemata(object):
+
+    @property
+    def additionalSchemata(self):
+        scs = []
+        self.fti = dict()
+
+        for ptype in self.context.formsets:
+             fti = queryUtility(IDexterityFTI, name=ptype)
+             if fti:
+                schema = fti.lookupSchema()
+                scs.append((ptype, fti.title, schema))
+                
+                self.fti[ptype] = (fti.title, schema)
+
+        return scs
+
+class ReservationForm(ResourceBaseForm, ReservationSchemata):
     permission = 'zope2.View'
 
     grok.name('reserve')
@@ -97,7 +114,10 @@ class ReservationForm(ResourceBaseForm):
             # to wrap the calls to data to first consult the metadata
             self.disabled_fields = self.metadata(data).keys()
 
-            day = date(*self.get_data(data, 'day'))
+            day = self.get_data(data, 'day')
+            if hasattr(day, '__iter__'):
+                day = date(*self.get_data(data, 'day'))
+                
             start_time = self.strptime(self.get_data(data, 'start_time'))
             end_time = self.strptime(self.get_data(data, 'end_time'))
 
@@ -112,7 +132,7 @@ class ReservationForm(ResourceBaseForm):
     @button.buttonAndHandler(_(u'Reserve'))
     @extract_action_data
     def reserve(self, data):
-        print 'reserve'
+        
         start, end = self.validate(data)
         autoapprove = not self.allocation(data['id']).approve
 
@@ -136,23 +156,9 @@ class ReservationForm(ResourceBaseForm):
 
     @button.buttonAndHandler(_(u'Cancel'))
     def cancel(self, action):
-        self.redirect_to_context() 
+        self.redirect_to_context()
 
-    def update(self, **kwargs):
-        
-        super(ReservationForm, self).update(**kwargs)
-
-        self.disabled_fields = ['day']
-
-        try:
-            if self.id and not self.allocation(self.id).partly_available:
-                self.disabled_fields = ['day', 'start_time', 'end_time']
-        except DirtyReadOnlySession:
-            pass
-
-        self.disableFields()
-
-class GroupReservationForm(ResourceBaseForm, AllocationGroupView):
+class GroupReservationForm(ResourceBaseForm, AllocationGroupView, ReservationSchemata):
     permission = 'zope2.View'
 
     grok.name('reserve-group')
@@ -172,21 +178,6 @@ class GroupReservationForm(ResourceBaseForm, AllocationGroupView):
 
     def defaults(self, **kwargs):
         return dict(group=self.group)
-
-    @property
-    def additionalSchemata(self):
-        scs = []
-        self.fti = dict()
-
-        for ptype in self.context.formsets:
-             fti = queryUtility(IDexterityFTI, name=ptype)
-             if fti:
-                schema = fti.lookupSchema()
-                scs.append((ptype, fti.title, schema))
-                
-                self.fti[ptype] = (fti.title, schema)
-
-        return scs
 
     @button.buttonAndHandler(_(u'Reserve'))
     @extract_action_data
