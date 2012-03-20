@@ -187,7 +187,7 @@ class ResourceBaseForm(GroupForm, form.Form):
 
     def updateFields(self):
         self.form.groups = []
-        
+
         if not hasattr(self, 'additionalSchemata'):
             return
 

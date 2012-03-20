@@ -12,7 +12,7 @@
         <h1 class="documentFirstHeading" tal:content="view/label | nothing"></h1>
         <p tal:content="python: view.hint"></p>
 
-        <div class="limitedList">
+        <div>
           <metal:block use-macro="context/@@reservations/macros/pending_reservations" />
         </div>
         <metal:block use-macro="context/@@ploneform-macros/titlelessform" />
