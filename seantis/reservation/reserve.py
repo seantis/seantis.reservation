@@ -137,13 +137,15 @@ class ReservationForm(ResourceBaseForm):
         self.redirect_to_context() 
 
     def update(self, **kwargs):
+        super(ReservationForm, self).update(**kwargs)
+
         if self.id:
             if self.allocation(self.id).partly_available:
                 self.disabled_fields = ['day']
             else:
                 self.disabled_fields = ['day', 'start_time', 'end_time']
 
-        super(ReservationForm, self).update(**kwargs)
+        self.disableFields()
 
 class GroupReservationForm(ResourceBaseForm, AllocationGroupView):
     permission = 'zope2.View'

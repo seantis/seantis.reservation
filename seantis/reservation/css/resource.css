@@ -333,3 +333,45 @@ body .portalMessage {
     font-size: 12px;
     margin: 0 0 8px;   
 }
+
+ul.formTabs {
+    margin-top: 10px;   
+}
+
+ul.formTabs li.formTab {
+    margin: 0;
+}
+
+ul.formTabs li.formTab:after {
+     content: " ► ";   
+     color: #888;
+     margin: 4px
+}
+
+ul.formTabs li.formTab:last-child:after {
+     content: ""   
+}
+
+.formTab a {
+    background-color: #ddd;
+    padding: 4px 8px;   
+    border-radius: 4px;
+    color: #555 !important;
+    border: 1px solid #bbb;
+}
+
+.formTab a:hover {
+    background-color: #ccf2ba;
+    color: #232 !important;
+}
+
+.formTab a.required:after {
+    content: " *";
+    color: red;
+}
+
+.formTab a.selected {
+    background-color: #c1e0ee;
+    color: #232 !important;
+    border: 1px solid #57a9cd;   
+}
