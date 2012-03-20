@@ -49,7 +49,7 @@ var get_popup_messages = function(soup) {
     });
 
     if (!messages.length)
-        return;
+        return {};
 
     messages = $(messages);
     
@@ -77,6 +77,13 @@ var show_popup_messages = function(get_result) {
 (function($) {
     $(document).ready(function() {
 
+        $(document).bind('formOverlayLoadSuccess', function(e, overlay, form, api, pb, ajax_parent) {
+            $(document).trigger('seantis.formload_success', [ajax_parent, form]);
+        }); 
+        $(document).bind('formOverlayLoadFailure', function(e, overlay, form, api, pb, ajax_parent) {
+            $(document).trigger('seantis.formload_failure', [ajax_parent, form]);
+        });
+
         // only run if there are any calendars
         if (!seantis.calendars.length) return;
 
@@ -101,6 +108,28 @@ var show_popup_messages = function(get_result) {
                 calendar.overlay_init = function(element, onclose) {
                     var popups = null;
 
+                    var on_formload_success = function(e, parent, form) {
+                        if ($.fn.ploneTabInit) {
+                            parent.ploneTabInit();
+                        }
+                        seantis.formgroups.init();
+                    };
+
+                    var on_formload_failure = function(e, parent, form) {
+                        if (popups) {
+                            show_popup_messages(popups);
+                        }
+                    };
+
+                    // bind events (ensuring that there's only one handler at a time)
+                    (function(formload_success, formload_failure) {
+                        $(document).unbind('seantis.formload_success');
+                        $(document).unbind('seantis.formload_failure');
+
+                        $(document).bind('seantis.formload_success', formload_success);
+                        $(document).bind('seantis.formload_failure', formload_failure);
+                    })(on_formload_success, on_formload_failure);
+
                     var on_close = function(e) {
                         calendar.is_resizing = false;
                         calendar.is_moving = false;
@@ -111,16 +140,12 @@ var show_popup_messages = function(get_result) {
                             window.seantis_inline.fetch();
                         }
 
-                        if (popups) {
-                            show_popup_messages(popups);
-                        }
-
                         if (onclose) _.defer(onclose);
                     };
 
                     var before_load = function() {
-                        seantis.formgroups.init();
                         seantis.contextmenu.close();
+                        seantis.formgroups.init();
                     };
 
                     var after_post = function(el) {
@@ -138,34 +163,6 @@ var show_popup_messages = function(get_result) {
                             }
                         });
                     };
-
-                    // After every post the form tabs need to be reactivated.
-                    // The only way I could find is the following hack
-
-                    // Handle the update, making sure that a repeated call
-                    // of the function does go to nowhere for 100ms
-                    var update_el = null;
-                    window.seantis_tab_update = false;
-                    var update_tabs = function() {
-                        if (window.seantis_tab_update) {
-                            return;
-                        }
-                        window.seantis_tab_update = true;
-                        
-                        if ($.fn.ploneTabInit) {
-                            update_el.ploneTabInit();
-                        }
-
-                        setTimeout(function() { 
-                            window.seantis_tab_update = false; 
-                        }, 100);
-                    };
-
-                    // Bind to the form load event which is called multiple times
-                    $(document).bind('formOverlayLoadSuccess', function(e, overlay, form, api, pb, ajax_parent) {
-                        update_el = ajax_parent;
-                        update_tabs();
-                    });
 
                     element.prepOverlay({
                         subtype: 'ajax', 
