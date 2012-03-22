@@ -57,10 +57,7 @@ class View(grok.View):
         return resources
 
     def title(self, resource):
-        if hasattr(resource, 'parent'):
-            return ' - '.join((resource.parent().title, resource.title))
-        else:
-            return resource.title
+        return utils.get_resource_title(resource)
 
 
     def javascript(self):

@@ -30,6 +30,8 @@ try:
 except ImportError:
     from ordereddict import OrderedDict #python < 2.7
 
+from seantis.reservation.sortedcollection import SortedCollection
+
 
 dexterity_encoder = SchemaNameEncoder()
 
@@ -175,12 +177,26 @@ def get_resource_by_uuid(context, uuid):
     results = catalog(UID=uuid)
     return len(results) == 1 and results[0] or None
 
+def get_resource_title(resource):
+    if hasattr(resource, 'parent'):
+        return ' - '.join((resource.parent().title, resource.title))
+    else:
+        return resource.title
+
 class UUIDEncoder(json.JSONEncoder):
     """Encodes UUID objects as string in JSON."""
     def default(self, obj):
         if isinstance(obj, UUID):
             return unicode(obj)
         return json.JSONEncoder.default(self, obj)
+
+class SortedCollectionEncoder(json.JSONEncoder):
+    """Encodes SortedCollectionEncoder objects as string in JSON."""
+    def default(self, obj):
+        if isinstance(obj, SortedCollection):
+            return [o for o in obj]
+        return json.JSONEncoder.default(self, obj)
+
 
 def event_class(availability):
     """Returns the event class to be used depending on the availability."""
