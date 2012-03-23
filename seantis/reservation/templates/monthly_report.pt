@@ -18,30 +18,29 @@
         <div tal:replace="structure provider:plone.abovecontentbody" />
 
         <div class="reservations-by-month" tal:define="days view/results">
-            <div class="reservations-by-day" tal:repeat="day view/results">
+            <tal:block repeat="day view/results">
                 <h2 tal:content="python: view.format_day(day)"></h2>
 
-                <div class="reservations-by-resource" tal:repeat="resource python: days[day]">
-                    <h3 tal:content="python: days[day][resource]['title']"></h3>
+                <div class="reservations-by-day">
+                    <div class="reservations-by-resource" tal:repeat="resource python: days[day]">
+                        <h3 tal:content="python: days[day][resource]['title']"></h3>
 
-                    <h4 i18n:translate="">Approved</h4>
+                        <h4 i18n:translate="">Approved</h4>
 
-                    <div tal:repeat="approved python: days[day][resource]['approved']">
-                        <tal:block define="data approved/data">
-                            <div>
-                                <span tal:content="approved/email"></span>
-                                <span tal:content="approved/start"></span>
-                                <span tal:content="approved/end"></span>
-                            </div>
-                        
-                            <div style="display: none;">
-                                <metal:block use-macro="python: path(view.data_macro_path)"/>
-                            </div>
-                        </tal:block>
+                        <div tal:repeat="approved python: days[day][resource]['approved']">
+                            <tal:block define="data approved/data">
+                                <div class="reservation-infoline">
+                                    <span tal:content="approved/email" class="reservation-email"></span>
+                                </div>
+                            
+                                <div style="display: none;">
+                                    <metal:block use-macro="python: path(view.data_macro_path)"/>
+                                </div>
+                            </tal:block>
+                        </div>
                     </div>
-                    
                 </div>
-            </div>
+            </tal:block>
         </div>
 
         <div tal:replace="structure provider:plone.belowcontentbody" />
