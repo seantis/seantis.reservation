@@ -1,7 +1,7 @@
 import json
 
 from calendar import Calendar
-from datetime import date
+from datetime import date, timedelta
 
 from five import grok
 from zope.interface import Interface
@@ -19,6 +19,8 @@ class MonthlyReportView(grok.View):
     grok.context(Interface)
     grok.name('monthly_report')
     grok.require('zope2.View')
+
+    template = grok.PageTemplateFile('templates/monthly_report.pt')
 
     @property
     def year(self):
@@ -47,7 +49,7 @@ def monthly_report(context, year, month, resource_uuids):
 
     for uuid in resource_uuids:
         schedulers[uuid] = db.Scheduler(uuid)
-        resources[uuid] = utils.get_resource_by_uuid(context, uuid)
+        resources[uuid] = utils.get_resource_by_uuid(context, uuid).getObject()
         titles[uuid] = utils.get_resource_title(resources[uuid])
 
     # this order is used for every day in the month
@@ -56,20 +58,16 @@ def monthly_report(context, year, month, resource_uuids):
     # build the hierarchical structure of the report data
     report = utils.OrderedDict()
     last_day = 28
-    for day in (d.day for d in calendar.itermonthdates(year, month)):
+    for day in sorted((d.day for d in calendar.itermonthdates(year, month))):
         last_day = max(last_day, day)
-
-        for uuid in ordered_uuids:
-            report[day] = dict()
-            
+        report[day] = dict()
+        
+        for uuid in ordered_uuids:    
             report[day][uuid] = dict()
             report[day][uuid][u'title'] = titles[uuid]
-            report[day][uuid][u'approved'] = utils.SortedCollection(
-                key=lambda i: i["start"]
-            )
-            report[day][uuid][u'pending'] = utils.SortedCollection(
-                key=lambda i: i["start"]
-            )
+            report[day][uuid][u'approved'] = list()
+            
+            report[day][uuid][u'pending'] = list()
 
     # gather the reservations with as much bulk loading as possible
     period_start = date(year, month, 1)
@@ -98,8 +96,10 @@ def monthly_report(context, year, month, resource_uuids):
 
     def add_reservation(start, end, reservation):
         day = start.day
-        report[day][unicode(reservation.resource)][reservation.status].insert(
-            dict(start=start, end=end, data=None)
+        end += timedelta(microseconds=1)
+        start, end = start.strftime('%H:%M'), end.strftime('%H:%M')
+        report[day][unicode(reservation.resource)][reservation.status].append(
+            dict(start=start, end=end, data=reservation.data)
         )
 
     for reservation in reservations:

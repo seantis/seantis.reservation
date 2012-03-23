@@ -1,0 +1,42 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="seantis.reservation"
+      lang="en">
+<body>
+
+<metal:main fill-slot="main">
+    <tal:main-macro metal:define-macro="main">
+
+        <div tal:replace="structure provider:plone.abovecontenttitle" />
+        
+        <h1 class="documentFirstHeading" i18n:translate="">Monthly Report</h1>
+        
+        <div tal:replace="structure provider:plone.belowcontenttitle" />
+        <div tal:replace="structure provider:plone.abovecontentbody" />
+
+        <div class="reservations-by-month" tal:define="days view/results">
+            <div class="reservations-by-day" tal:repeat="day view/results">
+                <h2 tal:content="day"></h2>
+
+                <div class="reservations-by-resource" tal:repeat="resource python: days[day]">
+                    <h3 tal:content="python: days[day][resource]['title']"></h3>
+
+                    <h4 i18n:translate="">Approved</h4>
+
+                    <div tal:repeat="approved python: days[day][resource]['approved']" class="reservation-list">
+                        <span tal:content="approved/start"></span>
+                        <span tal:content="approved/end"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div tal:replace="structure provider:plone.belowcontentbody" />
+    </tal:main-macro>
+</metal:main>
+
+</body>
+</html>
