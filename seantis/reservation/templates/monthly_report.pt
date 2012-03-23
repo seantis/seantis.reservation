@@ -31,13 +31,40 @@
                             <tal:block define="data approved/data">
                                 <div class="reservation-infoline">
                                     <span tal:content="approved/email" class="reservation-email"></span>
+                                    <div class="reservation-timeline">
+                                        <tal:block repeat="percentage approved/availability">
+                                        <div tal:attributes="style python: 'width: %s%%' % percentage" tal:condition="repeat/percentage/even" class="available"></div>
+                                        <div tal:attributes="style python: 'width: %s%%' % percentage" tal:condition="repeat/percentage/odd" class="unavailable"><div style="width: 100%; height: 100%;"></div></div></tal:block>
+                                    </div>
+                                    <div style="clear:both;"></div>
                                 </div>
                             
-                                <div style="display: none;">
+                                <div class="reservation-detail">
                                     <metal:block use-macro="python: path(view.data_macro_path)"/>
                                 </div>
                             </tal:block>
                         </div>
+
+                        <h4 i18n:translate="">Pending</h4>
+
+                        <div tal:repeat="pending python: days[day][resource]['pending']">
+                            <tal:block define="data pending/data">
+                                <div class="reservation-infoline">
+                                    <span tal:content="pending/email" class="reservation-email"></span>
+                                    <div class="reservation-timeline">
+                                        <tal:block repeat="percentage pending/availability">
+                                        <div tal:attributes="style python: 'width: %s%%' % percentage" tal:condition="repeat/percentage/even" class="available"></div>
+                                        <div tal:attributes="style python: 'width: %s%%' % percentage" tal:condition="repeat/percentage/odd" class="unavailable"><div style="width: 100%; height: 100%;"></div></div></tal:block>
+                                    </div>
+                                    <div style="clear:both;"></div>
+                                </div>
+                            
+                                <div class="reservation-detail">
+                                    <metal:block use-macro="python: path(view.data_macro_path)"/>
+                                </div>
+                            </tal:block>
+                        </div>
+
                     </div>
                 </div>
             </tal:block>

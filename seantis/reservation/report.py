@@ -1,7 +1,7 @@
 import json
 
 from calendar import Calendar
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 from five import grok
 from zope.interface import Interface
@@ -62,6 +62,33 @@ class MonthlyReportView(grok.View, form.ReservationDataView):
 
         return url.replace(self.context.absolute_url(), 'context')
 
+def availability_partitions(day, start, end):
+    assert day in (start.day, end.day)
+
+    if start.day <= day:
+        start = datetime(
+            start.year, start.month, day, start.hour, start.minute, start.second, start.microsecond
+        )
+    if end.day >= day:
+        end = datetime(
+            end.year, end.month, day, end.hour, end.minute, end.second, end.microsecond
+        )
+
+    assert start < end
+
+    daystart = datetime(start.year, start.month, start.day, 0, 0)
+
+    totalminutes = 24 * 60
+    startblock = utils.total_timedelta_seconds((start - daystart)) / 60
+    middleblock = utils.total_timedelta_seconds((end - start)) / 60
+
+    result = [0] * 3
+    result[0] = int(startblock / float(totalminutes) * 100)
+    result[1] = int(middleblock / float(totalminutes) * 100)
+    result[2] = 100 - sum(result)
+
+    return result
+
 def monthly_report(context, year, month, resource_uuids):
 
     resources, schedulers, titles = dict(), dict(), dict()
@@ -115,10 +142,18 @@ def monthly_report(context, year, month, resource_uuids):
 
     def add_reservation(start, end, reservation):
         day = start.day
+        availability=availability_partitions(day, start, end)
+
         end += timedelta(microseconds=1)
         start, end = start.strftime('%H:%M'), end.strftime('%H:%M')
         report[day][unicode(reservation.resource)][reservation.status].append(
-            dict(start=start, end=end, email=reservation.email, data=reservation.data)
+            dict(
+                start=start, 
+                end=end, 
+                email=reservation.email, 
+                data=reservation.data,
+                availability=availability        
+            )
         )
 
     for reservation in reservations:
