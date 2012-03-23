@@ -27,10 +27,10 @@
 
                         <h4 i18n:translate="">Approved</h4>
 
-                        <div tal:repeat="approved python: days[day][resource]['approved']">
+                        <div class="approved" tal:repeat="approved python: days[day][resource]['approved']">
                             <tal:block define="data approved/data">
                                 <div class="reservation-infoline">
-                                    <span tal:content="approved/email" class="reservation-email"></span>
+                                    <span tal:content="approved/email" class="reservation-email"></span> <span tal:content="approved/start"></span> - <span tal:content="approved/end"></span>
                                     <div class="reservation-timeline">
                                         <tal:block repeat="percentage approved/availability">
                                         <div tal:attributes="style python: 'width: %s%%' % percentage" tal:condition="repeat/percentage/even" class="available"></div>
@@ -47,10 +47,10 @@
 
                         <h4 i18n:translate="">Pending</h4>
 
-                        <div tal:repeat="pending python: days[day][resource]['pending']">
+                        <div class="pending" tal:repeat="pending python: days[day][resource]['pending']">
                             <tal:block define="data pending/data">
                                 <div class="reservation-infoline">
-                                    <span tal:content="pending/email" class="reservation-email"></span>
+                                    <span tal:content="pending/email" class="reservation-email"></span> <span tal:content="pending/start"></span> - <span tal:content="pending/end"></span>
                                     <div class="reservation-timeline">
                                         <tal:block repeat="percentage pending/availability">
                                         <div tal:attributes="style python: 'width: %s%%' % percentage" tal:condition="repeat/percentage/even" class="available"></div>

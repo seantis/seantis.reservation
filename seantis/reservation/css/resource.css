@@ -435,19 +435,26 @@ ul.formTabs li.formTab:last-child:after {
     display: block;
 }
 
+.reservations-by-resource .pending .reservation-infoline {
+     background-color: #888888;   
+}
+
 .reservation-infoline .reservation-email {
     font-size: 1.1em;
 }
 
 .reservation-timeline {
     margin-top: 3px;
-    height: 20px;
-    background-color: white;
+    height: 7px;
     border: 1px solid #355f90;           
 }
 
+.pending .reservation-timeline {
+    border-color: #555;   
+}
+
 .reservation-timeline div {
-    height: 20px;
+    height: 100%;
     float: left;
     box-sizing: border-box;  
 }
@@ -459,13 +466,8 @@ ul.formTabs li.formTab:last-child:after {
 }
 
 .reservation-timeline div.unavailable {
-    border: 1px solid #a1291e;
+    border: 1px solid #333;
     border-width: 0 1px 0 1px; 
     opacity: 1.0;
-}
-
-.reservation-timeline div.unavailable div {
-    background-color: #bd6861;
-    opacity: 0.7;
 }
 
