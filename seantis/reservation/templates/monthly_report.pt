@@ -12,14 +12,14 @@
 
         <div tal:replace="structure provider:plone.abovecontenttitle" />
         
-        <h1 class="documentFirstHeading" i18n:translate="">Monthly Report</h1>
+        <h1 class="documentFirstHeading" tal:content="view/title"></h1>
         
         <div tal:replace="structure provider:plone.belowcontenttitle" />
         <div tal:replace="structure provider:plone.abovecontentbody" />
 
         <div class="reservations-by-month" tal:define="days view/results">
             <div class="reservations-by-day" tal:repeat="day view/results">
-                <h2 tal:content="day"></h2>
+                <h2 tal:content="python: view.format_day(day)"></h2>
 
                 <div class="reservations-by-resource" tal:repeat="resource python: days[day]">
                     <h3 tal:content="python: days[day][resource]['title']"></h3>
@@ -35,7 +35,7 @@
                             </div>
                         
                             <div style="display: none;">
-                                <metal:block use-macro="python: path(view.get_data_macro())"/>
+                                <metal:block use-macro="python: path(view.data_macro_path)"/>
                             </div>
                         </tal:block>
                     </div>

@@ -380,3 +380,32 @@ ul.formTabs li.formTab:last-child:after {
     color: #232 !important;
     border: 1px solid #57a9cd;   
 }
+
+.reservations-by-month h2 {
+    background-color: #c1d5ea;
+    color: #355363;
+    padding-left: 10px;
+    margin-top: 10px;
+    border: 1px solid #80a0b6;
+}
+
+.reservations-by-month h3 {
+    color: #777;
+    font-weight: 500;
+    margin: 10px 0 0 0;
+}
+
+.reservations-by-month h4 {
+    font-weight: normal;
+    font-size: 1.1em;
+    color: #888
+}
+
+.reservations-by-day {
+    background-color: #f4f6f6;
+    padding-bottom: 10px;   
+}
+
+.reservations-by-resource {
+     margin-left: 25px;
+}
