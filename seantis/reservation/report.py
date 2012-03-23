@@ -5,15 +5,17 @@ from datetime import date, timedelta
 
 from five import grok
 from zope.interface import Interface
+from plone.memoize import view
 
 from seantis.reservation import Session
 from seantis.reservation import db
 from seantis.reservation import utils
+from seantis.reservation import form
 from seantis.reservation.models import Allocation, Reservation
 
 calendar = Calendar()
 
-class MonthlyReportView(grok.View):
+class MonthlyReportView(grok.View, form.ReservationDataView):
     permission = 'cmf.ManagePortal'
 
     grok.context(Interface)
@@ -43,6 +45,14 @@ class MonthlyReportView(grok.View):
     def results(self):
         return monthly_report(self.context, self.year, self.month, self.uuids)
 
+    @view.memoize
+    @property
+    def data_macro_path(self):
+        resource = utils.get_resource_by_uuid(self.context, self.uuids[0])
+        url = resource.getURL() + '/@@reservations/macros/reservation_data'
+
+        return url.replace(self.context.absolute_url(), 'context')
+
 def monthly_report(context, year, month, resource_uuids):
 
     resources, schedulers, titles = dict(), dict(), dict()
@@ -53,7 +63,7 @@ def monthly_report(context, year, month, resource_uuids):
         titles[uuid] = utils.get_resource_title(resources[uuid])
 
     # this order is used for every day in the month
-    ordered_uuids = [i[0] for i in sorted(titles.items(), lambda i: i[1])]
+    ordered_uuids = [i[0] for i in sorted(titles.items(), key=lambda i: i[1])]
 
     # build the hierarchical structure of the report data
     report = utils.OrderedDict()
@@ -99,7 +109,7 @@ def monthly_report(context, year, month, resource_uuids):
         end += timedelta(microseconds=1)
         start, end = start.strftime('%H:%M'), end.strftime('%H:%M')
         report[day][unicode(reservation.resource)][reservation.status].append(
-            dict(start=start, end=end, data=reservation.data)
+            dict(start=start, end=end, email=reservation.email, data=reservation.data)
         )
 
     for reservation in reservations:

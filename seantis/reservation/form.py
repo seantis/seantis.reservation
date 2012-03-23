@@ -252,7 +252,18 @@ class AllocationGroupView(object):
     def event_title(self, allocation):
         return self.event_availability(allocation)[0]
 
-class ReservationListView(object):
+class ReservationDataView(object):
+    """Mixin for reservation-data macro."""
+
+    def sorted_info_keys(self, data):
+        items = [(d[0], d[1]['values'][0]['sortkey']) for d in data.items()]
+
+        return [i[0] for i in sorted(items, key=lambda k: k[1])]
+
+    def sorted_values(self, values):
+        return sorted(values, key=lambda v: v['sortkey'])
+
+class ReservationListView(ReservationDataView):
     """Combines functionality of different views which show reservations.
 
     The class with which it is used needs to provide the resource as context.
@@ -310,15 +321,6 @@ class ReservationListView(object):
             return self.approved_reservations()[token][0].data
 
         return dict()
-
-    def sorted_info_keys(self, token):
-        data = self.extended_info(token)
-        items = [(d[0], d[1]['values'][0]['sortkey']) for d in data.items()]
-
-        return [i[0] for i in sorted(items, key=lambda k: k[1])]
-
-    def sorted_values(self, values):
-        return sorted(values, key=lambda v: v['sortkey'])
 
     def display_date(self, start, end):
         """ Formates the date range given for display. """

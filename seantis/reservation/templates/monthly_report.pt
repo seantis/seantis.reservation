@@ -26,10 +26,20 @@
 
                     <h4 i18n:translate="">Approved</h4>
 
-                    <div tal:repeat="approved python: days[day][resource]['approved']" class="reservation-list">
-                        <span tal:content="approved/start"></span>
-                        <span tal:content="approved/end"></span>
+                    <div tal:repeat="approved python: days[day][resource]['approved']">
+                        <tal:block define="data approved/data">
+                            <div>
+                                <span tal:content="approved/email"></span>
+                                <span tal:content="approved/start"></span>
+                                <span tal:content="approved/end"></span>
+                            </div>
+                        
+                            <div style="display: none;">
+                                <metal:block use-macro="python: path(view.get_data_macro())"/>
+                            </div>
+                        </tal:block>
                     </div>
+                    
                 </div>
             </div>
         </div>
