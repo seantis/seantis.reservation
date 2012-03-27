@@ -6,6 +6,9 @@
     <stylesheet title="" cacheable="True" compression="safe" cookable="True" enabled="1" expression="" id="++resource++seantis.reservation.css/resource.css" media="screen" rel="stylesheet" rendering="import"/>
 
     <stylesheet title="" cacheable="True" compression="safe" cookable="True" enabled="1"
-    id="++resource++seantis.reservation.css/timeframes.css" media="screen" rel="stylehsset" rendering="import"/>
+    id="++resource++seantis.reservation.css/timeframes.css" media="screen" rel="stylesheet" rendering="import"/>
+
+    <stylesheet title="" cacheable="True" compression="safe" cookable="True" enabled="1"
+    id="++resource++seantis.reservation.css/jquery.timetable.css" media="screen" rel="stylesheet" rendering="import"/>
     
 </object>

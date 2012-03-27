@@ -1,0 +1,53 @@
+table.timetable {
+    border: 1px solid #ccc;
+    font-family: "Lucida Sans", Arial, sans-serif;
+    width: 100%;
+
+    border-collapse:collapse;
+    border-spacing:0;
+    margin: 0;
+    padding: 0;
+    table-layout: fixed;
+}
+
+table.timetable th {
+    font-size: 11px;
+    padding: 3px 1px 3px 4px;
+    border: 1px solid #ccc;   
+    background-color: #eee;
+    text-align: left;
+}
+
+div.timespan {
+    width: 100%;
+    margin: 0;
+}
+
+table.timetable div.timespan div {
+    min-height: 17px;
+    z-index: 100;
+    position: relative;
+    left: -1px;
+}
+
+table.timetable div.timespan div.occupied {
+    background-color: #c94533;
+    font-size: 11px;
+    color: white;
+    border: 1px solid #a1291e;
+    border-radius: 2px;
+}
+
+table.timetable div.timespan div span {
+    margin: 1px 0 2px 1px;   
+    display: block;
+}
+
+table.timetable td {
+    border-right: 1px solid #ccc !important;
+}
+
+table.timetable tr.empty_row td {
+    height: 5px;   
+}
+​

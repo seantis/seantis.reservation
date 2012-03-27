@@ -19,4 +19,6 @@
         <javascript id="++resource++seantis.reservation.js/overview.js" cacheable="True"
         compression="safe" cookable="True" enabled="True" inline="False" insert-after="jquery.js" />
         
+        <javascript id="++resource++seantis.reservation.js/jquery.timetable.js" cacheable="True"
+        compression="safe" cookable="True" enabled="True" inline="False" insert-after="jquery.js" />
 </object>
