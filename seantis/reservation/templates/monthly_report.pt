@@ -17,6 +17,10 @@
         <div tal:replace="structure provider:plone.belowcontenttitle" />
         <div tal:replace="structure provider:plone.abovecontentbody" />
 
+        <div class="monthly-report-navigation">
+            <a tal:attributes="href view/backward_url" i18n:translate="">&lt;&lt; Previous Month</a> | <a tal:attributes="href view/forward_url" i18n:translate="">Next Month &gt;&gt;</a>
+        </div>
+
         <div class="monthly-report" tal:define="results view/results">
             <div class="day" tal:repeat="day results">
                 

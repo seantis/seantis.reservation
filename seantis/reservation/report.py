@@ -67,6 +67,43 @@ class MonthlyReportView(grok.View, form.ReservationDataView):
     def results(self):
         return monthly_report(self.year, self.month, self.resources)
 
+    def build_url(self, year, month):
+        url = self.context.absolute_url()
+        url += '/'
+        url += self.__name__
+        url += '?'
+        url += 'year=' + str(year)
+        url += '&month=' + str(month)
+        url += self.show_details and '&show_details=1' or ''
+
+        for uuid in self.uuids:
+            url += '&uuid=' + uuid
+
+        return url
+
+    @property
+    def forward_url(self):
+        year, month = self.year, self.month
+
+        if month == 12:
+            year += 1
+            month = 1
+        else:
+            month += 1
+        
+        return self.build_url(year, month)
+
+    def backward_url(self):
+        year, month = self.year, self.month
+
+        if month == 1:
+            year -= 1
+            month = 12
+        else:
+            month -= 1
+
+        return self.build_url(year, month)
+
     @property
     def title(self):
         return _(u'Monthly Report for %(month)s %(year)i') % dict(
@@ -108,7 +145,12 @@ def monthly_report(year, month, resources):
     # build the hierarchical structure of the report data
     report = utils.OrderedDict()
     last_day = 28
-    for day in sorted((d.day for d in calendar.itermonthdates(year, month))):
+
+    for d in sorted((d for d in calendar.itermonthdates(year, month))):
+        if not d.month == month:
+            continue
+
+        day = d.day
         last_day = max(last_day, day)
         report[day] = dict()
         
