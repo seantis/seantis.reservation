@@ -1,0 +1,114 @@
+/* daily header */
+.monthly-report .day {
+    margin: 23px 0 30px 0;   
+}
+
+.monthly-report .day:first-child {
+    margin: 5px 0 30px 0;   
+}
+
+.monthly-report .day h2 {
+    padding: 2px 20px;
+    border: 20px solid #5d768f;
+    border-width: 0 0 3px 0;
+    color: #485b6f;
+}
+
+/* daily resources */
+.monthly-report .resource {
+    margin: 5px 0 0 20px;   
+    padding: 0 0 0 0;
+}
+
+.monthly-report .resource h3 {
+    margin: 20px 0 5px 0;
+    font-size: 1.4em;
+}
+
+/* reservations */
+.monthly-report .reservation-type {
+    margin-bottom: 10px;   
+}
+
+.monthly-report .approved.reservation-type .reservation-header {
+    height: 100%;   
+    background-color: #4582bf;
+    border: 1px solid #3b70a4;
+    border-width: 1px 0 1px 1px;
+}
+
+.monthly-report .pending.reservation-type .reservation-header {
+    height: 100%;   
+    background-color: #888;
+    border: 1px solid #777;
+    border-width: 1px 0 1px 1px;
+}
+
+.monthly-report .reservation-type .reservation-header h4 {
+    font-size: 1.1em;   
+    font-weight: normal;
+    padding: 2px 0 0 10px;  
+}
+
+.monthly-report .reservation-type .reservation-header h4 {
+    color: white;
+}
+
+.monthly-report .reservation-type .reservation-summary .leftcolumn span {
+    margin-left: 10px;
+    line-height: 25px;
+}
+
+.monthly-report .reservation-type .reservation-summary.odd {
+    background-color: #efefef;
+}
+
+/* timetables */
+.monthly-report .day .timetable div.occupied {
+    border-radius: 0;   
+}
+
+.monthly-report .day .timetable div.occupied span {
+    padding-left: 2px;   
+}
+
+.monthly-report .day table.timetable th {
+    color: #666;
+    font-weight: normal;
+}
+
+.monthly-report .day table.timetable {
+    border-width: 0px 1px 1px 1px;
+}
+
+.monthly-report .day .reservation-summary table.timetable {
+    border-top: none;   
+}
+
+.monthly-report .day .timetable .empty_row td {
+    height: 0; /* display none is no good as we need the td widths */
+    border: none;
+}
+
+/* - approved */
+.monthly-report .day .approved .timetable div.occupied {
+    background-color: #4582bf;
+    border-color: #3b70a4;
+}
+
+/* - pending */
+.monthly-report .day .pending .timetable div.occupied {
+    background-color: #888;
+    border-color: #777;   
+}
+
+/* columns */
+.monthly-report .leftcolumn {
+    width: 25%;
+    float: left;
+}
+
+.monthly-report .rightcolumn {
+    width: 75%;
+    float: left;   
+}

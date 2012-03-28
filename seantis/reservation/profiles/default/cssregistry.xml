@@ -10,5 +10,8 @@
 
     <stylesheet title="" cacheable="True" compression="safe" cookable="True" enabled="1"
     id="++resource++seantis.reservation.css/jquery.timetable.css" media="screen" rel="stylesheet" rendering="import"/>
+
+    <stylesheet title="" cacheable="True" compression="safe" cookable="True" enabled="1"
+    id="++resource++seantis.reservation.css/report.css" media="screen" rel="stylesheet" rendering="import"/>
     
 </object>

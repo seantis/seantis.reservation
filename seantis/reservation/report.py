@@ -43,8 +43,29 @@ class MonthlyReportView(grok.View, form.ReservationDataView):
         return uuids
 
     @property
+    @view.memoize
+    def resources(self):
+        objs = dict()
+
+        for uuid in self.uuids:
+            objs[uuid] = utils.get_resource_by_uuid(self.context, uuid).getObject()
+
+        return objs
+
+    @property
+    @view.memoize
+    def min_hour(self):
+        return min((r.first_hour for r in self.resources.values()))
+
+    @property
+    @view.memoize
+    def max_hour(self):
+        return max((r.last_hour for r in self.resources.values()))
+
+    @property
+    @view.memoize
     def results(self):
-        return monthly_report(self.context, self.year, self.month, self.uuids)
+        return monthly_report(self.year, self.month, self.resources)
 
     @property
     def title(self):
@@ -53,7 +74,14 @@ class MonthlyReportView(grok.View, form.ReservationDataView):
         )
 
     def format_day(self, day):
-        return date(self.year, self.month, day).strftime('%d. %m. %Y')
+        return date(self.year, self.month, day).strftime('%a, %d. %m')
+
+    def has_reservations(self, resource):
+        for status in resource['lists']:
+            if resource[status]:
+                return True
+
+        return False
 
     @property
     def data_macro_path(self):
@@ -62,40 +90,12 @@ class MonthlyReportView(grok.View, form.ReservationDataView):
 
         return url.replace(self.context.absolute_url(), 'context')
 
-def availability_partitions(day, start, end):
-    assert day in (start.day, end.day)
+def monthly_report(year, month, resources):
 
-    if start.day <= day:
-        start = datetime(
-            start.year, start.month, day, start.hour, start.minute, start.second, start.microsecond
-        )
-    if end.day >= day:
-        end = datetime(
-            end.year, end.month, day, end.hour, end.minute, end.second, end.microsecond
-        )
+    schedulers, titles = dict(), dict()
 
-    assert start < end
-
-    daystart = datetime(start.year, start.month, start.day, 0, 0)
-
-    totalminutes = 24 * 60
-    startblock = utils.total_timedelta_seconds((start - daystart)) / 60
-    middleblock = utils.total_timedelta_seconds((end - start)) / 60
-
-    result = [0] * 3
-    result[0] = int(startblock / float(totalminutes) * 100)
-    result[1] = int(middleblock / float(totalminutes) * 100)
-    result[2] = 100 - sum(result)
-
-    return result
-
-def monthly_report(context, year, month, resource_uuids):
-
-    resources, schedulers, titles = dict(), dict(), dict()
-
-    for uuid in resource_uuids:
+    for uuid in resources.keys():
         schedulers[uuid] = db.Scheduler(uuid)
-        resources[uuid] = utils.get_resource_by_uuid(context, uuid).getObject()
         titles[uuid] = utils.get_resource_title(resources[uuid])
 
     # this order is used for every day in the month
@@ -112,8 +112,11 @@ def monthly_report(context, year, month, resource_uuids):
             report[day][uuid] = dict()
             report[day][uuid][u'title'] = titles[uuid]
             report[day][uuid][u'approved'] = list()
-            
             report[day][uuid][u'pending'] = list()
+            report[day][uuid][u'lists'] = {
+                u'approved': _(u'Approved'),
+                u'pending': _(u'Pending'),
+            }
 
     # gather the reservations with as much bulk loading as possible
     period_start = date(year, month, 1)
@@ -124,7 +127,7 @@ def monthly_report(context, year, month, resource_uuids):
     query = query.filter(period_start <= Allocation._start)
     query = query.filter(Allocation._start <= period_end)
     query = query.filter(Allocation.resource == Allocation.mirror_of)
-    query = query.filter(Allocation.resource.in_(resource_uuids))
+    query = query.filter(Allocation.resource.in_(resources.keys()))
 
     allocations = query.all()
 
@@ -140,9 +143,11 @@ def monthly_report(context, year, month, resource_uuids):
 
     reservations = query.all()
 
+    used_days = []
     def add_reservation(start, end, reservation):
         day = start.day
-        availability=availability_partitions(day, start, end)
+
+        used_days.append(day)
 
         end += timedelta(microseconds=1)
         start, end = start.strftime('%H:%M'), end.strftime('%H:%M')
@@ -152,7 +157,7 @@ def monthly_report(context, year, month, resource_uuids):
                 end=end, 
                 email=reservation.email, 
                 data=reservation.data,
-                availability=availability        
+                timespans=json.dumps([dict(start=start, end=end)])   
             )
         )
 
@@ -162,5 +167,10 @@ def monthly_report(context, year, month, resource_uuids):
         else:
             for allocation in groups[reservation.target]:
                 add_reservation(allocation.start, allocation.end, reservation)
+
+    # remove unused days
+    for day in report:
+        if day not in used_days:
+            del report[day]
 
     return report

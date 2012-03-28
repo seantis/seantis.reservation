@@ -17,57 +17,59 @@
         <div tal:replace="structure provider:plone.belowcontenttitle" />
         <div tal:replace="structure provider:plone.abovecontentbody" />
 
-        <div class="reservations-by-month" tal:define="days view/results">
-            <tal:block repeat="day view/results">
+        <div class="monthly-report" tal:define="results view/results">
+            <div class="day" tal:repeat="day results">
+                
                 <h2 tal:content="python: view.format_day(day)"></h2>
 
-                <div class="reservations-by-day">
-                    <div class="reservations-by-resource" tal:repeat="resource python: days[day]">
-                        <h3 tal:content="python: days[day][resource]['title']"></h3>
+                <tal:block repeat="resource python: results[day].values()">
+                    <div class="resource" tal:condition="python: view.has_reservations(resource)">
 
-                        <h4 i18n:translate="">Approved</h4>
+                        <h3 tal:content="python: resource['title']"></h3>
 
-                        <div class="approved" tal:repeat="approved python: days[day][resource]['approved']">
-                            <tal:block define="data approved/data">
-                                <div class="reservation-infoline">
-                                    <span tal:content="approved/email" class="reservation-email"></span> <span tal:content="approved/start"></span> - <span tal:content="approved/end"></span>
-                                    <div class="reservation-timeline">
-                                        <tal:block repeat="percentage approved/availability">
-                                        <div tal:attributes="style python: 'width: %s%%' % percentage" tal:condition="repeat/percentage/even" class="available"></div>
-                                        <div tal:attributes="style python: 'width: %s%%' % percentage" tal:condition="repeat/percentage/odd" class="unavailable"><div style="width: 100%; height: 100%;"></div></div></tal:block>
+                        <tal:block repeat="rtype python: resource['lists']">
+
+                            <div tal:attributes="class python: 'reservation-type ' + rtype" tal:condition="python: resource[rtype]">
+                                <div class="reservation-header">
+                                    <div class="leftcolumn">
+                                        <h4 tal:content="python: resource['lists'][rtype]"></h4>
+                                    </div>
+                                    <div class="rightcolumn">
+                                        <div class="timetable-wrapper" tal:attributes="
+                                            data-min_hour view/min_hour;
+                                            data-max_hour view/max_hour;
+                                        "></div>
                                     </div>
                                     <div style="clear:both;"></div>
                                 </div>
-                            
-                                <div class="reservation-detail">
-                                    <metal:block use-macro="python: path(view.data_macro_path)"/>
-                                </div>
-                            </tal:block>
-                        </div>
 
-                        <h4 i18n:translate="">Pending</h4>
-
-                        <div class="pending" tal:repeat="pending python: days[day][resource]['pending']">
-                            <tal:block define="data pending/data">
-                                <div class="reservation-infoline">
-                                    <span tal:content="pending/email" class="reservation-email"></span> <span tal:content="pending/start"></span> - <span tal:content="pending/end"></span>
-                                    <div class="reservation-timeline">
-                                        <tal:block repeat="percentage pending/availability">
-                                        <div tal:attributes="style python: 'width: %s%%' % percentage" tal:condition="repeat/percentage/even" class="available"></div>
-                                        <div tal:attributes="style python: 'width: %s%%' % percentage" tal:condition="repeat/percentage/odd" class="unavailable"><div style="width: 100%; height: 100%;"></div></div></tal:block>
+                                <div class="reservations" tal:repeat="reservation python: resource[rtype]">
+                                    <div tal:attributes="
+                                        class python: 'reservation-summary ' + (repeat['reservation'].odd() and 'odd' or 'even')
+                                    ">
+                                        <div class="leftcolumn">
+                                            <span tal:content="reservation/email"></span>
+                                        </div>
+                                        <div class="rightcolumn">
+                                            <div class="timetable-wrapper" tal:attributes="
+                                                data-min_hour view/min_hour;
+                                                data-max_hour view/max_hour;
+                                                data-show_header string:false;
+                                                data-timespans reservation/timespans;
+                                            "></div>
+                                        </div>
+                                        <div style="clear:both;"></div>
                                     </div>
-                                    <div style="clear:both;"></div>
+                                    <!--<div class="reservation-detail" tal:define="data reservation/data">
+                                        <metal:block use-macro="python: path(view.data_macro_path)"/>
+                                    </div>-->
                                 </div>
-                            
-                                <div class="reservation-detail">
-                                    <metal:block use-macro="python: path(view.data_macro_path)"/>
-                                </div>
-                            </tal:block>
-                        </div>
+                            </div>
 
+                        </tal:block>
                     </div>
-                </div>
-            </tal:block>
+                </tal:block>
+            </div>
         </div>
 
         <div tal:replace="structure provider:plone.belowcontentbody" />

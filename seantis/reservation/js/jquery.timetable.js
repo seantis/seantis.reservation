@@ -4,12 +4,36 @@
         defaults = {
             min_hour: 0,
             max_hour: 24,
-            show_text: true
+            show_text: true,
+            show_header: true,
+            timespans: []
         };
 
     function Plugin( element, options ) {
         this.element = element;
+        this.$ = $(element);
 
+        var to_bool = function(text) {
+            if (typeof text === 'undefined')
+                return text;
+
+            return text == 'true' ? true : false;
+        };
+
+        var element_options = {
+            min_hour: parseInt(this.$.attr('data-min_hour'), 10),
+            max_hour: parseInt(this.$.attr('data-max_hour'), 10),
+            show_text: to_bool(this.$.attr('data-show_text')),
+            show_header: to_bool(this.$.attr('data-show_header')),
+            timespans: this.$.attr('data-timespans')
+        };
+
+
+        if (element_options.timespans) {
+            element_options.timespans = $.parseJSON(element_options.timespans);
+        }
+
+        options = $.extend({}, element_options, options);
         this.options = $.extend( {}, defaults, options) ;
 
         this._defaults = defaults;
@@ -131,21 +155,25 @@
     
     Plugin.prototype.render = function() {
         
-        // render the table header
         var table = $('<table />').addClass('timetable');
-        var thead = $('<thead />');
-        var th_row = $('<tr />');
-        
-        thead.appendTo(table);
-        th_row.appendTo(thead);
-                
         var colcount = (this.options.max_hour - this.options.min_hour + 1);
         var hwidth = 100 / colcount;
-        for (var h=this.options.min_hour; h <= this.options.max_hour; h++) {
-            var hour = this.pad(h, 2) + ':00';
-            th_row.append($('<th />').width(hwidth + '%').text(hour));   
-        }
+
+        // render the table header
+        if (this.options.show_header) {
+            var thead = $('<thead />');
+            var th_row = $('<tr />');
+            
+            thead.appendTo(table);
+            th_row.appendTo(thead);
         
+            for (var h=this.options.min_hour; h <= this.options.max_hour; h++) {
+                var hour = this.pad(h, 2) + ':00';
+                th_row.append($('<th />').width(hwidth + '%').text(hour));
+            }
+        
+        }
+
         // render the table
         var tbody = $('<tbody />');
         tbody.appendTo(table);
@@ -154,16 +182,17 @@
         var add_empty_row = function() {
             var empty_row = $('<tr />').addClass('empty_row');
             for (var i=0; i<colcount; i++) {
-                empty_row.append($('<td />'));   
+                empty_row.append($('<td />').width(hwidth + '%'));   
             }
             tbody.append(empty_row);
         };
-             
-        add_empty_row();
+          
+        if (this.options.timespans.length > 0)   
+            add_empty_row();
         
         // render a row for each timespan
         var plugin = this;
-        $.each(this.options.data, function(index, timerow) {
+        $.each(this.options.timespans, function(index, timerow) {
             
             var row = $('<tr />');
             
@@ -198,7 +227,7 @@
             add_empty_row();
         });                
         
-        $(this.element).append(table);
+        this.$.append(table);
     };
     
     // Pads the given number
@@ -219,16 +248,9 @@
     };
 
 })( jQuery, window, document );
-    
-(function($) {
+
+(function($){
     $(document).ready(function() {
-        $('#placeholder').timetable({min_hour:6, max_hour:18, data:[ 
-            {start: "08:15", end:"12:00"},
-            {start: "08:30", end:"12:15"},
-            {start: "08:45", end:"12:30"},
-            {start: "09:00", end:"12:45"},
-            {start: "05:00", end:"19:00"},
-            {start: "15:00", end:"16:00"}
-        ]});                        
+        $('.timetable-wrapper').timetable();
     });
 })(jQuery);
