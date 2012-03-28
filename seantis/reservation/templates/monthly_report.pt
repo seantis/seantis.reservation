@@ -43,10 +43,11 @@
                                     <div style="clear:both;"></div>
                                 </div>
 
-                                <div class="reservation" tal:repeat="reservation python: resource[rtype]">
+                                <tal:block repeat="reservation python: resource[rtype]">
                                     <div tal:attributes="
-                                        class python: 'reservation-summary ' + (repeat['reservation'].odd() and 'odd' or 'even')
+                                        class python: (repeat['reservation'].odd() and 'reservation odd' or 'reservation even') + (view.show_details and ' show-details' or '')
                                     ">
+                                    <div class="reservation-summary">
                                         <div class="leftcolumn">
                                             <a tal:attributes="href python: 'mailto:' + reservation['email']" tal:content="reservation/email"></a>
                                         </div>
@@ -64,6 +65,7 @@
                                         <metal:block use-macro="python: path(view.data_macro_path)"/>
                                     </div>
                                 </div>
+                                </tal:block>
                             </div>
 
                         </tal:block>

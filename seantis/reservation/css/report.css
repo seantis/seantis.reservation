@@ -26,6 +26,29 @@
 }
 
 /* reservations */
+
+.monthly-report .reservation:hover {
+    cursor: pointer;
+    background-color: #dfdfdf !important;
+    background-image: linear-gradient(bottom, rgb(230,230,230) 0%, rgb(255,255,255) 100%);
+    background-image: -o-linear-gradient(bottom, rgb(230,230,230) 0%, rgb(255,255,255) 100%);
+    background-image: -moz-linear-gradient(bottom, rgb(230,230,230) 0%, rgb(255,255,255) 100%);
+    background-image: -webkit-linear-gradient(bottom, rgb(230,230,230) 0%, rgb(255,255,255) 100%);
+    background-image: -ms-linear-gradient(bottom, rgb(230,230,230) 0%, rgb(255,255,255) 100%);
+    
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0, rgb(230,230,230)),
+        color-stop(1, rgb(255,255,255))
+    );
+}
+
+.monthly-report .reservation.odd {
+    background-color: #efefef;   
+}
+
 .monthly-report .reservation-type {
     margin-bottom: 10px;   
 }
@@ -64,11 +87,15 @@
     line-height: 25px;
 }
 
-.monthly-report .reservation-type .reservation-summary.odd {
-    background-color: #efefef;
+/* reservation detail */
+
+.monthly-report .reservation .reservation-detail {
+     display:none;   
 }
 
-/* reservation detail */
+.monthly-report .reservation.show-details .reservation-detail {
+     display:block;
+}
 
 .monthly-report .reservation-detail {
     padding-bottom: 10px;
@@ -108,8 +135,11 @@
 
 .monthly-report .day .reservation-summary table.timetable td {
     border-left: 1px solid #ccc;
-    border-bottom: 1px solid #ccc;
     border-right: none !important;
+}
+
+.monthly-report .day .reservation.show-details table.timetable td {
+    border-bottom: 1px solid #ccc;
 }
 
 .monthly-report .day .timetable .empty_row td {

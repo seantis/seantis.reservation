@@ -84,6 +84,10 @@ class MonthlyReportView(grok.View, form.ReservationDataView):
         return False
 
     @property
+    def show_details(self):
+        return self.request.get('show_details', None) and True or False
+
+    @property
     def data_macro_path(self):
         resource = utils.get_resource_by_uuid(self.context, self.uuids[0])
         url = resource.getURL() + '/@@reservations/macros/reservation_data'
