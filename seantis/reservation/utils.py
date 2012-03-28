@@ -99,6 +99,28 @@ def compare_link(resources):
         
     return link.rstrip('&')
 
+def monthly_report_link(resources):
+    """Builds the monthly report link given the list of the resources
+    using the current year and month."""
+    if not resources:
+        return ''
+
+    today = datetime.now()
+    context = resources[0]
+
+    url = context.absolute_url()
+
+    # note that 'monthly_report' is copied in reports.py
+    url += '/monthly_report'
+    url += '?year=' + str(today.year)
+    url += '&month=' + str(today.month)
+
+    for uuid in (r.uuid() for r in resources):
+        url += '&uuid=' + str(uuid)
+
+    return url
+
+
 def dictionary_to_namedtuple(dictionary):
     """Creates a named tuple using the given dictionary"""
     return namedtuple('GenericDict', dictionary.keys())(**dictionary)

@@ -21,7 +21,7 @@ class MonthlyReportView(grok.View, form.ReservationDataView):
     grok.require(permission)
 
     grok.context(Interface)
-    grok.name('monthly_report')
+    grok.name('monthly_report') # note that this text is copied in utils.py
 
     template = grok.PageTemplateFile('templates/monthly_report.pt')
 
