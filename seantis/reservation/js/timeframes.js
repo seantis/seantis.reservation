@@ -1,13 +1,11 @@
 (function($) {
     $(document).ready(function() {
         var formselector = '#content-core form';
-        
-        $('a', $('#timeframes')).prepOverlay({
-            subtype: 'ajax',
-            filter: common_content_filter,
+        var options = {
             formselector: formselector,
-            noform: 'reload',
             closeselector: '[name=form.button.Cancel]',
+            noform: 'reload',
+
             config: {
                 onBeforeLoad: function() {
                     // If the formselector can't be found the overlay is
@@ -19,6 +17,8 @@
                         window.location.reload();
                 }
             }
-        });
+        };
+
+        reservation_overlay_init($('#timeframes').find('a'), options);
     });
 })(jQuery);
