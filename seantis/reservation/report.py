@@ -159,6 +159,7 @@ def monthly_report(year, month, resources):
             report[day][uuid][u'title'] = titles[uuid]
             report[day][uuid][u'approved'] = list()
             report[day][uuid][u'pending'] = list()
+            report[day][uuid][u'url'] = resources[uuid].absolute_url()
             report[day][uuid][u'lists'] = {
                 u'approved': _(u'Approved'),
                 u'pending': _(u'Pending'),

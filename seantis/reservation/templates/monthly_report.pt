@@ -29,7 +29,9 @@
                 <tal:block repeat="resource python: results[day].values()">
                     <div class="resource" tal:condition="python: view.has_reservations(resource)">
 
-                        <h3 tal:content="python: resource['title']"></h3>
+                        <h3>
+                            <a tal:attributes="href resource/url" tal:content="resource/title"></a>
+                        </h3>
 
                         <tal:block repeat="rtype python: resource['lists']">
 
