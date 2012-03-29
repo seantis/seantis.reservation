@@ -200,10 +200,14 @@ def get_resource_by_uuid(context, uuid):
     return len(results) == 1 and results[0] or None
 
 def get_resource_title(resource):
-    if hasattr(resource, 'parent'):
-        return ' - '.join((resource.parent().title, resource.title))
+    if hasattr(resource, '__parent__'):
+        parent = resource.__parent__.title
+    elif hasattr(resource, 'parent'):
+        parent = resource.parent().title
     else:
         return resource.title
+
+    return ' - '.join((parent, resource.title))
 
 class UUIDEncoder(json.JSONEncoder):
     """Encodes UUID objects as string in JSON."""
