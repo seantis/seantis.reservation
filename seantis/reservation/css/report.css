@@ -106,6 +106,10 @@
 .monthly-report .reservation-detail {
     padding-bottom: 10px;
     margin-top: -10px;
+    
+    /* relevant for reservation.urls */
+    position: relative;
+    min-height: 27px;
 }
 
 .monthly-report .reservation-detail .reservation-data {
@@ -122,6 +126,19 @@
 
 .monthly-report .reservation-detail .reservation-data .block-title:first-child {
      padding-top: 10px;
+}
+
+/* reservation-urls */
+
+.monthly-report .reservation .reservation-urls {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin: 0 7px 5px;
+}
+
+.monthly-report .reservation .reservation-urls a {
+    margin-left: 5px;
 }
 
 /* timetables */

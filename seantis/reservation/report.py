@@ -13,6 +13,7 @@ from seantis.reservation import db
 from seantis.reservation import utils
 from seantis.reservation import form
 from seantis.reservation.models import Allocation, Reservation
+from seantis.reservation.reserve import ReservationUrls
 
 calendar = Calendar()
 
@@ -189,6 +190,7 @@ def monthly_report(year, month, resources):
     query = query.order_by(Reservation.status)
 
     reservations = query.all()
+    reservation_urls = ReservationUrls()
 
     used_days = []
     def add_reservation(start, end, reservation):
@@ -198,13 +200,26 @@ def monthly_report(year, month, resources):
 
         end += timedelta(microseconds=1)
         start, end = start.strftime('%H:%M'), end.strftime('%H:%M')
+
+        context = resources[unicode(reservation.resource)]
+        if reservation.status == u'approved':
+            urls = [(_(u'Delete'), reservation_urls.remove_all_url(reservation.token, context))]
+        elif reservation.status == u'pending':
+            urls = [
+                (_(u'Approve'), reservation_urls.approve_all_url(reservation.token, context)),
+                (_(u'Deny'), reservation_urls.deny_all_url(reservation.token, context)),
+            ]
+        else:
+            raise NotImplementedError
+
         report[day][unicode(reservation.resource)][reservation.status].append(
             dict(
                 start=start, 
                 end=end, 
                 email=reservation.email, 
                 data=reservation.data,
-                timespans=json.dumps([dict(start=start, end=end)])   
+                timespans=json.dumps([dict(start=start, end=end)])   ,
+                urls=urls
             )
         )
 

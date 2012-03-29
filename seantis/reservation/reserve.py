@@ -33,16 +33,19 @@ from seantis.reservation.error import NoResultFound
 
 class ReservationUrls(object):
 
-    def remove_all_url(self, token):
-        base = self.context.absolute_url()
+    def remove_all_url(self, token, context=None):
+        context = context or self.context
+        base = context.absolute_url()
         return base + u'/remove-reservation?reservation=%s' % token
 
-    def approve_all_url(self, token):
-        base = self.context.absolute_url()
+    def approve_all_url(self, token, context=None):
+        context = context or self.context
+        base = context.absolute_url()
         return base + u'/approve-reservation?reservation=%s' % token
 
-    def deny_all_url(self, token):
-        base = self.context.absolute_url()
+    def deny_all_url(self, token, context=None):
+        context = context or self.context
+        base = context.absolute_url()
         return base + u'/deny-reservation?reservation=%s' % token
 
 class ReservationSchemata(object):

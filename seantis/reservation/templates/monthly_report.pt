@@ -68,7 +68,23 @@
                                         <div style="clear:both;"></div>
                                     </div>
                                     <div class="reservation-detail" tal:define="data reservation/data">
-                                        <metal:block use-macro="python: path(view.data_macro_path)"/>
+                                        <div class="leftcolumn">
+                                            <metal:block use-macro="python: path(view.data_macro_path)"/>
+                                        </div>
+
+                                        <div class="rightcolumn">
+                                            <div class="reservation-urls">
+                                                <tal:block repeat="url reservation/urls">
+                                                    <a 
+                                                        tal:attributes="href python: url[1]"
+                                                        tal:content="python: url[0]"
+                                                    >
+                                                    </a>
+                                                </tal:block>
+                                            </div>
+                                        </div>
+
+                                        <div style="clear:both"></div>
                                     </div>
                                 </div>
                                 </tal:block>
