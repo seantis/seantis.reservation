@@ -241,10 +241,6 @@ class ReservationDecisionForm(ResourceBaseForm, ReservationListView, Reservation
             reservation=unicode(self.reservation)
         )
 
-    @button.buttonAndHandler(_(u'Cancel'))
-    def cancel(self, action):
-        self.redirect_to_context()
-
 class ReservationApprovalForm(ReservationDecisionForm):
     
     permission = 'cmf.ManagePortal'
@@ -274,6 +270,10 @@ class ReservationApprovalForm(ReservationDecisionForm):
 
         utils.handle_action(action=approve, success=self.redirect_to_context)
 
+    @button.buttonAndHandler(_(u'Cancel'))
+    def cancel(self, action):
+        self.redirect_to_context()
+
 class ReservationDenialForm(ReservationDecisionForm):
 
     permission = 'cmf.ManagePortal'
@@ -302,6 +302,10 @@ class ReservationDenialForm(ReservationDecisionForm):
             self.flash(_(u'Reservation denied'))
 
         utils.handle_action(action=deny, success=self.redirect_to_context)
+
+    @button.buttonAndHandler(_(u'Cancel'))
+    def cancel(self, action):
+        self.redirect_to_context()
 
 class ReservationRemoveForm(ResourceBaseForm, ReservationListView, ReservationUrls):
     permission = 'cmf.ManagePortal'
