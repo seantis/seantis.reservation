@@ -219,7 +219,8 @@ def monthly_report(year, month, resources):
                 email=reservation.email, 
                 data=reservation.data,
                 timespans=json.dumps([dict(start=start, end=end)])   ,
-                urls=urls
+                urls=urls,
+                token=reservation.token
             )
         )
 

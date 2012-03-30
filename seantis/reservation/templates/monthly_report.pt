@@ -51,7 +51,8 @@
 
                                 <tal:block repeat="reservation python: resource[rtype]">
                                     <div tal:attributes="
-                                        class python: (repeat['reservation'].odd() and 'reservation odd' or 'reservation even') + (view.show_details and ' show-details' or '')
+                                        class python: (repeat['reservation'].odd() and 'reservation odd' or 'reservation even') + (view.show_details and ' show-details' or '');
+                                        data-token reservation/token;
                                     ">
                                     <div class="reservation-summary">
                                         <div class="leftcolumn">
