@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-03-15 15:53+0000\n"
+"POT-Creation-Date: 2012-03-30 15:24+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,23 +14,27 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: DOMAIN\n"
 
-#: ./utils.py:220
+#: ./utils.py:255
 msgid "%i Spots Available"
 msgstr "%i Plätze verfügbar"
 
-#: ./utils.py:236
+#: ./utils.py:271
 msgid "%i Waitinglist Spots"
 msgstr "%i Wartelisten-Plätze"
 
-#: ./utils.py:213
+#: ./utils.py:248
 msgid "%i%% Free"
 msgstr "%i%% Frei"
 
-#: ./utils.py:218
+#: ./templates/monthly_report.pt:21
+msgid "&lt;&lt; Previous Month"
+msgstr "&lt;&lt; Vorheriger Monat"
+
+#: ./utils.py:253
 msgid "1 Spot Available"
 msgstr "Ein Platz verfügbar"
 
-#: ./utils.py:234
+#: ./utils.py:269
 msgid "1 Waitinglist Spot"
 msgstr "Ein Warteliste-Platz"
 
@@ -46,27 +50,27 @@ msgstr "Ein offene Reservierung wäre durch die Änderung betroffen"
 msgid "Add"
 msgstr "Hinzufügen"
 
-#: ./reserve.py:133
+#: ./reserve.py:162
 msgid "Added to waitinglist"
 msgstr "In Warteliste eingetragen"
 
-#: ./allocate.py:110
+#: ./allocate.py:108
 msgid "Allocate"
 msgstr "Einteilen"
 
-#: ./allocate.py:39
+#: ./allocate.py:37
 msgid "Allocation"
 msgstr "Einteilung"
 
-#: ./allocate.py:124
+#: ./allocate.py:122
 msgid "Allocation added"
 msgstr "Einteilung hinzugefügt"
 
-#: ./allocate.py:240
+#: ./allocate.py:238
 msgid "Allocation removed"
 msgstr "Einteilung entfernt"
 
-#: ./allocate.py:206
+#: ./allocate.py:204
 msgid "Allocation saved"
 msgstr "Einteilung gespeichert"
 
@@ -74,12 +78,13 @@ msgstr "Einteilung gespeichert"
 msgid "An existing reservation would be affected by the requested change"
 msgstr "Eine bestehende Reservation wäre durch die Änderung betroffen"
 
-#: ./reserve.py:242
-#: ./templates/reservations.pt:86
+#: ./report.py:209
+#: ./reserve.py:260
+#: ./templates/reservations.pt:90
 msgid "Approve"
 msgstr "Zulassen"
 
-#: ./reserve.py:233
+#: ./reserve.py:251
 msgid "Approve reservation"
 msgstr "Reservation zulassen"
 
@@ -87,16 +92,28 @@ msgstr "Reservation zulassen"
 msgid "Approve reservation requests"
 msgstr "Reservations-Anfragen manuell bestätigen"
 
+#: ./report.py:165
+msgid "Approved"
+msgstr "Zugelassen"
+
 #: ./templates/reservations.pt:15
 msgid "Approved Reservations"
 msgstr "Zugelassene Reservationen"
 
-#: ./allocate.py:128
-#: ./reserve.py:138
+#: ./utils.py:480
+msgid "April"
+msgstr "April"
+
+#: ./utils.py:484
+msgid "August"
+msgstr "August"
+
+#: ./allocate.py:126
+#: ./reserve.py:167
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: ./templates/reservations.pt:46
+#: ./templates/reservations.pt:49
 msgid "Concerned Dates"
 msgstr "Betroffene Daten"
 
@@ -112,18 +129,23 @@ msgstr "Tag"
 msgid "Days"
 msgstr "Tage"
 
-#: ./allocate.py:228
-#: ./reserve.py:323
-#: ./templates/reservations.pt:28
+#: ./utils.py:488
+msgid "December"
+msgstr "Dezember"
+
+#: ./allocate.py:226
+#: ./report.py:206
+#: ./reserve.py:349
 msgid "Delete"
 msgstr "Löschen"
 
-#: ./reserve.py:271
-#: ./templates/reservations.pt:80
+#: ./report.py:210
+#: ./reserve.py:293
+#: ./templates/reservations.pt:84
 msgid "Deny"
 msgstr "Ablehnen"
 
-#: ./reserve.py:262
+#: ./reserve.py:284
 msgid "Deny reservation"
 msgstr "Reservation ablehnen"
 
@@ -131,11 +153,11 @@ msgstr "Reservation ablehnen"
 msgid "Description"
 msgstr "Beschreibung"
 
-#: ./reserve.py:240
+#: ./reserve.py:258
 msgid "Do you really want to approve the following reservations?"
 msgstr "Möchten Sie die folgende Reservation wirklich zulassen?"
 
-#: ./reserve.py:269
+#: ./reserve.py:291
 msgid "Do you really want to deny the following reservations?"
 msgstr "Möchten Sie die folgende Reservation wirklich ablehnen?"
 
@@ -143,11 +165,11 @@ msgstr "Möchten Sie die folgende Reservation wirklich ablehnen?"
 msgid "Do you really want to remove the following allocations?"
 msgstr "Möchten Sie die folgenden Einteilungen wirklich löschen?"
 
-#: ./reserve.py:317
+#: ./reserve.py:343
 msgid "Do you really want to remove the following reservations?"
 msgstr "Möchten Sie die folgenden Reservation wirklich löschen?"
 
-#: ./reserve.py:320
+#: ./reserve.py:346
 msgid "Do you really want to remove the following timespans from the reservation?"
 msgstr "Möchten Sie die folgenden Zeiträume wirklich von der Reservation entfernen?"
 
@@ -155,13 +177,13 @@ msgstr "Möchten Sie die folgenden Zeiträume wirklich von der Reservation entfe
 msgid "Do you want to reserve the following allocations?"
 msgstr "Möchten Sie die folgenden Einteilungen reservieren?"
 
-#: ./allocate.py:184
-#: ./resource.py:215
+#: ./allocate.py:182
+#: ./resource.py:212
 #: ./timeframe.py:160
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: ./allocate.py:148
+#: ./allocate.py:146
 msgid "Edit allocation"
 msgstr "Einteilung bearbeiten"
 
@@ -178,9 +200,13 @@ msgstr "Ende"
 msgid "End date before start date"
 msgstr "Ende vor Start"
 
-#: ./resource.py:213
+#: ./resource.py:210
 msgid "Entry"
 msgstr "Eintrag"
+
+#: ./utils.py:478
+msgid "February"
+msgstr "Februar"
 
 #: ./interfaces.py:104
 msgid "First hour must be smaller than last hour"
@@ -198,7 +224,7 @@ msgstr "Teilformulare"
 msgid "Fr"
 msgstr "Fr"
 
-#: ./utils.py:211
+#: ./utils.py:246
 msgid "Free"
 msgstr "Frei"
 
@@ -206,7 +232,7 @@ msgstr "Frei"
 msgid "From"
 msgstr "Von"
 
-#: ./utils.py:238
+#: ./utils.py:273
 msgid "Full Waitinglist"
 msgstr "Warteliste voll"
 
@@ -218,7 +244,7 @@ msgstr "Warteliste voll"
 msgid "Fully booked"
 msgstr "Ausgebucht"
 
-#: ./reserve.py:62
+#: ./reserve.py:81
 msgid "General Information"
 msgstr "Allgemein"
 
@@ -226,7 +252,7 @@ msgstr "Allgemein"
 msgid "Id"
 msgstr "Id"
 
-#: ./allocate.py:162
+#: ./allocate.py:160
 msgid "Invalid arguments"
 msgstr "Ungültige Argumente"
 
@@ -246,21 +272,41 @@ msgstr "Ungültige erste Stunde"
 msgid "Invalid last hour"
 msgstr "Ungültige letzte Stunde"
 
-#: ./reserve.py:112
+#: ./reserve.py:140
 msgid "Invalid reservation request"
 msgstr "Ungültige Reservations-Anfrage"
+
+#: ./utils.py:477
+msgid "January"
+msgstr "Januar"
+
+#: ./utils.py:483
+msgid "July"
+msgstr "Juli"
+
+#: ./utils.py:482
+msgid "June"
+msgstr "Juni"
 
 #: ./interfaces.py:72
 msgid "Last hour of the day"
 msgstr "Letzte Stunde des Tages"
 
-#: ./resource.py:227
+#: ./resource.py:224
 msgid "List"
 msgstr "Auflisten"
 
-#: ./resource.py:209
+#: ./utils.py:481
+msgid "Mai"
+msgstr "Mai"
+
+#: ./resource.py:206
 msgid "Manage"
 msgstr "Verwalten"
+
+#: ./utils.py:479
+msgid "March"
+msgstr "März"
 
 #: ./interfaces.py:246
 msgid "Metadata"
@@ -270,25 +316,41 @@ msgstr "Metadaten"
 msgid "Mo"
 msgstr "Mo"
 
+#: ./report.py:110
+msgid "Monthly Report for %(month)s %(year)i"
+msgstr "Monatsreport für %(month)s %(year)i"
+
 #: ./interfaces.py:58
 msgid "Name"
 msgstr "Name"
+
+#: ./templates/monthly_report.pt:21
+msgid "Next Month &gt;&gt;"
+msgstr "Nächster Monat &gt;&gt;"
 
 #: ./error.py:76
 msgid "No reservable slot found."
 msgstr "Der gewünschte Zeitbereich ist bereits besetzt."
 
-#: ./utils.py:222
+#: ./utils.py:257
 msgid "No spots available"
 msgstr "Keine Plätze frei"
 
-#: ./reserve.py:238
+#: ./reserve.py:256
 msgid "No such reservation"
 msgstr "Unbekannte Reservation"
 
-#: ./utils.py:209
+#: ./utils.py:487
+msgid "November"
+msgstr "November"
+
+#: ./utils.py:244
 msgid "Occupied"
 msgstr "Besetzt"
+
+#: ./utils.py:486
+msgid "October"
+msgstr "Oktober"
 
 #: ./interfaces.py:36
 msgid "Once"
@@ -302,7 +364,11 @@ msgstr "Teilweise verfügbar"
 msgid "Partly available allocations can only be reserved separately"
 msgstr "Teilweise verfügbare Einteilungen können nur separat reserviert werden"
 
-#: ./templates/reservations.pt:65
+#: ./report.py:166
+msgid "Pending"
+msgstr "Warteliste"
+
+#: ./templates/reservations.pt:68
 msgid "Pending Reservations"
 msgstr "Offene Reservationen"
 
@@ -318,7 +384,7 @@ msgstr "Kontingent muss zwischen 1 und 100 liegen"
 msgid "Raster"
 msgstr "Raster"
 
-#: ./reserve.py:164
+#: ./reserve.py:178
 msgid "Recurrance reservation"
 msgstr "Wiederholung reservieren"
 
@@ -330,19 +396,19 @@ msgstr "Wiederholung"
 msgid "Recurrence View"
 msgstr "Auflistung der Wiederholung"
 
-#: ./resource.py:225
+#: ./resource.py:222
 msgid "Recurrences"
 msgstr "Wiederholungen"
 
-#: ./resource.py:218
+#: ./resource.py:215
 msgid "Remove"
 msgstr "Entfernen"
 
-#: ./allocate.py:223
+#: ./allocate.py:221
 msgid "Remove allocations"
 msgstr "Einteilungen entfernen"
 
-#: ./reserve.py:293
+#: ./reserve.py:319
 msgid "Remove reservation"
 msgstr "Reservation entfernen"
 
@@ -350,23 +416,23 @@ msgstr "Reservation entfernen"
 msgid "Reservation"
 msgstr "Reservation"
 
-#: ./reserve.py:251
+#: ./reserve.py:269
 msgid "Reservation confirmed"
 msgstr "Reservation bestätigt"
 
-#: ./reserve.py:280
+#: ./reserve.py:302
 msgid "Reservation denied"
 msgstr "Reservation abgelehnt"
 
-#: ./reserve.py:108
+#: ./reserve.py:136
 msgid "Reservation out of bounds"
 msgstr "Reservation ausserhalb des gültigen Bereichs"
 
-#: ./reserve.py:332
+#: ./reserve.py:358
 msgid "Reservation removed"
 msgstr "Reservation entfernt"
 
-#: ./reserve.py:131
+#: ./reserve.py:160
 msgid "Reservation successful"
 msgstr "Reservation erfolgreich"
 
@@ -374,7 +440,7 @@ msgstr "Reservation erfolgreich"
 msgid "Reservation throttling"
 msgstr "Reservations Limit"
 
-#: ./resource.py:193
+#: ./resource.py:190
 msgid "Reservations"
 msgstr "Reservationen"
 
@@ -382,8 +448,8 @@ msgstr "Reservationen"
 msgid "Reservations can't be made for more than 24 hours at a time"
 msgstr "Reservationen können nicht über mehr als 24 Stunden gemacht werden"
 
-#: ./reserve.py:114
-#: ./resource.py:195
+#: ./reserve.py:142
+#: ./resource.py:192
 msgid "Reserve"
 msgstr "Reservieren"
 
@@ -391,7 +457,7 @@ msgstr "Reservieren"
 msgid "Resource"
 msgstr "Ressource"
 
-#: ./reserve.py:55
+#: ./reserve.py:75
 msgid "Resource reservation"
 msgstr "Reservation"
 
@@ -414,6 +480,10 @@ msgstr "Seantis Reservation Einstellungen"
 #: ./interfaces.py:163
 msgid "Separately reservable"
 msgstr "Separat reservierbar"
+
+#: ./utils.py:485
+msgid "September"
+msgstr ""
 
 #: ./interfaces.py:131
 msgid "Start"
