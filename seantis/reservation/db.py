@@ -1,5 +1,5 @@
 from uuid import UUID
-from uuid import uuid4 as new_uuid
+from uuid import uuid1 as new_uuid
 from datetime import datetime, MINYEAR, MAXYEAR
 from itertools import groupby
 
@@ -219,7 +219,7 @@ class Scheduler(object):
 
         """
         dates = utils.pairs(dates)
-
+        
         group = new_uuid()
         quota = quota or self.quota
         waitinglist_spots = approve and waitinglist_spots or quota

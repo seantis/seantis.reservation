@@ -56,12 +56,12 @@ class MonthlyReportView(grok.View, form.ReservationDataView):
     @property
     @view.memoize
     def min_hour(self):
-        return min((r.first_hour for r in self.resources.values()))
+        return min((r.first_hour for r in self.resources.values() if hasattr(r, 'first_hour')))
 
     @property
     @view.memoize
     def max_hour(self):
-        return max((r.last_hour for r in self.resources.values()))
+        return max((r.last_hour for r in self.resources.values() if hasattr(r, 'last_hour')))
 
     @property
     @view.memoize
@@ -153,7 +153,7 @@ def monthly_report(year, month, resources):
 
         day = d.day
         last_day = max(last_day, day)
-        report[day] = dict()
+        report[day] = utils.OrderedDict()
         
         for uuid in ordered_uuids:    
             report[day][uuid] = dict()
@@ -225,7 +225,7 @@ def monthly_report(year, month, resources):
         )
 
     for reservation in reservations:
-        if reservation.target == u'allocation':
+        if reservation.target_type == u'allocation':
             add_reservation(reservation.start, reservation.end, reservation)
         else:
             for allocation in groups[reservation.target]:

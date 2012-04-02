@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from uuid import uuid4 as new_uuid
+from uuid import uuid1 as new_uuid
 
 from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation.db import Scheduler

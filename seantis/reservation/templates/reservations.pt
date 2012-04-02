@@ -47,6 +47,7 @@
 
                   <div class="reservation-timespans">
                     <div class="block-title" i18n:translate="">Concerned Dates</div>
+                    <div class="limitedList" style="max-height: 450px; min-width: 100%;">
                     <tal:block tal:repeat="timespan python: reservation.timespans()">
                         <tal:block tal:define="
                         start python: timespan[0];
@@ -56,6 +57,7 @@
                           <div tal:content="display"></div>
                         </tal:block>
                     </tal:block>
+                    </div>
                   </div>
                   <div style="clear: both;"></div>
                 </div>
@@ -100,6 +102,7 @@
 
                   <div class="reservation-timespans">
                     <div class="block-title" i18n:translate="">Concerned Dates</div>
+                    <div class="limitedList" style="max-height: 450px; min-width: 100%;">
                     <tal:block tal:repeat="timespan python: reservation.timespans()">
                         <tal:block tal:define="
                         start python: timespan[0];
@@ -109,6 +112,7 @@
                           <div tal:content="display"></div>
                         </tal:block>
                     </tal:block>
+                    </div>
                   </div>
                   <div style="clear: both;"></div>
                 </div>

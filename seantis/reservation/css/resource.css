@@ -158,7 +158,7 @@ a.reservation-delete {
 .limitedList {
     overflow: auto;
     max-height: 150px;
-    max-width: 300px;
+    max-width: 400px;
 }
 
 .groupListDay {
@@ -168,7 +168,7 @@ a.reservation-delete {
 }
 
 .groupListTime {
-    width:180px !important; 
+    width:300px !important; 
     float:left;
     text-align: center;
 }
@@ -276,14 +276,15 @@ a.event-full-waitinglist.event-fully-booked .fc-event-head {
     font-weight: normal;
     color: #555;
     display: inline-block;
-    min-width: 70px;
+    min-width: 75px;
+    margin-top: 3px;
 }
 
 .reservation-list .block-title {
     font-size: 1em;
     font-weight: bold;   
     color: #222;
-    padding-top: 3px;
+    padding-top: 15px;
     padding-bottom: 1px;
 }
 
@@ -383,4 +384,4 @@ ul.formTabs li.formTab:last-child:after {
     background-color: #c1e0ee;
     color: #232 !important;
     border: 1px solid #57a9cd;   
-}}
+}

@@ -1,7 +1,7 @@
 import transaction
 
 from threading import Thread
-from uuid import uuid4 as uuid
+from uuid import uuid1 as uuid
 from datetime import datetime
 from seantis.reservation.tests import IntegrationTestCase
 

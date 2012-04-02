@@ -1,5 +1,5 @@
 from datetime import datetime
-from uuid import uuid4 as uuid
+from uuid import uuid1 as uuid
 
 from sqlalchemy.exc import IntegrityError
 
