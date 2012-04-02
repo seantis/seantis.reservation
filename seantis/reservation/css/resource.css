@@ -181,7 +181,7 @@ a.reservation-delete {
     width: 30px;
     float: right;
     top: 3px;
-    right: 3px
+    right: 3px;
 }
 
 div.error {
@@ -320,7 +320,7 @@ body .enableFormTabbing fieldset {
 }
 
 body .fieldErrorBox .error {
-    margin-bottom: 5px   
+    margin-bottom: 5px; 
 }
 
 body div.error {
@@ -355,11 +355,11 @@ ul.formTabs li.formTab {
 ul.formTabs li.formTab:after {
      content: " ► ";   
      color: #888;
-     margin: 4px
+     margin: 4px;
 }
 
 ul.formTabs li.formTab:last-child:after {
-     content: ""   
+     content: "";
 }
 
 .formTab a {
