@@ -1,4 +1,4 @@
-<div xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="seantis.reservation">
+<div xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="seantis.reservation" tal:condition="viewlet/timeframes">
     
     <div id="timeframes">
         <h2 i18n:translate="" style="display: inline;">
@@ -6,7 +6,7 @@
         </h2>
         <a class="resourceTitle" style="float: none;" tal:repeat="link viewlet/links" tal:attributes="href python: link[1]" tal:content="python: link[0]"></a>
         
-        <div tal:condition="viewlet/timeframes">
+        <div>
             
             <div class="resourceItem" tal:repeat="frame viewlet/timeframes">
                 <div tal:attributes="class python: viewlet.visible(frame) and 'visibleTimeframe' or 'hiddenTimeframe'">
