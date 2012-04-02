@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-03-15 15:53+0000\n"
+"POT-Creation-Date: 2012-04-02 14:45+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,23 +17,27 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: seantis.reservation\n"
 
-#: ./utils.py:220
+#: ./utils.py:255
 msgid "%i Spots Available"
 msgstr ""
 
-#: ./utils.py:236
+#: ./utils.py:271
 msgid "%i Waitinglist Spots"
 msgstr ""
 
-#: ./utils.py:213
+#: ./utils.py:248
 msgid "%i%% Free"
 msgstr ""
 
-#: ./utils.py:218
+#: ./templates/monthly_report.pt:21
+msgid "&lt;&lt; Previous Month"
+msgstr ""
+
+#: ./utils.py:253
 msgid "1 Spot Available"
 msgstr ""
 
-#: ./utils.py:234
+#: ./utils.py:269
 msgid "1 Waitinglist Spot"
 msgstr ""
 
@@ -49,27 +53,27 @@ msgstr ""
 msgid "Add"
 msgstr ""
 
-#: ./reserve.py:133
+#: ./reserve.py:162
 msgid "Added to waitinglist"
 msgstr ""
 
-#: ./allocate.py:110
+#: ./allocate.py:108
 msgid "Allocate"
 msgstr ""
 
-#: ./allocate.py:39
+#: ./allocate.py:37
 msgid "Allocation"
 msgstr ""
 
-#: ./allocate.py:124
+#: ./allocate.py:122
 msgid "Allocation added"
 msgstr ""
 
-#: ./allocate.py:240
+#: ./allocate.py:238
 msgid "Allocation removed"
 msgstr ""
 
-#: ./allocate.py:206
+#: ./allocate.py:204
 msgid "Allocation saved"
 msgstr ""
 
@@ -77,12 +81,13 @@ msgstr ""
 msgid "An existing reservation would be affected by the requested change"
 msgstr ""
 
-#: ./reserve.py:242
-#: ./templates/reservations.pt:86
+#: ./report.py:207
+#: ./reserve.py:260
+#: ./templates/reservations.pt:92
 msgid "Approve"
 msgstr ""
 
-#: ./reserve.py:233
+#: ./reserve.py:251
 msgid "Approve reservation"
 msgstr ""
 
@@ -90,16 +95,28 @@ msgstr ""
 msgid "Approve reservation requests"
 msgstr ""
 
+#: ./report.py:163
+msgid "Approved"
+msgstr ""
+
 #: ./templates/reservations.pt:15
 msgid "Approved Reservations"
 msgstr ""
 
-#: ./allocate.py:128
-#: ./reserve.py:138
+#: ./utils.py:480
+msgid "April"
+msgstr ""
+
+#: ./utils.py:484
+msgid "August"
+msgstr ""
+
+#: ./allocate.py:126
+#: ./reserve.py:167
 msgid "Cancel"
 msgstr ""
 
-#: ./templates/reservations.pt:46
+#: ./templates/reservations.pt:49
 msgid "Concerned Dates"
 msgstr ""
 
@@ -115,18 +132,23 @@ msgstr ""
 msgid "Days"
 msgstr ""
 
-#: ./allocate.py:228
-#: ./reserve.py:323
-#: ./templates/reservations.pt:28
+#: ./utils.py:488
+msgid "December"
+msgstr ""
+
+#: ./allocate.py:226
+#: ./report.py:204
+#: ./reserve.py:349
 msgid "Delete"
 msgstr ""
 
-#: ./reserve.py:271
-#: ./templates/reservations.pt:80
+#: ./report.py:208
+#: ./reserve.py:293
+#: ./templates/reservations.pt:86
 msgid "Deny"
 msgstr ""
 
-#: ./reserve.py:262
+#: ./reserve.py:284
 msgid "Deny reservation"
 msgstr ""
 
@@ -134,11 +156,11 @@ msgstr ""
 msgid "Description"
 msgstr ""
 
-#: ./reserve.py:240
+#: ./reserve.py:258
 msgid "Do you really want to approve the following reservations?"
 msgstr ""
 
-#: ./reserve.py:269
+#: ./reserve.py:291
 msgid "Do you really want to deny the following reservations?"
 msgstr ""
 
@@ -146,11 +168,11 @@ msgstr ""
 msgid "Do you really want to remove the following allocations?"
 msgstr ""
 
-#: ./reserve.py:317
+#: ./reserve.py:343
 msgid "Do you really want to remove the following reservations?"
 msgstr ""
 
-#: ./reserve.py:320
+#: ./reserve.py:346
 msgid "Do you really want to remove the following timespans from the reservation?"
 msgstr ""
 
@@ -158,13 +180,13 @@ msgstr ""
 msgid "Do you want to reserve the following allocations?"
 msgstr ""
 
-#: ./allocate.py:184
-#: ./resource.py:215
+#: ./allocate.py:182
+#: ./resource.py:212
 #: ./timeframe.py:160
 msgid "Edit"
 msgstr ""
 
-#: ./allocate.py:148
+#: ./allocate.py:146
 msgid "Edit allocation"
 msgstr ""
 
@@ -181,8 +203,12 @@ msgstr ""
 msgid "End date before start date"
 msgstr ""
 
-#: ./resource.py:213
+#: ./resource.py:210
 msgid "Entry"
+msgstr ""
+
+#: ./utils.py:478
+msgid "February"
 msgstr ""
 
 #: ./interfaces.py:104
@@ -201,7 +227,7 @@ msgstr ""
 msgid "Fr"
 msgstr ""
 
-#: ./utils.py:211
+#: ./utils.py:246
 msgid "Free"
 msgstr ""
 
@@ -209,7 +235,7 @@ msgstr ""
 msgid "From"
 msgstr ""
 
-#: ./utils.py:238
+#: ./utils.py:273
 msgid "Full Waitinglist"
 msgstr ""
 
@@ -221,7 +247,7 @@ msgstr ""
 msgid "Fully booked"
 msgstr ""
 
-#: ./reserve.py:62
+#: ./reserve.py:81
 msgid "General Information"
 msgstr ""
 
@@ -229,7 +255,7 @@ msgstr ""
 msgid "Id"
 msgstr ""
 
-#: ./allocate.py:162
+#: ./allocate.py:160
 msgid "Invalid arguments"
 msgstr ""
 
@@ -249,20 +275,40 @@ msgstr ""
 msgid "Invalid last hour"
 msgstr ""
 
-#: ./reserve.py:112
+#: ./reserve.py:140
 msgid "Invalid reservation request"
+msgstr ""
+
+#: ./utils.py:477
+msgid "January"
+msgstr ""
+
+#: ./utils.py:483
+msgid "July"
+msgstr ""
+
+#: ./utils.py:482
+msgid "June"
 msgstr ""
 
 #: ./interfaces.py:72
 msgid "Last hour of the day"
 msgstr ""
 
-#: ./resource.py:227
+#: ./resource.py:224
 msgid "List"
 msgstr ""
 
-#: ./resource.py:209
+#: ./utils.py:481
+msgid "Mai"
+msgstr ""
+
+#: ./resource.py:206
 msgid "Manage"
+msgstr ""
+
+#: ./utils.py:479
+msgid "March"
 msgstr ""
 
 #: ./interfaces.py:246
@@ -273,24 +319,40 @@ msgstr ""
 msgid "Mo"
 msgstr ""
 
+#: ./report.py:110
+msgid "Monthly Report for "
+msgstr ""
+
 #: ./interfaces.py:58
 msgid "Name"
+msgstr ""
+
+#: ./templates/monthly_report.pt:21
+msgid "Next Month &gt;&gt;"
 msgstr ""
 
 #: ./error.py:76
 msgid "No reservable slot found."
 msgstr ""
 
-#: ./utils.py:222
+#: ./utils.py:257
 msgid "No spots available"
 msgstr ""
 
-#: ./reserve.py:238
+#: ./reserve.py:256
 msgid "No such reservation"
 msgstr ""
 
-#: ./utils.py:209
+#: ./utils.py:487
+msgid "November"
+msgstr ""
+
+#: ./utils.py:244
 msgid "Occupied"
+msgstr ""
+
+#: ./utils.py:486
+msgid "October"
 msgstr ""
 
 #: ./interfaces.py:36
@@ -305,7 +367,11 @@ msgstr ""
 msgid "Partly available allocations can only be reserved separately"
 msgstr ""
 
-#: ./templates/reservations.pt:65
+#: ./report.py:164
+msgid "Pending"
+msgstr ""
+
+#: ./templates/reservations.pt:70
 msgid "Pending Reservations"
 msgstr ""
 
@@ -321,7 +387,7 @@ msgstr ""
 msgid "Raster"
 msgstr ""
 
-#: ./reserve.py:164
+#: ./reserve.py:178
 msgid "Recurrance reservation"
 msgstr ""
 
@@ -333,19 +399,19 @@ msgstr ""
 msgid "Recurrence View"
 msgstr ""
 
-#: ./resource.py:225
+#: ./resource.py:222
 msgid "Recurrences"
 msgstr ""
 
-#: ./resource.py:218
+#: ./resource.py:215
 msgid "Remove"
 msgstr ""
 
-#: ./allocate.py:223
+#: ./allocate.py:221
 msgid "Remove allocations"
 msgstr ""
 
-#: ./reserve.py:293
+#: ./reserve.py:319
 msgid "Remove reservation"
 msgstr ""
 
@@ -353,23 +419,23 @@ msgstr ""
 msgid "Reservation"
 msgstr ""
 
-#: ./reserve.py:251
+#: ./reserve.py:269
 msgid "Reservation confirmed"
 msgstr ""
 
-#: ./reserve.py:280
+#: ./reserve.py:302
 msgid "Reservation denied"
 msgstr ""
 
-#: ./reserve.py:108
+#: ./reserve.py:136
 msgid "Reservation out of bounds"
 msgstr ""
 
-#: ./reserve.py:332
+#: ./reserve.py:358
 msgid "Reservation removed"
 msgstr ""
 
-#: ./reserve.py:131
+#: ./reserve.py:160
 msgid "Reservation successful"
 msgstr ""
 
@@ -377,7 +443,7 @@ msgstr ""
 msgid "Reservation throttling"
 msgstr ""
 
-#: ./resource.py:193
+#: ./resource.py:190
 msgid "Reservations"
 msgstr ""
 
@@ -385,8 +451,8 @@ msgstr ""
 msgid "Reservations can't be made for more than 24 hours at a time"
 msgstr ""
 
-#: ./reserve.py:114
-#: ./resource.py:195
+#: ./reserve.py:142
+#: ./resource.py:192
 msgid "Reserve"
 msgstr ""
 
@@ -394,7 +460,7 @@ msgstr ""
 msgid "Resource"
 msgstr ""
 
-#: ./reserve.py:55
+#: ./reserve.py:75
 msgid "Resource reservation"
 msgstr ""
 
@@ -416,6 +482,10 @@ msgstr ""
 
 #: ./interfaces.py:163
 msgid "Separately reservable"
+msgstr ""
+
+#: ./utils.py:485
+msgid "September"
 msgstr ""
 
 #: ./interfaces.py:131

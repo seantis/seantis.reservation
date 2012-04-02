@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-03-30 15:24+0000\n"
+"POT-Creation-Date: 2012-04-02 14:45+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -78,9 +78,9 @@ msgstr "Einteilung gespeichert"
 msgid "An existing reservation would be affected by the requested change"
 msgstr "Eine bestehende Reservation wäre durch die Änderung betroffen"
 
-#: ./report.py:209
+#: ./report.py:207
 #: ./reserve.py:260
-#: ./templates/reservations.pt:90
+#: ./templates/reservations.pt:92
 msgid "Approve"
 msgstr "Zulassen"
 
@@ -92,7 +92,7 @@ msgstr "Reservation zulassen"
 msgid "Approve reservation requests"
 msgstr "Reservations-Anfragen manuell bestätigen"
 
-#: ./report.py:165
+#: ./report.py:163
 msgid "Approved"
 msgstr "Zugelassen"
 
@@ -134,14 +134,14 @@ msgid "December"
 msgstr "Dezember"
 
 #: ./allocate.py:226
-#: ./report.py:206
+#: ./report.py:204
 #: ./reserve.py:349
 msgid "Delete"
 msgstr "Löschen"
 
-#: ./report.py:210
+#: ./report.py:208
 #: ./reserve.py:293
-#: ./templates/reservations.pt:84
+#: ./templates/reservations.pt:86
 msgid "Deny"
 msgstr "Ablehnen"
 
@@ -317,8 +317,8 @@ msgid "Mo"
 msgstr "Mo"
 
 #: ./report.py:110
-msgid "Monthly Report for %(month)s %(year)i"
-msgstr "Monatsreport für %(month)s %(year)i"
+msgid "Monthly Report for "
+msgstr "Monatsreport "
 
 #: ./interfaces.py:58
 msgid "Name"
@@ -364,11 +364,11 @@ msgstr "Teilweise verfügbar"
 msgid "Partly available allocations can only be reserved separately"
 msgstr "Teilweise verfügbare Einteilungen können nur separat reserviert werden"
 
-#: ./report.py:166
+#: ./report.py:164
 msgid "Pending"
 msgstr "Warteliste"
 
-#: ./templates/reservations.pt:68
+#: ./templates/reservations.pt:70
 msgid "Pending Reservations"
 msgstr "Offene Reservationen"
 
