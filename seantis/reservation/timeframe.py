@@ -148,6 +148,10 @@ class TimeframeViewlet(grok.Viewlet):
         title = self.titles[state]
         return state, utils.translate_workflow(self.context, self.request, title)
 
+    def state_text(self, timeframe):
+        state = self.state(timeframe)
+        return utils.translate_workflow(self.context, self.request, state)
+
     def render(self, **kwargs):
         if self.context == None:
             return u''
