@@ -11,43 +11,57 @@
 <tal:main-macro metal:define-macro="main">
 
 <div class="inline-reservations" tal:attributes="data-group python: view.highlight_group">
+  
   <div class="splitscreen" >
+
     <h2 class="documentFirstHeading" i18n:translate="">Approved Reservations</h2>
+    
     <div class="reservation-info reservation-approved" metal:define-macro="approved_reservations">
+        
         <tal:block tal:repeat="group python: view.approved_reservations().items()">
-            
+          
             <div class="reservation"
                 tal:define="
                     token python: group[0];
                     reservations python: group[1];
                     data python: view.extended_info(token);
                 ">
+
                 <div class="reservation-title">
                     
                     <h3 tal:content="python: view.reservation_info(token)"></h3>
 
-                      <a tal:condition="view/show_links"
+                    <a tal:condition="view/show_links"
                        tal:attributes="href python: view.remove_all_url(token)"
                        class="reservation-delete" i18n:translate="">
                        Delete
                     </a>
+
                 </div>
+
                 <div tal:repeat="reservation reservations" class="reservation-list">
 
                   <div class="reservation-data" metal:define-macro="reservation_data">
+                    
                     <tal:block tal:repeat="key python: view.sorted_info_keys(data)">
                       <tal:block tal:define="interface python: data[key]">
+                        
                         <div class="block-title" tal:content="python: interface['desc']"></div>
+                        
                         <div tal:repeat="value python: view.sorted_values(interface['values'])">
                           <span class="label" tal:content="python: value['desc']"></span><span tal:content="python: value['value']"></span>
                         </div>
+                      
                       </tal:block>
                     </tal:block>
+                  
                   </div>
 
-                  <div class="reservation-timespans">
+                  <div class="reservation-timespans" metal:define-macro="reservation_timespans">
+                    
                     <div class="block-title" i18n:translate="">Concerned Dates</div>
                     <div class="limitedList" style="max-height: 450px; min-width: 100%;">
+                    
                     <tal:block tal:repeat="timespan python: reservation.timespans()">
                         <tal:block tal:define="
                         start python: timespan[0];
@@ -57,8 +71,10 @@
                           <div tal:content="display"></div>
                         </tal:block>
                     </tal:block>
+
                     </div>
                   </div>
+
                   <div style="clear: both;"></div>
                 </div>
             </div>
@@ -67,8 +83,11 @@
     </div>
   </div>
   <div class="splitscreen">
+   
     <h2 class="documentFirstHeading" i18n:translate="">Pending Reservations</h2>
+    
     <div class="reservation-info reservation-pending" metal:define-macro="pending_reservations">
+        
         <tal:block tal:repeat="group python: view.pending_reservations().items()">
             
             <div class="reservation"
@@ -77,43 +96,31 @@
                     reservations python: group[1];
                     data python: view.extended_info(token);
                 ">
+
                 <div class="reservation-title">
                     <h3>
                       <b tal:condition="python: view.show_links"><tal:block content="repeat/group/number"></tal:block></b>&nbsp;
                       <tal:block tal:content="python: view.reservation_info(token)"></tal:block>
                     </h3>
 
-                      <a tal:condition="view/show_links"
-                       tal:attributes="href python: view.deny_all_url(token)"
-                       class="reservation-delete" i18n:translate="">
-                       Deny
-                      </a>
+                    <a tal:condition="view/show_links"
+                      tal:attributes="href python: view.deny_all_url(token)"
+                      class="reservation-delete" i18n:translate="">
+                      Deny
+                    </a>
 
-                      <a tal:condition="view/show_links"
+                    <a tal:condition="view/show_links"
                        tal:attributes="href python: view.approve_all_url(token)"
                        class="reservation-delete" i18n:translate="">
                        Approve
-                      </a>
-
+                    </a>
                 </div>
+
                 <div tal:repeat="reservation reservations" class="reservation-list">
                   
                   <metal:block use-macro="context/@@reservations/macros/reservation_data" />
-
-                  <div class="reservation-timespans">
-                    <div class="block-title" i18n:translate="">Concerned Dates</div>
-                    <div class="limitedList" style="max-height: 450px; min-width: 100%;">
-                    <tal:block tal:repeat="timespan python: reservation.timespans()">
-                        <tal:block tal:define="
-                        start python: timespan[0];
-                        end python: timespan[1];
-                        display python: view.display_date(start, end);
-                        ">
-                          <div tal:content="display"></div>
-                        </tal:block>
-                    </tal:block>
-                    </div>
-                  </div>
+                  <metal:block use-macro="context/@@reservations/macros/reservation_timespans" />
+                  
                   <div style="clear: both;"></div>
                 </div>
             </div>
