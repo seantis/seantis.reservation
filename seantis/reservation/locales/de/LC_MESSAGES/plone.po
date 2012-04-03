@@ -1,0 +1,16 @@
+msgid ""
+msgstr ""
+"Domain: plone\n"
+"Comment: Translations for Workflow Transitions / States"
+
+msgid "Hidden"
+msgstr "Versteckt"
+
+msgid "Visible"
+msgstr "Sichtbar"
+
+msgid "Hide"
+msgstr "Verstecken"
+
+msgid "Show"
+msgstr "Sichtbar machen"

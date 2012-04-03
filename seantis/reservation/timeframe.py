@@ -125,6 +125,10 @@ class TimeframeViewlet(grok.Viewlet):
         status = workflowTool.getStatusOf("timeframe_workflow", timeframe)
         return status["review_state"]
 
+    def state_text(self, timeframe):
+        state = self.state(timeframe)
+        return utils.translate_workflow(self.context, self.request, state)
+
     def render(self, **kwargs):
         if self.context == None:
             return u''
@@ -154,8 +158,12 @@ class TimeframeViewlet(grok.Viewlet):
 
         action_tool = getToolByName(frame, 'portal_actions')
         actions = action_tool.listFilteredActionsFor(frame)['workflow']
+
         for action in actions:
             if action['visible'] and action['available']:
+                action['title'] = utils.translate_workflow(
+                    self.context, self.request, action['title']
+                )
                 links.append((action['title'], action['url']))
 
         baseurl = frame.absolute_url()

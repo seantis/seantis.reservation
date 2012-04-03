@@ -140,10 +140,13 @@ def translator(context, request):
         return translate(context, request, text)
     return curried
 
-def translate(context, request, text):
+def translate(context, request, text, domain=None):
     """Translates the given text using context & request."""
     lang = get_current_language(context, request)
-    return i18n.translate(text, target_language=lang)
+    return i18n.translate(text, target_language=lang, domain=domain)
+
+def translate_workflow(context, request, text):
+    return translate(context, request, text, domain='plone')
 
 def handle_action(action=None, success=None, message_handler=None):
     """Calls 'action' and then 'success' if everything went well or
