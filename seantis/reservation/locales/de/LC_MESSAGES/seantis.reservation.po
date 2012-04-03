@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-04-02 14:45+0000\n"
+"POT-Creation-Date: 2012-04-03 12:53+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -46,7 +46,7 @@ msgstr "Es existiert bereits eine Einteilung für den gewählten Zeitraum"
 msgid "A pending reservation would be affected by the requested change"
 msgstr "Ein offene Reservierung wäre durch die Änderung betroffen"
 
-#: ./timeframe.py:147
+#: ./timeframe.py:149
 msgid "Add"
 msgstr "Hinzufügen"
 
@@ -78,9 +78,9 @@ msgstr "Einteilung gespeichert"
 msgid "An existing reservation would be affected by the requested change"
 msgstr "Eine bestehende Reservation wäre durch die Änderung betroffen"
 
-#: ./report.py:207
+#: ./report.py:210
 #: ./reserve.py:260
-#: ./templates/reservations.pt:92
+#: ./templates/reservations.pt:112
 msgid "Approve"
 msgstr "Zulassen"
 
@@ -92,11 +92,11 @@ msgstr "Reservation zulassen"
 msgid "Approve reservation requests"
 msgstr "Reservations-Anfragen manuell bestätigen"
 
-#: ./report.py:163
+#: ./report.py:166
 msgid "Approved"
 msgstr "Zugelassen"
 
-#: ./templates/reservations.pt:15
+#: ./templates/reservations.pt:17
 msgid "Approved Reservations"
 msgstr "Zugelassene Reservationen"
 
@@ -113,7 +113,7 @@ msgstr "August"
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: ./templates/reservations.pt:49
+#: ./templates/reservations.pt:62
 msgid "Concerned Dates"
 msgstr "Betroffene Daten"
 
@@ -134,14 +134,14 @@ msgid "December"
 msgstr "Dezember"
 
 #: ./allocate.py:226
-#: ./report.py:204
+#: ./report.py:207
 #: ./reserve.py:349
 msgid "Delete"
 msgstr "Löschen"
 
-#: ./report.py:208
+#: ./report.py:211
 #: ./reserve.py:293
-#: ./templates/reservations.pt:86
+#: ./templates/reservations.pt:106
 msgid "Deny"
 msgstr "Ablehnen"
 
@@ -179,7 +179,7 @@ msgstr "Möchten Sie die folgenden Einteilungen reservieren?"
 
 #: ./allocate.py:182
 #: ./resource.py:212
-#: ./timeframe.py:160
+#: ./timeframe.py:162
 msgid "Edit"
 msgstr "Bearbeiten"
 
@@ -317,8 +317,8 @@ msgid "Mo"
 msgstr "Mo"
 
 #: ./report.py:110
-msgid "Monthly Report for "
-msgstr "Monatsreport "
+msgid "Monthly Report for ${month} ${year}"
+msgstr "Monatesreport ${month} ${year}"
 
 #: ./interfaces.py:58
 msgid "Name"
@@ -364,11 +364,11 @@ msgstr "Teilweise verfügbar"
 msgid "Partly available allocations can only be reserved separately"
 msgstr "Teilweise verfügbare Einteilungen können nur separat reserviert werden"
 
-#: ./report.py:164
+#: ./report.py:167
 msgid "Pending"
 msgstr "Warteliste"
 
-#: ./templates/reservations.pt:70
+#: ./templates/reservations.pt:87
 msgid "Pending Reservations"
 msgstr "Offene Reservationen"
 
@@ -465,7 +465,7 @@ msgstr "Reservation"
 msgid "Sa"
 msgstr "Sa"
 
-#: ./timeframe.py:92
+#: ./timeframe.py:94
 msgid "Save"
 msgstr "Speichern"
 
@@ -542,8 +542,8 @@ msgid "Timeframe"
 msgstr "Belegungsperiode"
 
 #: ./timeframe.py:34
-msgid "Timeframe overlaps with '%s' in the current folder"
-msgstr "Belegungsperiode überschneidet sich mit '%s'"
+msgid "Timeframe overlaps with '${overlap}' in the current folder"
+msgstr "Die Belegungsperiod überschneidet sich mit '${overlap}' in diesem Ordner"
 
 #: ./interfaces.py:125
 #: ./templates/timeframes.pt:4

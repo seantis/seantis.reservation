@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-04-02 14:45+0000\n"
+"POT-Creation-Date: 2012-04-03 12:53+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -49,7 +49,7 @@ msgstr ""
 msgid "A pending reservation would be affected by the requested change"
 msgstr ""
 
-#: ./timeframe.py:147
+#: ./timeframe.py:149
 msgid "Add"
 msgstr ""
 
@@ -81,9 +81,9 @@ msgstr ""
 msgid "An existing reservation would be affected by the requested change"
 msgstr ""
 
-#: ./report.py:207
+#: ./report.py:210
 #: ./reserve.py:260
-#: ./templates/reservations.pt:92
+#: ./templates/reservations.pt:112
 msgid "Approve"
 msgstr ""
 
@@ -95,11 +95,11 @@ msgstr ""
 msgid "Approve reservation requests"
 msgstr ""
 
-#: ./report.py:163
+#: ./report.py:166
 msgid "Approved"
 msgstr ""
 
-#: ./templates/reservations.pt:15
+#: ./templates/reservations.pt:17
 msgid "Approved Reservations"
 msgstr ""
 
@@ -116,7 +116,7 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: ./templates/reservations.pt:49
+#: ./templates/reservations.pt:62
 msgid "Concerned Dates"
 msgstr ""
 
@@ -137,14 +137,14 @@ msgid "December"
 msgstr ""
 
 #: ./allocate.py:226
-#: ./report.py:204
+#: ./report.py:207
 #: ./reserve.py:349
 msgid "Delete"
 msgstr ""
 
-#: ./report.py:208
+#: ./report.py:211
 #: ./reserve.py:293
-#: ./templates/reservations.pt:86
+#: ./templates/reservations.pt:106
 msgid "Deny"
 msgstr ""
 
@@ -182,7 +182,7 @@ msgstr ""
 
 #: ./allocate.py:182
 #: ./resource.py:212
-#: ./timeframe.py:160
+#: ./timeframe.py:162
 msgid "Edit"
 msgstr ""
 
@@ -320,7 +320,7 @@ msgid "Mo"
 msgstr ""
 
 #: ./report.py:110
-msgid "Monthly Report for "
+msgid "Monthly Report for ${month} ${year}"
 msgstr ""
 
 #: ./interfaces.py:58
@@ -367,11 +367,11 @@ msgstr ""
 msgid "Partly available allocations can only be reserved separately"
 msgstr ""
 
-#: ./report.py:164
+#: ./report.py:167
 msgid "Pending"
 msgstr ""
 
-#: ./templates/reservations.pt:70
+#: ./templates/reservations.pt:87
 msgid "Pending Reservations"
 msgstr ""
 
@@ -468,7 +468,7 @@ msgstr ""
 msgid "Sa"
 msgstr ""
 
-#: ./timeframe.py:92
+#: ./timeframe.py:94
 msgid "Save"
 msgstr ""
 
@@ -545,7 +545,7 @@ msgid "Timeframe"
 msgstr ""
 
 #: ./timeframe.py:34
-msgid "Timeframe overlaps with '%s' in the current folder"
+msgid "Timeframe overlaps with '${overlap}' in the current folder"
 msgstr ""
 
 #: ./interfaces.py:125

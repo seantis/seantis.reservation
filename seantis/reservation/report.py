@@ -107,8 +107,10 @@ class MonthlyReportView(grok.View, form.ReservationDataView):
 
     @property
     def title(self):
-        return utils.translate(self.context, self.request, _(u'Monthly Report for ')) \
-        + utils.month_name(self.month) + ' ' + str(self.year)
+        return _(u'Monthly Report for ${month} ${year}', mapping={
+                'month': utils.month_name(self.month),
+                'year': self.year
+            })
 
     def format_day(self, day):
         return date(self.year, self.month, day).strftime('%a, %d. %m')

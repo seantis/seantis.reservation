@@ -31,8 +31,10 @@ def validate_timeframe(context, request, data):
     overlap = overlapping_timeframe(context, data['start'], data['end'])
     if overlap:
         msg = utils.translate(context, request, 
-                _(u"Timeframe overlaps with '%s' in the current folder")
-            ) % overlap.title
+            _(
+                u"Timeframe overlaps with '${overlap}' in the current folder",
+                mapping={'overlap': overlap.title}
+            ))
         utils.form_error(msg)
 
 def timeframes_in_context(context):
