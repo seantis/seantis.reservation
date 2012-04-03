@@ -118,6 +118,11 @@ class TestScheduler(IntegrationTestCase):
         # the waiting list should be full now
         self.assertEqual(allocation.open_waitinglist_spots(), 0)
 
+        # try to illegally move the allocation now
+        self.assertRaises(AffectedReservationError, sc.move_allocation, 
+                allocation.id, start + timedelta(days=1), end + timedelta(days=1)
+                )
+
         # we may now get rid of the existing approved reservation
         sc.remove_reservation(approval_token)
         self.assertEqual(allocation.open_waitinglist_spots(), 0)

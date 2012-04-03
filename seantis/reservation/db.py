@@ -503,8 +503,10 @@ class Scheduler(object):
 
                 # pending reservations
                 if change.is_master: # (mirrors return the same values)
-                    for pending in change.pending_reservations:
-                        if not new.contains(pending.start, pending.end):
+                    for pending in change.pending_reservations.with_entities(
+                            Reservation.start, Reservation.end
+                        ):
+                        if not new.contains(*pending):
                             raise AffectedPendingReservationError(pending)
 
             else:
