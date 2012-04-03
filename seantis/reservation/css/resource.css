@@ -1,5 +1,5 @@
 .calendar-occupied {
-    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAOVBMVEXY2Nj////d7h7d7h7d7h7d7h7///////////////////////////////////////////////////+4yo5sAAAAQklEQVQoke3LqQ3AMADAQKP8b/cftjjAUgaI6cmEmHKprY+59seRSkAlopJQyagUVCoqDZWOykBlorJQ2aj48+Rafr0hD9knm0tJAAAAAElFTkSuQmCC) !important;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAOVBMVEXY2Nj////d7h7d7h7d7h7d7h7///////////////////////////////////////////////////+4yo5sAAAAQklEQVQoke3LqQ3AMADAQKP8b/cftjjAUgaI6cmEmHKprY+59seRSkAlopJQyagUVCoqDZWOykBlorJQ2aj48+Rafr0hD9knm0tJAAAAAElFTkSuQmCC);
     background-repeat: repeat;
     border: solid #ccc 1px;
 }
@@ -12,9 +12,9 @@
 }
 
 .groupSelection {
-    -webkit-box-shadow: 0px 0px 4px 4px #6DADF2;
-    -moz-box-shadow: 0px 0px 4px 4px #6DADF2;
-    box-shadow: 0px 0px 4px 4px #6DADF2;
+    -webkit-box-shadow: 0 0 4px 4px #6DADF2;
+    -moz-box-shadow: 0 0 4px 4px #6DADF2;
+    box-shadow: 0 0 4px 4px #6DADF2;
 }
 
 #content table {
@@ -27,7 +27,7 @@
 
 #miniTip_c div {
     background-color: #1d4f90;
-    padding: 4px 0px;
+    padding: 4px 0;
     padding-left: 10px;
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
@@ -51,9 +51,9 @@
 #miniTip_c a:hover:before {
     content: '▶ ';
     margin-left: -14px;
-    margin-right: 0px;
-    padding-left: 0px;
-    padding-right: 0px;
+    margin-right: 0;
+    padding-left: 0;
+    padding-right: 0;
 }
 
 #miniTip_c {
