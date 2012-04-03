@@ -115,15 +115,38 @@ class TimeframeViewlet(grok.Viewlet):
 
     _template = grok.PageTemplateFile('templates/timeframes.pt')
 
+    @property
+    def workflowTool(self):
+        return getToolByName(self.context, "portal_workflow")
+
     @view.memoize
     def timeframes(self):
         frames = [t.getObject() for t in timeframes_in_context(self.context)]
         return sorted(frames, key=lambda f: f.start)
 
+    @property
+    @view.memoize
+    def titles(self):
+        """Returns a dict with titles keyed by review_state. The workflow-tool
+        has a getTitleForStateOnType function which should do that but
+        it does not return updated values for me, just some old ones.
+
+        The listWFStatesByTitle function on the other hand contains
+        the right information and I will just use that instead. 
+
+        Once this breaks I'll read the source of the workflow tool, until this
+        happens I'm off to do useful things.
+
+        """
+
+        titles = self.workflowTool.listWFStatesByTitle()
+        return dict(((t[1], t[0]) for t in titles))
+
+
     def state(self, timeframe):
-        workflowTool = getToolByName(self.context, "portal_workflow")
-        status = workflowTool.getStatusOf("timeframe_workflow", timeframe)
-        return status["review_state"]
+        state = self.workflowTool.getStatusOf("timeframe_workflow", timeframe)['review_state']
+        title = self.titles[state]
+        return state, utils.translate_workflow(self.context, self.request, title)
 
     def render(self, **kwargs):
         if self.context == None:
@@ -138,7 +161,7 @@ class TimeframeViewlet(grok.Viewlet):
 
     def visible(self, frame):
         # TODO does this work with translation?
-        state = self.state(frame)
+        state = self.state(frame)[0]
         return state == 'visible'
 
     def links(self, frame=None):
@@ -154,8 +177,12 @@ class TimeframeViewlet(grok.Viewlet):
 
         action_tool = getToolByName(frame, 'portal_actions')
         actions = action_tool.listFilteredActionsFor(frame)['workflow']
+
         for action in actions:
             if action['visible'] and action['available']:
+                action['title'] = utils.translate_workflow(
+                    self.context, self.request, action['title']
+                )
                 links.append((action['title'], action['url']))
 
         baseurl = frame.absolute_url()

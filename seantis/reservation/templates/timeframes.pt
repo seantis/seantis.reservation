@@ -13,7 +13,7 @@
                     <div class="resourceTitle" tal:content="frame/timestr"></div>
                     <div class="resourceTitle" tal:content="frame/title"></div>
 
-                    <div tal:content="python: viewlet.state(frame)" class="resourceTitle"></div>
+                    <div tal:content="python: viewlet.state(frame)[1]" class="resourceTitle"></div>
                 </div>
                 <a tal:repeat="link python: viewlet.links(frame)" tal:attributes="href python: link[1]">
                     
