@@ -19,7 +19,7 @@ calendar = Calendar()
 
 class MonthlyReportView(grok.View, form.ReservationDataView):
     
-    permission = 'cmf.ListFolderContents'
+    permission = 'seantis.reservation.ViewReservations'
     
     grok.require(permission)
 

@@ -25,12 +25,17 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
 <!-- Permissions -->
 <permission
     id="seantis.reservation.ApproveReservations"
-    title="seantis.reservation: ApproveReservations"
+    title="seantis.reservation: Approve Reservations"
+/>
+
+<permission
+    id="seantis.reservation.ViewReservations"
+    title="seantis.reservation: View Reservations"
 />
 
 <permission
     id="seantis.reservation.ViewHiddenAllocations"
-    title="seantis.reservation: ViewHiddenAllocations"
+    title="seantis.reservation: View Hidden Allocations"
 />
 
 <grok:grok package="." />

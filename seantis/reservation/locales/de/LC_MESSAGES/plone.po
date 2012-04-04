@@ -1,7 +1,6 @@
 msgid ""
 msgstr ""
-"Domain: plone\n"
-"Comment: Translations for Workflow Transitions / States"
+"Domain: plone"
 
 msgid "Hidden"
 msgstr "Versteckt"
@@ -14,3 +13,18 @@ msgstr "Verstecken"
 
 msgid "Show"
 msgstr "Sichtbar machen"
+
+msgid "Reservation-Manager"
+msgstr "Reservations-Manager"
+
+msgid "Can manage reservations"
+msgstr "Kann Reservationen verwalten"
+
+msgid "seantis.reservation: Approve Reservations"
+msgstr "seantis.reservation: Reservationen zulassen"
+
+msgid "seantis.reservation: View Reservations"
+msgstr "seantis.reservation: Reservationen anzeigen"
+
+msgid "seantis.reservation: View Hidden Allocations"
+msgstr "seantis.reservation: Versteckte Einteilungen anzeigen"

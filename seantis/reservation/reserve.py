@@ -309,7 +309,7 @@ class ReservationDenialForm(ReservationDecisionForm):
 
 class ReservationRemoveForm(ResourceBaseForm, ReservationListView, ReservationUrls):
     
-    permission = 'zope2.DeleteObjects'
+    permission = 'seantis.reservation.ApproveReservations'
 
     grok.name('remove-reservation')
     grok.require(permission)
@@ -367,7 +367,7 @@ class ReservationRemoveForm(ResourceBaseForm, ReservationListView, ReservationUr
 
 class ReservationList(grok.View, ReservationListView, ReservationUrls):
     
-    permission = "cmf.ListFolderContents"
+    permission = "seantis.reservation.ViewReservations"
 
     grok.name('reservations')
     grok.require(permission)

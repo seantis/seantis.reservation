@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-04-04 07:38+0000\n"
+"POT-Creation-Date: 2012-04-04 13:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -46,7 +46,7 @@ msgstr "Es existiert bereits eine Einteilung für den gewählten Zeitraum"
 msgid "A pending reservation would be affected by the requested change"
 msgstr "Ein offene Reservierung wäre durch die Änderung betroffen"
 
-#: ./timeframe.py:171
+#: ./timeframe.py:183
 msgid "Add"
 msgstr "Hinzufügen"
 
@@ -54,23 +54,23 @@ msgstr "Hinzufügen"
 msgid "Added to waitinglist"
 msgstr "In Warteliste eingetragen"
 
-#: ./allocate.py:108
+#: ./allocate.py:106
 msgid "Allocate"
 msgstr "Einteilen"
 
-#: ./allocate.py:37
+#: ./allocate.py:35
 msgid "Allocation"
 msgstr "Einteilung"
 
-#: ./allocate.py:122
+#: ./allocate.py:120
 msgid "Allocation added"
 msgstr "Einteilung hinzugefügt"
 
-#: ./allocate.py:238
+#: ./allocate.py:236
 msgid "Allocation removed"
 msgstr "Einteilung entfernt"
 
-#: ./allocate.py:204
+#: ./allocate.py:202
 msgid "Allocation saved"
 msgstr "Einteilung gespeichert"
 
@@ -78,7 +78,7 @@ msgstr "Einteilung gespeichert"
 msgid "An existing reservation would be affected by the requested change"
 msgstr "Eine bestehende Reservation wäre durch die Änderung betroffen"
 
-#: ./report.py:210
+#: ./report.py:212
 #: ./reserve.py:260
 #: ./templates/reservations.pt:112
 msgid "Approve"
@@ -92,7 +92,7 @@ msgstr "Reservation zulassen"
 msgid "Approve reservation requests"
 msgstr "Reservations-Anfragen manuell bestätigen"
 
-#: ./report.py:166
+#: ./report.py:168
 msgid "Approved"
 msgstr "Zugelassen"
 
@@ -108,7 +108,7 @@ msgstr "April"
 msgid "August"
 msgstr "August"
 
-#: ./allocate.py:126
+#: ./allocate.py:124
 #: ./reserve.py:167
 msgid "Cancel"
 msgstr "Abbrechen"
@@ -133,13 +133,13 @@ msgstr "Tage"
 msgid "December"
 msgstr "Dezember"
 
-#: ./allocate.py:226
-#: ./report.py:207
-#: ./reserve.py:349
+#: ./allocate.py:224
+#: ./report.py:209
+#: ./reserve.py:350
 msgid "Delete"
 msgstr "Löschen"
 
-#: ./report.py:211
+#: ./report.py:213
 #: ./reserve.py:293
 #: ./templates/reservations.pt:106
 msgid "Deny"
@@ -165,11 +165,11 @@ msgstr "Möchten Sie die folgende Reservation wirklich ablehnen?"
 msgid "Do you really want to remove the following allocations?"
 msgstr "Möchten Sie die folgenden Einteilungen wirklich löschen?"
 
-#: ./reserve.py:343
+#: ./reserve.py:344
 msgid "Do you really want to remove the following reservations?"
 msgstr "Möchten Sie die folgenden Reservation wirklich löschen?"
 
-#: ./reserve.py:346
+#: ./reserve.py:347
 msgid "Do you really want to remove the following timespans from the reservation?"
 msgstr "Möchten Sie die folgenden Zeiträume wirklich von der Reservation entfernen?"
 
@@ -177,13 +177,13 @@ msgstr "Möchten Sie die folgenden Zeiträume wirklich von der Reservation entfe
 msgid "Do you want to reserve the following allocations?"
 msgstr "Möchten Sie die folgenden Einteilungen reservieren?"
 
-#: ./allocate.py:182
-#: ./resource.py:212
-#: ./timeframe.py:188
+#: ./allocate.py:180
+#: ./resource.py:209
+#: ./timeframe.py:200
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: ./allocate.py:146
+#: ./allocate.py:144
 msgid "Edit allocation"
 msgstr "Einteilung bearbeiten"
 
@@ -200,7 +200,7 @@ msgstr "Ende"
 msgid "End date before start date"
 msgstr "Ende vor Start"
 
-#: ./resource.py:210
+#: ./resource.py:207
 msgid "Entry"
 msgstr "Eintrag"
 
@@ -252,7 +252,7 @@ msgstr "Allgemein"
 msgid "Id"
 msgstr "Id"
 
-#: ./allocate.py:160
+#: ./allocate.py:158
 msgid "Invalid arguments"
 msgstr "Ungültige Argumente"
 
@@ -292,7 +292,7 @@ msgstr "Juni"
 msgid "Last hour of the day"
 msgstr "Letzte Stunde des Tages"
 
-#: ./resource.py:224
+#: ./resource.py:221
 msgid "List"
 msgstr "Auflisten"
 
@@ -300,7 +300,7 @@ msgstr "Auflisten"
 msgid "Mai"
 msgstr "Mai"
 
-#: ./resource.py:206
+#: ./resource.py:203
 msgid "Manage"
 msgstr "Verwalten"
 
@@ -316,7 +316,7 @@ msgstr "Metadaten"
 msgid "Mo"
 msgstr "Mo"
 
-#: ./report.py:110
+#: ./report.py:112
 msgid "Monthly Report for ${month} ${year}"
 msgstr "Monatesreport ${month} ${year}"
 
@@ -368,7 +368,7 @@ msgstr "Teilweise verfügbar"
 msgid "Partly available allocations can only be reserved separately"
 msgstr "Teilweise verfügbare Einteilungen können nur separat reserviert werden"
 
-#: ./report.py:167
+#: ./report.py:169
 msgid "Pending"
 msgstr "Warteliste"
 
@@ -400,19 +400,19 @@ msgstr "Wiederholung"
 msgid "Recurrence View"
 msgstr "Auflistung der Wiederholung"
 
-#: ./resource.py:222
+#: ./resource.py:219
 msgid "Recurrences"
 msgstr "Wiederholungen"
 
-#: ./resource.py:215
+#: ./resource.py:212
 msgid "Remove"
 msgstr "Entfernen"
 
-#: ./allocate.py:221
+#: ./allocate.py:219
 msgid "Remove allocations"
 msgstr "Einteilungen entfernen"
 
-#: ./reserve.py:319
+#: ./reserve.py:320
 msgid "Remove reservation"
 msgstr "Reservation entfernen"
 
@@ -432,7 +432,7 @@ msgstr "Reservation abgelehnt"
 msgid "Reservation out of bounds"
 msgstr "Reservation ausserhalb des gültigen Bereichs"
 
-#: ./reserve.py:358
+#: ./reserve.py:359
 msgid "Reservation removed"
 msgstr "Reservation entfernt"
 
@@ -444,7 +444,7 @@ msgstr "Reservation erfolgreich"
 msgid "Reservation throttling"
 msgstr "Reservations Limit"
 
-#: ./resource.py:190
+#: ./resource.py:187
 msgid "Reservations"
 msgstr "Reservationen"
 
@@ -453,7 +453,7 @@ msgid "Reservations can't be made for more than 24 hours at a time"
 msgstr "Reservationen können nicht über mehr als 24 Stunden gemacht werden"
 
 #: ./reserve.py:142
-#: ./resource.py:192
+#: ./resource.py:189
 msgid "Reserve"
 msgstr "Reservieren"
 
@@ -469,7 +469,7 @@ msgstr "Reservation"
 msgid "Sa"
 msgstr "Sa"
 
-#: ./timeframe.py:94
+#: ./timeframe.py:99
 msgid "Save"
 msgstr "Speichern"
 

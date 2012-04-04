@@ -263,6 +263,20 @@ class ReservationDataView(object):
     def sorted_values(self, values):
         return sorted(values, key=lambda v: v['sortkey'])
 
+    def display_info(self, value):
+        """ Transforms json data values into a human readable format
+        where appropriate.
+
+        """
+
+        if value is True:
+            return _(u'Yes')
+        
+        if value is False:
+            return _(u'No')
+
+        return value
+
 class ReservationListView(ReservationDataView):
     """Combines functionality of different views which show reservations.
 
@@ -321,20 +335,6 @@ class ReservationListView(ReservationDataView):
             return self.approved_reservations()[token][0].data
 
         return dict()
-
-    def display_info(self, value):
-        """ Transforms json data values into a human readable format
-        where appropriate.
-
-        """
-
-        if value is True:
-            return _(u'Yes')
-        
-        if value is False:
-            return _(u'No')
-
-        return value
 
     def display_date(self, start, end):
         """ Formates the date range given for display. """

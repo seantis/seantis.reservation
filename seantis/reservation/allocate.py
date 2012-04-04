@@ -208,7 +208,7 @@ class AllocationEditForm(AllocationForm):
         self.redirect_to_context()
 
 class AllocationRemoveForm(AllocationForm, AllocationGroupView):
-    permission = 'zope2.DeleteObjects'
+    permission = 'cmf.ModifyPortalContent'
 
     grok.name('remove-allocation')
     grok.require(permission)
