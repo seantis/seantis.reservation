@@ -75,8 +75,17 @@ def for_calendar(resource):
 
     """
 
+    option_permissions = {
+        'selectable': 'cmf.AddPortalContent', # drag and drop creation
+        'editable': 'cmf.ModifyPortalContent', # drag and drop resizing
+    }
+
     # right now there's nothing sophisticated to see here
     def is_exposed(option):
+        if option in option_permissions:
+            return checkPermission(option_permissions[option], resource)
+        else:
+            return False
         return checkPermission('cmf.ManagePortal', resource)
 
     return is_exposed

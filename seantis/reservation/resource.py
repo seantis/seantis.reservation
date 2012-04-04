@@ -97,10 +97,7 @@ class View(grok.View):
         options['minTime'] = first_hour or resource.first_hour
         options['maxTime'] = last_hour or resource.last_hour
 
-        #TODO theoretically, multiple calendars may have different permissions
-        #which would be important for the calendar compare view. It's not a very
-        #important feature, but it might be needed one day
-        is_exposed = exposure.for_calendar(self.context)
+        is_exposed = exposure.for_calendar(resource)
         options['selectable'] = is_exposed('selectable')
         options['editable'] = is_exposed('editable')
 
