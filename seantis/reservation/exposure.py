@@ -4,6 +4,8 @@ from zope.component import getMultiAdapter
 from seantis.reservation.utils import is_uuid, get_resource_by_uuid
 from seantis.reservation.timeframe import timeframes_by_context
 
+from plone.uuid.interfaces import IUUID
+
 def for_allocations(context, resources):
     """Returns a function which takes an allocation and returns true if the
     allocation can be exposed.
@@ -89,3 +91,55 @@ def for_calendar(resource):
         return checkPermission('cmf.ManagePortal', resource)
 
     return is_exposed
+
+def for_resources(resources):
+    """Returns a function which takes a resource (object or uuid) and
+    returns true if it is visible to the current user.
+
+    """
+
+    visible_resources = []
+
+    for r in resources:
+        if checkPermission('zope2.View', r):
+            visible_resources.append(str((IUUID(r))))
+
+    def is_exposed(resource):
+        if is_uuid(resource) or isinstance(resource, basestring):
+            return str(resource) in visible_resources
+        else:
+            return str(IUUID(resource)) in visible_resources
+
+    return is_exposed
+
+def limit_resources(resources):
+    """Given a list of resources or a dictionary with uuid -> resources,
+    this function will return the subset of the argument depending on the
+    result of for_resource_reservations.is_exposed.
+
+    """
+
+    is_dict = isinstance(resources, dict)
+    is_list = isinstance(resources, list)
+    assert is_dict or is_list
+
+    if is_list:
+        resdict = dict(((IUUID(r), r) for r in resources))
+    else:
+        resdict = resources
+    
+    is_exposed = for_resources(resdict.values())
+
+    to_remove = []
+
+    for key, resource in resdict.items():
+        if not is_exposed(resource):
+            to_remove.append(key)
+
+    for key in to_remove:
+        del resdict[key]
+
+    if is_list:
+        return resdict.values()
+    else:
+        return resdict

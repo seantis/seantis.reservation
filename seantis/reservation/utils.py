@@ -32,8 +32,21 @@ except ImportError:
 
 from seantis.reservation.sortedcollection import SortedCollection
 
-
 dexterity_encoder = SchemaNameEncoder()
+
+def profile(fn):
+    """ Naive profiling of a function.. on unix systems only. """
+
+    @functools.wraps(fn)
+    def wrapper(*args, **kwargs):
+        start = time.time()
+
+        result = fn(*args, **kwargs)
+        print fn.__name__, 'took', (time.time() - start) * 1000, 'ms'
+
+        return result
+
+    return wrapper
 
 def additional_data_dictionary(data, fti):
 
@@ -86,10 +99,48 @@ def request_id_as_int(string):
         
     return int(''.join(re.findall(_requestid_expr, string)))
 
+class memoize(object):
+   """Decorator that caches a function's return value each time it is called.
+   If called later with the same arguments, the cached value is returned, and
+   not re-evaluated.
+   """
+   def __init__(self, func):
+      self.func = func
+      self.cache = {}
+   def __call__(self, *args):
+      try:
+         return self.cache[args]
+      except KeyError:
+         value = self.func(*args)
+         self.cache[args] = value
+         return value
+      except TypeError:
+         # uncachable -- for instance, passing a list as an argument.
+         # Better to not cache than to blow up entirely.
+         return self.func(*args)
+   def __repr__(self):
+      """Return the function's docstring."""
+      return self.func.__doc__
+   def __get__(self, obj, objtype):
+      """Support instance methods."""
+      return functools.partial(self.__call__, obj)
+
+@memoize
+def _exposure():
+    # keep direct imports out of utils as it will lead to circular imports
+    from seantis.reservation import exposure
+    return exposure
+
 def compare_link(resources):
     """Builds the compare link for the given list of resources"""
+
+    # limit the resources already on the link, as the view needs
+    # at least two visible resources to be even callable
+    # another check (for security is made in the resources module later)
+    resources = _exposure().limit_resources(resources)
+
     if len(resources) < 2:
-            return ''
+        return ''
 
     link = resources[0:1][0].absolute_url_path() + '?'
     compare_to = [r.uuid() for r in resources[1:]]
@@ -363,32 +414,6 @@ def merge_reserved_slots(slots):
         merged.append(current)
 
     return merged
-
-class memoize(object):
-   """Decorator that caches a function's return value each time it is called.
-   If called later with the same arguments, the cached value is returned, and
-   not re-evaluated.
-   """
-   def __init__(self, func):
-      self.func = func
-      self.cache = {}
-   def __call__(self, *args):
-      try:
-         return self.cache[args]
-      except KeyError:
-         value = self.func(*args)
-         self.cache[args] = value
-         return value
-      except TypeError:
-         # uncachable -- for instance, passing a list as an argument.
-         # Better to not cache than to blow up entirely.
-         return self.func(*args)
-   def __repr__(self):
-      """Return the function's docstring."""
-      return self.func.__doc__
-   def __get__(self, obj, objtype):
-      """Support instance methods."""
-      return functools.partial(self.__call__, obj)
 
 def urlparam(base, url, params):
     """Joins an url, adding parameters as query parameters."""
