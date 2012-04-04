@@ -24,7 +24,13 @@ def for_allocations(context, resources):
     # get timeframes for each uuid
     timeframes = {}
     for uuid, resource in resource_objects.items():
-        timeframes[uuid] = timeframes_by_context(resource)
+
+        # Don't load the timeframes of the resources for which the user has
+        # special access to. This way they won't get checked later in 'is_exposed'
+        if checkPermission('seantis.reservation.ViewHiddenAllocations', resource):
+            timeframes[uuid] = []
+        else:
+            timeframes[uuid] = timeframes_by_context(resource)
 
     # returning closure
     def is_exposed(allocation):
