@@ -88,7 +88,12 @@ def overlapping_timeframe(context, start, end):
     return None
 
 class TimeframeAddForm(dexterity.AddForm):
+
+    permission = 'cmf.AddPortalContent'
+
     grok.context(ITimeframe)
+    grok.require(permission)
+
     grok.name('seantis.reservation.timeframe')
 
     @button.buttonAndHandler(_('Save'), name='save')
@@ -98,7 +103,11 @@ class TimeframeAddForm(dexterity.AddForm):
         dexterity.AddForm.handleAdd(self, action)
 
 class TimeframeEditForm(dexterity.EditForm):
+
+    permission = 'cmf.ModifyPortalContent'
+
     grok.context(ITimeframe)
+    grok.require(permission)
 
     @button.buttonAndHandler(_(u'Save'), name='save')
     def handleApply(self, action):
@@ -108,9 +117,12 @@ class TimeframeEditForm(dexterity.EditForm):
 
 class TimeframeViewlet(grok.Viewlet):
 
-    grok.name('seantis.reservation.TimeframeViewlet')
+    permission = 'cmf.ModifyPortalContent'
+
     grok.context(form.Schema)
-    grok.require('cmf.ManagePortal')
+    grok.require(permission)
+    
+    grok.name('seantis.reservation.TimeframeViewlet')
     grok.viewletmanager(IBelowContentBody)
 
     _template = grok.PageTemplateFile('templates/timeframes.pt')

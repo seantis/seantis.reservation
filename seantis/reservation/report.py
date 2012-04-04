@@ -18,7 +18,9 @@ from seantis.reservation.reserve import ReservationUrls
 calendar = Calendar()
 
 class MonthlyReportView(grok.View, form.ReservationDataView):
-    permission = 'cmf.ManagePortal'
+    
+    permission = 'cmf.ListFolderContents'
+    
     grok.require(permission)
 
     grok.context(Interface)

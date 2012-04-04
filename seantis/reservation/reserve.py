@@ -243,7 +243,7 @@ class ReservationDecisionForm(ResourceBaseForm, ReservationListView, Reservation
 
 class ReservationApprovalForm(ReservationDecisionForm):
     
-    permission = 'cmf.ManagePortal'
+    permission = 'cmf.ModifyPortalContent'
     
     grok.name('approve-reservation')
     grok.require(permission)
@@ -276,7 +276,7 @@ class ReservationApprovalForm(ReservationDecisionForm):
 
 class ReservationDenialForm(ReservationDecisionForm):
 
-    permission = 'cmf.ManagePortal'
+    permission = 'cmf.ModifyPortalContent'
     
     grok.name('deny-reservation')
     grok.require(permission)
@@ -308,7 +308,8 @@ class ReservationDenialForm(ReservationDecisionForm):
         self.redirect_to_context()
 
 class ReservationRemoveForm(ResourceBaseForm, ReservationListView, ReservationUrls):
-    permission = 'cmf.ManagePortal'
+    
+    permission = 'zope2.DeleteObjects'
 
     grok.name('remove-reservation')
     grok.require(permission)
@@ -365,7 +366,8 @@ class ReservationRemoveForm(ResourceBaseForm, ReservationListView, ReservationUr
 
 
 class ReservationList(grok.View, ReservationListView, ReservationUrls):
-    permission = "cmf.ManagePortal"
+    
+    permission = "cmf.ListFolderContents"
 
     grok.name('reservations')
     grok.require(permission)

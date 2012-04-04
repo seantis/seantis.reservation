@@ -1,6 +1,5 @@
 import json
 from datetime import date
-from datetime import datetime
 from dateutil import rrule
 
 from five import grok
@@ -12,7 +11,6 @@ from z3c.form.browser.radio import RadioFieldWidget
 
 from seantis.reservation import _
 from seantis.reservation import utils
-from seantis.reservation import settings
 from seantis.reservation.interfaces import IAllocation, days
 from seantis.reservation.form import (
         ResourceBaseForm, 
@@ -25,7 +23,7 @@ class AllocationForm(ResourceBaseForm):
     hidden_fields = ['id', 'group', 'timeframes']
 
 class AllocationAddForm(AllocationForm):
-    permission = 'cmf.ManagePortal'
+    permission = 'cmf.AddPortalContent'
 
     grok.name('allocate')
     grok.require(permission)
@@ -128,7 +126,7 @@ class AllocationAddForm(AllocationForm):
         self.redirect_to_context()
 
 class AllocationEditForm(AllocationForm):
-    permission = 'cmf.ManagePortal'
+    permission = 'cmf.ModifyPortalContent'
 
     grok.name('edit-allocation')
     grok.require(permission)
@@ -210,7 +208,7 @@ class AllocationEditForm(AllocationForm):
         self.redirect_to_context()
 
 class AllocationRemoveForm(AllocationForm, AllocationGroupView):
-    permission = 'cmf.ManagePortal'
+    permission = 'zope2.DeleteObjects'
 
     grok.name('remove-allocation')
     grok.require(permission)
