@@ -322,6 +322,20 @@ class ReservationListView(ReservationDataView):
 
         return dict()
 
+    def display_info(self, value):
+        """ Transforms json data values into a human readable format
+        where appropriate.
+
+        """
+
+        if value is True:
+            return _(u'Yes')
+        
+        if value is False:
+            return _(u'No')
+
+        return value
+
     def display_date(self, start, end):
         """ Formates the date range given for display. """
         end += timedelta(microseconds=1)

@@ -49,7 +49,7 @@
                         <div class="block-title" tal:content="python: interface['desc']"></div>
                         
                         <div tal:repeat="value python: view.sorted_values(interface['values'])">
-                          <span class="label" tal:content="python: value['desc']"></span><span tal:content="python: value['value']"></span>
+                          <span class="label" tal:content="python: value['desc']"></span><span tal:content="python: view.display_info(value['value'])"></span>
                         </div>
                       
                       </tal:block>

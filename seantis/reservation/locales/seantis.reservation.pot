@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-04-03 14:01+0000\n"
+"POT-Creation-Date: 2012-04-04 07:38+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,15 +17,15 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: seantis.reservation\n"
 
-#: ./utils.py:255
+#: ./utils.py:258
 msgid "%i Spots Available"
 msgstr ""
 
-#: ./utils.py:271
+#: ./utils.py:274
 msgid "%i Waitinglist Spots"
 msgstr ""
 
-#: ./utils.py:248
+#: ./utils.py:251
 msgid "%i%% Free"
 msgstr ""
 
@@ -33,11 +33,11 @@ msgstr ""
 msgid "&lt;&lt; Previous Month"
 msgstr ""
 
-#: ./utils.py:253
+#: ./utils.py:256
 msgid "1 Spot Available"
 msgstr ""
 
-#: ./utils.py:269
+#: ./utils.py:272
 msgid "1 Waitinglist Spot"
 msgstr ""
 
@@ -49,7 +49,7 @@ msgstr ""
 msgid "A pending reservation would be affected by the requested change"
 msgstr ""
 
-#: ./timeframe.py:149
+#: ./timeframe.py:171
 msgid "Add"
 msgstr ""
 
@@ -103,11 +103,11 @@ msgstr ""
 msgid "Approved Reservations"
 msgstr ""
 
-#: ./utils.py:480
+#: ./utils.py:483
 msgid "April"
 msgstr ""
 
-#: ./utils.py:484
+#: ./utils.py:487
 msgid "August"
 msgstr ""
 
@@ -132,7 +132,7 @@ msgstr ""
 msgid "Days"
 msgstr ""
 
-#: ./utils.py:488
+#: ./utils.py:491
 msgid "December"
 msgstr ""
 
@@ -182,7 +182,7 @@ msgstr ""
 
 #: ./allocate.py:182
 #: ./resource.py:212
-#: ./timeframe.py:162
+#: ./timeframe.py:188
 msgid "Edit"
 msgstr ""
 
@@ -207,7 +207,7 @@ msgstr ""
 msgid "Entry"
 msgstr ""
 
-#: ./utils.py:478
+#: ./utils.py:481
 msgid "February"
 msgstr ""
 
@@ -227,7 +227,7 @@ msgstr ""
 msgid "Fr"
 msgstr ""
 
-#: ./utils.py:246
+#: ./utils.py:249
 msgid "Free"
 msgstr ""
 
@@ -235,7 +235,7 @@ msgstr ""
 msgid "From"
 msgstr ""
 
-#: ./utils.py:273
+#: ./utils.py:276
 msgid "Full Waitinglist"
 msgstr ""
 
@@ -279,15 +279,15 @@ msgstr ""
 msgid "Invalid reservation request"
 msgstr ""
 
-#: ./utils.py:477
+#: ./utils.py:480
 msgid "January"
 msgstr ""
 
-#: ./utils.py:483
+#: ./utils.py:486
 msgid "July"
 msgstr ""
 
-#: ./utils.py:482
+#: ./utils.py:485
 msgid "June"
 msgstr ""
 
@@ -299,7 +299,7 @@ msgstr ""
 msgid "List"
 msgstr ""
 
-#: ./utils.py:481
+#: ./utils.py:484
 msgid "Mai"
 msgstr ""
 
@@ -307,7 +307,7 @@ msgstr ""
 msgid "Manage"
 msgstr ""
 
-#: ./utils.py:479
+#: ./utils.py:482
 msgid "March"
 msgstr ""
 
@@ -331,11 +331,15 @@ msgstr ""
 msgid "Next Month &gt;&gt;"
 msgstr ""
 
+#: ./form.py:335
+msgid "No"
+msgstr ""
+
 #: ./error.py:76
 msgid "No reservable slot found."
 msgstr ""
 
-#: ./utils.py:257
+#: ./utils.py:260
 msgid "No spots available"
 msgstr ""
 
@@ -343,15 +347,15 @@ msgstr ""
 msgid "No such reservation"
 msgstr ""
 
-#: ./utils.py:487
+#: ./utils.py:490
 msgid "November"
 msgstr ""
 
-#: ./utils.py:244
+#: ./utils.py:247
 msgid "Occupied"
 msgstr ""
 
-#: ./utils.py:486
+#: ./utils.py:489
 msgid "October"
 msgstr ""
 
@@ -484,7 +488,7 @@ msgstr ""
 msgid "Separately reservable"
 msgstr ""
 
-#: ./utils.py:485
+#: ./utils.py:488
 msgid "September"
 msgstr ""
 
@@ -575,5 +579,9 @@ msgstr ""
 
 #: ./interfaces.py:27
 msgid "We"
+msgstr ""
+
+#: ./form.py:332
+msgid "Yes"
 msgstr ""
 
