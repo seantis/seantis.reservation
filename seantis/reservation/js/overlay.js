@@ -105,14 +105,14 @@ var reservation_overlay_init = null;
 
         var _after_post = all_options.afterpost;
         all_options.afterpost = function(el) {
-            after_post.call(this, el);
-            _after_post.call(this, el);
+            after_post.apply(this, arguments);
+            _after_post.apply(this, arguments);
         };
 
         var _before_load = all_options.config.onBeforeLoad;
         all_options.config.onBeforeLoad = function() {
-            before_load.call(this);
-            _before_load.call(this);
+            before_load.apply(this, arguments);
+            _before_load.apply(this, arguments);
         };
 
         elements.prepOverlay(all_options);

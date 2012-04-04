@@ -7,14 +7,16 @@
             noform: 'reload',
 
             config: {
-                onBeforeLoad: function() {
+                onBeforeLoad: function(e) {
                     // If the formselector can't be found the overlay is
                     // immediatly discarded and the page reloaded. This
                     // is a bit of a hack to enable workflow_state changes
                     // without showing a meaningless overlay.
                     var overlay = this.getOverlay();
-                    if (overlay.find(formselector).length === 0)
+                    if (overlay.find(formselector).length === 0) {
                         window.location.reload();
+                        e.preventDefault();
+                    }
                 }
             }
         };
