@@ -99,14 +99,13 @@ def compare_link(resources):
         
     return link.rstrip('&')
 
-def monthly_report_link(resources):
+def monthly_report_link(context, resources):
     """Builds the monthly report link given the list of the resources
     using the current year and month."""
     if not resources:
         return ''
 
     today = datetime.now()
-    context = resources[0]
 
     url = context.absolute_url()
 
