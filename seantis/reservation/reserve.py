@@ -243,7 +243,7 @@ class ReservationDecisionForm(ResourceBaseForm, ReservationListView, Reservation
 
 class ReservationApprovalForm(ReservationDecisionForm):
     
-    permission = 'cmf.ModifyPortalContent'
+    permission = 'seantis.reservation.ApproveReservations'
     
     grok.name('approve-reservation')
     grok.require(permission)
@@ -276,7 +276,7 @@ class ReservationApprovalForm(ReservationDecisionForm):
 
 class ReservationDenialForm(ReservationDecisionForm):
 
-    permission = 'cmf.ModifyPortalContent'
+    permission = 'seantis.reservation.ApproveReservations'
     
     grok.name('deny-reservation')
     grok.require(permission)
