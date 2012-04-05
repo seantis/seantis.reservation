@@ -51,7 +51,10 @@ class MonthlyReportView(grok.View, form.ReservationDataView):
         objs = dict()
 
         for uuid in self.uuids:
-            objs[uuid] = utils.get_resource_by_uuid(self.context, uuid).getObject()
+            try:
+                objs[uuid] = utils.get_resource_by_uuid(self.context, uuid).getObject()
+            except AttributeError:
+                continue
 
         return objs
 
