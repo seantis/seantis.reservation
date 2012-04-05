@@ -40,6 +40,7 @@ def validate_timeframe(context, request, data):
 def timeframes_in_context(context):
     """Returns the timeframes _within_ the current context."""
     path = '/'.join(context.getPhysicalPath())
+
     catalog = getToolByName(context, 'portal_catalog')
     results = catalog(
             portal_type = 'seantis.reservation.timeframe',
@@ -52,6 +53,22 @@ def timeframes_by_context(context):
     are required by traversing up the acquisition context.
 
     """
+
+    # The timeframes need to be discovered for all users to ensure
+    # that they can be used for hiding allocations.
+    # Unfortunately this is not that easy to do as all folders need to
+    # be traversed unrestricted.
+    # Calling unrestrictedTraverse first seems to work with the supposedly
+    # restricted catalog, but I'm not too sure about this at this point.
+    # I have to test this more and maybe rewrite the whole timeframe acquiring
+    # routines. => #TODO
+    if hasattr(context, 'getPath'):
+        path = context.getPath()
+    else:
+        path = context.getPhysicalPath()
+    
+    context = context.aq_inner.unrestrictedTraverse(path)
+
     def traverse(context):
         frames = timeframes_in_context(context)
         if frames:

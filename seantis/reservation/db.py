@@ -133,7 +133,7 @@ def availability_by_day(start, end, resources, is_exposed):
     days = {}
 
     for day, allocations in group:
-
+        
         exposed = [a for a in allocations if is_exposed(a)]
         if not exposed:
             continue

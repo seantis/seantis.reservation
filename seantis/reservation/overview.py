@@ -109,6 +109,7 @@ class Overview(grok.View, CalendarRequest):
         events = []
 
         uuids = self.uuids()
+
         is_exposed = exposure.for_allocations(self.context, uuids)
 
         days = db.availability_by_day(start, end, uuids, is_exposed)
