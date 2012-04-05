@@ -1,4 +1,6 @@
-<div class="overview-utils">
+
+
+<div class="overview-utils" xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="seantis.reservation">
     <h2 tal:condition="python: viewlet.compare_link or viewlet.monthly_report_link" i18n:translate="">Utils</h2>
 
     <div class="directoryChildrenUtils" tal:condition="python: viewlet.compare_link or viewlet.monthly_report_link">
