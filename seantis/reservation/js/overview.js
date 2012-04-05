@@ -109,16 +109,19 @@ var CalendarDays = function (options) {
             if (!_.isUndefined(cell)) {
                 var items = get_items(event.uuids);
                 var itemids = '#' + items.join(', #');
-                var classes = event.className.join(' ') + ' ' + items.join(' ');
+                var itemuuids = '#' + event.uuids.join(', #');
+                var classes = event.className.join(' ') + ' ' + items.join(' ') + ' ' + event.uuids.join(' ');
 
                 days.addClass(event.start, classes);
                 days.mouseenter(event.start, function() {
                     highlight_group($(itemids), true);
+                    highlight_group($(itemuuids), true);
                     highlight_group($(cell), true);
                 });
                 
                 days.mouseleave(event.start, function() {
                     highlight_group($(itemids), false);
+                    highlight_group($(itemuuids), false);
                     highlight_group($(cell), false);
                 });   
             }
@@ -140,7 +143,7 @@ var CalendarDays = function (options) {
             highlight_group(element, false);
         };
 
-        var directoryResult = $('.directoryResult');
+        var directoryResult = $('.directoryResult, .resourceItem');
         directoryResult.mouseenter(function() {
             var element = $('.' + $(this).attr('id'));
             highlight_group(element, true);
