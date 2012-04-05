@@ -4,24 +4,13 @@ from datetime import timedelta, datetime
 from five import grok
 from zope.interface import Interface
 from plone.uuid.interfaces import IUUID
+from plone.memoize import view
 
 from seantis.reservation.resource import CalendarRequest
 from seantis.reservation import utils
 from seantis.reservation import db
 from seantis.reservation import exposure
-
-class IOverview(Interface):
-
-    def items(self):
-        """ Returns a list of items to use for the overview. Each item must have
-        a method 'resources' which returns a list of seantis.reservation.resource
-        objects.
-
-        """
-
-class OverviewletManager(grok.ViewletManager):
-    grok.context(Interface)
-    grok.name('seantis.reservation.overviewletmanager')
+from seantis.reservation.interfaces import OverviewletManager, IOverview
 
 class Overviewlet(grok.Viewlet):
     grok.context(Interface)
@@ -42,6 +31,7 @@ class Overviewlet(grok.Viewlet):
         <div id="%(id)s"></div>
     """
 
+    @view.memoize
     def uuidmap(self):
         uuids = {}
         
@@ -73,7 +63,11 @@ class Overviewlet(grok.Viewlet):
         return json.dumps(options)
 
     def render(self):
-        assert (IOverview.providedBy(self.view))
+        if not IOverview.providedBy(self.view):
+            return ''
+
+        if not self.uuidmap():
+            return ''
 
         return self._template % {
                 "id": self.overview_id, 
@@ -128,3 +122,32 @@ class Overview(grok.View, CalendarRequest):
             ))
 
         return events
+
+class Utilsviewlet(grok.Viewlet):
+    grok.context(Interface)
+    grok.name('seantis.reservation.utilslet')
+    grok.require('zope2.View')
+    grok.viewletmanager(OverviewletManager)
+
+    template = grok.PageTemplateFile('templates/utils.pt')
+
+    @property
+    @view.memoize
+    def resources(self):
+        resources = []
+
+        if not IOverview.providedBy(self.view):
+            return resources
+
+        for item in self.view.items:
+            resources.extend(item.resources())
+        
+        return resources
+
+    @property
+    def compare_link(self):
+        return utils.compare_link(self.resources)
+
+    @property
+    def monthly_report_link(self):
+        return utils.monthly_report_link(self.context, self.resources)

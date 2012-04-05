@@ -7,6 +7,7 @@ from Products.CMFCore.utils import getToolByName
 from z3c.form import button
 
 from seantis.reservation import _
+from seantis.reservation.interfaces import IOverview, OverviewletManager
 from seantis.reservation.interfaces import ITimeframe
 from seantis.reservation import utils
 
@@ -140,7 +141,7 @@ class TimeframeViewlet(grok.Viewlet):
     grok.require(permission)
     
     grok.name('seantis.reservation.TimeframeViewlet')
-    grok.viewletmanager(IBelowContentBody)
+    grok.viewletmanager(OverviewletManager)
 
     _template = grok.PageTemplateFile('templates/timeframes.pt')
 
@@ -197,7 +198,7 @@ class TimeframeViewlet(grok.Viewlet):
         # global links
         if not frame:
             baseurl = self.context.absolute_url()
-            return [(_(u'Add'), 
+            return [(_(u'Add timeframe'), 
                     baseurl + '/++add++seantis.reservation.timeframe')]
         
         # frame specific links

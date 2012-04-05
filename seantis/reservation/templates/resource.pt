@@ -90,6 +90,8 @@
         <div id="inline-page">
         </div>
 
+        <div tal:replace="structure provider:seantis.reservation.overviewletmanager"/>
+
         <div tal:replace="structure provider:plone.belowcontentbody" />
 
     </tal:main-macro>

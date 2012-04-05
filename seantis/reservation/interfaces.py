@@ -49,6 +49,19 @@ def form_interfaces(context):
 
     return SimpleVocabulary(map(get_term, interfaces))
 
+class IOverview(interface.Interface):
+
+    def items(self):
+        """ Returns a list of items to use for the overview. Each item must have
+        a method 'resources' which returns a list of seantis.reservation.resource
+        objects.
+
+        """
+
+class OverviewletManager(grok.ViewletManager):
+    grok.context(interface.Interface)
+    grok.name('seantis.reservation.overviewletmanager')
+
 class IReservationFormSet(interface.Interface):
     pass
 

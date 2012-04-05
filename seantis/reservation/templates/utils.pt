@@ -1,0 +1,18 @@
+<div class="overview-utils">
+    <h2 tal:condition="python: viewlet.compare_link or viewlet.monthly_report_link" i18n:translate="">Utils</h2>
+
+    <div class="directoryChildrenUtils" tal:condition="python: viewlet.compare_link or viewlet.monthly_report_link">
+        <ul>
+            <li tal:condition="viewlet/monthly_report_link">
+                <a tal:attributes="href viewlet/monthly_report_link">
+                    <tal:block i18n:translate="">Monthly Report</tal:block>
+                </a>
+            </li>
+            <li tal:condition="viewlet/compare_link">
+                <a tal:attributes="href viewlet/compare_link">
+                    <tal:block i18n:translate="">Compare Resources</tal:block>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
