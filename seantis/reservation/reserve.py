@@ -8,7 +8,7 @@ from zope.component import queryUtility
 from z3c.form import field
 from z3c.form import button
 from z3c.form import group
-from z3c.form.ptcompat import ViewPageTemplateFile
+from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 
 from seantis.reservation.throttle import throttled
 from seantis.reservation.interfaces import (

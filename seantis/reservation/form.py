@@ -16,7 +16,7 @@ from seantis.reservation import utils
 from seantis.reservation.models import Allocation, Reservation
 from seantis.reservation.interfaces import IResourceBase
 
-from z3c.form.ptcompat import ViewPageTemplateFile
+from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from plone.z3cform.fieldsets import utils as z3cutils
 
 def extract_action_data(fn):

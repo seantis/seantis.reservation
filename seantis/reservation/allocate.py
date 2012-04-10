@@ -5,7 +5,7 @@ from dateutil import rrule
 from five import grok
 from z3c.form import field
 from z3c.form import button
-from z3c.form.ptcompat import ViewPageTemplateFile
+from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from z3c.form.browser.radio import RadioFieldWidget
 
