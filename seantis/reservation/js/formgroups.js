@@ -50,9 +50,7 @@ seantis.formgroups.add_utility_links = function(findfn) {
     });
     
     var target = find('#formfield-form-widgets-recurrence_start');
-    var link = _.template(
-            '<div id="<%= id %>"><a href="#">&gt;&gt; <%= title %></a></div>'
-        );
+    var link = _.template('<div id="<%= id %>"><a href="#">&gt;&gt; <%= title %></a></div>');
 
     var start = {};
     start.year = find('#form-widgets-recurrence_start-year');

@@ -36,7 +36,7 @@ seantis.contextmenu = function(event, element, calendar) {
                         break;
                 }
             });
-    }
+    };
 
     element.miniTip({
         title: '',
