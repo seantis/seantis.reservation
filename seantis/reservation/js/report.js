@@ -4,11 +4,20 @@
 
         if (!report.length > 0)
             return;
+            
+        var show_details = function(elements, show) {
+            elements.toggleClass('show-details', show);  
+        };
 
         // Toggle reservation details
         report.find('.reservation').click(function() {
-            var el = $(this);
-            el.toggleClass('show-details');
+            show_details($(this));
+        });
+        
+        // Toggle all reservation details
+        $('.controlbox input[name="details"]').change(function() {
+            var show = $(this).val() == 'show';
+            show_details(report.find('.reservation'), show);
         });
 
         // Hookup approve/decline overlays
