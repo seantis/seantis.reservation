@@ -134,7 +134,6 @@ var CalendarDays = function (options) {
         };
 
         var highlight_group = function(elements, highlight) {
-            console.log('highlight: ' + highlight);
             elements.toggleClass('groupSelection', highlight);    
         };
 

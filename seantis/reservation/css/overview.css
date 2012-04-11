@@ -1,7 +1,9 @@
 .groupSelection {
     -webkit-box-shadow: 0px 0px 3px 3px #6DADF2;
     -moz-box-shadow: 0px 0px 3px 3px #6DADF2;
-    box-shadow: 0px 0px 3px 3px #6DADF2; 
+    box-shadow: 0px 0px 3px 3px #6DADF2;
+    background-color: #ddd; 
+    zoom: 1;
 }
 
 #seantis-overview-calendar td.groupSelection {
@@ -13,6 +15,9 @@
     accomplishes the same effect */
     -moz-box-shadow: 0 0 0 0 white;
     opacity: 1.0;
+    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+    filter: alpha(opacity=100);
+    zoom: 1;
 }
 
 #seantis-overview-calendar .event-unavailable, 
@@ -21,6 +26,9 @@
     background-color: #a1291e !important;
     border: none;
     opacity: 0.6;
+    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
+    filter: alpha(opacity=60);
+    zoom: 1;
 }
 
 #seantis-overview-calendar .event-available, 
@@ -29,6 +37,9 @@
     background-color: #379a00 !important;
     border: none;
     opacity: 0.6;
+    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
+    filter: alpha(opacity=60);
+    zoom: 1;
 }
 
 #seantis-overview-calendar .event-partly-available, 
@@ -37,6 +48,9 @@
     background-color: #e99623 !important;
     border: none;
     opacity: 0.6;
+    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
+    filter: alpha(opacity=60);
+    zoom: 1;
 }
 
 #timeframes .visibleTimeframe {
@@ -64,7 +78,7 @@
 }
 
 #timeframes h2 {
-    margin-top: 18px;   
+    margin-top: 15px;   
 }
 
 #timeframes div.resourceTitle {

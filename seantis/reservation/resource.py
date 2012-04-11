@@ -85,7 +85,7 @@ class View(grok.View):
         this.seantis.calendars.push({
             id:'#%s',
             options:%s,
-            addurl:'%s',
+            addurl:'%s'
         })        
         """
         baseurl = resource.absolute_url_path()
