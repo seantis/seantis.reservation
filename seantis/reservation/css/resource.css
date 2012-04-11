@@ -351,6 +351,7 @@ ul.formTabs {
 
 ul.formTabs li.formTab {
     margin: 0;
+    line-height: 30px;
 }
 
 ul.formTabs li.formTab:after {
