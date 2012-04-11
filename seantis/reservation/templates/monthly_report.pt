@@ -13,8 +13,7 @@
         <div tal:replace="structure provider:plone.abovecontenttitle" />
         
         <h1 class="documentFirstHeading" tal:content="view/title"></h1>
-        
-        <div tal:replace="structure provider:plone.belowcontenttitle" />
+                
         <div tal:replace="structure provider:plone.abovecontentbody" />
 
         <div class="monthly-report-navigation">
