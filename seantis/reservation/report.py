@@ -59,6 +59,24 @@ class MonthlyReportView(grok.View, form.ReservationDataView):
         return objs
 
     @property
+    def sorted_resources(self):
+        objs = self.resources
+
+        sortkey = lambda item: self.resource_title(item[0])
+        return utils.OrderedDict(sorted(objs.items(), key=sortkey))
+
+    @property
+    def statuses(self):
+        return (
+            ('pending', _(u'Pending')),
+            ('approved', _(u'Approved')),
+        )
+
+    @view.memoize
+    def resource_title(self, uuid):
+        return utils.get_resource_title(self.resources[uuid])
+
+    @property
     @view.memoize
     def min_hour(self):
         return min((r.first_hour for r in self.resources.values() if hasattr(r, 'first_hour')))

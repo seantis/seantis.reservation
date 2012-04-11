@@ -16,8 +16,36 @@
                 
         <div tal:replace="structure provider:plone.abovecontentbody" />
 
-        <div class="monthly-report-navigation">
-            <a tal:attributes="href view/backward_url" i18n:translate="">&lt;&lt; Previous Month</a> | <a tal:attributes="href view/forward_url" i18n:translate="">Next Month &gt;&gt;</a>
+        <div class="controlbox">
+            <div class="monthly-report-navigation">
+                <div class="nav-block">
+                    <h2 i18n:translate="">Navigation</h2>
+                    <a tal:attributes="href view/backward_url" i18n:translate="">&lt;&lt; Previous Month</a> | <a tal:attributes="href view/forward_url" i18n:translate="">Next Month &gt;&gt;</a>
+                </div>
+                <div class="nav-block">
+                    <h2 i18n:translate="">Display</h2>
+                    <label><input type="radio" name="details" value="show" /><span i18n:translate="">Show Details</span></label>
+                    <label><input type="radio" name="details" value="hide" checked="checked" /><span i18n:translate="">Hide Details</span></label>
+                </div>
+                <div class="nav-block">
+                    <h2 i18n:translate="">Resources</h2>
+                    <tal:block repeat="uuid view/sorted_resources">
+                        <label><input type="checkbox" tal:attributes="value uuid" checked="checked"><span tal:content="python: view.resource_title(uuid)"></span></label>
+                    </tal:block>
+                </div>
+                <div class="nav-block">
+                    <h2 i18n:translate="">Statuses</h2>
+                    <tal:block repeat="status view/statuses">
+                        <label><input type="checkbox" tal:attributes="value python: status[0]" checked="checked"><span tal:content="python: status[1]"></span></label>
+                    </tal:block>
+                </div>
+                <div class="nav-block">
+                    <h2 i18n:translate="">Export</h2>
+                    <a href="#" i18n:translate="">Excel</a>
+                </div>
+
+                <div style="clear: both;"></div>
+            </div>
         </div>
 
         <div class="monthly-report" tal:define="results view/results">

@@ -1,6 +1,47 @@
 /* navigation */
-.monthly-report-navigation {
-    float: right;   
+.controlbox {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0px 0px 16px #eee;
+    margin: 10px 0 15px 0;
+}
+
+.nav-block {
+    float: left;
+    margin: 10px 20px 15px 20px;
+}
+
+.controlbox h2 {
+    font-size: 1.3em;
+    font-weight: normal;
+    border-bottom: 1px solid #aaa; 
+    margin: 10px 0;
+}
+
+.controlbox h2:first-child {
+    margin-top: 4px;   
+}
+
+.controlbox label {
+    font-weight: normal;
+    display: block;   
+    cursor: pointer;
+}
+
+.controlbox label span {
+    padding: 3px;   
+}
+
+.controlbox label span {
+    color: #333;    
+}
+
+.controlbox label:hover span {
+    color: #205C90;
+}
+
+.controlbox input {
+    margin-right: 5px;   
 }
 
 /* daily header */
