@@ -48,7 +48,6 @@
         color-stop(0, rgb(230,230,230)),
         color-stop(1, rgb(255,255,255))
     );
-    
 }
 
 .monthly-report .reservation.odd {
@@ -97,7 +96,8 @@
 }
 
 .monthly-report .reservation.show-details .reservation-detail {
-     display:block;
+     display: block;
+     margin: 0;
 }
 
 .monthly-report .reservation-detail {

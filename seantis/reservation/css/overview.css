@@ -6,8 +6,12 @@
 
 #seantis-overview-calendar td.groupSelection {
     -webkit-box-shadow: none;
-    -moz-box-shadow: none;
     box-shadow: none;
+
+    /* if the box shadow is reduced to none here, mozilla's rendering
+    gets flickery and slow. Reducing the width of the shadow helps and
+    accomplishes the same effect */
+    -moz-box-shadow: 0 0 0 0 white;
     opacity: 1.0;
 }
 

@@ -114,15 +114,19 @@ var CalendarDays = function (options) {
 
                 days.addClass(event.start, classes);
                 days.mouseenter(event.start, function() {
-                    highlight_group($(itemids), true);
-                    highlight_group($(itemuuids), true);
-                    highlight_group($(cell), true);
+                    _.defer(function() {
+                        highlight_group($(itemids), true);
+                        highlight_group($(itemuuids), true);
+                        highlight_group($(cell), true);    
+                    });
                 });
                 
                 days.mouseleave(event.start, function() {
-                    highlight_group($(itemids), false);
-                    highlight_group($(itemuuids), false);
-                    highlight_group($(cell), false);
+                    _.defer(function() {
+                        highlight_group($(itemids), false);
+                        highlight_group($(itemuuids), false);
+                        highlight_group($(cell), false);
+                    });
                 });   
             }
 
@@ -130,7 +134,8 @@ var CalendarDays = function (options) {
         };
 
         var highlight_group = function(elements, highlight) {
-            elements.toggleClass('groupSelection', highlight);
+            console.log('highlight: ' + highlight);
+            elements.toggleClass('groupSelection', highlight);    
         };
 
         var item_mouseover = function() {
