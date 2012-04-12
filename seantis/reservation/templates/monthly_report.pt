@@ -36,7 +36,7 @@
                 <div class="nav-block">
                     <h2 i18n:translate="">Statuses</h2>
                     <tal:block repeat="status view/statuses">
-                        <label><input type="checkbox" tal:attributes="value python: status[0]" checked="checked"><span tal:content="python: status[1]"></span></label>
+                        <label><input type="checkbox" class="status-checkbox" tal:attributes="value python: status[0]" checked="checked"><span tal:content="python: status[1]"></span></label>
                     </tal:block>
                 </div>
                 <div class="nav-block">
@@ -62,7 +62,7 @@
 
                         <tal:block repeat="rtype python: resource['lists']">
 
-                            <div tal:attributes="class python: 'reservation-type ' + rtype" tal:condition="python: resource[rtype]">
+                            <div tal:attributes="class python: 'reservation-type ' + rtype;" tal:condition="python: resource[rtype]">
                                 <div class="reservation-header">
                                     <div class="leftcolumn">
                                         <h4 tal:content="python: resource['lists'][rtype]"></h4>

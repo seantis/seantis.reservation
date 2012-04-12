@@ -9,29 +9,73 @@
             elements.toggleClass('show-details', show);  
         };
         
-        var show_resource = function(uuid, show) {
-            var resources = report.find('.resource[data-uuid="' + uuid + '"]');
-            resources.toggle(show);
+        var checkbox_values = function(selector, status) {
+            var values = _.map($(selector), function(checkbox) {
+                if ($(checkbox).is(status))
+                    return $(checkbox).val(); 
+            });  
+            return _.filter(values, function(value) { return ! _.isUndefined(value); });
+        };
+        
+        var visible_resources = function() {
+            return checkbox_values('.controlbox .resource-checkbox', ':checked');
+        };
+        
+        var visible_statuses = function() {
+            return checkbox_values('.controlbox .status-checkbox', ':checked');
+        };
+        
+        var update_resource_status = function(changed) {
+            var statuses = visible_statuses();
+            var resources = visible_resources();
 
-            _.each(resources, function(resource) {
-                var day = $(resource).parent();
-                var show_day;
-
-                if (day.is(':visible')) {
-                    // if the day is visible we have a shortcut to figure out
-                    // if any resources below the day are visible..
-                    show_day = day.find('.resource:visible').length > 0;
-                } else {
-                    // ..which doesn't work if the day itself is invisible,
-                    // as the children will be considered invisible in any case
-                    show_day = _.any(day.find('.resource'), function(child) {
-                        return $(child).css('display') != 'none';
-                    });
-                }
-                    
-
-                day.toggle(show_day);
+            // shortcut to hide all
+            if (statuses.length === 0 || resources.length === 0) {
+                report.find('div.day').hide();
+                return;   
+            } else {
+                report.find('div.day').show();   
+            }
+            
+            // get the selectors for the visible statuses and resources
+            var status_selector = "";
+            _.each(statuses, function(status) {
+                status_selector += '.reservation-type.' + status + ', '; 
             });
+            
+            var resource_selector = "";
+            _.each(resources, function(resource) {
+                resource_selector += '.resource[data-uuid="' + resource + '"], '; 
+            });
+
+            // hide all elements of the changed selection
+            if (changed == 'status')
+                report.find('.reservation-type').hide();
+            else 
+                report.find('.resource').hide();
+            
+            // show all visible
+            $(status_selector).show();
+            $(resource_selector).show();
+            
+            // go through visible resources and hide the ones that don't have
+            // visible statuses
+            _.each(resources, function(resource) {
+                _.each($('.resource[data-uuid="' + resource + '"]'), function(resource_el) {
+                    if ($(resource_el).find(status_selector).length === 0) {
+                        $(resource_el).hide();
+                        console.log('hit');
+                    }
+                });    
+            });
+            
+            // go through the days and hide the ones without visible resources
+            _.each(report.find('div.day'), function(day) {
+                if ($(day).find(resource_selector).length === 0) {
+                    $(day).hide();
+                } 
+            });     
+            
         };
 
         // Toggle reservation details
@@ -47,10 +91,12 @@
         
         // Toggle specific resources
         $('.controlbox .resource-checkbox').change(function() {
-            var uuid = $(this).val();
-            var show = $(this).is(':checked');
-            
-            show_resource(uuid, show);
+            update_resource_status('resource');
+        });
+        
+        // Toggle statuses
+        $('.controlbox .status-checkbox').change(function() {
+            update_resource_status('status');
         });
 
         // Hookup approve/decline overlays
