@@ -28,5 +28,4 @@
 
         <javascript id="++resource++seantis.reservation.js/calendar.js" cacheable="True" compression="safe" cookable="True" enabled="True" expression="python:object.portal_type == 'seantis.reservation.resource'" inline="False" insert-after="++resource++seantis.reservation.js/overlay.js"/>
         
-        <javascript id="++resource++kukit.js" enabled="False" />
 </object>
