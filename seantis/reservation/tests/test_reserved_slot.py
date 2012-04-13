@@ -19,7 +19,7 @@ class TestReservedSlot(IntegrationTestCase):
         allocation = Allocation(raster=15, resource=uuid())
         allocation.start = datetime(2011, 1, 1, 15)
         allocation.end = datetime(2011, 1, 1, 15, 59)
-        allocation.group = str(uuid())
+        allocation.group = uuid()
 
         reservation = uuid()
 

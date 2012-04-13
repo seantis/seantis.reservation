@@ -24,7 +24,7 @@ class Resource(Container):
         return IUUID(self)
 
     def scheduler(self):
-        uuid = str(self.uuid())
+        uuid = utils.string_uuid(self.uuid())
         is_exposed = exposure.for_allocations(self, [uuid])
         return Scheduler(self.uuid(), self.quota, is_exposed)
 

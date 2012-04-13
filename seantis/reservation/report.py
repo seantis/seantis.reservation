@@ -225,7 +225,7 @@ def monthly_report(year, month, resources):
         end += timedelta(microseconds=1)
         start, end = start.strftime('%H:%M'), end.strftime('%H:%M')
 
-        context = resources[unicode(reservation.resource)]
+        context = resources[utils.string_uuid(reservation.resource)]
         if reservation.status == u'approved':
             urls = [(_(u'Delete'), reservation_urls.remove_all_url(reservation.token, context))]
         elif reservation.status == u'pending':
@@ -236,7 +236,7 @@ def monthly_report(year, month, resources):
         else:
             raise NotImplementedError
 
-        report[day][unicode(reservation.resource)][reservation.status].append(
+        report[day][utils.string_uuid(reservation.resource)][reservation.status].append(
             dict(
                 start=start, 
                 end=end, 

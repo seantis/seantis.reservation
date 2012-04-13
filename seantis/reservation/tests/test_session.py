@@ -141,7 +141,7 @@ class TestSession(IntegrationTestCase):
         try:
             def change_allocation():
                 allocation = Session.query(Allocation).one()
-                allocation.group = unicode(uuid())
+                allocation.group = uuid()
 
             def read_allocation():
                 allocation = Session.query(Allocation).one()

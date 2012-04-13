@@ -117,7 +117,7 @@ class Overview(grok.View, CalendarRequest):
                 start=event_start.isoformat(),
                 end=event_end.isoformat(),
                 title=u'',
-                uuids=[str(r) for r in resources],
+                uuids=[utils.string_uuid(r) for r in resources],
                 className=utils.event_class(availability)
             ))
 

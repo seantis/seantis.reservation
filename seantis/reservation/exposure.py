@@ -1,7 +1,9 @@
+from uuid import UUID
+
 from zope.security import checkPermission
 from zope.component import getMultiAdapter
 
-from seantis.reservation.utils import is_uuid, get_resource_by_uuid
+from seantis.reservation.utils import is_uuid, get_resource_by_uuid, string_uuid
 from seantis.reservation.timeframe import timeframes_by_context
 
 from plone.uuid.interfaces import IUUID
@@ -17,9 +19,9 @@ def for_allocations(context, resources):
     # get a dictionary with uuids as keys and resources as values
     def get_object(obj):
         if is_uuid(obj):
-            return obj, get_resource_by_uuid(context, obj)
+            return UUID(obj), get_resource_by_uuid(context, obj)
         else:
-            return obj.uuid(), obj
+            return UUID(obj.uuid()), obj
 
     resource_objects = dict([get_object(o) for o in resources])
 
@@ -39,7 +41,7 @@ def for_allocations(context, resources):
 
         # use the mirror_of as resource-keys of mirrors do not really exist
         # as plone objects
-        frames = timeframes[str(allocation.mirror_of)]
+        frames = timeframes[allocation.mirror_of]
 
         if not frames:
             return True
@@ -102,13 +104,13 @@ def for_resources(resources):
 
     for r in resources:
         if checkPermission('zope2.View', r):
-            visible_resources.append(str((IUUID(r))))
+            visible_resources.append(string_uuid((IUUID(r))))
 
     def is_exposed(resource):
         if is_uuid(resource) or isinstance(resource, basestring):
-            return str(resource) in visible_resources
+            return string_uuid(resource) in visible_resources
         else:
-            return str(IUUID(resource)) in visible_resources
+            return string_uuid(IUUID(resource)) in visible_resources
 
     return is_exposed
 

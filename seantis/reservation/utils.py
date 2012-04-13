@@ -146,7 +146,7 @@ def compare_link(resources):
     compare_to = [r.uuid() for r in resources[1:]]
 
     for uuid in compare_to:
-        link += 'compare_to=' + str(uuid) + '&'
+        link += 'compare_to=' + string_uuid(uuid) + '&'
         
     return link.rstrip('&')
 
@@ -166,7 +166,7 @@ def monthly_report_link(context, resources):
     url += '&month=' + str(today.month)
 
     for uuid in (r.uuid() for r in resources):
-        url += '&uuid=' + str(uuid)
+        url += '&uuid=' + string_uuid(uuid)
 
     return url
 
@@ -231,7 +231,7 @@ def handle_exception(ex, message_handler=None):
     else:
         form_error(msg)
 
-_uuid_regex = re.compile('[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}')
+_uuid_regex = re.compile('[a-f0-9]{8}-?[a-f0-9]{4}-?[a-f0-9]{4}-?[a-f0-9]{4}-?[a-f0-9]{12}')
 def is_uuid(obj):
     """Returns true if the given obj is a uuid. The obj may be a string
     or of type UUID. If it's a string, the uuid is checked with a regex.
@@ -241,15 +241,19 @@ def is_uuid(obj):
     
     return isinstance(obj, UUID)
 
+def string_uuid(uuid):
+    return UUID(str(uuid)).hex
+
 # TODO cache this incrementally
 def generate_uuids(uuid, quota):
     mirror = lambda n: new_uuid_mirror(uuid, str(n))
     return [mirror(n) for n in xrange(1, quota)]
 
+from plone.uuid.interfaces import IUUID
 def get_resource_by_uuid(context, uuid):
     """Returns the zodb object with the given uuid."""
     catalog = getToolByName(context, 'portal_catalog')
-    results = catalog(UID=uuid)
+    results = catalog(UID=string_uuid(uuid))
     return len(results) == 1 and results[0] or None
 
 def get_resource_title(resource):
@@ -266,7 +270,7 @@ class UUIDEncoder(json.JSONEncoder):
     """Encodes UUID objects as string in JSON."""
     def default(self, obj):
         if isinstance(obj, UUID):
-            return unicode(obj)
+            return string_uuid(obj)
         return json.JSONEncoder.default(self, obj)
 
 class SortedCollectionEncoder(json.JSONEncoder):
