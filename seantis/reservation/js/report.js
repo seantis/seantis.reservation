@@ -71,9 +71,16 @@
             
             // go through the days and hide the ones without visible resources
             _.each(report.find('div.day'), function(day) {
-                if ($(day).find(resource_selector).length === 0) {
+                var day_resources = $(day).find(resource_selector);
+                if (day_resources.length === 0) {
                     $(day).hide();
-                } 
+                } else {
+                    if (_.all(day_resources, function(resource) {
+                        return $(resource).css('display') == 'none';
+                    })) {
+                        $(day).hide();
+                    }
+                }
             });     
             
         };
