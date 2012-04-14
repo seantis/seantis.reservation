@@ -79,13 +79,4 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
 <browser:resourceDirectory name="seantis.reservation.js" directory="js"/>
 <browser:resourceDirectory name="seantis.reservation.css" directory="css"/>
 
-<!-- Upgrades -->
-<genericsetup:upgradeStep
-  title="Migrateion resource uuids"
-  description=""
-  source="1"
-  destination="2"
-  handler="seantis.reservation.setuphandlers.migrate_uuids"
-  profile="seantis.reservation:default" />
-
 </configure>

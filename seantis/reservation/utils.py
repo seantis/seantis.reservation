@@ -249,11 +249,24 @@ def generate_uuids(uuid, quota):
     mirror = lambda n: new_uuid_mirror(uuid, str(n))
     return [mirror(n) for n in xrange(1, quota)]
 
+def uuid_query(uuid):
+    """ Returns a tuple of uuids for querying the zodb. See why:
+    http://stackoverflow.com/questions/10137632/querying-portal-catalog-using-typed-uuids-instead-of-string-uuids
+
+    """
+
+    uuid = string_uuid(uuid)
+
+    if '-' in uuid:
+        return (uuid.replace('-', ''), uuid)
+    return (uuid, '-'.join([
+        uuid[:8], uuid[8:12], uuid[12:16], uuid[16:20], uuid[20:]]))
+
 from plone.uuid.interfaces import IUUID
 def get_resource_by_uuid(context, uuid):
     """Returns the zodb object with the given uuid."""
     catalog = getToolByName(context, 'portal_catalog')
-    results = catalog(UID=string_uuid(uuid))
+    results = catalog(UID=uuid_query(uuid))
     return len(results) == 1 and results[0] or None
 
 def get_resource_title(resource):
