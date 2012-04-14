@@ -68,6 +68,8 @@ class ResourceBaseForm(GroupForm, form.Form):
     disabled_fields = []
     hidden_fields = ['id', 'metadata']
 
+    css_class = 'seantis-reservation-form wizard'
+
     template = ViewPageTemplateFile('templates/form.pt')
 
     def updateWidgets(self):

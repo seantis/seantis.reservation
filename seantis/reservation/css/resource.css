@@ -345,26 +345,26 @@ body .portalMessage {
     background-color: #eee;   
 }
 
-ul.formTabs {
+.seantis-reservation-form ul.formTabs {
     margin-top: 10px;   
 }
 
-ul.formTabs li.formTab {
+.seantis-reservation-form ul.formTabs li.formTab {
     margin: 0;
     line-height: 30px;
 }
 
-ul.formTabs li.formTab:after {
+.seantis-reservation-form ul.formTabs li.formTab:after {
      content: " ► ";   
      color: #888;
      margin: 4px;
 }
 
-ul.formTabs li.formTab:last-child:after {
+.seantis-reservation-form ul.formTabs li.formTab:last-child:after {
      content: "";
 }
 
-.formTab a {
+.seantis-reservation-form .formTab a {
     background-color: #ddd;
     padding: 4px 8px;   
     border-radius: 4px;
@@ -372,17 +372,17 @@ ul.formTabs li.formTab:last-child:after {
     border: 1px solid #bbb;
 }
 
-.formTab a:hover {
+.seantis-reservation-form .formTab a:hover {
     background-color: #ccf2ba;
     color: #232 !important;
 }
 
-.formTab a.required:after {
+.seantis-reservation-form .formTab a.required:after {
     content: " *";
     color: red;
 }
 
-.formTab a.selected {
+.seantis-reservation-form .formTab a.selected {
     background-color: #c1e0ee;
     color: #232 !important;
     border: 1px solid #57a9cd;   
