@@ -48,6 +48,7 @@ var reservation_overlay_init = null;
             parent.ploneTabInit();
         }
         seantis.formgroups.init();
+        seantis.wizard.init();
     };
 
     var on_formload_failure = function(e, parent, form) {
@@ -69,6 +70,7 @@ var reservation_overlay_init = null;
 
         var before_load = function() {
             seantis.formgroups.init();
+            seantis.wizard.init();
         };
 
         var after_post = function(el) {
