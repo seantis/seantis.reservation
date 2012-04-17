@@ -324,24 +324,22 @@ class IApproveReservation(Interface):
         required=False
         )
 
-class IReservationMadeEvent(Interface):
+class IReservationBaseEvent(Interface):
+    """ Base Interface for reservation events (not actually fired). """
+
+    resource = Attribute("The resource on which the reservaiton event occured")
+    reservation = ("The reservation data associated with the event")
+
+class IReservationMadeEvent(IReservationBaseEvent):
     """ Event triggered when a reservation is made (directly written or
         added to the pending reservation list).
 
     """
 
-    resource = Attribute("The resource on which the reservaiton was made")
-    reservation = Attribute("The reservation record")
-
-class IReservationDecisionBaseEvent(Interface):
-    """ Base-Interface for Approved / Denied Reservations (not actually fired)."""
-
-    resource = Attribute("The resource the decision was made on")
-    reservation = Attribute("The approved or denied reservation")
-
-
-class IReservationApprovedEvent(IReservationDecisionBaseEvent):
+class IReservationApprovedEvent(IReservationBaseEvent):
+    """ Event triggered when a reservation is approved. """
     pass
 
-class IReservationDeniedEvent(IReservationDecisionBaseEvent):
+class IReservationDeniedEvent(IReservationBaseEvent):
+    """ Event triggered when a reservation is denied. """
     pass
