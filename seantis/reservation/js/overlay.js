@@ -13,7 +13,7 @@ var reservation_overlay_init = null;
 
         // filter out the ones without any text
         messages = _.filter(messages, function(m) {
-            return !_.isEmpty($(m).find('dd').text().trim());
+            return !_.isEmpty($.trim($(m).find('dd').text()));
         });
 
         if (!messages.length)
