@@ -39,10 +39,6 @@
                         <label><input type="checkbox" class="status-checkbox" tal:attributes="value python: status[0]" checked="checked"><span tal:content="python: status[1]"></span></label>
                     </tal:block>
                 </div>
-                <div class="nav-block">
-                    <h2 i18n:translate="">Export</h2>
-                    <a href="#" i18n:translate="">Excel</a>
-                </div>
 
                 <div style="clear: both;"></div>
             </div>
