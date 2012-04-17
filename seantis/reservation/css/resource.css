@@ -11,10 +11,22 @@
     min-height: 30px;
 }
 
-.groupSelection {
-    -webkit-box-shadow: 0 0 4px 4px #6DADF2;
-    -moz-box-shadow: 0 0 4px 4px #6DADF2;
-    box-shadow: 0 0 4px 4px #6DADF2;
+.event-unavailable.groupSelection {
+    -webkit-box-shadow: 0 0 4px 1px #a1291e;
+    -moz-box-shadow: 0 0 4px 1px #a1291e;
+    box-shadow: 0 0 4px 1px #a1291e; 
+}
+
+.event-available.groupSelection {
+    -webkit-box-shadow: 0 0 4px 1px #379a00;
+    -moz-box-shadow: 0 0 4px 1px #379a00;
+    box-shadow: 0 0 4px 1px #379a00; 
+}
+
+.event-partly-available.groupSelection {
+    -webkit-box-shadow: 0 0 4px 1px #e99623;
+    -moz-box-shadow: 0 0 4px 1px #e99623;
+    box-shadow: 0 0 4px 1px #e99623; 
 }
 
 #content table {
