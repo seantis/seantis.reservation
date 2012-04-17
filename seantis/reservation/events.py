@@ -1,6 +1,6 @@
 from zope.interface import implements
 
-from seantis.reservation.interface import (
+from seantis.reservation.interfaces import (
     IReservationBaseEvent,
     IReservationMadeEvent,
     IReservationApprovedEvent,
@@ -10,8 +10,7 @@ from seantis.reservation.interface import (
 class ReservationBaseEvent(object):
     implements(IReservationBaseEvent)
 
-    def __init__(self, resource, reservation):
-        self.resource = resource
+    def __init__(self, reservation):
         self.reservation = reservation
 
 class ReservationMadeEvent(ReservationBaseEvent):

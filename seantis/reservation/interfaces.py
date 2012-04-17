@@ -327,8 +327,7 @@ class IApproveReservation(Interface):
 class IReservationBaseEvent(Interface):
     """ Base Interface for reservation events (not actually fired). """
 
-    resource = Attribute("The resource on which the reservaiton event occured")
-    reservation = ("The reservation data associated with the event")
+    reservation = Attribute("The reservation record associated with the event")
 
 class IReservationMadeEvent(IReservationBaseEvent):
     """ Event triggered when a reservation is made (directly written or
@@ -338,8 +337,6 @@ class IReservationMadeEvent(IReservationBaseEvent):
 
 class IReservationApprovedEvent(IReservationBaseEvent):
     """ Event triggered when a reservation is approved. """
-    pass
 
 class IReservationDeniedEvent(IReservationBaseEvent):
     """ Event triggered when a reservation is denied. """
-    pass

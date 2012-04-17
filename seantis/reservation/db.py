@@ -3,9 +3,17 @@ from uuid import uuid1 as new_uuid
 from datetime import datetime, MINYEAR, MAXYEAR
 from itertools import groupby
 
+from zope.event import notify
+
 from sqlalchemy.sql import and_, or_
 from sqlalchemy.orm import joinedload
 from sqlalchemy import func
+
+from seantis.reservation.events import (
+    ReservationMadeEvent,
+    ReservationApprovedEvent,
+    ReservationDeniedEvent
+)
 
 from seantis.reservation.models import Allocation
 from seantis.reservation.models import ReservedSlot
@@ -654,6 +662,8 @@ class Scheduler(object):
             # do that automatically)
             assert len(groups) == len(set(groups)), 'wrongly trying to reserve a group'
 
+        notify(ReservationMadeEvent(reservation))
+
         return token
 
     @serialized
@@ -712,6 +722,8 @@ class Scheduler(object):
         if not slots_to_reserve:
             raise NotReservableError
 
+        notify(ReservationApprovedEvent(reservation))
+
         return slots_to_reserve
 
     @serialized
@@ -727,7 +739,11 @@ class Scheduler(object):
         if not query.count():
             raise InvalidReservationToken
 
+
+        reservation = query.one()
         query.delete();
+
+        notify(ReservationDeniedEvent(reservation))
 
     @serialized
     def remove_reservation(self, token, start=None, end=None):
