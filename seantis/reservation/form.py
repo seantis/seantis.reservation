@@ -48,7 +48,7 @@ def from_timestamp(fn):
         date = None
         try:
             date = fn(self, *args, **kwargs)
-            return date and datetime.fromtimestamp(float(date)) or None
+            return date and datetime.utcfromtimestamp(float(date)) or None
         except TypeError:
             return date
 
