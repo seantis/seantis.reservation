@@ -1,17 +1,17 @@
 <?xml version="1.0"?>
 <object name="portal_css" meta_type="Stylesheets Registry">
 
-    <stylesheet title="" cacheable="True" compression="safe" cookable="True" enabled="1" expression="python:object.portal_type == 'seantis.reservation.resource'" id="++resource++seantis.reservation.css/miniTip.css" media="screen" rel="stylesheet" rendering="link"/>
+    <stylesheet title="" cacheable="True" compression="safe" cookable="True" enabled="1" expression="python:object.portal_type == 'seantis.reservation.resource'" id="++resource++seantis.reservation.css/miniTip.css" media="all" rel="stylesheet" rendering="link"/>
 
-    <stylesheet title="" cacheable="True" compression="safe" cookable="True" enabled="1" expression="" id="++resource++seantis.reservation.css/resource.css" media="screen" rel="stylesheet" rendering="link"/>
-
-    <stylesheet title="" cacheable="True" compression="safe" cookable="True" enabled="1"
-    id="++resource++seantis.reservation.css/jquery.timetable.css" media="screen" rel="stylesheet" rendering="link"/>
+    <stylesheet title="" cacheable="True" compression="safe" cookable="True" enabled="1" expression="" id="++resource++seantis.reservation.css/resource.css" media="all" rel="stylesheet" rendering="link"/>
 
     <stylesheet title="" cacheable="True" compression="safe" cookable="True" enabled="1"
-    id="++resource++seantis.reservation.css/report.css" media="screen" rel="stylesheet" rendering="link"/>
+    id="++resource++seantis.reservation.css/jquery.timetable.css" media="all" rel="stylesheet" rendering="link"/>
 
     <stylesheet title="" cacheable="True" compression="safe" cookable="True" enabled="1"
-    id="++resource++seantis.reservation.css/overview.css" media="screen" rel="stylesheet" rendering="link"/>
+    id="++resource++seantis.reservation.css/report.css" media="all" rel="stylesheet" rendering="link"/>
+
+    <stylesheet title="" cacheable="True" compression="safe" cookable="True" enabled="1"
+    id="++resource++seantis.reservation.css/overview.css" media="all" rel="stylesheet" rendering="link"/>
     
 </object>
