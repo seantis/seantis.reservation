@@ -2,23 +2,19 @@ from dateutil import rrule
 
 from five import grok
 
-from plone.directives import form
-from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from zope import schema
-from zope import interface
-from plone.dexterity.interfaces import IDexterityFTI
-
-from plone.dexterity.utils import schemaNameToPortalType as getname
+from zope.interface import Interface, invariant, Invalid
 from zope.component import getAllUtilitiesRegisteredFor as getallutils
-
 from zope.schema.interfaces import IContextSourceBinder
-from zope.schema.vocabulary import SimpleVocabulary
-from zope.schema.vocabulary import SimpleTerm
+from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 
-from seantis.reservation import utils
+from plone.directives import form
+from plone.dexterity.interfaces import IDexterityFTI
+from plone.dexterity.utils import schemaNameToPortalType as getname
+
+from z3c.form.browser.checkbox import CheckBoxFieldWidget
+from seantis.reservation import _, utils
 from seantis.reservation.raster import VALID_RASTER_VALUES
-from seantis.reservation import _
-
 from seantis.reservation.email import EmailField
 
 days = SimpleVocabulary(
@@ -40,6 +36,10 @@ recurrence = SimpleVocabulary(
 
 @grok.provider(IContextSourceBinder)
 def form_interfaces(context):
+    """ Used as a source for a vocabulary this function returns a vocabulary
+    of interfaces which may be used as sub-forms in a resource object.
+
+    """
     dutils = getallutils(IDexterityFTI)
     behavior = 'seantis.reservation.interfaces.IReservationFormSet'
     interfaces = [(u.title, u.lookupSchema()) for u in dutils if behavior in u.behaviors]
@@ -49,7 +49,9 @@ def form_interfaces(context):
 
     return SimpleVocabulary(map(get_term, interfaces))
 
-class IOverview(interface.Interface):
+class IOverview(Interface):
+    """ Views implementing this interface may use the OverviewletManager to
+    display an overview of a list of resources. """
 
     def items(self):
         """ Returns a list of items to use for the overview. Each item must have
@@ -59,13 +61,15 @@ class IOverview(interface.Interface):
         """
 
 class OverviewletManager(grok.ViewletManager):
-    grok.context(interface.Interface)
+    """ Manages the viewlets shown in the overview. """
+    grok.context(Interface)
     grok.name('seantis.reservation.overviewletmanager')
 
-class IReservationFormSet(interface.Interface):
-    pass
+class IReservationFormSet(Interface):
+    """ Marks interface as usable for sub-forms in a resource object. """
 
 class IResourceBase(form.Schema):
+    """ A resource displaying a calendar. """
 
     title = schema.TextLine(
             title=_(u'Name')
@@ -101,26 +105,24 @@ class IResourceBase(form.Schema):
         
     form.widget(formsets=CheckBoxFieldWidget)
 
-    @interface.invariant
+    @invariant
     def isValidFirstLastHour(Resource):
         in_valid_range = lambda h: 0 <= h and h <= 24
         first_hour, last_hour = Resource.first_hour, Resource.last_hour
         
         if not in_valid_range(first_hour):
-            raise interface.Invalid(_(u'Invalid first hour'))
+            raise Invalid(_(u'Invalid first hour'))
 
         if not in_valid_range(last_hour):
-            raise interface.Invalid(_(u'Invalid last hour'))
+            raise Invalid(_(u'Invalid last hour'))
 
         if last_hour <= first_hour:
-            raise interface.Invalid(
+            raise Invalid(
                     _(u'First hour must be smaller than last hour')
                 )                  
 
-class IResource(IResourceBase):
-    pass
-
 class IAllocation(form.Schema):
+    """ An reservable time-slot within a calendar. """
 
     id = schema.Int(
         title=_(u'Id'),
@@ -202,7 +204,7 @@ class IAllocation(form.Schema):
         title=_(u'Waiting List Spots'),
         )
 
-    @interface.invariant
+    @invariant
     def isValidRange(Allocation):
         start, end = utils.get_date_range(
                 Allocation.day, 
@@ -210,25 +212,26 @@ class IAllocation(form.Schema):
             )
         
         if abs((end - start).seconds // 60) < 5:
-            raise interface.Invalid(_(u'The allocation must be at least 5 minutes long'))
+            raise Invalid(_(u'The allocation must be at least 5 minutes long'))
 
-    @interface.invariant
+    @invariant
     def isValidQuota(Allocation):
         if not (1 <= Allocation.quota and Allocation.quota <= 100):
-            raise interface.Invalid(_(u'Quota must be between 1 and 100'))
+            raise Invalid(_(u'Quota must be between 1 and 100'))
 
-    @interface.invariant
+    @invariant
     def isValidWaitinglist(Allocation):    
         if not (Allocation.quota <= Allocation.waitinglist_spots and Allocation.waitinglist_spots <= 100):
-            raise interface.Invalid(_(u'Waitinglist length must be between the quota and 100'))
+            raise Invalid(_(u'Waitinglist length must be between the quota and 100'))
 
-    @interface.invariant
+    @invariant
     def isValidOption(Allocation):
         if Allocation.recurring:
             if Allocation.partly_available and not Allocation.separately:
-                raise interface.Invalid(_(u'Partly available allocations can only be reserved separately'))
+                raise Invalid(_(u'Partly available allocations can only be reserved separately'))
 
 class ITimeframe(form.Schema):
+    """ A timespan which is either visible or hidden. """
 
     title = schema.TextLine(
             title=_(u'Name')
@@ -242,12 +245,13 @@ class ITimeframe(form.Schema):
             title=_(u'End')
         )
 
-    @interface.invariant
+    @invariant
     def isValidDateRange(Timeframe):
         if Timeframe.start > Timeframe.end:
-            raise interface.Invalid(_(u'End date before start date'))
+            raise Invalid(_(u'End date before start date'))
 
-class IReservation(interface.Interface):
+class IReservation(Interface):
+    """ A reservation of an allocation (may be pending or approved). """
 
     id = schema.Int(
         title=_(u'Id'),
@@ -281,7 +285,8 @@ class IReservation(interface.Interface):
         required=True
         )
 
-class IGroupReservation(interface.Interface):
+class IGroupReservation(Interface):
+    """ A reservation of an allocation group. """
 
     group = schema.Text(
         title=_(u'Recurrence'),
@@ -293,7 +298,8 @@ class IGroupReservation(interface.Interface):
         required=True
         )
 
-class IRemoveReservation(interface.Interface):
+class IRemoveReservation(Interface):
+    """ For the reservation removal form. """
 
     reservation = schema.Text(
         title=_(u'Reservation'),
@@ -310,7 +316,8 @@ class IRemoveReservation(interface.Interface):
         required=False
         )    
 
-class IApproveReservation(interface.Interface):
+class IApproveReservation(Interface):
+    """ For the reservation approval form. """
 
     reservation = schema.Text(
         title=_(u'Reservation'),
