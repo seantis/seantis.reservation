@@ -3,7 +3,7 @@ from dateutil import rrule
 from five import grok
 
 from zope import schema
-from zope.interface import Interface, invariant, Invalid
+from zope.interface import Interface, invariant, Invalid, Attribute
 from zope.component import getAllUtilitiesRegisteredFor as getallutils
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
@@ -323,3 +323,25 @@ class IApproveReservation(Interface):
         title=_(u'Reservation'),
         required=False
         )
+
+class IReservationMadeEvent(Interface):
+    """ Event triggered when a reservation is made (directly written or
+        added to the pending reservation list).
+
+    """
+
+    resource = Attribute("The resource on which the reservaiton was made")
+    reservation = Attribute("The reservation record")
+
+class IReservationDecisionBaseEvent(Interface):
+    """ Base-Interface for Approved / Denied Reservations (not actually fired)."""
+
+    resource = Attribute("The resource the decision was made on")
+    reservation = Attribute("The approved or denied reservation")
+
+
+class IReservationApprovedEvent(IReservationDecisionBaseEvent):
+    pass
+
+class IReservationDeniedEvent(IReservationDecisionBaseEvent):
+    pass
