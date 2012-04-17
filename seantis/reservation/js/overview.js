@@ -165,7 +165,6 @@ var CalendarDays = function (options) {
             firstDay: 1,
             timeFormat: 'HH:mm{ - HH:mm}',
             axisFormat: 'HH:mm{ - HH:mm}',
-            columnFormat: 'ddd d.M',
             eventRender: render
         });
         $.extend(options, seantis.locale.fullcalendar());
