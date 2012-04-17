@@ -131,12 +131,14 @@ class MonthlyReportView(grok.View, form.ReservationDataView):
     @property
     def title(self):
         return _(u'Monthly Report for ${month} ${year}', mapping={
-                'month': utils.month_name(self.month),
+                'month': utils.month_name(self.context, self.request, self.month),
                 'year': self.year
             })
 
     def format_day(self, day):
-        return date(self.year, self.month, day).strftime('%a, %d. %m')
+        daydate = date(self.year, self.month, day)
+        weekday = utils.weekdayname_abbr(self.context, self.request, daydate.weekday() + 1)
+        return weekday + daydate.strftime(', %d. %m')
 
     def has_reservations(self, resource):
         for status in resource['lists']:

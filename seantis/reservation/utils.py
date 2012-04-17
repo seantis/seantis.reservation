@@ -20,6 +20,7 @@ from zope.component import getMultiAdapter
 from zope import i18n
 from zope import interface
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.i18nl10n import weekdayname_msgid_abbr, monthname_msgid
 from z3c.form.interfaces import ActionExecutionError
 
 from seantis.reservation import error
@@ -517,25 +518,14 @@ def get_date_range(day, start_time, end_time):
 def flash(context, message, type='info'):
     context.plone_utils.addPortalMessage(message, type)
 
-MONTHS = {
-    1: _(u'January'),
-    2: _(u'February'),
-    3: _(u'March'),
-    4: _(u'April'),
-    5: _(u'Mai'),
-    6: _(u'June'),
-    7: _(u'July'),
-    8: _(u'August'),
-    9: _(u'September'),
-    10: _(u'October'),
-    11: _(u'November'),
-    12: _(u'December'),
-}
-
-def month_name(month):
-    """Returns the text for the given month (1-12). Though python has
-    such a functionality it depends on the current locale which is not
-    threadsafe.
-    """
+def month_name(context, request, month):
+    """Returns the text for the given month (1-12)."""
     assert (1 <= month and month <= 12)
-    return MONTHS[month]
+    msgid = monthname_msgid(month)
+    return translate(context, request, msgid, 'plonelocales')
+
+def weekdayname_abbr(context, request, day):
+    """Returns the text for the given day (0-6)."""
+    assert (1 <= day and day <= 7)
+    msgid = weekdayname_msgid_abbr(day)
+    return translate(context, request, msgid, 'plonelocales')
