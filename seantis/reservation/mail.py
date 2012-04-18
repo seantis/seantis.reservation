@@ -7,10 +7,11 @@ from email.Utils import parseaddr, formataddr
 
 
 from seantis.reservation.form import ReservationDataView
+from seantis.reservation.reserve import ReservationUrls
 from seantis.reservation import utils
 from seantis.reservation import _
 
-def send_reservation_made_for_managers(reservation, with_approval):
+def send_reservation_pending(reservation):
     resource = utils.get_resource_by_uuid(reservation.resource)
 
     subject = _(u'New reservation for %(resource)s')
@@ -26,9 +27,11 @@ def send_reservation_made_for_managers(reservation, with_approval):
         Formdata: 
         %(data)s
 
-        Sincerely yours,
+        To approve this reservation click the following link:
+        %(approval_link)s
 
-        The seantis.reservation Mailbot
+        To deny this reservation:
+        %(denial_link)s
     """)
 
     mail = ReservationMail(resource, reservation, 
@@ -36,7 +39,99 @@ def send_reservation_made_for_managers(reservation, with_approval):
         recipient=reservation.email,
         subject=subject,
         body=body
-        )
+    )
+
+    send_mail(resource, mail)
+
+def send_reservation_recieved(reservation):
+    resource = utils.get_resource_by_uuid(reservation.resource)
+
+    subject = _(u'New reservation for %(resource)s')
+    body = dedent("""\
+        We received your reservation for %(resource)s:
+
+        Dates:
+        %(dates)s
+
+        Formdata:
+        %(data)s
+
+        Please let us know if the information above is incorrect while
+        we review your reservation. Once our review is done you will
+        receive another email.
+    """)
+
+    mail = ReservationMail(resource, reservation,
+        sender='bot@example.com',
+        recipient=reservation.email,
+        subject=subject,
+        body=body
+    )
+
+    send_mail(resource, mail)
+
+def send_reservation_autoapproved(reservation):
+    resource = utils.get_resource_by_uuid(reservation.resource)
+
+    subject = _(u'Reservation added to %(resource)s')
+    body = dedent("""\
+        Your reservation for %(resource)s was successfully added.
+
+        Dates:
+        %(dates)s
+
+        Formdata:
+        %(data)s
+    """)
+
+    mail = ReservationMail(resource, reservation,
+        sender='bot@example.com',
+        recipient=reservation.email,
+        subject=subject,
+        body=body
+    )
+
+    send_mail(resource, mail)
+
+def send_reservation_approved(reservation):
+    resource = utils.get_resource_by_uuid(reservation.resource)
+
+    subject = _(u'Reservation for %(resource)s approved')
+    body = dedent("""\
+        We are pleased to inform you that the following dates for %(resource)s were
+        approved and reserved for you.
+
+        Dates:
+        %(dates)s
+    """)
+
+    mail = ReservationMail(resource, reservation,
+        sender='bot@example.com',
+        recipient=reservation.email,
+        subject=subject,
+        body=body
+    )
+
+    send_mail(resource, mail)
+
+def send_reservation_denial(reservation):
+    resource = utils.get_resource_by_uuid(reservation.resource)
+
+    subject = _(u'Reservation for %(resource)s denied')
+    body = dedent("""\
+        We are sorry to inform you that the following dates for %(resource)s were
+        denied. Please get in touch with us if you have further questions.
+
+        Dates:
+        %(dates)s
+    """)
+
+    mail = ReservationMail(resource, reservation,
+        sender='bot@example.com',
+        recipient=reservation.email,
+        subject=subject,
+        body=body
+    )
 
     send_mail(resource, mail)
 
@@ -46,12 +141,11 @@ def send_mail(context, mail):
     except Exception:
         pass # TODO add logging
 
-class ReservationMail(ReservationDataView):
+class ReservationMail(ReservationDataView, ReservationUrls):
 
-    sender=u'', 
-    recipient=u'',
-    subject=u'',
-    charset=u'utf-8'
+    sender=u''
+    recipient=u''
+    subject=u''
     body=u''
 
     def __init__(self, resource, reservation, **kwargs):
@@ -100,11 +194,11 @@ class ReservationMail(ReservationDataView):
 
         # approval link
         if is_needed('approval_link'):
-            pass
+            p['approval_link'] = self.approve_all_url(reservation.token, resource)
 
         # denial links
         if is_needed('denial_link'):
-            pass
+            p['denial_link'] = self.deny_all_url(reservation.token, resource)
 
         self.parameters = p
 
