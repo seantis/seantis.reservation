@@ -25,11 +25,13 @@ def on_reservation_made(event):
 
 @grok.subscribe(IReservationApprovedEvent)
 def on_reservation_approved(event):
-    send_reservation_mail(event.reservation, 'reservation_approved')
+    if not event.reservation.autoapprovable:
+        send_reservation_mail(event.reservation, 'reservation_approved')
 
 @grok.subscribe(IReservationDeniedEvent)
 def on_reservation_denied(event):
-    send_reservation_mail(event.reservation, 'reservation_denied')
+    if not event.reservation.autoapprovable:
+        send_reservation_mail(event.reservation, 'reservation_denied')
 
 email_types = {
     'reservation_pending': _(u'Reservation Pending (Manager Notification)'),
@@ -73,8 +75,8 @@ default_contents = {
         Formdata:
         %(data)s
 
-        Please let us know if the information above is incorrect while
-        we review your reservation. Once our review is done you will
+        Please let us know if the information above is incorrect while\
+        we review your reservation. Once our review is done you will\
         receive another email.
         """)),
     ),
@@ -95,7 +97,7 @@ default_contents = {
     'reservation_approved': (
         _(u'Reservation for %(resource)s approved'),
         dedent(_(u"""\
-        We are pleased to inform you that the following dates for %(resource)s were
+        We are pleased to inform you that the following dates for %(resource)s were\
         approved and reserved for you.
 
         Dates:
@@ -106,7 +108,7 @@ default_contents = {
     'reservation_denied': (
         _(u'Reservation for %(resource)s denied'),
         dedent(_(u"""\
-        We are sorry to inform you that the following dates for %(resource)s were
+        We are sorry to inform you that the following dates for %(resource)s were\
         denied. Please get in touch with us if you have further questions.
 
         Dates:
@@ -145,7 +147,8 @@ def send_reservation_mail(reservation, email_type):
 def send_mail(context, mail):
     try:
         context.MailHost.send(mail.as_string(), immediate=True)
-    except Exception:
+    except Exception, e:
+        print e
         pass # TODO add logging
 
 class ReservationMail(ReservationDataView, ReservationUrls):
@@ -166,7 +169,7 @@ class ReservationMail(ReservationDataView, ReservationUrls):
 
         # title of the resource
         if is_needed('resource'):
-            p['resource'] = utils.get_resource_title(resource)
+            p['resource'] = utils.get_resource_title(resource.getObject())
 
         # reservation email
         if is_needed('reservation_mail'):
@@ -209,7 +212,7 @@ class ReservationMail(ReservationDataView, ReservationUrls):
 
         self.parameters = p
 
-    def mail_text(self):
+    def as_string(self):
         subject = self.subject % self.parameters
         body = self.body % self.parameters
         mail = create_email(self.sender, self.recipient, subject, body)
