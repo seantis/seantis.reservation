@@ -255,7 +255,7 @@ class AllocationGroupView(object):
         return self.event_availability(allocation)[0]
 
 class ReservationDataView(object):
-    """Mixin for reservation-data macro."""
+    """Mixin for reservation-data showing."""
 
     def sorted_info_keys(self, data):
         items = [(d[0], d[1]['values'][0]['sortkey']) for d in data.items()]
