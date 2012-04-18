@@ -11,11 +11,18 @@ from seantis.reservation.reserve import ReservationUrls
 from seantis.reservation import utils
 from seantis.reservation import _
 
-def send_reservation_pending(reservation):
-    resource = utils.get_resource_by_uuid(reservation.resource)
+email_types = {
+    'reservation_pending': _(u'Reservation Pending (Manager Notification)'),
+    'reservation_received': _(u'Reservation Recieved (To user, if approval is required)'),
+    'reservation_autoapproved': _(u'Reservation Automatically Approved'),
+    'reservation_approved': _(u'Reservation Manually Approved'),
+    'reservation_denied': _(u'Reservation Denied'),
+}
 
-    subject = _(u'New reservation for %(resource)s')
-    body = dedent("""\
+default_contents = {  
+    'reservation_pending': (
+        _(u'New reservation for %(resource)s'),
+        dedent(_(u"""\
         A new reservation was made for %(resource)s:
 
         Dates:
@@ -32,22 +39,12 @@ def send_reservation_pending(reservation):
 
         To deny this reservation:
         %(denial_link)s
-    """)
-
-    mail = ReservationMail(resource, reservation, 
-        sender='bot@example.com',
-        recipient=reservation.email,
-        subject=subject,
-        body=body
-    )
-
-    send_mail(resource, mail)
-
-def send_reservation_recieved(reservation):
-    resource = utils.get_resource_by_uuid(reservation.resource)
-
-    subject = _(u'New reservation for %(resource)s')
-    body = dedent("""\
+        """))
+    ),
+    
+    'reservation_received': (
+        _(u'New reservation for %(resource)s'),
+        dedent(_(u"""\
         We received your reservation for %(resource)s:
 
         Dates:
@@ -59,22 +56,12 @@ def send_reservation_recieved(reservation):
         Please let us know if the information above is incorrect while
         we review your reservation. Once our review is done you will
         receive another email.
-    """)
-
-    mail = ReservationMail(resource, reservation,
-        sender='bot@example.com',
-        recipient=reservation.email,
-        subject=subject,
-        body=body
-    )
-
-    send_mail(resource, mail)
-
-def send_reservation_autoapproved(reservation):
-    resource = utils.get_resource_by_uuid(reservation.resource)
-
-    subject = _(u'Reservation added to %(resource)s')
-    body = dedent("""\
+        """)),
+    ),
+    
+    'reservation_autoapproved': (
+        _(u'Reservation added to %(resource)s'),
+        dedent(_(u"""\
         Your reservation for %(resource)s was successfully added.
 
         Dates:
@@ -82,52 +69,45 @@ def send_reservation_autoapproved(reservation):
 
         Formdata:
         %(data)s
-    """)
-
-    mail = ReservationMail(resource, reservation,
-        sender='bot@example.com',
-        recipient=reservation.email,
-        subject=subject,
-        body=body
-    )
-
-    send_mail(resource, mail)
-
-def send_reservation_approved(reservation):
-    resource = utils.get_resource_by_uuid(reservation.resource)
-
-    subject = _(u'Reservation for %(resource)s approved')
-    body = dedent("""\
+        """)),
+    ),
+    
+    'reservation_approved': (
+        _(u'Reservation for %(resource)s approved'),
+        dedent(_(u"""\
         We are pleased to inform you that the following dates for %(resource)s were
         approved and reserved for you.
 
         Dates:
         %(dates)s
-    """)
+        """)),
+    ),
 
-    mail = ReservationMail(resource, reservation,
-        sender='bot@example.com',
-        recipient=reservation.email,
-        subject=subject,
-        body=body
-    )
-
-    send_mail(resource, mail)
-
-def send_reservation_denial(reservation):
-    resource = utils.get_resource_by_uuid(reservation.resource)
-
-    subject = _(u'Reservation for %(resource)s denied')
-    body = dedent("""\
+    'reservation_denied': (
+        _(u'Reservation for %(resource)s denied'),
+        dedent(_(u"""\
         We are sorry to inform you that the following dates for %(resource)s were
         denied. Please get in touch with us if you have further questions.
 
         Dates:
         %(dates)s
-    """)
+        """)),
+    ),
+}
+
+def get_email_content(context, email_type):
+    assert email_type in email_types
+
+    return default_contents[email_type]
+
+def send_reservation_mail(reservation, email_type):
+    assert email_type in email_types
+
+    resource = utils.get_resource_by_uuid(reservation.resource)
+    subject, body = get_email_content(resource, email_type)
 
     mail = ReservationMail(resource, reservation,
-        sender='bot@example.com',
+        sender='noreply@example.com',
         recipient=reservation.email,
         subject=subject,
         body=body
