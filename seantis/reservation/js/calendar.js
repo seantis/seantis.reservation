@@ -222,16 +222,16 @@ var CalendarGroups = function() {
             });
         };
 
-        var get_unix_utc = function(dt) {
-            var timestamp = Date.UTC(dt.getFullYear(),dt.getMonth(), dt.getDate() , dt.getHours(), dt.getMinutes(), dt.getSeconds(), dt.getMilliseconds());
+        var get_timestamp = function(dt) {
+            var timestamp = new Date(dt.getFullYear(),dt.getMonth(), dt.getDate() , dt.getHours(), dt.getMinutes(), dt.getSeconds(), dt.getMilliseconds());
             return timestamp / 1000;
         };
 
         // move an event
         var move_event = function(event, calendar) {
             var url = event.moveurl;
-            url += '&start=' + get_unix_utc(event.start);
-            url += '&end=' + get_unix_utc(event.end);
+            url += '&start=' + get_timestamp(event.start);
+            url += '&end=' + get_timestamp(event.end);
             
             calendar.overlay_show(url);
         };
@@ -240,8 +240,8 @@ var CalendarGroups = function() {
         var add_event = function(start, end, allDay, calendar) {
             if (!allDay) {
                 var url = calendar.addurl;
-                url += '?start=' + get_unix_utc(start);
-                url += '&end=' + get_unix_utc(end);
+                url += '?start=' + get_timestamp(start);
+                url += '&end=' + get_timestamp(end);
                 calendar.overlay_show(url);
             }
         };
