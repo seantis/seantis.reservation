@@ -89,3 +89,11 @@ class Reservation(ORMBase, OtherModels):
     @property
     def title(self):
         return self.email
+
+    @property
+    def autoapprovable(self):
+        Allocation = self.models.Allocation
+        query = self.allocations()
+        query = query.filter(Allocation.approve == True)
+
+        return query.count() == 0

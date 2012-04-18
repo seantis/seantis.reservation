@@ -5,5 +5,3 @@ from zope.i18nmessageid import MessageFactory
 _ = MessageFactory('seantis.reservation')
 
 from session import Session
-
-from mail import EmailFieldFactory, EmailFieldHandler

@@ -29,7 +29,7 @@ from seantis.reservation.error import ReservationParametersInvalid
 from seantis.reservation.error import InvalidReservationToken
 from seantis.reservation.session import serialized
 from seantis.reservation.raster import rasterize_span
-from seantis.reservation.mail import validate_email
+from seantis.reservation.interfaces import validate_email
 from seantis.reservation import utils
 from seantis.reservation import Session
     

@@ -98,6 +98,7 @@ class TestScheduler(IntegrationTestCase):
 
         # first reservation should work
         approval_token = sc.reserve(reservation_email, dates)
+        self.assertFalse(sc.reservations_by_token(approval_token).one().autoapprovable)
         self.assertTrue(allocation.is_available(start, end))
         
         # which results in a full waiting list (as the reservation is pending)
@@ -173,6 +174,7 @@ class TestScheduler(IntegrationTestCase):
 
         # reserving groups is no different than single allocations
         maintoken = sc.reserve(reservation_email, group=group)
+        self.assertFalse(sc.reservations_by_token(maintoken).one().autoapprovable)
         sc.approve_reservation(maintoken)
 
         token = sc.reserve(reservation_email, group=group)
@@ -210,7 +212,8 @@ class TestScheduler(IntegrationTestCase):
         # this time there can be only one spot in the list as long as there's
         # no reservation
 
-        token = sc.reserve(reservation_email, dates) 
+        token = sc.reserve(reservation_email, dates)
+        self.assertTrue(sc.reservations_by_token(token).one().autoapprovable)
         sc.approve_reservation(token)
 
         # it is now that we should have a problem reserving
