@@ -15,7 +15,7 @@ from plone.dexterity.utils import schemaNameToPortalType as getname
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from seantis.reservation import _, utils
 from seantis.reservation.raster import VALID_RASTER_VALUES
-from seantis.reservation.email import EmailField
+from seantis.reservation.mail import EmailField
 
 days = SimpleVocabulary(
         [SimpleTerm(value=rrule.MO, title=_(u'Mo')),

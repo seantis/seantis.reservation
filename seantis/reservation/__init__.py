@@ -6,4 +6,4 @@ _ = MessageFactory('seantis.reservation')
 
 from session import Session
 
-from email import EmailFieldFactory, EmailFieldHandler
+from mail import EmailFieldFactory, EmailFieldHandler

@@ -65,12 +65,12 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
     
 <!-- Email field registration -->
 <utility zcml:condition="installed plone.schemaeditor"
-    name="seantis.reservation.email.EmailField"
+    name="seantis.reservation.mail.EmailField"
     component=".EmailFieldFactory"
     />
     
 <utility zcml:condition="installed plone.supermodel"
-    name="seantis.reservation.email.EmailField"
+    name="seantis.reservation.mail.EmailField"
     component=".EmailFieldHandler"
     />
 
