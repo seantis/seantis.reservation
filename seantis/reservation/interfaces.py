@@ -148,6 +148,9 @@ class IResourceBase(form.Schema):
                     _(u'First hour must be smaller than last hour')
                 )                  
 
+class IResource(IResourceBase):
+    pass
+
 class IAllocation(form.Schema):
     """ An reservable time-slot within a calendar. """
 

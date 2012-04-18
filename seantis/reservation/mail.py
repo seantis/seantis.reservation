@@ -4,12 +4,32 @@ from email.MIMEText import MIMEText
 from email.Header import Header
 from email.Utils import parseaddr, formataddr
 
-
+from five import grok
+from zope.app.component.hooks import getSite 
 
 from seantis.reservation.form import ReservationDataView
 from seantis.reservation.reserve import ReservationUrls
+from seantis.reservation.interfaces import IReservationMadeEvent
+from seantis.reservation.interfaces import IReservationApprovedEvent
+from seantis.reservation.interfaces import IReservationDeniedEvent
 from seantis.reservation import utils
 from seantis.reservation import _
+
+@grok.subscribe(IReservationMadeEvent)
+def on_reservation_made(event):
+    if event.reservation.autoapprovable:
+        send_reservation_mail(event.reservation, 'reservation_autoapproved')
+    else:
+        send_reservation_mail(event.reservation, 'reservation_received')
+        send_reservation_mail(event.reservation, 'reservation_pending')
+
+@grok.subscribe(IReservationApprovedEvent)
+def on_reservation_approved(event):
+    send_reservation_mail(event.reservation, 'reservation_approved')
+
+@grok.subscribe(IReservationDeniedEvent)
+def on_reservation_denied(event):
+    send_reservation_mail(event.reservation, 'reservation_denied')
 
 email_types = {
     'reservation_pending': _(u'Reservation Pending (Manager Notification)'),
@@ -103,7 +123,14 @@ def get_email_content(context, email_type):
 def send_reservation_mail(reservation, email_type):
     assert email_type in email_types
 
-    resource = utils.get_resource_by_uuid(reservation.resource)
+    context = getSite()
+    resource = utils.get_resource_by_uuid(context, reservation.resource)
+
+    # the resource doesn't currently exist in testing so we quietly
+    # exit. This should be changed => #TODO
+    if not resource:
+        return
+
     subject, body = get_email_content(resource, email_type)
 
     mail = ReservationMail(resource, reservation,
