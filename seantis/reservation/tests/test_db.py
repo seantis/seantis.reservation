@@ -7,10 +7,9 @@ from seantis.reservation.error import OverlappingAllocationError
 from seantis.reservation.error import AffectedReservationError
 from seantis.reservation.error import AlreadyReservedError
 from seantis.reservation.error import ReservationTooLong
-from seantis.reservation.error import NotReservableError
 from seantis.reservation.error import FullWaitingList
-from seantis.reservation import utils
 from seantis.reservation.session import serialized
+from seantis.reservation import events
 
 reservation_email = u'test@example.com'
 
@@ -621,3 +620,69 @@ class TestScheduler(IntegrationTestCase):
             sc.reserve(reservation_email, (start, end))
         )
         self.assertEqual(0.0, sc.availability())
+
+    @serialized
+    def test_events(self):
+
+        # hookup test event subscribers
+        reservation_made_event = self.subscribe(events.ReservationMadeEvent)
+        reservation_approved_event = self.subscribe(events.ReservationApprovedEvent)
+        reservation_denied_event = self.subscribe(events.ReservationDeniedEvent)
+
+        self.assertFalse(reservation_made_event.was_fired())
+        self.assertFalse(reservation_approved_event.was_fired())
+        self.assertFalse(reservation_denied_event.was_fired())
+
+        # prepare reservation
+        sc = Scheduler(new_uuid())
+
+        start = datetime(2012, 2, 29, 15, 0)
+        end = datetime(2012, 2, 29, 19, 0)
+        dates = (start, end)
+
+        # do reservation
+        start = datetime(2012, 1, 1, 15, 0)
+        end = datetime(2012, 1, 1, 19, 0)
+        dates = (start, end)
+
+        sc.allocate(dates, waitinglist_spots=1)
+        token = sc.reserve(reservation_email, dates)
+        
+        self.assertTrue(reservation_made_event.was_fired())
+        self.assertEqual(reservation_made_event.event.reservation.token, token)
+
+        reservation_made_event.reset()
+
+        # do a failing reservation (=> no event)
+        try:
+            sc.reserve(reservation_email, dates)
+        except FullWaitingList:
+            pass
+
+        self.assertFalse(reservation_made_event.was_fired())
+
+        # approve it
+        sc.approve_reservation(token)
+
+        self.assertTrue(reservation_approved_event.was_fired())
+        self.assertFalse(reservation_denied_event.was_fired())
+        self.assertFalse(reservation_made_event.was_fired())
+
+        self.assertEqual(reservation_approved_event.event.reservation.token, token)
+
+        reservation_approved_event.reset()
+        reservation_denied_event.reset()
+
+        # remove the reservation and deny the next one
+        sc.remove_reservation(token)
+
+        token = sc.reserve(reservation_email, dates)
+
+        self.assertTrue(reservation_made_event.was_fired())
+
+        sc.deny_reservation(token)
+
+        self.assertFalse(reservation_approved_event.was_fired())
+        self.assertTrue(reservation_denied_event.was_fired())
+
+        self.assertEqual(reservation_denied_event.event.reservation.token, token)
