@@ -136,7 +136,9 @@ def plone_languages(context):
     def get_term(item):
         return SimpleTerm(title=item[1]['native'], value=item[0])
 
-    return SimpleVocabulary(map(get_term, _languagelist.items()))
+    terms = sorted(map(get_term, _languagelist.items()), key=lambda t: t.title)
+
+    return SimpleVocabulary(terms)
 
 def get_default_language(adapter):
     portal_languages = getToolByName(adapter.context, 'portal_languages')
