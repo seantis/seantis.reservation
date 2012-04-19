@@ -13,25 +13,33 @@ from seantis.reservation.interfaces import IReservationMadeEvent
 from seantis.reservation.interfaces import IReservationApprovedEvent
 from seantis.reservation.interfaces import IReservationDeniedEvent
 from seantis.reservation import utils
+from seantis.reservation import settings
 from seantis.reservation import _
 
 @grok.subscribe(IReservationMadeEvent)
 def on_reservation_made(event):
     if event.reservation.autoapprovable:
-        send_reservation_mail(event.reservation, 'reservation_autoapproved')
+        if settings.get('send_email_to_reservees', True):
+            send_reservation_mail(event.reservation, 'reservation_autoapproved')
     else:
-        send_reservation_mail(event.reservation, 'reservation_received')
-        send_reservation_mail(event.reservation, 'reservation_pending')
+        if settings.get('send_email_to_reservees', True):
+            send_reservation_mail(event.reservation, 'reservation_received')
+
+        if settings.get('send_email_to_managers', True):
+            send_reservation_mail(event.reservation, 'reservation_pending')
 
 @grok.subscribe(IReservationApprovedEvent)
 def on_reservation_approved(event):
+    if not settings.get('send_email_to_reservees', False):
+        return
     if not event.reservation.autoapprovable:
         send_reservation_mail(event.reservation, 'reservation_approved')
 
 @grok.subscribe(IReservationDeniedEvent)
 def on_reservation_denied(event):
-    if not event.reservation.autoapprovable:
-        send_reservation_mail(event.reservation, 'reservation_denied')
+    if not settings.get('send_email_to_reservees', False):
+        if not event.reservation.autoapprovable:
+            send_reservation_mail(event.reservation, 'reservation_denied')
 
 email_types = {
     'reservation_pending': _(u'Reservation Pending (Manager Notification)'),
