@@ -17,11 +17,13 @@ from plone.dexterity.utils import SchemaNameEncoder
 from App.config import getConfiguration
 from Acquisition import aq_inner
 from zope.component import getMultiAdapter
+from zope.component.hooks import getSite
 from zope import i18n
 from zope import interface
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.i18nl10n import weekdayname_msgid_abbr, monthname_msgid
 from z3c.form.interfaces import ActionExecutionError
+from plone.i18n.locales.languages import _languagelist
 
 from seantis.reservation import error
 from seantis.reservation import _
@@ -198,6 +200,9 @@ def translate(context, request, text, domain=None):
 
 def translate_workflow(context, request, text):
     return translate(context, request, text, domain='plone')
+
+def native_language_name(code):
+    return _languagelist[code]['native']
 
 def handle_action(action=None, success=None, message_handler=None):
     """Calls 'action' and then 'success' if everything went well or

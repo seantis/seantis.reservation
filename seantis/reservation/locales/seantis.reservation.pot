@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-04-05 13:56+0000\n"
+"POT-Creation-Date: 2012-04-19 13:39+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,27 +17,27 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: seantis.reservation\n"
 
-#: ./utils.py:308
+#: ./utils.py:326
 msgid "%i Spots Available"
 msgstr ""
 
-#: ./utils.py:324
+#: ./utils.py:342
 msgid "%i Waitinglist Spots"
 msgstr ""
 
-#: ./utils.py:301
+#: ./utils.py:319
 msgid "%i%% Free"
 msgstr ""
 
-#: ./templates/monthly_report.pt:21
+#: ./templates/monthly_report.pt:23
 msgid "&lt;&lt; Previous Month"
 msgstr ""
 
-#: ./utils.py:306
+#: ./utils.py:324
 msgid "1 Spot Available"
 msgstr ""
 
-#: ./utils.py:322
+#: ./utils.py:340
 msgid "1 Waitinglist Spot"
 msgstr ""
 
@@ -81,7 +81,7 @@ msgstr ""
 msgid "An existing reservation would be affected by the requested change"
 msgstr ""
 
-#: ./report.py:215
+#: ./report.py:235
 #: ./reserve.py:260
 #: ./templates/reservations.pt:112
 msgid "Approve"
@@ -91,24 +91,16 @@ msgstr ""
 msgid "Approve reservation"
 msgstr ""
 
-#: ./interfaces.py:197
+#: ./interfaces.py:258
 msgid "Approve reservation requests"
 msgstr ""
 
-#: ./report.py:171
+#: ./report.py:72
 msgid "Approved"
 msgstr ""
 
 #: ./templates/reservations.pt:17
 msgid "Approved Reservations"
-msgstr ""
-
-#: ./utils.py:507
-msgid "April"
-msgstr ""
-
-#: ./utils.py:511
-msgid "August"
 msgstr ""
 
 #: ./allocate.py:124
@@ -124,29 +116,25 @@ msgstr ""
 msgid "Concerned Dates"
 msgstr ""
 
-#: ./interfaces.py:37
+#: ./interfaces.py:40
 msgid "Daily"
 msgstr ""
 
-#: ./interfaces.py:158
+#: ./interfaces.py:219
 msgid "Day"
 msgstr ""
 
-#: ./interfaces.py:170
+#: ./interfaces.py:231
 msgid "Days"
 msgstr ""
 
-#: ./utils.py:515
-msgid "December"
-msgstr ""
-
 #: ./allocate.py:224
-#: ./report.py:212
+#: ./report.py:232
 #: ./reserve.py:350
 msgid "Delete"
 msgstr ""
 
-#: ./report.py:216
+#: ./report.py:236
 #: ./reserve.py:293
 #: ./templates/reservations.pt:106
 msgid "Deny"
@@ -156,8 +144,12 @@ msgstr ""
 msgid "Deny reservation"
 msgstr ""
 
-#: ./interfaces.py:75
+#: ./interfaces.py:135
 msgid "Description"
+msgstr ""
+
+#: ./templates/monthly_report.pt:26
+msgid "Details"
 msgstr ""
 
 #: ./reserve.py:258
@@ -194,16 +186,35 @@ msgstr ""
 msgid "Edit allocation"
 msgstr ""
 
-#: ./email.py:30
-#: ./interfaces.py:280
+#: ./interfaces.py:103
 msgid "Email"
 msgstr ""
 
-#: ./interfaces.py:148
+#: ./settings.py:21
+msgid "Email Notifications for Managers"
+msgstr ""
+
+#: ./settings.py:27
+msgid "Email Notifications for Reservees"
+msgstr ""
+
+#: ./interfaces.py:330
+msgid "Email Subject for Reservation Pending"
+msgstr ""
+
+#: ./profiles/default/types/seantis.reservation.emailtemplate.xml
+msgid "Email Template"
+msgstr ""
+
+#: ./interfaces.py:336
+msgid "Email Text for Reservation Pending"
+msgstr ""
+
+#: ./interfaces.py:209
 msgid "End"
 msgstr ""
 
-#: ./interfaces.py:248
+#: ./interfaces.py:310
 msgid "End date before start date"
 msgstr ""
 
@@ -211,35 +222,31 @@ msgstr ""
 msgid "Entry"
 msgstr ""
 
-#: ./utils.py:505
-msgid "February"
-msgstr ""
-
-#: ./interfaces.py:117
+#: ./interfaces.py:177
 msgid "First hour must be smaller than last hour"
 msgstr ""
 
-#: ./interfaces.py:80
+#: ./interfaces.py:140
 msgid "First hour of the day"
 msgstr ""
 
-#: ./interfaces.py:95
+#: ./interfaces.py:155
 msgid "Formsets"
 msgstr ""
 
-#: ./interfaces.py:29
+#: ./interfaces.py:32
 msgid "Fr"
 msgstr ""
 
-#: ./utils.py:299
+#: ./utils.py:317
 msgid "Free"
 msgstr ""
 
-#: ./interfaces.py:162
+#: ./interfaces.py:223
 msgid "From"
 msgstr ""
 
-#: ./utils.py:326
+#: ./utils.py:344
 msgid "Full Waitinglist"
 msgstr ""
 
@@ -255,7 +262,11 @@ msgstr ""
 msgid "General Information"
 msgstr ""
 
-#: ./interfaces.py:126
+#: ./templates/monthly_report.pt:28
+msgid "Hide"
+msgstr ""
+
+#: ./interfaces.py:187
 msgid "Id"
 msgstr ""
 
@@ -267,15 +278,15 @@ msgstr ""
 msgid "Invalid change. Your request may have already been processed earlier."
 msgstr ""
 
-#: ./email.py:16
+#: ./interfaces.py:89
 msgid "Invalid email address"
 msgstr ""
 
-#: ./interfaces.py:110
+#: ./interfaces.py:170
 msgid "Invalid first hour"
 msgstr ""
 
-#: ./interfaces.py:113
+#: ./interfaces.py:173
 msgid "Invalid last hour"
 msgstr ""
 
@@ -283,19 +294,11 @@ msgstr ""
 msgid "Invalid reservation request"
 msgstr ""
 
-#: ./utils.py:504
-msgid "January"
+#: ./interfaces.py:325
+msgid "Language"
 msgstr ""
 
-#: ./utils.py:510
-msgid "July"
-msgstr ""
-
-#: ./utils.py:509
-msgid "June"
-msgstr ""
-
-#: ./interfaces.py:85
+#: ./interfaces.py:145
 msgid "Last hour of the day"
 msgstr ""
 
@@ -303,23 +306,19 @@ msgstr ""
 msgid "List"
 msgstr ""
 
-#: ./utils.py:508
-msgid "Mai"
-msgstr ""
-
 #: ./resource.py:203
 msgid "Manage"
 msgstr ""
 
-#: ./utils.py:506
-msgid "March"
+#: ./interfaces.py:312
+msgid "May contain the following template variables:<br>%(resource)s - title of the resource<br>%(dates)s - list of dates reserved<br>%(reservation_mail)s - email of reservee<br>%(data)s - formdata associated with the reservation<br>%(approval_link)s - link to the approval view<br>%(denial_link)s - link to the denial view"
 msgstr ""
 
-#: ./interfaces.py:259
+#: ./interfaces.py:355
 msgid "Metadata"
 msgstr ""
 
-#: ./interfaces.py:25
+#: ./interfaces.py:28
 msgid "Mo"
 msgstr ""
 
@@ -327,19 +326,27 @@ msgstr ""
 msgid "Monthly Report"
 msgstr ""
 
-#: ./report.py:115
+#: ./report.py:133
 msgid "Monthly Report for ${month} ${year}"
 msgstr ""
 
-#: ./interfaces.py:71
+#: ./interfaces.py:131
 msgid "Name"
 msgstr ""
 
-#: ./templates/monthly_report.pt:21
+#: ./templates/monthly_report.pt:22
+msgid "Navigation"
+msgstr ""
+
+#: ./mail.py:48
+msgid "New reservation for %(resource)s"
+msgstr ""
+
+#: ./templates/monthly_report.pt:23
 msgid "Next Month &gt;&gt;"
 msgstr ""
 
-#: ./form.py:276
+#: ./form.py:278
 msgid "No"
 msgstr ""
 
@@ -347,7 +354,7 @@ msgstr ""
 msgid "No reservable slot found."
 msgstr ""
 
-#: ./utils.py:310
+#: ./utils.py:328
 msgid "No spots available"
 msgstr ""
 
@@ -355,31 +362,23 @@ msgstr ""
 msgid "No such reservation"
 msgstr ""
 
-#: ./utils.py:514
-msgid "November"
-msgstr ""
-
-#: ./utils.py:297
+#: ./utils.py:315
 msgid "Occupied"
 msgstr ""
 
-#: ./utils.py:513
-msgid "October"
-msgstr ""
-
-#: ./interfaces.py:36
+#: ./interfaces.py:39
 msgid "Once"
 msgstr ""
 
-#: ./interfaces.py:182
+#: ./interfaces.py:243
 msgid "Partly available"
 msgstr ""
 
-#: ./interfaces.py:229
+#: ./interfaces.py:290
 msgid "Partly available allocations can only be reserved separately"
 msgstr ""
 
-#: ./report.py:172
+#: ./report.py:71
 msgid "Pending"
 msgstr ""
 
@@ -387,15 +386,15 @@ msgstr ""
 msgid "Pending Reservations"
 msgstr ""
 
-#: ./interfaces.py:90
+#: ./interfaces.py:150
 msgid "Quota"
 msgstr ""
 
-#: ./interfaces.py:218
+#: ./interfaces.py:279
 msgid "Quota must be between 1 and 100"
 msgstr ""
 
-#: ./interfaces.py:187
+#: ./interfaces.py:248
 msgid "Raster"
 msgstr ""
 
@@ -403,7 +402,7 @@ msgstr ""
 msgid "Recurrance reservation"
 msgstr ""
 
-#: ./interfaces.py:132
+#: ./interfaces.py:193
 msgid "Recurrence"
 msgstr ""
 
@@ -427,8 +426,36 @@ msgstr ""
 msgid "Remove reservation"
 msgstr ""
 
-#: ./interfaces.py:299
+#: ./interfaces.py:397
 msgid "Reservation"
+msgstr ""
+
+#: ./interfaces.py:47
+msgid "Reservation Automatically Approved"
+msgstr ""
+
+#: ./interfaces.py:49
+msgid "Reservation Denied"
+msgstr ""
+
+#: ./interfaces.py:48
+msgid "Reservation Manually Approved"
+msgstr ""
+
+#: ./interfaces.py:45
+msgid "Reservation Pending (Manager Notification)"
+msgstr ""
+
+#: ./interfaces.py:46
+msgid "Reservation Received (to user, if approval is requred)"
+msgstr ""
+
+#: ./settings.py:15
+msgid "Reservation Throttling"
+msgstr ""
+
+#: ./mail.py:69
+msgid "Reservation added to %(resource)s"
 msgstr ""
 
 #: ./reserve.py:269
@@ -437,6 +464,14 @@ msgstr ""
 
 #: ./reserve.py:302
 msgid "Reservation denied"
+msgstr ""
+
+#: ./mail.py:82
+msgid "Reservation for %(resource)s approved"
+msgstr ""
+
+#: ./mail.py:93
+msgid "Reservation for %(resource)s denied"
 msgstr ""
 
 #: ./reserve.py:136
@@ -449,10 +484,6 @@ msgstr ""
 
 #: ./reserve.py:160
 msgid "Reservation successful"
-msgstr ""
-
-#: ./settings.py:15
-msgid "Reservation throttling"
 msgstr ""
 
 #: ./resource.py:187
@@ -476,7 +507,11 @@ msgstr ""
 msgid "Resource reservation"
 msgstr ""
 
-#: ./interfaces.py:30
+#: ./templates/monthly_report.pt:31
+msgid "Resources"
+msgstr ""
+
+#: ./interfaces.py:33
 msgid "Sa"
 msgstr ""
 
@@ -484,7 +519,7 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-#: ./settings.py:29
+#: ./settings.py:41
 msgid "Seantis Reservation Control Panel"
 msgstr ""
 
@@ -492,27 +527,43 @@ msgstr ""
 msgid "Seantis Reservation Settings"
 msgstr ""
 
-#: ./interfaces.py:176
+#: ./settings.py:28
+msgid "Send emails about made, approved and denied reservations to the user that made the reservation."
+msgstr ""
+
+#: ./settings.py:22
+msgid "Send emails about new pending reservations to the first reservation managers found in the path."
+msgstr ""
+
+#: ./interfaces.py:331
+msgid "Sent to managers when a new pending reservation is made. May contain the template variables listed below."
+msgstr ""
+
+#: ./interfaces.py:237
 msgid "Separately reservable"
 msgstr ""
 
-#: ./utils.py:512
-msgid "September"
+#: ./templates/monthly_report.pt:27
+msgid "Show"
 msgstr ""
 
-#: ./interfaces.py:144
+#: ./interfaces.py:205
 msgid "Start"
 msgstr ""
 
-#: ./interfaces.py:31
+#: ./templates/monthly_report.pt:37
+msgid "Statuses"
+msgstr ""
+
+#: ./interfaces.py:34
 msgid "Su"
 msgstr ""
 
-#: ./interfaces.py:28
+#: ./interfaces.py:31
 msgid "Th"
 msgstr ""
 
-#: ./interfaces.py:213
+#: ./interfaces.py:274
 msgid "The allocation must be at least 5 minutes long"
 msgstr ""
 
@@ -529,7 +580,7 @@ msgid "The item does no longer exist."
 msgstr ""
 
 #: ./settings.py:16
-msgid "The number of minutes a user needs to wait between reservations"
+msgid "The number of minutes a user needs to wait between reservations, use 0 if no throttling should occur."
 msgstr ""
 
 #: ./templates/remove_allocation.pt:18
@@ -560,7 +611,7 @@ msgstr ""
 msgid "Timeframe overlaps with '${overlap}' in the current folder"
 msgstr ""
 
-#: ./interfaces.py:138
+#: ./interfaces.py:199
 #: ./templates/timeframes.pt:4
 msgid "Timeframes"
 msgstr ""
@@ -569,11 +620,11 @@ msgstr ""
 msgid "Too many reservations in a short time. Wait for a moment before trying again."
 msgstr ""
 
-#: ./interfaces.py:26
+#: ./interfaces.py:29
 msgid "Tu"
 msgstr ""
 
-#: ./interfaces.py:166
+#: ./interfaces.py:227
 msgid "Until"
 msgstr ""
 
@@ -581,19 +632,44 @@ msgstr ""
 msgid "Utils"
 msgstr ""
 
-#: ./interfaces.py:202
+#: ./interfaces.py:263
 msgid "Waiting List Spots"
 msgstr ""
 
-#: ./interfaces.py:223
+#: ./interfaces.py:284
 msgid "Waitinglist length must be between the quota and 100"
 msgstr ""
 
-#: ./interfaces.py:27
+#: ./interfaces.py:30
 msgid "We"
 msgstr ""
 
-#: ./form.py:273
+#: ./form.py:275
 msgid "Yes"
+msgstr ""
+
+#. Default: "        We are pleased to inform you that the following dates for %(resource)s were        approved and reserved for you.\n\n        Dates:\n        %(dates)s\n        "
+#: ./mail.py:83
+msgid "reservation_approved"
+msgstr ""
+
+#. Default: "        Your reservation for %(resource)s was successfully added.\n\n        Dates:\n        %(dates)s\n\n        Formdata:\n        %(data)s\n        "
+#: ./mail.py:70
+msgid "reservation_autoapproved"
+msgstr ""
+
+#. Default: "        We are sorry to inform you that the following dates for %(resource)s were        denied. Please get in touch with us if you have further questions.\n\n        Dates:\n        %(dates)s\n        "
+#: ./mail.py:94
+msgid "reservation_denied"
+msgstr ""
+
+#: ./interfaces.py:338
+#: ./mail.py:48
+msgid "reservation_pending"
+msgstr ""
+
+#. Default: "        We received your reservation for %(resource)s:\n\n        Dates:\n        %(dates)s\n\n        Formdata:\n        %(data)s\n\n        Please let us know if the information above is incorrect while        we review your reservation. Once our review is done you will        receive another email.\n        "
+#: ./mail.py:53
+msgid "reservation_received"
 msgstr ""
 

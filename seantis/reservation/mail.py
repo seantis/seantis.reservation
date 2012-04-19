@@ -1,5 +1,3 @@
-from textwrap import dedent
-
 from email.MIMEText import MIMEText
 from email.Header import Header
 from email.Utils import parseaddr, formataddr
@@ -13,7 +11,7 @@ from seantis.reservation.reserve import ReservationUrls
 from seantis.reservation.interfaces import IReservationMadeEvent
 from seantis.reservation.interfaces import IReservationApprovedEvent
 from seantis.reservation.interfaces import IReservationDeniedEvent
-from seantis.reservation.interfaces import email_types
+from seantis.reservation.interfaces import default_email_contents
 from seantis.reservation import utils
 from seantis.reservation import settings
 from seantis.reservation import _
@@ -43,89 +41,19 @@ def on_reservation_denied(event):
         if not event.reservation.autoapprovable:
             send_reservation_mail(event.reservation, 'reservation_denied')
 
-default_contents = {  
-    'reservation_pending': (
-        _(u'New reservation for %(resource)s'),
-        dedent(_(u"""\
-        A new reservation was made for %(resource)s:
-
-        Dates:
-        %(dates)s
-
-        Email: 
-        %(reservation_mail)s
-        
-        Formdata: 
-        %(data)s
-
-        To approve this reservation click the following link:
-        %(approval_link)s
-
-        To deny this reservation:
-        %(denial_link)s
-        """))
-    ),
-    
-    'reservation_received': (
-        _(u'New reservation for %(resource)s'),
-        dedent(_(u"""\
-        We received your reservation for %(resource)s:
-
-        Dates:
-        %(dates)s
-
-        Formdata:
-        %(data)s
-
-        Please let us know if the information above is incorrect while\
-        we review your reservation. Once our review is done you will\
-        receive another email.
-        """)),
-    ),
-    
-    'reservation_autoapproved': (
-        _(u'Reservation added to %(resource)s'),
-        dedent(_(u"""\
-        Your reservation for %(resource)s was successfully added.
-
-        Dates:
-        %(dates)s
-
-        Formdata:
-        %(data)s
-        """)),
-    ),
-    
-    'reservation_approved': (
-        _(u'Reservation for %(resource)s approved'),
-        dedent(_(u"""\
-        We are pleased to inform you that the following dates for %(resource)s were\
-        approved and reserved for you.
-
-        Dates:
-        %(dates)s
-        """)),
-    ),
-
-    'reservation_denied': (
-        _(u'Reservation for %(resource)s denied'),
-        dedent(_(u"""\
-        We are sorry to inform you that the following dates for %(resource)s were\
-        denied. Please get in touch with us if you have further questions.
-
-        Dates:
-        %(dates)s
-        """)),
-    ),
-}
-
 class EmailTemplate(Item):
-    pass
+    def get_title(self):
+        return _(u'Email Template') + u' ' + utils.native_language_name(self.language)
+
+    def set_title(self, title):
+        pass
+
+    title = property(get_title, set_title)
 
 def get_email_content(context, email_type):
-    assert email_type in email_types
+    assert email_type in default_email_contents
 
-    return default_contents[email_type]
+    return default_email_contents[email_type]
 
 def send_reservation_mail(reservation, email_type):
 

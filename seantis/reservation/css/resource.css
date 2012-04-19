@@ -399,3 +399,14 @@ body .portalMessage {
     color: #232 !important;
     border: 1px solid #57a9cd;   
 }
+
+.portaltype-seantis-reservation-emailtemplate form textarea,
+.template-seantis\.reservation\.emailtemplate form textarea {
+    height: 200px;
+    margin-bottom: 30px;
+}
+
+.portaltype-seantis-reservation-emailtemplate form select,
+.template-seantis\.reservation\.emailtemplate form select {
+    margin-bottom: 30px;   
+}

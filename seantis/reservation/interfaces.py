@@ -1,3 +1,4 @@
+from textwrap import dedent
 from dateutil import rrule
 
 from five import grok
@@ -24,6 +25,8 @@ from z3c.form.interfaces import IAddForm
 from seantis.reservation import _, utils
 from seantis.reservation.raster import VALID_RASTER_VALUES
 
+from seantis.reservation.utils import _languagelist 
+
 days = SimpleVocabulary(
         [SimpleTerm(value=rrule.MO, title=_(u'Mo')),
          SimpleTerm(value=rrule.TU, title=_(u'Tu')),
@@ -41,14 +44,77 @@ recurrence = SimpleVocabulary(
         ]
     )
 
-email_types = SimpleVocabulary(
-        [SimpleTerm(value='reservation_pending', title=_(u'Reservation Pending (Manager Notification)')),
-         SimpleTerm(value='reservation_received', title=_(u'Reservation Received (to user, if approval is requred)')),
-         SimpleTerm(value='reservation_autoapproved', title=_(u'Reservation Automatically Approved')),
-         SimpleTerm(value='reservation_approved', title=_(u'Reservation Manually Approved')),
-         SimpleTerm(value='reservation_denied', title=_(u'Reservation Denied'))
-        ]
-    )
+default_email_contents = {  
+    'reservation_pending': (
+        _(u'New reservation for %(resource)s'),
+        dedent(_(u"""\
+        A new reservation was made for %(resource)s:
+
+        Dates:
+        %(dates)s
+
+        Email: 
+        %(reservation_mail)s
+        
+        Formdata: 
+        %(data)s
+
+        To approve this reservation click the following link:
+        %(approval_link)s
+
+        To deny this reservation:
+        %(denial_link)s
+        """))
+    ),
+    
+    'reservation_received': (
+        _(u'New reservation for %(resource)s'),
+        dedent(_(u"""\
+        We received your reservation for %(resource)s:
+
+        Dates:
+        %(dates)s
+
+        Formdata:
+        %(data)s
+
+        Please let us know if the information above is incorrect while we review your reservation. Once our review is done you will receive another email.
+        """)),
+    ),
+    
+    'reservation_autoapproved': (
+        _(u'Reservation added to %(resource)s'),
+        dedent(_(u"""\
+        Your reservation for %(resource)s was successfully added.
+
+        Dates:
+        %(dates)s
+
+        Formdata:
+        %(data)s
+        """)),
+    ),
+    
+    'reservation_approved': (
+        _(u'Reservation for %(resource)s approved'),
+        dedent(_(u"""\
+        We are pleased to inform you that the following dates for %(resource)s were approved and reserved for you.
+
+        Dates:
+        %(dates)s
+        """)),
+    ),
+
+    'reservation_denied': (
+        _(u'Reservation for %(resource)s denied'),
+        dedent(_(u"""\
+        We are sorry to inform you that the following dates for %(resource)s were denied. Please get in touch with us if you have further questions.
+
+        Dates:
+        %(dates)s
+        """)),
+    ),
+}
 
 @grok.provider(IContextSourceBinder)
 def form_interfaces(context):
@@ -67,12 +133,10 @@ def form_interfaces(context):
 
 @grok.provider(IContextSourceBinder)
 def plone_languages(context):
-    portal_languages = getToolByName(context, 'portal_languages')
-
     def get_term(item):
-        return SimpleTerm(title=item[1], value=item[0])
+        return SimpleTerm(title=item[1]['native'], value=item[0])
 
-    return SimpleVocabulary(map(get_term, portal_languages.listAvailableLanguages()))
+    return SimpleVocabulary(map(get_term, _languagelist.items()))
 
 def get_default_language(adapter):
     portal_languages = getToolByName(adapter.context, 'portal_languages')
@@ -309,34 +373,86 @@ class ITimeframe(form.Schema):
         if Timeframe.start > Timeframe.end:
             raise Invalid(_(u'End date before start date'))
 
-class IEmailTemplate(form.Schema):
-    """ An email template used for custom email messages """
-
-    email_type = schema.Choice(
-        title=_(u'Type'),
-        vocabulary=email_types,
-        )
-
-    language = schema.Choice(
-            title=_(u'Language'),
-            source = plone_languages
-        )
-
-    subect = schema.TextLine(
-        title=_(u'Email Subject'),
-        description=_(u'May contain the template variables listed below')
-        )
-
-    content = schema.Text(
-        title=_(u'Email Text'),
-        description=_(u'May contain the following template variables:<br>'
+template_variables = _(u'May contain the following template variables:<br>'
                       u'%(resource)s - title of the resource<br>'
                       u'%(dates)s - list of dates reserved<br>'
                       u'%(reservation_mail)s - email of reservee<br>'
                       u'%(data)s - formdata associated with the reservation<br>'
                       u'%(approval_link)s - link to the approval view<br>'
                       u'%(denial_link)s - link to the denial view'
-                     )
+                    )
+
+class IEmailTemplate(form.Schema):
+    """ An email template used for custom email messages """
+
+    language = schema.Choice(
+        title=_(u'Language'),
+        source = plone_languages
+        )
+
+    reservation_pending_subject = schema.TextLine(
+        title=_(u'Email Subject for Reservation Pending'),
+        description=_(u'Sent to <b>managers</b> when a new pending reservation is made. '
+                      u'May contain the template variables listed below.'),
+        default=default_email_contents['reservation_pending'][0]
+        )
+
+    reservation_pending_content = schema.Text(
+        title=_(u'Email Text for Reservation Pending'),
+        description=template_variables,
+        default=default_email_contents['reservation_pending'][1]
+        )
+
+    reservation_received_subject = schema.TextLine(
+        title=_(u'Email Subject for Received Reservations'),
+        description=_(u'Sent to <b>users</b> when a new pending reservation is made. '
+                      u'May contain the template variables listed below.'),
+        default=default_email_contents['reservation_received'][0]
+        )
+
+    reservation_received_content = schema.Text(
+        title=_(u'Email Text for Received Reservations'),
+        description=template_variables,
+        default=default_email_contents['reservation_received'][1]
+        )
+
+    reservation_autoapproved_subject = schema.TextLine(
+        title=_(u'Email Subject for Automatically Approved Reservations'),
+        description=_(u'Sent to <b>users</b> when a new reservation is made. '
+                      u'May contain the template variables listed below.'),
+        default=default_email_contents['reservation_autoapproved'][0]
+        )
+
+    reservation_autoapproved_content = schema.Text(
+        title=_(u'Email Text for Automatically Approved Reservations'),
+        description=template_variables,
+        default=default_email_contents['reservation_autoapproved'][1]
+        )
+
+    reservation_approved_subject = schema.TextLine(
+        title=_(u'Email Subject for Approved Reservations'),
+        description=_(u'Sent to <b>users</b> when a reservation is approved. '
+                      u'May contain the template variables listed below.'),
+        default=default_email_contents['reservation_approved'][0]
+        )
+
+    reservation_approved_content = schema.Text(
+        title=_(u'Email Text for Approved Reservations'),
+        description=template_variables,
+        default=default_email_contents['reservation_approved'][1]
+        )
+
+    reservation_denied_subject = schema.TextLine(
+        title=_(u'Email Subject for Denied Reservations'),
+        description=_(u'Sent to <b>users</b> when a reservation is denied. '
+                      u'May contain the template variables listed below.'),
+        default=default_email_contents['reservation_denied'][0]
+        )
+
+    reservation_denied_content = schema.Text(
+        title=_(u'Email Text for Denied Reservations'),
+        description=template_variables,
+        default=default_email_contents['reservation_denied'][1]
         )
 
 DefaultLanguage = widget.ComputedWidgetAttribute(
