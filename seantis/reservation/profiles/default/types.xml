@@ -1,4 +1,5 @@
 <object name="portal_types">
     <object name="seantis.reservation.resource" meta_type="Dexterity FTI" />
     <object name="seantis.reservation.timeframe" meta_type="Dexterity FTI" />
+    <object name="seantis.reservation.emailtemplate" meta_type="Dexterity FTI" />
 </object>

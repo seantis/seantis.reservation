@@ -7,7 +7,9 @@ from zope.interface import Interface, invariant, Invalid, Attribute
 from zope.component import getAllUtilitiesRegisteredFor as getallutils
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+from zope.component.hooks import getSite
 
+from Products.CMFCore.utils import getToolByName
 from Products.CMFDefault.utils import checkEmailAddress
 from Products.CMFDefault.exceptions import EmailAddressInvalid
 
@@ -16,6 +18,9 @@ from plone.dexterity.interfaces import IDexterityFTI
 from plone.dexterity.utils import schemaNameToPortalType as getname
 
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
+from z3c.form.browser.select import SelectFieldWidget
+from z3c.form import widget, field
+from z3c.form.interfaces import IAddForm
 from seantis.reservation import _, utils
 from seantis.reservation.raster import VALID_RASTER_VALUES
 
@@ -36,6 +41,15 @@ recurrence = SimpleVocabulary(
         ]
     )
 
+email_types = SimpleVocabulary(
+        [SimpleTerm(value='reservation_pending', title=_(u'Reservation Pending (Manager Notification)')),
+         SimpleTerm(value='reservation_received', title=_(u'Reservation Received (to user, if approval is requred)')),
+         SimpleTerm(value='reservation_autoapproved', title=_(u'Reservation Automatically Approved')),
+         SimpleTerm(value='reservation_approved', title=_(u'Reservation Manually Approved')),
+         SimpleTerm(value='reservation_denied', title=_(u'Reservation Denied'))
+        ]
+    )
+
 @grok.provider(IContextSourceBinder)
 def form_interfaces(context):
     """ Used as a source for a vocabulary this function returns a vocabulary
@@ -50,6 +64,21 @@ def form_interfaces(context):
         return SimpleTerm(title=item[0], value=getname(item[1].__name__))
 
     return SimpleVocabulary(map(get_term, interfaces))
+
+@grok.provider(IContextSourceBinder)
+def plone_languages(context):
+    portal_languages = getToolByName(context, 'portal_languages')
+
+    def get_term(item):
+        return SimpleTerm(title=item[1], value=item[0])
+
+    return SimpleVocabulary(map(get_term, portal_languages.listAvailableLanguages()))
+
+def get_default_language(adapter):
+    portal_languages = getToolByName(adapter.context, 'portal_languages')
+    langs = portal_languages.getSupportedLanguages()
+
+    return langs and langs[0] or u'en'
 
 # TODO -> Move this to a separate module as it is also used in seantis.dir.base
 def validate_email(value):
@@ -279,6 +308,40 @@ class ITimeframe(form.Schema):
     def isValidDateRange(Timeframe):
         if Timeframe.start > Timeframe.end:
             raise Invalid(_(u'End date before start date'))
+
+class IEmailTemplate(form.Schema):
+    """ An email template used for custom email messages """
+
+    email_type = schema.Choice(
+        title=_(u'Type'),
+        vocabulary=email_types,
+        )
+
+    language = schema.Choice(
+            title=_(u'Language'),
+            source = plone_languages
+        )
+
+    subect = schema.TextLine(
+        title=_(u'Email Subject'),
+        description=_(u'May contain the template variables listed below')
+        )
+
+    content = schema.Text(
+        title=_(u'Email Text'),
+        description=_(u'May contain the following template variables:<br>'
+                      u'%(resource)s - title of the resource<br>'
+                      u'%(dates)s - list of dates reserved<br>'
+                      u'%(reservation_mail)s - email of reservee<br>'
+                      u'%(data)s - formdata associated with the reservation<br>'
+                      u'%(approval_link)s - link to the approval view<br>'
+                      u'%(denial_link)s - link to the denial view'
+                     )
+        )
+
+DefaultLanguage = widget.ComputedWidgetAttribute(
+    get_default_language, field=IEmailTemplate['language']
+)
 
 class IReservation(Interface):
     """ A reservation of an allocation (may be pending or approved). """

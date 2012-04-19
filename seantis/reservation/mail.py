@@ -6,12 +6,14 @@ from email.Utils import parseaddr, formataddr
 
 from five import grok
 from zope.app.component.hooks import getSite 
+from plone.dexterity.content import Item
 
 from seantis.reservation.form import ReservationDataView
 from seantis.reservation.reserve import ReservationUrls
 from seantis.reservation.interfaces import IReservationMadeEvent
 from seantis.reservation.interfaces import IReservationApprovedEvent
 from seantis.reservation.interfaces import IReservationDeniedEvent
+from seantis.reservation.interfaces import email_types
 from seantis.reservation import utils
 from seantis.reservation import settings
 from seantis.reservation import _
@@ -40,14 +42,6 @@ def on_reservation_denied(event):
     if not settings.get('send_email_to_reservees', False):
         if not event.reservation.autoapprovable:
             send_reservation_mail(event.reservation, 'reservation_denied')
-
-email_types = {
-    'reservation_pending': _(u'Reservation Pending (Manager Notification)'),
-    'reservation_received': _(u'Reservation Recieved (To user, if approval is required)'),
-    'reservation_autoapproved': _(u'Reservation Automatically Approved'),
-    'reservation_approved': _(u'Reservation Manually Approved'),
-    'reservation_denied': _(u'Reservation Denied'),
-}
 
 default_contents = {  
     'reservation_pending': (
@@ -125,13 +119,15 @@ default_contents = {
     ),
 }
 
+class EmailTemplate(Item):
+    pass
+
 def get_email_content(context, email_type):
     assert email_type in email_types
 
     return default_contents[email_type]
 
 def send_reservation_mail(reservation, email_type):
-    assert email_type in email_types
 
     context = getSite()
     resource = utils.get_resource_by_uuid(context, reservation.resource)
