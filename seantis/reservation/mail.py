@@ -29,7 +29,7 @@ def on_reservation_made(event):
             send_reservation_mail(event.reservation, 'reservation_received', event.language)
 
         if settings.get('send_email_to_managers', True):
-            send_reservation_mail(event.reservation, 'reservation_pending', event.language)
+            send_reservation_mail(event.reservation, 'reservation_pending', event.language, to_managers=True)
 
 @grok.subscribe(IReservationApprovedEvent)
 def on_reservation_approved(event):
@@ -41,8 +41,9 @@ def on_reservation_approved(event):
 @grok.subscribe(IReservationDeniedEvent)
 def on_reservation_denied(event):
     if not settings.get('send_email_to_reservees', False):
-        if not event.reservation.autoapprovable:
-            send_reservation_mail(event.reservation, 'reservation_denied', event.language)
+        return
+    if not event.reservation.autoapprovable:
+        send_reservation_mail(event.reservation, 'reservation_denied', event.language)
 
 class EmailTemplate(Item):
     def get_title(self):
@@ -53,7 +54,47 @@ class EmailTemplate(Item):
 
     title = property(get_title, set_title)
 
-def send_reservation_mail(reservation, email_type, language):
+def get_managers_by_context(context):
+    managers = context.users_with_local_role('Reservation-Manager')
+    
+    if managers:
+        return managers
+
+    if not hasattr(context, 'portal_type'):
+        return []
+
+    if context.portal_type == 'Plone Site':
+        return []
+
+    return get_managers_by_context(context.aq_inner.aq_parent)
+
+def get_manager_emails_by_context(context):
+    managers = get_managers_by_context(context.getObject())
+    
+    if not managers:
+        return []
+
+    acl = utils.getToolByName(context, 'acl_users')
+    groups = acl.source_groups.getGroupIds()
+
+    # remove the groups and replace them with users
+    users = []
+    for man in managers:
+        if man in groups:
+            users.extend(acl.source_groups.getGroupById(man).getMemberIds())
+        else:
+            users.append(man)
+
+    users = set(users)
+
+    # go through the users and get their emails
+    emails = []
+    for user in users:
+        emails.append(acl.getUserById(user).getProperty('email'))
+
+    return emails
+    
+def send_reservation_mail(reservation, email_type, language, to_managers=False):
 
     context = getSite()
     resource = utils.get_resource_by_uuid(context, reservation.resource)
@@ -70,16 +111,25 @@ def send_reservation_mail(reservation, email_type, language):
         logging.warn('Cannot send email as no sender is configured')
         return
 
+    if to_managers:
+        recipients = [get_manager_emails_by_context(resource)]
+        if not recipients:
+            logger.warn("Couldn't find a manager to send an email to")
+        return
+    else:
+        recipients = [reservation.email]
+
     subject, body = templates[email_type].get(language)
 
-    mail = ReservationMail(resource, reservation,
-        sender=sender,
-        recipient=reservation.email,
-        subject=subject,
-        body=body
-    )
+    for recipient in recipients:
+        mail = ReservationMail(resource, reservation,
+            sender=sender,
+            recipient=recipient,
+            subject=subject,
+            body=body
+        )
 
-    send_mail(resource, mail)
+        send_mail(resource, mail)
 
 def send_mail(context, mail):
     try:
@@ -112,7 +162,7 @@ class ReservationMail(ReservationDataView, ReservationUrls):
 
         # reservation email
         if is_needed('reservation_mail'):
-            p['reservation_mail'] = self.recipient
+            p['reservation_mail'] = reservation.email
 
         # a list of dates
         if is_needed('dates'):

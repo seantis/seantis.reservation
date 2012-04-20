@@ -746,7 +746,6 @@ class Scheduler(object):
         if not query.count():
             raise InvalidReservationToken
 
-
         reservation = query.one()
         query.delete();
 
