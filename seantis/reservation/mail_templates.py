@@ -1,4 +1,5 @@
 import logging
+import codecs
 from os import path
 
 logger = logging.getLogger('seantis.reservation')
@@ -20,7 +21,7 @@ class MailTemplate(object):
         return path.exists(get_filename(self.key, language))
 
     def load_language(self, language):
-        with open(get_filename(self.key, language)) as f:
+        with codecs.open(get_filename(self.key, language), "r", "utf-8") as f:
             self.templates[language] = self.parse_file(f)
 
         return self.templates[language]
