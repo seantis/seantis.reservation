@@ -78,7 +78,7 @@ def get_managers_by_context(context):
 
 def get_manager_emails_by_context(context):
     managers = get_managers_by_context(context)
-    
+
     if not managers:
         return []
 
@@ -138,10 +138,10 @@ def send_reservation_mail(reservation, email_type, language, to_managers=False):
     resource = resource.getObject()
 
     if to_managers:
-        recipients = [get_manager_emails_by_context(resource)]
+        recipients = get_manager_emails_by_context(resource)
         if not recipients:
             logger.warn("Couldn't find a manager to send an email to")
-        return
+            return
     else:
         recipients = [reservation.email]
 
