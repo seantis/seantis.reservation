@@ -99,8 +99,10 @@ class TimeframeViewlet(grok.Viewlet):
     grok.context(form.Schema)
     grok.require(permission)
     
-    grok.name('seantis.reservation.TimeframeViewlet')
+    grok.name('seantis.reservation.timeframeviewlet')
     grok.viewletmanager(OverviewletManager)
+
+    grok.order(3)
 
     _template = grok.PageTemplateFile('templates/timeframes.pt')
 

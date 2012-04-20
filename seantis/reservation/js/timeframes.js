@@ -21,6 +21,6 @@
             }
         };
 
-        reservation_overlay_init($('#timeframes').find('a'), options);
+        reservation_overlay_init($('#timeframes, #email_templates').find('a'), options);
     });
 })(jQuery);

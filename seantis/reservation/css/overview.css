@@ -77,29 +77,35 @@
     padding-left: 25px;
 }
 
+#email_templates h2, 
 #timeframes h2 {
     margin-top: 15px;   
 }
 
+#email_templates div.resourceTitle, 
 #timeframes div.resourceTitle {
     font-size: 1.3em;
 }
 
+.templates-control,
 .timeframes-control {
     margin-left: 10px;
     margin-top: 5px;  
 }
 
+.templates-control a,
 .timeframes-control a {
     margin-right: 3px;   
     font-size: 1.1em;
 }
 
+.templates-global-control:before,
 .timeframes-global-control:before{
     content: '>>';
     margin-left: 10px;  
 }
 
+.templates-global-control, 
 .timeframes-global-control {
     margin-top: 15px;
     padding-left: 10px;

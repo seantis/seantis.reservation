@@ -1,19 +1,27 @@
 import logging
 logger = logging.getLogger('seantis.reservation')
 
+from five import grok
+
 from email.MIMEText import MIMEText
 from email.Header import Header
 from email.Utils import parseaddr, formataddr
 
-from five import grok
 from zope.app.component.hooks import getSite 
 from plone.dexterity.content import Item
+from plone.directives import form, dexterity
+from plone.app.layout.viewlets.interfaces import IBelowContentBody
+from plone.memoize import view
+from Products.CMFCore.utils import getToolByName
+from z3c.form import button
 
 from seantis.reservation.form import ReservationDataView
 from seantis.reservation.reserve import ReservationUrls
 from seantis.reservation.interfaces import IReservationMadeEvent
 from seantis.reservation.interfaces import IReservationApprovedEvent
 from seantis.reservation.interfaces import IReservationDeniedEvent
+from seantis.reservation.interfaces import OverviewletManager
+from seantis.reservation.interfaces import IEmailTemplate
 from seantis.reservation.mail_templates import templates
 from seantis.reservation import utils
 from seantis.reservation import settings
@@ -243,3 +251,104 @@ def create_email(sender, recipient, subject, body):
     msg['Subject'] = Header(unicode(subject), header_charset)
 
     return msg
+
+# The following is quite similar to the timeframe.py stuff
+# surely this can be merged somewhat => #TODO
+
+def validate_template(context, request, data):
+    if context.portal_type == 'seantis.reservation.emailtemplate':
+        folder = context.aq_inner.aq_parent
+    else:
+        folder = context
+    
+    templates = utils.portal_type_in_context(
+        folder, portal_type='seantis.reservation.emailtemplate'
+    )
+
+    duplicate = False
+
+    for template in templates:
+        if template.id == context.id:
+            continue
+
+        if template.getObject().title == context.title:
+            duplicate = True
+            break
+
+    if duplicate:
+        msg = utils.translate(context, request, 
+            _(u"There's already an Email template in the same folder for the same language")
+        )
+        utils.form_error(msg)
+
+class TemplateAddForm(dexterity.AddForm):
+
+    permission = 'cmf.AddPortalContent'
+
+    grok.context(IEmailTemplate)
+    grok.require(permission)
+
+    grok.name('seantis.reservation.emailtemplate')
+
+    @button.buttonAndHandler(_('Save'), name='save')
+    def handleAdd(self, action):
+        data, errors = self.extractData()
+        validate_template(self.context, self.request, data)
+        dexterity.AddForm.handleAdd(self, action)
+
+class TemplateEditForm(dexterity.EditForm):
+
+    permission = 'cmf.ModifyPortalContent'
+
+    grok.context(IEmailTemplate)
+    grok.require(permission)
+
+    @button.buttonAndHandler(_(u'Save'), name='save')
+    def handleApply(self, action):
+        data, errors = self.extractData()
+        validate_template(self.context, self.request, data)
+        dexterity.EditForm.handleApply(self, action)
+
+class TemplatesViewlet(grok.Viewlet):
+
+    permission = 'cmf.ModifyPortalContent'
+
+    grok.context(form.Schema)
+    grok.require(permission)
+
+    grok.name('seantis.reservation.mailviewlet')
+    grok.viewletmanager(OverviewletManager)
+
+    grok.order(4)
+
+    _template = grok.PageTemplateFile('templates/email_templates.pt')
+
+    @view.memoize
+    def templates(self):
+        templates = [t.getObject() for t in utils.portal_type_in_context(
+            self.context, portal_type='seantis.reservation.emailtemplate'
+        )]
+        return sorted(templates, key=lambda t: t.title)
+
+    def links(self, template=None):
+
+        # global links
+        if not template:
+            baseurl = self.context.absolute_url()
+            return [(_(u'Add email template'),
+                baseurl + '/++add++seantis.reservation.emailtemplate')]
+
+        # template specific links
+        links = []
+        
+        baseurl = template.absolute_url()
+        links.append((_(u'Edit'), baseurl + '/edit'))
+        links.append((_(u'Delete'), baseurl + '/delete_confirmation'))
+        
+        return links
+
+    def render(self, **kwargs):
+        if self.context == None:
+            return u''
+        
+        return self._template.render(self)

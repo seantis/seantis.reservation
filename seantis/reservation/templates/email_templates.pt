@@ -1,0 +1,21 @@
+<div xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="seantis.reservation" tal:condition="viewlet/templates">
+    
+    <div id="email_templates">
+        <h2 i18n:translate="">Email Templates</h2>
+        
+        <div>
+            <div class="resourceItem" tal:repeat="template viewlet/templates">
+                <div class="resourceTitle" tal:content="template/title"></div>
+                <div style="clear:both;"></div>
+                <div class="templates-control">
+                    <a tal:repeat="link python: viewlet.links(template)" tal:attributes="href python: link[1]" tal:content="python: link[0]"></a>
+                </div>
+               
+            </div>
+        </div>
+
+        <div class="templates-global-control">
+            <a class="resourceTitle" style="float: none;" tal:repeat="link viewlet/links" tal:attributes="href python: link[1]" tal:content="python: link[0]"></a>
+        </div>
+    </div>
+</div>

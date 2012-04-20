@@ -17,6 +17,7 @@ class Overviewlet(grok.Viewlet):
     grok.name('seantis.reservation.overviewlet')
     grok.require('zope2.View')
     grok.viewletmanager(OverviewletManager)
+    grok.order(1)
 
     overview_id = "seantis-overview-calendar";
 
@@ -128,6 +129,8 @@ class Utilsviewlet(grok.Viewlet):
     grok.name('seantis.reservation.utilslet')
     grok.require('zope2.View')
     grok.viewletmanager(OverviewletManager)
+
+    grok.order(2)
 
     template = grok.PageTemplateFile('templates/utils.pt')
 
