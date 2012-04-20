@@ -1,0 +1,18 @@
+Neue Reservation für %(resource)s
+=================================
+Eine neue Reservation für %(resource)s wurde erfasst:
+
+Daten:
+%(dates)s
+
+Email:
+%(reservation_mail)s
+
+Formulardaten:
+%(data)s
+
+Um die Reservation anzunehmen klicken Sie bitten den folgenden Link:
+%(approval_link)s
+
+Um die Reservation abzulehnen:
+%(denial_link)s

@@ -1,0 +1,6 @@
+Reservation für %(resource)s Zugelassen
+=======================================
+Es freut uns Ihnen mitzuteilen dass die folgenden Daten für %(resource)s zugelassen und für Sie reserviert wurden.
+
+Daten:
+%(dates)s

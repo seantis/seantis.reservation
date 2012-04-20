@@ -1,0 +1,11 @@
+Neue Reservation für %(resource)s
+=================================
+Wir haben Ihre Reservation für %(resource)s erhalten:
+
+Daten:
+%(dates)s
+
+Formulardaten:
+%(data)s
+
+Bitte teilen Sie uns mit wenn Ihre Informatione inkorrekt sind. Wir werden in der Zwischenzeit Ihre Reservaiton prüfen und Ihnen nach unserer Entscheidung eine weitere Email senden.

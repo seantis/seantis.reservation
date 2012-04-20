@@ -1,0 +1,6 @@
+Reservation für %(resource)s Abgelehnt
+======================================
+Es tut uns leid Ihnen mitzuteilen dass die folgenden Daten für %(resource)s abgelehnt wurden. Bitte nehmen Sie Kontakt mit uns auf wenn Sie Fragen haben.
+
+Daten:
+%(dates)s
