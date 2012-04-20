@@ -77,7 +77,7 @@ def get_managers_by_context(context):
     return get_managers_by_context(context.aq_inner.aq_parent)
 
 def get_manager_emails_by_context(context):
-    managers = get_managers_by_context(context.getObject())
+    managers = get_managers_by_context(context)
     
     if not managers:
         return []
@@ -101,6 +101,22 @@ def get_manager_emails_by_context(context):
         emails.append(acl.getUserById(user).getProperty('email'))
 
     return emails
+
+def get_email_content(context, email_type, language):
+    user_templates = utils.portal_type_by_context(
+        context, portal_type='seantis.reservation.emailtemplate'
+    )
+
+    for t in user_templates:
+        if t.language != language:
+            continue
+
+        subject = getattr(t, email_type + '_subject')
+        body = getattr(t, email_type + '_content')
+
+        return subject, body
+
+    return templates[email_type].get(language)
     
 def send_reservation_mail(reservation, email_type, language, to_managers=False):
 
@@ -119,6 +135,8 @@ def send_reservation_mail(reservation, email_type, language, to_managers=False):
         logging.warn('Cannot send email as no sender is configured')
         return
 
+    resource = resource.getObject()
+
     if to_managers:
         recipients = [get_manager_emails_by_context(resource)]
         if not recipients:
@@ -127,7 +145,7 @@ def send_reservation_mail(reservation, email_type, language, to_managers=False):
     else:
         recipients = [reservation.email]
 
-    subject, body = templates[email_type].get(language)
+    subject, body = get_email_content(resource, email_type, language)
 
     for recipient in recipients:
         mail = ReservationMail(resource, reservation,
@@ -161,8 +179,6 @@ class ReservationMail(ReservationDataView, ReservationUrls):
 
         p = dict()
         is_needed = lambda key: key in self.subject or key in self.body
-
-        resource = resource.getObject()
 
         # title of the resource
         if is_needed('resource'):
