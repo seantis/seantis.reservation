@@ -127,7 +127,7 @@ class ReservationMail(ReservationDataView, ReservationUrls):
 
                 lines.append(interface['desc'])
                 for value in self.sorted_values(interface['values']):
-                    lines.append('\t' + self.display_info(value['value']))
+                    lines.append('\t' + value['desc'] + ': '+ self.display_info(value['value']))
 
 
             p['data'] = '\n'.join(lines)
