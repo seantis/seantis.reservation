@@ -1,3 +1,6 @@
+import logging
+logger = logging.getLogger('seantis.reservation')
+
 from email.MIMEText import MIMEText
 from email.Header import Header
 from email.Utils import parseaddr, formataddr
@@ -58,12 +61,19 @@ def send_reservation_mail(reservation, email_type, language):
     # the resource doesn't currently exist in testing so we quietly
     # exit. This should be changed => #TODO
     if not resource:
+        logging.warn('Cannot send email as the resource does not exist')
+        return
+
+    sender = utils.get_site_email_sender()
+
+    if not sender:
+        logging.warn('Cannot send email as no sender is configured')
         return
 
     subject, body = templates[email_type].get(language)
 
     mail = ReservationMail(resource, reservation,
-        sender='noreply@example.com',
+        sender=sender,
         recipient=reservation.email,
         subject=subject,
         body=body

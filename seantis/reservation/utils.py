@@ -193,6 +193,24 @@ def get_current_site_language():
 
     return langs and langs[0] or u'en'
 
+def get_site_email_sender():
+    """Returns the default sender of emails of the current site in the
+    following format: 'sendername<sender@domain>'.
+
+    """
+
+    site = getSite()
+    address = site.getProperty('email_from_address')
+    name = site.getProperty('email_from_name')
+
+    if not address:
+        return None
+
+    if name:
+        return '%s<%s>' % (name, address)
+    else:
+        return address
+
 
 def translator(context, request):
     """Returns a function which takes a single string and translates it using
