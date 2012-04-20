@@ -1,0 +1,11 @@
+New Reservation for %(resource)s
+================================
+We received your reservation for %(resource)s:
+
+Dates:
+%(dates)s
+
+Formdata:
+%(data)s
+
+Please let us know if the information above is incorrect while we review your reservation. Once our review is done you will receive another email.

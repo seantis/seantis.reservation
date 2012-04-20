@@ -1,0 +1,6 @@
+Reservation for %(resource)s Denied
+===================================
+We are sorry to inform you that the following dates for %(resource)s were denied. Please get in touch with us if you have further questions.
+
+Dates:
+%(dates)s

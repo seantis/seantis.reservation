@@ -1,0 +1,18 @@
+New Reservation for %(resource)s
+================================
+A new reservation was made for %(resource)s:
+
+Dates:
+%(dates)s
+
+Email:
+%(reservation_mail)s
+
+Form data:
+%(data)s
+
+To approve this reservation click the following link:
+%(approval_link)s
+
+To deny this reservation:
+%(denial_link)s
