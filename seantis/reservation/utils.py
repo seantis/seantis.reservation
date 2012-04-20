@@ -562,3 +562,48 @@ def weekdayname_abbr(context, request, day):
     assert (1 <= day and day <= 7)
     msgid = weekdayname_msgid_abbr(day)
     return translate(context, request, msgid, 'plonelocales')
+
+def portal_type_in_context(context, portal_type):
+    """Returns the given portal types _within_ the current context."""
+    path = '/'.join(context.getPhysicalPath())
+
+    catalog = getToolByName(context, 'portal_catalog')
+    results = catalog(
+            portal_type = portal_type,
+            path={'query': path, 'depth': 1}
+        )
+    return results
+
+def portal_type_by_context(context, portal_type):
+    """Returns the given portal_type _for_ the current context. Portal types 
+    for a context are required by traversing up the acquisition context.
+
+    """
+
+    # As this code is used for backend stuff that needs to be callable for
+    # every user the idea is to do an unrestricted traverse.
+
+    # Calling unrestrictedTraverse first seems to work with the supposedly
+    # restricted catalog.
+
+    if hasattr(context, 'getPath'):
+        path = context.getPath()
+    else:
+        path = context.getPhysicalPath()
+    
+    context = context.aq_inner.unrestrictedTraverse(path)
+
+    def traverse(context, portal_type):
+        frames = portal_type_in_context(context, portal_type)
+        if frames:
+            return [f.getObject() for f in frames]
+        else:
+            if not hasattr(context, 'portal_type'):
+                return []
+            if context.portal_type == 'Plone Site':
+                return []
+            
+            parent = context.aq_inner.aq_parent
+            return traverse(parent, portal_type)
+
+    return traverse(context, portal_type)

@@ -39,51 +39,10 @@ def validate_timeframe(context, request, data):
         utils.form_error(msg)
 
 def timeframes_in_context(context):
-    """Returns the timeframes _within_ the current context."""
-    path = '/'.join(context.getPhysicalPath())
-
-    catalog = getToolByName(context, 'portal_catalog')
-    results = catalog(
-            portal_type = 'seantis.reservation.timeframe',
-            path={'query': path, 'depth': 1}
-        )
-    return results
+    return utils.portal_type_in_context(context, 'seantis.reservation.timeframe')
 
 def timeframes_by_context(context):
-    """Returns the timeframes _for_ the current context. Timeframes for a context
-    are required by traversing up the acquisition context.
-
-    """
-
-    # The timeframes need to be discovered for all users to ensure
-    # that they can be used for hiding allocations.
-    # Unfortunately this is not that easy to do as all folders need to
-    # be traversed unrestricted.
-    # Calling unrestrictedTraverse first seems to work with the supposedly
-    # restricted catalog, but I'm not too sure about this at this point.
-    # I have to test this more and maybe rewrite the whole timeframe acquiring
-    # routines. => #TODO
-    if hasattr(context, 'getPath'):
-        path = context.getPath()
-    else:
-        path = context.getPhysicalPath()
-    
-    context = context.aq_inner.unrestrictedTraverse(path)
-
-    def traverse(context):
-        frames = timeframes_in_context(context)
-        if frames:
-            return [f.getObject() for f in frames]
-        else:
-            if not hasattr(context, 'portal_type'):
-                return []
-            if context.portal_type == 'Plone Site':
-                return []
-            
-            parent = context.aq_inner.aq_parent
-            return traverse(parent)
-
-    return traverse(context)
+    return utils.portal_type_by_context(context, 'seantis.reservation.timeframe')
 
 def timeframes_by_uuid(context, uuid):
     return timeframes_by_context(utils.get_resource_by_uuid(context, uuid))
