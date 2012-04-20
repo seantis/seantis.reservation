@@ -179,10 +179,20 @@ def dictionary_to_namedtuple(dictionary):
     return namedtuple('GenericDict', dictionary.keys())(**dictionary)
 
 def get_current_language(context, request):
-    """Returns the current language"""
+    """Returns the current language of the request"""
     context = aq_inner(context)
     portal_state = getMultiAdapter((context, request), name=u'plone_portal_state')
     return portal_state.language()
+
+def get_current_site_language():
+    """Returns the current language of the current site"""
+
+    context = getSite()
+    portal_languages = getToolByName(context, 'portal_languages')
+    langs = portal_languages.getSupportedLanguages()
+
+    return langs and langs[0] or u'en'
+
 
 def translator(context, request):
     """Returns a function which takes a single string and translates it using

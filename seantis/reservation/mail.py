@@ -11,7 +11,7 @@ from seantis.reservation.reserve import ReservationUrls
 from seantis.reservation.interfaces import IReservationMadeEvent
 from seantis.reservation.interfaces import IReservationApprovedEvent
 from seantis.reservation.interfaces import IReservationDeniedEvent
-from seantis.reservation.interfaces import default_email_contents
+from seantis.reservation.mail_templates import templates
 from seantis.reservation import utils
 from seantis.reservation import settings
 from seantis.reservation import _
@@ -50,11 +50,6 @@ class EmailTemplate(Item):
 
     title = property(get_title, set_title)
 
-def get_email_content(context, email_type):
-    assert email_type in default_email_contents
-
-    return default_email_contents[email_type]
-
 def send_reservation_mail(reservation, email_type):
 
     context = getSite()
@@ -65,7 +60,10 @@ def send_reservation_mail(reservation, email_type):
     if not resource:
         return
 
-    subject, body = get_email_content(resource, email_type)
+    # awwh, I need the request here, must change it so that emails can be
+    # sent with the language set in the current request => #TODO
+    language = utils.get_current_site_language()
+    subject, body = templates[email_type].get(language)
 
     mail = ReservationMail(resource, reservation,
         sender='noreply@example.com',

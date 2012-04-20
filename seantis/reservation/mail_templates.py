@@ -26,8 +26,9 @@ class MailTemplate(object):
         return self.templates[language]
 
     def get(self, language):
+
         if language in self.templates:
-            return self.templates
+            return self.templates[language]
 
         if self.is_translated(language):
             return self.load_language(language)
@@ -61,7 +62,7 @@ class MailTemplate(object):
 
             content.append(line)
 
-        return subject, '\n'.join(content)
+        return unicode(subject), unicode('\n'.join(content))
 
 keys = [
     'reservation_approved',
