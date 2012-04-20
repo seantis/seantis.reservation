@@ -10,8 +10,9 @@ from seantis.reservation.interfaces import (
 class ReservationBaseEvent(object):
     implements(IReservationBaseEvent)
 
-    def __init__(self, reservation):
+    def __init__(self, reservation, language):
         self.reservation = reservation
+        self.language = language
 
 class ReservationMadeEvent(ReservationBaseEvent):
     implements(IReservationMadeEvent)

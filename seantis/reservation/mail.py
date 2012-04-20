@@ -20,26 +20,26 @@ from seantis.reservation import _
 def on_reservation_made(event):
     if event.reservation.autoapprovable:
         if settings.get('send_email_to_reservees', True):
-            send_reservation_mail(event.reservation, 'reservation_autoapproved')
+            send_reservation_mail(event.reservation, 'reservation_autoapproved', event.language)
     else:
         if settings.get('send_email_to_reservees', True):
-            send_reservation_mail(event.reservation, 'reservation_received')
+            send_reservation_mail(event.reservation, 'reservation_received', event.language)
 
         if settings.get('send_email_to_managers', True):
-            send_reservation_mail(event.reservation, 'reservation_pending')
+            send_reservation_mail(event.reservation, 'reservation_pending', event.language)
 
 @grok.subscribe(IReservationApprovedEvent)
 def on_reservation_approved(event):
     if not settings.get('send_email_to_reservees', False):
         return
     if not event.reservation.autoapprovable:
-        send_reservation_mail(event.reservation, 'reservation_approved')
+        send_reservation_mail(event.reservation, 'reservation_approved', event.language)
 
 @grok.subscribe(IReservationDeniedEvent)
 def on_reservation_denied(event):
     if not settings.get('send_email_to_reservees', False):
         if not event.reservation.autoapprovable:
-            send_reservation_mail(event.reservation, 'reservation_denied')
+            send_reservation_mail(event.reservation, 'reservation_denied', event.language)
 
 class EmailTemplate(Item):
     def get_title(self):
@@ -50,7 +50,7 @@ class EmailTemplate(Item):
 
     title = property(get_title, set_title)
 
-def send_reservation_mail(reservation, email_type):
+def send_reservation_mail(reservation, email_type, language):
 
     context = getSite()
     resource = utils.get_resource_by_uuid(context, reservation.resource)
@@ -60,9 +60,6 @@ def send_reservation_mail(reservation, email_type):
     if not resource:
         return
 
-    # awwh, I need the request here, must change it so that emails can be
-    # sent with the language set in the current request => #TODO
-    language = utils.get_current_site_language()
     subject, body = templates[email_type].get(language)
 
     mail = ReservationMail(resource, reservation,
@@ -97,9 +94,11 @@ class ReservationMail(ReservationDataView, ReservationUrls):
         p = dict()
         is_needed = lambda key: key in self.subject or key in self.body
 
+        resource = resource.getObject()
+
         # title of the resource
         if is_needed('resource'):
-            p['resource'] = utils.get_resource_title(resource.getObject())
+            p['resource'] = utils.get_resource_title(resource)
 
         # reservation email
         if is_needed('reservation_mail'):

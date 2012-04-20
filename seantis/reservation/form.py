@@ -125,9 +125,11 @@ class ResourceBaseForm(GroupForm, form.Form):
         self.request.response.redirect(self.context.absolute_url())
 
     @property
+    @utils.memoize
     def scheduler(self):
         """ Returns the scheduler of the resource. """
-        return self.context.scheduler()
+        language = utils.get_current_language(self.context, self.request) 
+        return self.context.scheduler(language=language)
 
     def metadata(self, data):
         metadata = data.get('metadata')

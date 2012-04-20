@@ -11,9 +11,8 @@ def get_filename(key, language):
 
 class MailTemplate(object):
 
-    templates = {}
-
     def __init__(self, template):
+        self.templates = dict()
         self.key = template
         assert self.is_translated('en')
 
@@ -41,13 +40,13 @@ class MailTemplate(object):
     def get_subject(self, language):
         return self.get(language)[0]
 
-    def get_content(self, language):
+    def get_body(self, language):
         return self.get(language)[1]
 
     def parse_file(self, template_file):
         
         subject = u''
-        content = []
+        body = []
 
         for line in (l.strip('\n\t') for l in template_file):
 
@@ -58,12 +57,12 @@ class MailTemplate(object):
                 subject = line
                 continue
 
-            if subject and not content and line.startswith('='):
+            if subject and not body and line.startswith('='):
                 continue
 
-            content.append(line)
+            body.append(line)
 
-        return unicode(subject), unicode('\n'.join(content))
+        return unicode(subject), unicode('\n'.join(body))
 
 keys = [
     'reservation_approved',

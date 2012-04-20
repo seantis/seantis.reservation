@@ -23,10 +23,10 @@ class Resource(Container):
     def uuid(self):
         return IUUID(self)
 
-    def scheduler(self):
+    def scheduler(self, language=None):
         uuid = utils.string_uuid(self.uuid())
         is_exposed = exposure.for_allocations(self, [uuid])
-        return Scheduler(self.uuid(), self.quota, is_exposed)
+        return Scheduler(self.uuid(), self.quota, is_exposed, language=language)
 
     def timeframes(self):
         return timeframes_by_context(self)

@@ -322,7 +322,7 @@ class IEmailTemplate(form.Schema):
     reservation_pending_content = schema.Text(
         title=_(u'Email Text for Reservation Pending'),
         description=template_variables,
-        default=templates['reservation_pending'].get_content('en')
+        default=templates['reservation_pending'].get_body('en')
         )
 
     reservation_received_subject = schema.TextLine(
@@ -335,7 +335,7 @@ class IEmailTemplate(form.Schema):
     reservation_received_content = schema.Text(
         title=_(u'Email Text for Received Reservations'),
         description=template_variables,
-        default=templates['reservation_received'].get_content('en')
+        default=templates['reservation_received'].get_body('en')
         )
 
     reservation_autoapproved_subject = schema.TextLine(
@@ -348,7 +348,7 @@ class IEmailTemplate(form.Schema):
     reservation_autoapproved_content = schema.Text(
         title=_(u'Email Text for Automatically Approved Reservations'),
         description=template_variables,
-        default=templates['reservation_autoapproved'].get_content('en')
+        default=templates['reservation_autoapproved'].get_body('en')
         )
 
     reservation_approved_subject = schema.TextLine(
@@ -361,7 +361,7 @@ class IEmailTemplate(form.Schema):
     reservation_approved_content = schema.Text(
         title=_(u'Email Text for Approved Reservations'),
         description=template_variables,
-        default=templates['reservation_approved'].get_content('en')
+        default=templates['reservation_approved'].get_body('en')
         )
 
     reservation_denied_subject = schema.TextLine(
@@ -374,7 +374,7 @@ class IEmailTemplate(form.Schema):
     reservation_denied_content = schema.Text(
         title=_(u'Email Text for Denied Reservations'),
         description=template_variables,
-        default=templates['reservation_denied'].get_content('en')
+        default=templates['reservation_denied'].get_body('en')
         )
 
 def get_default_language(adapter):
@@ -462,6 +462,7 @@ class IReservationBaseEvent(Interface):
     """ Base Interface for reservation events (not actually fired). """
 
     reservation = Attribute("The reservation record associated with the event")
+    language = Attribute("The language of the site or current request")
 
 class IReservationMadeEvent(IReservationBaseEvent):
     """ Event triggered when a reservation is made (directly written or

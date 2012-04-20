@@ -186,7 +186,7 @@ class Scheduler(object):
 
     """
 
-    def __init__(self, resource_uuid, quota=1, is_exposed=None):
+    def __init__(self, resource_uuid, quota=1, is_exposed=None, language=None):
         assert(0 <= quota)
 
         try: 
@@ -196,6 +196,13 @@ class Scheduler(object):
         
         self.is_exposed = is_exposed or (lambda allocation: True)
         self.quota = quota
+
+        # the language is used for the events that are being sent
+        # if no language is given, then the current site language is used
+        if language:
+            self.language = language
+        else:
+            self.language = utils.get_current_site_language()
 
     @serialized
     def allocate(self, dates, raster=15, quota=None, partly_available=False, 
@@ -662,7 +669,7 @@ class Scheduler(object):
             # do that automatically)
             assert len(groups) == len(set(groups)), 'wrongly trying to reserve a group'
 
-        notify(ReservationMadeEvent(reservation))
+        notify(ReservationMadeEvent(reservation, self.language))
 
         return token
 
@@ -722,7 +729,7 @@ class Scheduler(object):
         if not slots_to_reserve:
             raise NotReservableError
 
-        notify(ReservationApprovedEvent(reservation))
+        notify(ReservationApprovedEvent(reservation, self.language))
 
         return slots_to_reserve
 
@@ -743,7 +750,7 @@ class Scheduler(object):
         reservation = query.one()
         query.delete();
 
-        notify(ReservationDeniedEvent(reservation))
+        notify(ReservationDeniedEvent(reservation, self.language))
 
     @serialized
     def remove_reservation(self, token, start=None, end=None):

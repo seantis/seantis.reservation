@@ -110,7 +110,7 @@ class ReservationForm(ResourceBaseForm, ReservationSchemata):
         return dict(id=self.id)
 
     def allocation(self, id):
-        return self.context.scheduler().allocation_by_id(id)
+        return self.scheduler.allocation_by_id(id)
 
     def strptime(self, value):
         if not value:
@@ -151,12 +151,12 @@ class ReservationForm(ResourceBaseForm, ReservationSchemata):
             additional_data = utils.additional_data_dictionary(
                 data, self.fti
             )
-            token = self.context.scheduler().reserve(
+            token = self.scheduler.reserve(
                 email, (start, end), data=additional_data
             )
             
             if autoapprove:
-                self.context.scheduler().approve_reservation(token)
+                self.scheduler.approve_reservation(token)
                 self.flash(_(u'Reservation successful'))
             else:
                 self.flash(_(u'Added to waitinglist'))
@@ -193,7 +193,7 @@ class GroupReservationForm(ResourceBaseForm, AllocationGroupView, ReservationSch
     @extract_action_data
     def reserve(self, data):
 
-        sc = self.context.scheduler()
+        sc = self.scheduler
         autoapprove = not sc.allocations_by_group(data['group']).first().approve
 
         def reserve():
@@ -263,9 +263,8 @@ class ReservationApprovalForm(ReservationDecisionForm):
 
         self.data = data
 
-        scheduler = self.scheduler
         def approve():
-            scheduler.approve_reservation(data['reservation'])
+            self.scheduler.approve_reservation(data['reservation'])
             self.flash(_(u'Reservation confirmed'))
 
         utils.handle_action(action=approve, success=self.redirect_to_context)
@@ -296,9 +295,8 @@ class ReservationDenialForm(ReservationDecisionForm):
 
         self.data = data
 
-        scheduler = self.scheduler
         def deny():
-            scheduler.deny_reservation(data['reservation'])
+            self.scheduler.deny_reservation(data['reservation'])
             self.flash(_(u'Reservation denied'))
 
         utils.handle_action(action=deny, success=self.redirect_to_context)
@@ -351,9 +349,8 @@ class ReservationRemoveForm(ResourceBaseForm, ReservationListView, ReservationUr
     @extract_action_data
     def delete(self, data):
 
-        scheduler = self.scheduler
         def delete():
-            scheduler.remove_reservation(
+            self.scheduler.remove_reservation(
                 data['reservation'], data['start'], data['end']
             )
             self.flash(_(u'Reservation removed'))
