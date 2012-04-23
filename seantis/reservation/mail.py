@@ -158,11 +158,7 @@ def send_reservation_mail(reservation, email_type, language, to_managers=False):
         send_mail(resource, mail)
 
 def send_mail(context, mail):
-    try:
-        context.MailHost.send(mail.as_string(), immediate=True)
-    except Exception, e:
-        print e
-        pass # TODO add logging
+    context.MailHost.send(mail.as_string())
 
 class ReservationMail(ReservationDataView, ReservationUrls):
 
