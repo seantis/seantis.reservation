@@ -558,10 +558,15 @@ def month_name(context, request, month):
     return translate(context, request, msgid, 'plonelocales')
 
 def weekdayname_abbr(context, request, day):
-    """Returns the text for the given day (0-6)."""
-    assert (1 <= day and day <= 7)
+    """Returns the text for the given day (0-6), 0 being sunday.
+    Since 0 is sunday in the plone function and monday in the python stdlib
+    you might want to shift the day.weekday() result"""
+    assert (0 <= day and day <= 6)
     msgid = weekdayname_msgid_abbr(day)
     return translate(context, request, msgid, 'plonelocales')
+
+def shift_day(stdday):
+    return abs(0 - (stdday+1) % 7)
 
 def portal_type_in_context(context, portal_type):
     """Returns the given portal types _within_ the current context."""
