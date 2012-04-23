@@ -181,9 +181,6 @@ class AllocationEditForm(AllocationForm):
     @extract_action_data
     def edit(self, data):
 
-        # TODO since we can't trust the id here there should be another check
-        # to make sure the user has the right to work with it. 
-
         scheduler = self.context.scheduler()
 
         start, end = utils.get_date_range(data['day'], data['start_time'], data['end_time'])

@@ -141,16 +141,10 @@ class TimeframeViewlet(grok.Viewlet):
     def render(self, **kwargs):
         if self.context == None:
             return u''
-
-        # TODO add a view for the timeframes in effect, until then
-        # disable them on the resource
-        if self.context.portal_type == 'seantis.reservation.resource':
-            return u''
         
         return self._template.render(self)
 
     def visible(self, frame):
-        # TODO does this work with translation?
         state = self.state(frame)[0]
         return state == 'visible'
 
