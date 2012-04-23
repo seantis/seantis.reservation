@@ -38,7 +38,7 @@ class Overviewlet(grok.Viewlet):
         
         for item in self.view.items:
             for resource in item.resources():
-                uuids[IUUID(resource)] = item.id 
+                uuids[utils.string_uuid(IUUID(resource))] = item.id 
 
         return uuids
 
