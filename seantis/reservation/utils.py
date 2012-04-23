@@ -5,7 +5,6 @@ import random
 import collections
 import functools
 from datetime import datetime, timedelta
-from collections import namedtuple
 from urlparse import urljoin
 from urllib import quote
 from itertools import tee, izip
@@ -173,11 +172,6 @@ def monthly_report_link(context, resources):
 
     return url
 
-
-def dictionary_to_namedtuple(dictionary):
-    """Creates a named tuple using the given dictionary"""
-    return namedtuple('GenericDict', dictionary.keys())(**dictionary)
-
 def get_current_language(context, request):
     """Returns the current language of the request"""
     context = aq_inner(context)
@@ -210,7 +204,6 @@ def get_site_email_sender():
         return '%s<%s>' % (name, address)
     else:
         return address
-
 
 def translator(context, request):
     """Returns a function which takes a single string and translates it using
@@ -296,7 +289,6 @@ def uuid_query(uuid):
     return (uuid, '-'.join([
         uuid[:8], uuid[8:12], uuid[12:16], uuid[16:20], uuid[20:]]))
 
-from plone.uuid.interfaces import IUUID
 def get_resource_by_uuid(context, uuid):
     """Returns the zodb object with the given uuid."""
     catalog = getToolByName(context, 'portal_catalog')
@@ -326,7 +318,6 @@ class SortedCollectionEncoder(json.JSONEncoder):
         if isinstance(obj, SortedCollection):
             return [o for o in obj]
         return json.JSONEncoder.default(self, obj)
-
 
 def event_class(availability):
     """Returns the event class to be used depending on the availability."""
@@ -528,14 +519,6 @@ class EventUrls(object):
 
     def move_url(self, view, params):
         self.move = urlparam(self.base, view, params)
-
-def random_name():
-    """Returns a random person name for demo purposes."""
-
-    firstnames = ['Anna', 'Barbara', 'Christine', 'Daniel', 'Edward', 'Gabriel']
-    lastnames = ['Aebischer', 'Brown', 'Curiger', 'Durrer', 'Enzlin', 'Gwerder']
-
-    return '%s %s' % (random.choice(firstnames), random.choice(lastnames))
 
 def get_date_range(day, start_time, end_time):
     """Returns the date-range of a date a start and an end time."""
