@@ -3,7 +3,6 @@ from datetime import datetime
 
 from five import grok
 from plone.dexterity.content import Container
-from plone.directives import dexterity
 from plone.uuid.interfaces import IUUID
 from plone.memoize import view
 
@@ -12,7 +11,7 @@ from seantis.reservation import utils
 from seantis.reservation.db import Scheduler
 from seantis.reservation import _
 from seantis.reservation.timeframe import timeframes_by_context
-from seantis.reservation.form import AllocationGroupView, ResourceBaseForm
+from seantis.reservation.form import AllocationGroupView
 from seantis.reservation.interfaces import IResourceBase
 
 class Resource(Container):
@@ -22,6 +21,9 @@ class Resource(Container):
 
     def uuid(self):
         return IUUID(self)
+
+    def string_uuid(self):
+        return utils.string_uuid(self.uuid())
 
     def scheduler(self, language=None):
         uuid = utils.string_uuid(self.uuid())
