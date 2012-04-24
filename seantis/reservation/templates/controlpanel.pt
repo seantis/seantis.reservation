@@ -1,0 +1,55 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      xml:lang="en" lang="en"
+      i18n:domain="seantis.reservation">
+
+
+<metal:form metal:define-macro="form">
+    <metal:block use-macro="context/@@ploneform-macros/titlelessform" />
+    <br />
+    <form action="."
+          tal:attributes="action request/URL"
+          method="post"
+          class="edit-form"
+          enctype="multipart/form-data">
+
+                <fieldset>
+                    <legend i18n:translate="">Maintenance</legend>
+
+                    <div>
+                        <b i18n:translate="">Number of Records in Database:</b>
+                        <span tal:content="view/number_of_records"></span>
+                    </div>
+                    <div>
+                        <b i18n:translate="">Number of Orphan Records in Databse:</b>
+                        <span tal:content="view/number_of_orphan_records"></span>
+                    </div>
+
+                    <div class="formHelp" style="margin-top: 20px;">
+                        <div i18n:translate="">Orphan Records are records in the database for which no corresponding plone resource object can be found. Those records exist because there is no reliable way to detect that a plone resource object is being deleted, hence no cleanup is ever done in this case.</div>
+                        <br>
+                        <div i18n:translate="">Usually there is no reason to clean these records until their number grows large.</div>
+                        <br>
+                        <div i18n:translate="" style="font-weight: bold; color: darkred;">If you do want to get rid of those records be adviced to do a backup of your current SQL database first, before cleaning up.</div>
+                    </div>
+
+                </fieldset>
+
+                <div id="actionsView" class="formControls">
+                    <span class="actionButtons">
+                        <input type="submit" 
+                               id="form.actions.remove_orphans"
+                               name="form.actions.remove_orphans"
+                               i18n:attributes="value" 
+                               value="Remove Orphan Records" 
+                               class="standalone" />
+                    </span>
+                </div>
+            </form>
+
+</metal:form>
+
+
+</html>
