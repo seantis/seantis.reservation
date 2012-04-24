@@ -90,7 +90,6 @@ def for_calendar(resource):
             return checkPermission(option_permissions[option], resource)
         else:
             return False
-        return checkPermission('cmf.ManagePortal', resource)
 
     return is_exposed
 
