@@ -49,6 +49,9 @@ class FullWaitingList(ReservationError):
 class InvalidReservationToken(ReservationError):
     pass
 
+class InvalidReservationError(ReservationError):
+    pass
+
 errormap = {
 
     OverlappingAllocationError: 
@@ -89,4 +92,7 @@ errormap = {
 
     InvalidReservationToken:
     _(u'The given reservation token is invalid.'),
+
+    InvalidReservationError:
+    _(u'The given reservation paramters are invalid.')
 }

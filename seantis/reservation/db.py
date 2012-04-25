@@ -27,6 +27,7 @@ from seantis.reservation.error import ReservationTooLong
 from seantis.reservation.error import FullWaitingList
 from seantis.reservation.error import ReservationParametersInvalid
 from seantis.reservation.error import InvalidReservationToken
+from seantis.reservation.error import InvalidReservationError
 from seantis.reservation.session import serialized
 from seantis.reservation.raster import rasterize_span
 from seantis.reservation.interfaces import validate_email
@@ -627,11 +628,13 @@ class Scheduler(object):
 
         # ok, we're good to go
         token = new_uuid()
+        found = 0
         
         # groups are reserved by group-identifier - so all members of a group
         # or none of them. As such there's no start / end date which is defined
         # implicitly by the allocation
         if group:
+            found = 1
             reservation = Reservation()
             reservation.token = token
             reservation.target = group
@@ -643,11 +646,15 @@ class Scheduler(object):
             Session.add(reservation)
         else:
             groups = []
+            
             for start, end in dates:
+
                 for allocation in self.allocations_in_range(start, end):
 
                     if not allocation.overlaps(start, end):
                         continue
+
+                    found += 1
 
                     reservation = Reservation()
                     reservation.token = token
@@ -664,12 +671,17 @@ class Scheduler(object):
 
                     groups.append(allocation.group)
 
+
+
             # check if no group reservation is made with this request.
             # reserve by group in this case (or make this function
             # do that automatically)
             assert len(groups) == len(set(groups)), 'wrongly trying to reserve a group'
-
-        notify(ReservationMadeEvent(reservation, self.language))
+        
+        if found:
+            notify(ReservationMadeEvent(reservation, self.language))
+        else:
+            raise InvalidReservationError
 
         return token
 
