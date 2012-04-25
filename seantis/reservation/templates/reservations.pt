@@ -43,7 +43,7 @@
 
                   <div class="reservation-data" metal:define-macro="reservation_data">
                     
-                    <tal:block tal:repeat="key python: view.sorted_info_keys(data)">
+                    <tal:block tal:condition="data" tal:repeat="key python: view.sorted_info_keys(data)">
                       <tal:block tal:define="interface python: data[key]">
                         
                         <div class="block-title" tal:content="python: interface['desc']"></div>
