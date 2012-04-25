@@ -106,7 +106,7 @@ class SeantisReservationSettingsPanelForm(RegistryEditForm):
         for reservation in reservations:
             dead_uuids.add(reservation.resource)
         for slot in slots:
-            dead_uuids.add(slots.resource)
+            dead_uuids.add(slot.resource)
         for allocation in allocations:
             dead_uuids.add(allocation.mirror_of)
 
