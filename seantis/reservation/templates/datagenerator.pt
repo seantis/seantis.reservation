@@ -1,0 +1,57 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="seantis.reservation"
+>
+<body>
+
+<metal:main fill-slot="main">
+<tal:main-macro metal:define-macro="main">
+
+    <style>
+        input {
+            margin-bottom: 10px;
+        }
+        input, label {
+            display: block;
+        }
+        input[type="checkbox"] {
+            display: inline;
+        }
+        input[type="submit"] {
+            margin-top: 25px;
+        }
+    </style>
+
+    <h1>Testdata</h1>
+    <h2>For your everyday performance tests</h2>
+
+    <p>Generates a huge amount of records for performance tests. This will occupy
+        the server for a couple of minutes. The progress can be seen in the console.
+    </p>
+
+    <p>Since this is a development feature it can only be run in DEBUG mode</p>
+
+    <p>Debug mode is: <b tal:content="python: view.may_run and 'ON' or 'OFF'"></b></p>
+
+    <form action="."
+          tal:condition="view/may_run"
+          tal:attributes="action request/URL"
+          method="post"
+          class="edit-form"
+          enctype="multipart/form-data">
+          <label>Start: <input id="start" name="start" type="date" placeholder="dd.mm.yyyy"></label>
+          <label>End: <input id="end" name="end" type="date" placeholder="dd.mm.yyyy"></label>
+          <label>First Hour: <input id="first_hour" name="first_hour" type="text" value="8"></label>
+          <label>Last Hour: <input id="last_hour" name="last_hour" type="text" value="18"></label>
+          <label>Minimum Allocation Duration in Minutes: <input id="min_duration" name="min_duration" type="text" value="30"></label>
+          <label>Reservations: <input id="with_reservations" name="with_reservations" type="checkbox" checked="checked"></label>
+          <input id="generate_data" name="generate_data" type="submit" value="Generate!">
+    </form>
+
+</tal:main-macro>
+</metal:main>
+</body>
+</html>
