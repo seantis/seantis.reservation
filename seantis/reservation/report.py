@@ -37,6 +37,7 @@ class MonthlyReportView(grok.View, form.ReservationDataView):
         return int(self.request.get('month', 0))
 
     @property
+    @view.memoize
     def uuids(self):
         uuids = self.request.get('uuid', [])
 
@@ -154,9 +155,10 @@ class MonthlyReportView(grok.View, form.ReservationDataView):
         return self.request.get('show_details', None) and True or False
 
     @property
+    @view.memoize
     def data_macro_path(self):
-        resource = utils.get_resource_by_uuid(self.context, self.uuids[0])
-        url = resource.getURL() + '/@@reservations/macros/reservation_data'
+        resource = self.resources[self.uuids[0]]
+        url = resource.absolute_url() + '/@@reservations/macros/reservation_data'
 
         return url.replace(self.context.absolute_url(), 'context')
 
@@ -220,11 +222,15 @@ def monthly_report(year, month, resources):
     reservations = query.all()
     reservation_urls = ReservationUrls()
 
-    used_days = []
+    @utils.memoize
+    def json_timespans(start, end):
+        return json.dumps([dict(start=start, end=end)])
+
+    used_days = dict([(i, False) for i in range(1, 32)])
     def add_reservation(start, end, reservation):
         day = start.day
 
-        used_days.append(day)
+        used_days[day] = True
 
         end += timedelta(microseconds=1)
         start, end = start.strftime('%H:%M'), end.strftime('%H:%M')
@@ -246,7 +252,7 @@ def monthly_report(year, month, resources):
                 end=end, 
                 email=reservation.email, 
                 data=reservation.data,
-                timespans=json.dumps([dict(start=start, end=end)])   ,
+                timespans=json_timespans(start, end),
                 urls=urls,
                 token=reservation.token
             )
@@ -261,7 +267,7 @@ def monthly_report(year, month, resources):
 
     # remove unused days
     for day in report:
-        if day not in used_days:
+        if not used_days[day]:
             del report[day]
 
     return report
