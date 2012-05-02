@@ -29,7 +29,7 @@ from seantis.reservation.error import ReservationParametersInvalid
 from seantis.reservation.error import InvalidReservationToken
 from seantis.reservation.error import InvalidReservationError
 from seantis.reservation.session import serialized
-from seantis.reservation.raster import rasterize_span
+from seantis.reservation.raster import rasterize_span, MIN_RASTER_VALUE
 from seantis.reservation.interfaces import validate_email
 from seantis.reservation import utils
 from seantis.reservation import Session
@@ -239,6 +239,10 @@ class Scheduler(object):
         group = new_uuid()
         quota = quota or self.quota
         waitinglist_spots = approve and waitinglist_spots or quota
+
+        # if the allocation is not partly available the raster is set to lowest
+        # possible raster value
+        raster = partly_available and raster or MIN_RASTER_VALUE
 
         # Make sure that this span does not overlap another master
         for start, end in dates:
