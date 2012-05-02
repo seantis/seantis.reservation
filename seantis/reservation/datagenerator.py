@@ -24,7 +24,7 @@ class DataGeneratorView(grok.View):
     grok.require(permission)
 
     grok.context(Interface)
-    grok.name('generate_test_data')
+    grok.name('generate')
 
     template = grok.PageTemplateFile('templates/datagenerator.pt')
 

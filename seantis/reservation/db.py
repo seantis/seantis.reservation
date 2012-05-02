@@ -107,7 +107,7 @@ def waitinglist_availabilty_by_allocations(allocations):
     query = query.filter(Reservation.target.in_(groups))    
     pending = query.count()
 
-    return float(pending) / float(spots) * 100.0
+    return 100.0 - (float(pending) / float(spots) * 100.0)
 
 def availability_by_range(start, end, resources, is_exposed):
     """Returns the availability for the given resources in the given range.
@@ -142,20 +142,40 @@ def availability_by_day(start, end, resources, is_exposed):
     days = {}
 
     for day, allocations in group:
+
+        waitinglist, unapproved = [], []
+        skip_day = True
+        members = set()
+
+        # count the allocations with / without waitinglist separately
+        # to be able to only use one metric on days which have no mixed
+        # allocation types (=> more accurate, better performance)
+        for a in (a for a in allocations if is_exposed(a)):
+
+            skip_day = False
+            members.add(a.mirror_of)
+            
+            if a.approve:
+                waitinglist.append(a)
+            else:
+                unapproved.append(a)
         
-        exposed = [a for a in allocations if is_exposed(a)]
-        if not exposed:
+        if skip_day:
             continue
 
-        members = set([a.mirror_of for a in exposed])
+        if unapproved:
+            unapproved_total = availability_by_allocations(unapproved)
 
-        normal = availability_by_allocations(exposed)
-        waitinglist = waitinglist_availabilty_by_allocations(exposed)
+        if waitinglist:
+            waitinglist_total = waitinglist_availabilty_by_allocations(waitinglist)
+            assert waitinglist_total is not False
 
-        if not waitinglist == False:
-            total = (normal + waitinglist) / 2.0
-        else:
-            total = normal
+        if unapproved and waitinglist:
+            total = (unapproved_total + waitinglist_total) / 2.0
+        elif unapproved:
+            total = unapproved_total
+        elif waitinglist:
+            total = waitinglist_total
 
         days[day] = (total, members)
 
