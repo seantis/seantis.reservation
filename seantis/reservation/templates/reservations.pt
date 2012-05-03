@@ -62,7 +62,7 @@
                     <div class="block-title" i18n:translate="">Concerned Dates</div>
                     <div class="limitedList" style="max-height: 450px; min-width: 100%;">
                     
-                    <tal:block tal:repeat="timespan python: reservation.timespans()">
+                    <tal:block tal:repeat="timespan python: sorted(reservation.timespans())">
                         <tal:block tal:define="
                         start python: timespan[0];
                         end python: timespan[1];
