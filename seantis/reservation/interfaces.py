@@ -124,12 +124,20 @@ class IResourceBase(form.Schema):
 
     first_hour = schema.Int(
             title=_(u'First hour of the day'),
-            default=0
+            description=_(u'Everything before this hour is not shown in the '
+                          u'calendar, making the calendar display more compact. '
+                          u'Should be set to an hour before which there cannot '
+                          u'be any reservations.'),
+            default=7
         )
 
     last_hour = schema.Int(
             title=_(u'Last hour of the day'),
-            default=24
+            description=_(u'Everything after this hour is not shown in the '
+                          u'calendar, making the calendar display more compact. '
+                          u'Should be set to an hour after which there cannot '
+                          u'be any reservations.'),
+            default=23
         )
 
     quota = schema.Int(
