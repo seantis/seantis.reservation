@@ -4,12 +4,15 @@ import json
 import random
 import collections
 import functools
+
 from datetime import datetime, timedelta
 from urlparse import urljoin
 from urllib import quote
 from itertools import tee, izip
 from uuid import UUID
 from uuid import uuid5 as new_uuid_mirror
+
+import pytz
 
 from plone.dexterity.utils import SchemaNameEncoder
 
@@ -411,8 +414,22 @@ def get_config(key):
 def total_timedelta_seconds(td):
     return (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
 
-def timestamp(dt):
-    return time.mktime(dt.timetuple())   
+def utc_mktime(utc_tuple):
+    """Returns number of seconds elapsed since epoch
+
+    Note that no timezone are taken into consideration.
+
+    utc tuple must be: (year, month, day, hour, minute, second)
+
+    """
+
+    if len(utc_tuple) == 6:
+        utc_tuple += (0, 0, 0)
+    return time.mktime(utc_tuple) - time.mktime((1970, 1, 1, 0, 0, 0, 0, 0, 0))
+
+def utctimestamp(dt):
+    dt = dt.replace(tzinfo=pytz.utc)
+    return utc_mktime(dt.timetuple())   
 
 def merge_reserved_slots(slots):
     """Given a list of reserved slots a list of tuples with from-to datetimes is

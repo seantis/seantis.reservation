@@ -180,8 +180,8 @@ class Slots(grok.View, CalendarRequest):
         
         items = utils.EventUrls(self.context, self.request, exposure)
 
-        start = utils.timestamp(allocation.display_start)
-        end = utils.timestamp(allocation.display_end)
+        start = utils.utctimestamp(allocation.display_start)
+        end = utils.utctimestamp(allocation.display_end)
 
         items.move_url('edit-allocation', dict(id=allocation.id))
 

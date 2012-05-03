@@ -41,6 +41,7 @@ setup(name='seantis.reservation',
           'collective.js.underscore',
           'collective.js.fullcalendar',
           'profilehooks',
+          'pytz',
           'ordereddict'
       ],
       entry_points="""

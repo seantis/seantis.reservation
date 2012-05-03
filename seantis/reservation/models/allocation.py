@@ -34,11 +34,21 @@ class Allocation(ORMBase, OtherModels):
     partly_available = Column(types.Boolean(), default=False)
     approve = Column(types.Boolean(), default=True)
 
-    waitinglist_spots = Column(types.Integer(), default=0)
     # waiting list spots are interpreted like this:
     # <1 = no spots on the waiting list
     # >0 = n spots on the waiting list
+    waitinglist_spots = Column(types.Integer(), default=0)
 
+    # The dates are stored without any timzone information (unaware).
+    # Therefore the times are implicitly stored in the timezone the resource
+    # resides in. 
+
+    # This is fine and dandy as long as all resources are in the same timezone.
+    # If they are not problems arise. So in the future the resource should
+    # carry a timezone property which is applied to the dates which will then
+    # be stored in UTC
+
+    # => TODO
     _start = Column(types.DateTime(), nullable=False)
     _end = Column(types.DateTime(), nullable=False)
     _raster = Column(types.Integer(), nullable=False)

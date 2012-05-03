@@ -223,8 +223,7 @@ var CalendarGroups = function() {
         };
 
         var get_timestamp = function(dt) {
-            var timestamp = new Date(dt.getFullYear(),dt.getMonth(), dt.getDate() , dt.getHours(), dt.getMinutes(), dt.getSeconds(), dt.getMilliseconds());
-            return timestamp / 1000;
+            return dt.getTime() / 1000 - (dt.getTimezoneOffset() * 60);
         };
 
         // move an event
