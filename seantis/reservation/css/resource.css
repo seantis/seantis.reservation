@@ -410,3 +410,7 @@ body .portalMessage {
 .template-seantis\.reservation\.emailtemplate form select {
     margin-bottom: 30px;   
 }
+
+#calroot {
+    z-index: 10000; /* to overlap the overlay */
+}

@@ -71,6 +71,7 @@ var reservation_overlay_init = null;
         var before_load = function() {
             seantis.formgroups.init();
             seantis.wizard.init();
+            jQuery = $;
         };
 
         var after_post = function(el) {
@@ -120,12 +121,54 @@ var reservation_overlay_init = null;
         elements.prepOverlay(all_options);
     };
 
+    var _eval_stripped = function(responseText) {
+        // the overlay helper script of plone.app.jquerytools strips
+        // script tags from the forms which results in calendar widgets
+        // not showing up
+
+        // this function tries to compensate for that by parsing the 
+        // plain html code for those tags and executing theng using eval
+
+        // this is horribly hackish and somewhat insecure (if the user
+        // is able to add his own script tags to a document, which he shouldn't)
+
+        // I must confess though that it was way more fun to write than it should
+        // have been... 
+        try {
+
+            // only do it on whitelisted forms
+            var whitelisted = false;
+            if (/kssattr-formname-allocate/gi.test(responseText)) whitelisted = true;
+            if (/kssattr-formname-@@edit/gi.test(responseText)) whitelisted = true;
+
+            var re = /<script type="text\/javascript">([^]*?)<\/script>/gi;
+            var matches = null;
+
+            // eval all scripts (index 0 is the whole tag, index 1 is what's within)
+            while ((matches = re.exec(responseText)) != null) {
+                eval(matches[1]);
+            }    
+        } catch (e) {
+            // pass
+        }
+    };
+
     $(document).ready(function() {
         $(document).bind('formOverlayLoadSuccess', function(e, overlay, form, api, pb, ajax_parent) {
             $(document).trigger('seantis.formload_success', [ajax_parent, form]);
         }); 
         $(document).bind('formOverlayLoadFailure', function(e, overlay, form, api, pb, ajax_parent) {
             $(document).trigger('seantis.formload_failure', [ajax_parent, form]);
+        });
+        $(document).bind('loadInsideOverlay', function(e, el, responseText, errorText, api) {
+            _.defer(function() {
+                _eval_stripped(responseText)
+            });
+        });
+        $(document).bind('formOverlayStart', function(e, overlay, responseText, statusText, xhr, form) {
+            _.defer(function() {
+                _eval_stripped(responseText);
+            });
         });
     });
 
