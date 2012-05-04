@@ -38,6 +38,11 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
     title="seantis.reservation: View Hidden Allocations"
 />
 
+<permission
+    id="seantis.reservation.SubmitReservation"
+    title="seantis.reservation: Submit Reservation"
+/>
+
 <grok:grok package="." />
 
 <genericsetup:registerProfile

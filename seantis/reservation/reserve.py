@@ -66,7 +66,7 @@ class ReservationSchemata(object):
         return scs
 
 class ReservationForm(ResourceBaseForm, ReservationSchemata):
-    permission = 'zope2.View'
+    permission = 'seantis.reservation.SubmitReservation'
 
     grok.name('reserve')
     grok.require(permission)
@@ -169,7 +169,7 @@ class ReservationForm(ResourceBaseForm, ReservationSchemata):
         self.redirect_to_context()
 
 class GroupReservationForm(ResourceBaseForm, AllocationGroupView, ReservationSchemata):
-    permission = 'zope2.View'
+    permission = 'seantis.reservation.SubmitReservation'
 
     grok.name('reserve-group')
     grok.require(permission)

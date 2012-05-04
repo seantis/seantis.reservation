@@ -18,5 +18,8 @@
             <role name="Owner" />
             <role name="Manager" />
         </permission>
+        <permission name="seantis.reservation: Submit Reservation" acquire="True">
+            <role name="Anonymous" />
+        </permission>
     </permissions>
 </rolemap>

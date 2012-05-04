@@ -515,11 +515,15 @@ class EventUrls(object):
         # return closure
         return build
 
-    def menu_add(self, group, name, view, params, target):
+    @memoize
+    def get_restricted(self, view, params):
         urlfactory = self.restricted_url(view)
-        if not urlfactory: return
+        if not urlfactory: return None
 
-        url = urlfactory(params)
+        return urlfactory(params)
+
+    def menu_add(self, group, name, view, params, target):
+        url = self.get_restricted(view, params)
         if not url: return
 
         group = self.translate(group)
@@ -532,10 +536,16 @@ class EventUrls(object):
         self.menu[group].append(dict(name=name, url=url, target=target))
 
     def default_url(self, view, params):
-        self.default = urlparam(self.base, view, params)
+        url = self.get_restricted(view, params)
+        if not url: return
+
+        self.default = url
 
     def move_url(self, view, params):
-        self.move = urlparam(self.base, view, params)
+        url = self.get_restricted(view, params)
+        if not url: return
+
+        self.move = url
 
 def get_date_range(day, start_time, end_time):
     """Returns the date-range of a date a start and an end time."""
