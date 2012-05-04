@@ -8,7 +8,6 @@ from zope.component import getAllUtilitiesRegisteredFor as getallutils
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 
-from Products.CMFCore.utils import getToolByName
 from Products.CMFDefault.utils import checkEmailAddress
 from Products.CMFDefault.exceptions import EmailAddressInvalid
 
@@ -142,11 +141,16 @@ class IResourceBase(form.Schema):
 
     quota = schema.Int(
             title=_(u'Quota'),
-            default=1
+            default=1,
+            description=_(u'The default quota of any allocation made within this '
+                          u'resource. The quota of an allocation is the number of '
+                          u'times the allocation may be reserved at the same time. ')
         )
 
     formsets = schema.List(
             title=_(u'Formsets'),
+            description=_(u'Subforms that need to be filled out to make a reservation. '
+                          u'Forms can currently only be created by a site-administrator.'),
             value_type=schema.Choice(
                 source=form_interfaces,
             ),
@@ -196,11 +200,19 @@ class IAllocation(form.Schema):
         )
 
     start_time = schema.Time(
-        title=_(u'Start')
+        title=_(u'Start'),
+        description=_(u'Allocations may start every 5 minutes if the allocation '
+                      u'is not partly available. If it is partly available the start '
+                      u'time may be every x minute where x equals the given raster.')
         )
 
     end_time = schema.Time(
-        title=_(u'End')
+        title=_(u'End'),
+        description=_(u'Allocations may end every 5 minutes if the allocation '
+                      u'is not partly available. If it is partly available the start '
+                      u'time may be every x minute where x equals the given raster. '
+                      u'The minimum length of an allocation is also either 5 minutes '
+                      u'or whatever the value of the raster is.')
         )
 
     recurring = schema.Choice(
@@ -229,32 +241,46 @@ class IAllocation(form.Schema):
 
     separately = schema.Bool(
         title=_(u'Separately reservable'),
+        description=_(u'If checked parts of the recurrance may be reserved. '
+                      u'If not checkd the recurrance must be reserved as a whole.'),
         required=False,
         default=False
         )
 
     partly_available = schema.Bool(
         title=_(u'Partly available'),
+        description=_(u'If the allocation is partly available users may reserve '
+                      u'only a part of it (e.g. half of it). If not the allocation '
+                      u'Must be reserved as a whole or not at all'),
         default=False
         )
 
     raster = schema.Choice(
         title=_(u'Raster'),
+        description=_(u'Defines the minimum length of any given reservation as well '
+                      u'as the alignment of the start / end of the allocation. E.g. a '
+                      u'raster of 30 minutes means that the allocation can only start '
+                      u'at xx:00 and xx:30 respectively'),
         values=VALID_RASTER_VALUES,
         default=30
         )
 
     quota = schema.Int(
         title=_(u'Quota'),
+        description=_(u'Number of times an allocation may be reserved at the same time.')
         )
 
     approve = schema.Bool(
         title=_(u'Approve reservation requests'),
+        description=_(u'If checked a reservation manager must decide if a reservation can '
+                      u'be approved. Until then users are added to the waitinglist. '
+                      u'Reservations are automatically approved if this is not checked. '),
         default=False
         )
     
     waitinglist_spots = schema.Int(
         title=_(u'Waiting List Spots'),
+        description=_(u'Number of spots in the waitinglist (must be at least as high as the quota)')
         )
 
     @invariant
