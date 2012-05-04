@@ -134,23 +134,25 @@ var reservation_overlay_init = null;
 
         // I must confess though that it was way more fun to write than it should
         // have been... 
-        try {
+        
+        // only do it on whitelisted forms
+        var whitelisted = false;
+        if (/kssattr-formname-allocate/gi.test(responseText)) whitelisted = true;
+        if (/kssattr-formname-@@edit/gi.test(responseText)) whitelisted = true;
 
-            // only do it on whitelisted forms
-            var whitelisted = false;
-            if (/kssattr-formname-allocate/gi.test(responseText)) whitelisted = true;
-            if (/kssattr-formname-@@edit/gi.test(responseText)) whitelisted = true;
-
-            var re = /<script type="text\/javascript">([^]*?)<\/script>/gi;
-            var matches = null;
-
-            // eval all scripts (index 0 is the whole tag, index 1 is what's within)
-            while ((matches = re.exec(responseText)) != null) {
-                eval(matches[1]);
-            }    
-        } catch (e) {
-            // pass
+        if (!whitelisted) {
+            return;
         }
+
+        var re = /<script type="text\/javascript">([^]*?)<\/script>/gi;
+        var matches = null;
+
+        // eval all scripts (index 0 is the whole tag, index 1 is what's within)
+        while ((matches = re.exec(responseText)) !== null) {
+            try {
+                eval(matches[1]);
+            } catch (e) {}
+        }    
     };
 
     $(document).ready(function() {
@@ -162,7 +164,7 @@ var reservation_overlay_init = null;
         });
         $(document).bind('loadInsideOverlay', function(e, el, responseText, errorText, api) {
             _.defer(function() {
-                _eval_stripped(responseText)
+                _eval_stripped(responseText);
             });
         });
         $(document).bind('formOverlayStart', function(e, overlay, responseText, statusText, xhr, form) {
