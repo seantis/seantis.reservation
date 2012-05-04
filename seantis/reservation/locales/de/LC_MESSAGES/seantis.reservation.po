@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-04-24 10:37+0000\n"
+"POT-Creation-Date: 2012-05-04 07:38+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,19 +14,19 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: DOMAIN\n"
 
-#: ./settings.py:115
+#: ./settings.py:128
 msgid "${count} Orphan Records Removed"
 msgstr "${count} Verwaiste Datensätze entfernt"
 
-#: ./utils.py:350
+#: ./utils.py:353
 msgid "%i Spots Available"
 msgstr "%i Plätze verfügbar"
 
-#: ./utils.py:366
+#: ./utils.py:369
 msgid "%i Waitinglist Spots"
 msgstr "%i Wartelisten-Plätze"
 
-#: ./utils.py:343
+#: ./utils.py:346
 msgid "%i%% Free"
 msgstr "%i%% Frei"
 
@@ -34,19 +34,19 @@ msgstr "%i%% Frei"
 msgid "&lt;&lt; Previous Month"
 msgstr "&lt;&lt; Vorheriger Monat"
 
-#: ./utils.py:348
+#: ./utils.py:351
 msgid "1 Spot Available"
 msgstr "Ein Platz verfügbar"
 
-#: ./utils.py:364
+#: ./utils.py:367
 msgid "1 Waitinglist Spot"
 msgstr "Ein Warteliste-Platz"
 
-#: ./error.py:55
+#: ./error.py:58
 msgid "A conflicting allocation exists for the requested time period."
 msgstr "Es existiert bereits eine Einteilung für den gewählten Zeitraum"
 
-#: ./error.py:61
+#: ./error.py:64
 msgid "A pending reservation would be affected by the requested change"
 msgstr "Ein offene Reservierung wäre durch die Änderung betroffen"
 
@@ -82,11 +82,11 @@ msgstr "Einteilung entfernt"
 msgid "Allocation saved"
 msgstr "Einteilung gespeichert"
 
-#: ./error.py:58
+#: ./error.py:61
 msgid "An existing reservation would be affected by the requested change"
 msgstr "Eine bestehende Reservation wäre durch die Änderung betroffen"
 
-#: ./report.py:237
+#: ./report.py:243
 #: ./reserve.py:260
 #: ./templates/reservations.pt:112
 msgid "Approve"
@@ -96,11 +96,11 @@ msgstr "Zulassen"
 msgid "Approve reservation"
 msgstr "Reservation zulassen"
 
-#: ./interfaces.py:244
+#: ./interfaces.py:252
 msgid "Approve reservation requests"
 msgstr "Reservations-Anfragen manuell bestätigen"
 
-#: ./report.py:72
+#: ./report.py:73
 msgid "Approved"
 msgstr "Zugelassen"
 
@@ -125,21 +125,21 @@ msgstr "Betroffene Daten"
 msgid "Daily"
 msgstr "Täglich"
 
-#: ./interfaces.py:205
+#: ./interfaces.py:213
 msgid "Day"
 msgstr "Tag"
 
-#: ./interfaces.py:217
+#: ./interfaces.py:225
 msgid "Days"
 msgstr "Tage"
 
 #: ./allocate.py:221
 #: ./mail.py:362
-#: ./report.py:234
+#: ./report.py:240
 msgid "Delete"
 msgstr "Löschen"
 
-#: ./report.py:238
+#: ./report.py:244
 #: ./reserve.py:292
 #: ./templates/reservations.pt:106
 msgid "Deny"
@@ -203,23 +203,23 @@ msgstr "Email Benachrichtigung für Manager"
 msgid "Email Notifications for Reservees"
 msgstr "Email Benachrichtigung für Reservierende"
 
-#: ./interfaces.py:355
+#: ./interfaces.py:363
 msgid "Email Subject for Approved Reservations"
 msgstr "Email Betreff für Zugelassene Reservationen"
 
-#: ./interfaces.py:342
+#: ./interfaces.py:350
 msgid "Email Subject for Automatically Approved Reservations"
 msgstr "Email Betreff für Automatisch Zugelassene Reservationen"
 
-#: ./interfaces.py:368
+#: ./interfaces.py:376
 msgid "Email Subject for Denied Reservations"
 msgstr "Email Betreff für Abgelehnte Reservationen"
 
-#: ./interfaces.py:329
+#: ./interfaces.py:337
 msgid "Email Subject for Received Reservations"
 msgstr "Email Betreff für Erhaltene Reservationen"
 
-#: ./interfaces.py:316
+#: ./interfaces.py:324
 msgid "Email Subject for Reservation Pending"
 msgstr "Email Betreff für Reservationen in der Warteliste"
 
@@ -232,31 +232,31 @@ msgstr "Email Vorlage"
 msgid "Email Templates"
 msgstr "Email Vorlagen"
 
-#: ./interfaces.py:362
+#: ./interfaces.py:370
 msgid "Email Text for Approved Reservations"
 msgstr "Email Text für Zugelassene Reservationen"
 
-#: ./interfaces.py:349
+#: ./interfaces.py:357
 msgid "Email Text for Automatically Approved Reservations"
 msgstr "Email Text für Automatisch Zugelassene Reservationen"
 
-#: ./interfaces.py:375
+#: ./interfaces.py:383
 msgid "Email Text for Denied Reservations"
 msgstr "Email Text für Abgelehnte Reservationen"
 
-#: ./interfaces.py:336
+#: ./interfaces.py:344
 msgid "Email Text for Received Reservations"
 msgstr "Email Text für Erhaltene Reservationen"
 
-#: ./interfaces.py:323
+#: ./interfaces.py:331
 msgid "Email Text for Reservation Pending"
 msgstr "Email Text für Reservationen in der Warteliste"
 
-#: ./interfaces.py:195
+#: ./interfaces.py:203
 msgid "End"
 msgstr "Ende"
 
-#: ./interfaces.py:296
+#: ./interfaces.py:304
 msgid "End date before start date"
 msgstr "Ende vor Start"
 
@@ -264,7 +264,15 @@ msgstr "Ende vor Start"
 msgid "Entry"
 msgstr "Eintrag"
 
-#: ./interfaces.py:163
+#: ./interfaces.py:136
+msgid "Everything after this hour is not shown in the calendar, making the calendar display more compact. Should be set to an hour after which there cannot be any reservations."
+msgstr "Alles nach dieser Stunde wird im Kalender nicht angezeigt, was die Anzeige kompakter macht. Sie sollten eine Stunde wählen nach der es keine Reservationen geben kann."
+
+#: ./interfaces.py:127
+msgid "Everything before this hour is not shown in the calendar, making the calendar display more compact. Should be set to an hour before which there cannot be any reservations."
+msgstr "Alles vor dieser Stunde wird im Kalender nicht angezeigt, was die Anzeige kompakter macht. Sie sollten eine Stunde wählen vor der es keine Reservationen geben kann."
+
+#: ./interfaces.py:171
 msgid "First hour must be smaller than last hour"
 msgstr "Die erste Stunde muss kleiner als die letzte Stunde sein"
 
@@ -272,7 +280,7 @@ msgstr "Die erste Stunde muss kleiner als die letzte Stunde sein"
 msgid "First hour of the day"
 msgstr "Erste Stunde des Tages"
 
-#: ./interfaces.py:141
+#: ./interfaces.py:149
 msgid "Formsets"
 msgstr "Teilformulare"
 
@@ -280,15 +288,15 @@ msgstr "Teilformulare"
 msgid "Fr"
 msgstr "Fr"
 
-#: ./utils.py:341
+#: ./utils.py:344
 msgid "Free"
 msgstr "Frei"
 
-#: ./interfaces.py:209
+#: ./interfaces.py:217
 msgid "From"
 msgstr "Von"
 
-#: ./utils.py:368
+#: ./utils.py:371
 msgid "Full Waitinglist"
 msgstr "Warteliste voll"
 
@@ -308,7 +316,7 @@ msgstr "Allgemein"
 msgid "Hide"
 msgstr "Verstecken"
 
-#: ./interfaces.py:173
+#: ./interfaces.py:181
 msgid "Id"
 msgstr "Id"
 
@@ -320,7 +328,7 @@ msgstr "Wenn Sie diese Datensätze entfernen möchten, sollten Sie zuerst ein Ba
 msgid "Invalid arguments"
 msgstr "Ungültige Argumente"
 
-#: ./error.py:73
+#: ./error.py:76
 msgid "Invalid change. Your request may have already been processed earlier."
 msgstr "Ungültige Änderung. Ihre Anfrage wurde möglicherweise schon bearbeitet."
 
@@ -328,11 +336,11 @@ msgstr "Ungültige Änderung. Ihre Anfrage wurde möglicherweise schon bearbeite
 msgid "Invalid email address"
 msgstr "Ungültige Email Adresse"
 
-#: ./interfaces.py:156
+#: ./interfaces.py:164
 msgid "Invalid first hour"
 msgstr "Ungültige erste Stunde"
 
-#: ./interfaces.py:159
+#: ./interfaces.py:167
 msgid "Invalid last hour"
 msgstr "Ungültige letzte Stunde"
 
@@ -340,11 +348,11 @@ msgstr "Ungültige letzte Stunde"
 msgid "Invalid reservation request"
 msgstr "Ungültige Reservations-Anfrage"
 
-#: ./interfaces.py:311
+#: ./interfaces.py:319
 msgid "Language"
 msgstr "Sprache"
 
-#: ./interfaces.py:131
+#: ./interfaces.py:135
 msgid "Last hour of the day"
 msgstr "Letzte Stunde des Tages"
 
@@ -360,11 +368,11 @@ msgstr "Wartung"
 msgid "Manage"
 msgstr "Verwalten"
 
-#: ./interfaces.py:298
+#: ./interfaces.py:306
 msgid "May contain the following template variables:<br>%(resource)s - title of the resource<br>%(dates)s - list of dates reserved<br>%(reservation_mail)s - email of reservee<br>%(data)s - formdata associated with the reservation<br>%(approval_link)s - link to the approval view<br>%(denial_link)s - link to the denial view"
 msgstr "Kann die folgenden Vorlagen-Variabeln enthalten:<br>%(resource)s - Titel der Ressource<br>%(dates)s - Daten der Reservation<br>%(reservation_mail)s - Email des/der Reservierenden<br>%(data)s - Formulardaten der Reservation<br>%(approval_link)s - Link zu der Zulassungs-Ansicht<br>%(denial_link)s - Link zu der Ablehnungs-Ansicht"
 
-#: ./interfaces.py:397
+#: ./interfaces.py:405
 msgid "Metadata"
 msgstr "Metadaten"
 
@@ -376,7 +384,7 @@ msgstr "Mo"
 msgid "Monthly Report"
 msgstr "Monatsreport"
 
-#: ./report.py:133
+#: ./report.py:134
 msgid "Monthly Report for ${month} ${year}"
 msgstr "Monatesreport ${month} ${year}"
 
@@ -396,11 +404,11 @@ msgstr "Nächster Monat &gt;&gt;"
 msgid "No"
 msgstr "Nein"
 
-#: ./error.py:76
+#: ./error.py:79
 msgid "No reservable slot found."
 msgstr "Der gewünschte Zeitbereich ist bereits besetzt."
 
-#: ./utils.py:352
+#: ./utils.py:355
 msgid "No spots available"
 msgstr "Keine Plätze frei"
 
@@ -416,7 +424,7 @@ msgstr "Anzahl verwaister Datensätze in der Datenbank:"
 msgid "Number of Records in Database:"
 msgstr "Anzahl Datensätze in der Datenbank"
 
-#: ./utils.py:339
+#: ./utils.py:342
 msgid "Occupied"
 msgstr "Besetzt"
 
@@ -428,15 +436,15 @@ msgstr "Einmalig"
 msgid "Orphan Records are records in the database for which no corresponding plone resource object can be found. Those records exist because there is no reliable way to detect that a plone resource object is being deleted, hence no cleanup is ever done in this case."
 msgstr "Verwaiste Datensätze sind Datensätze in der Datenbank für welche es keine abhängige Plone Ressource mehr gibt. Diese Datensätze existieren weil es keinen verlässlichen Weg gibt zu erfahren dass eine Ressource gerade gelöscht wird, weswegen in diesem Fall nicht aufgeräumt wird."
 
-#: ./interfaces.py:229
+#: ./interfaces.py:237
 msgid "Partly available"
 msgstr "Teilweise verfügbar"
 
-#: ./interfaces.py:276
+#: ./interfaces.py:284
 msgid "Partly available allocations can only be reserved separately"
 msgstr "Teilweise verfügbare Einteilungen können nur separat reserviert werden"
 
-#: ./report.py:71
+#: ./report.py:72
 msgid "Pending"
 msgstr "Warteliste"
 
@@ -444,15 +452,15 @@ msgstr "Warteliste"
 msgid "Pending Reservations"
 msgstr "Offene Reservationen"
 
-#: ./interfaces.py:136
+#: ./interfaces.py:144
 msgid "Quota"
 msgstr "Kontingent"
 
-#: ./interfaces.py:265
+#: ./interfaces.py:273
 msgid "Quota must be between 1 and 100"
 msgstr "Kontingent muss zwischen 1 und 100 liegen"
 
-#: ./interfaces.py:234
+#: ./interfaces.py:242
 msgid "Raster"
 msgstr "Raster"
 
@@ -460,7 +468,7 @@ msgstr "Raster"
 msgid "Recurrance reservation"
 msgstr "Wiederholung reservieren"
 
-#: ./interfaces.py:179
+#: ./interfaces.py:187
 msgid "Recurrence"
 msgstr "Wiederholung"
 
@@ -488,7 +496,7 @@ msgstr "Einteilungen entfernen"
 msgid "Remove reservation"
 msgstr "Reservation entfernen"
 
-#: ./interfaces.py:439
+#: ./interfaces.py:447
 msgid "Reservation"
 msgstr "Reservation"
 
@@ -520,7 +528,7 @@ msgstr "Reservation erfolgreich"
 msgid "Reservations"
 msgstr "Reservationen"
 
-#: ./error.py:79
+#: ./error.py:82
 msgid "Reservations can't be made for more than 24 hours at a time"
 msgstr "Reservationen können nicht über mehr als 24 Stunden gemacht werden"
 
@@ -566,27 +574,27 @@ msgstr "Sende Emails zu gemachten, zugelassenen und abgelehnten Reservationen zu
 msgid "Send emails about new pending reservations to the first reservation managers found in the path."
 msgstr "Sende Emails zu neuen Reservationen in der Warteliste zum ersten Reservationsmanager der im Pfad gefunden werden kann."
 
-#: ./interfaces.py:317
+#: ./interfaces.py:325
 msgid "Sent to <b>managers</b> when a new pending reservation is made. May contain the template variables listed below."
 msgstr "Wird <b>Managern</b> gesendet, wenn eine Reservation in die Warteliste hinzugefügt wird. Kann die untenstehenden Vorlagen-Variabeln enthalten."
 
-#: ./interfaces.py:330
+#: ./interfaces.py:338
 msgid "Sent to <b>users</b> when a new pending reservation is made. May contain the template variables listed below."
 msgstr "Wird <b>Benutzern</b> gesendet, wenn eine neue Reservation in die Warteliste hinzugefügt wird. Kann die untenstehenden Vorlagen-Variabeln enthalten."
 
-#: ./interfaces.py:343
+#: ./interfaces.py:351
 msgid "Sent to <b>users</b> when a new reservation is made. May contain the template variables listed below."
 msgstr "Wird <b>Benutzern</b> gesendet, wenn eine neue Reservation gemacht wird. Kann die untenstehenden Vorlagen-Variabeln enthalten."
 
-#: ./interfaces.py:356
+#: ./interfaces.py:364
 msgid "Sent to <b>users</b> when a reservation is approved. May contain the template variables listed below."
 msgstr "Wird <b>Benutzern</b> gesendet, wenn eine Reservation zugelassen wird. Kann die untenstehenden Vorlagen-Variabeln enthalten."
 
-#: ./interfaces.py:369
+#: ./interfaces.py:377
 msgid "Sent to <b>users</b> when a reservation is denied. May contain the template variables listed below."
 msgstr "Wird <b>Benutzern</b> gesendet, wenn eine Reservation abgelehnt wird. Kann die untenstehenden Vorlagen-Variabeln enthalten."
 
-#: ./interfaces.py:223
+#: ./interfaces.py:231
 msgid "Separately reservable"
 msgstr "Separat reservierbar"
 
@@ -598,7 +606,7 @@ msgstr "Einstellungen"
 msgid "Show"
 msgstr "Anzeigen"
 
-#: ./interfaces.py:191
+#: ./interfaces.py:199
 msgid "Start"
 msgstr "Start"
 
@@ -614,19 +622,19 @@ msgstr "So"
 msgid "Th"
 msgstr "Do"
 
-#: ./interfaces.py:260
+#: ./interfaces.py:268
 msgid "The allocation must be at least 5 minutes long"
 msgstr "Die Einteilung muss mindestens 5 minuten lang sein"
 
-#: ./error.py:85
+#: ./error.py:88
 msgid "The given reservation paramters are invalid."
 msgstr "Die Reservations-Parameter sind ungültig."
 
-#: ./error.py:91
+#: ./error.py:94
 msgid "The given reservation token is invalid."
 msgstr "Das Reservations-Token ist ungültig."
 
-#: ./error.py:67
+#: ./error.py:70
 msgid "The item does no longer exist."
 msgstr "Der Eintrag existiert nicht mehr"
 
@@ -638,11 +646,11 @@ msgstr "Die Anzahl Minuten während der ein Benutzer warten muss bis eine neue R
 msgid "The requested allocations could not be found"
 msgstr "Die gewünschten Einteilungen konnten nicht gefunden werden"
 
-#: ./error.py:88
+#: ./error.py:91
 msgid "The requested period is no longer available and the waiting list is full."
 msgstr "Die angefragte Periode ist nicht mehr verfügbar und die Warteliste ist voll."
 
-#: ./error.py:70
+#: ./error.py:73
 msgid "The requested period is no longer available and there is no waiting list."
 msgstr "Die angefragte Periode ist nicht mehr verfügbar und es existiert keine Warteliste."
 
@@ -650,7 +658,7 @@ msgstr "Die angefragte Periode ist nicht mehr verfügbar und es existiert keine 
 msgid "The requested recurrence could not be found"
 msgstr "Die gewünschte Wiederholung konnte nicht gefunden werden"
 
-#: ./error.py:64
+#: ./error.py:67
 msgid "The resource is being edited by someone else. Please try again."
 msgstr "Die Resource wird von jemand anderem bearbeitet. Bitte versuchen Sie es nochmal."
 
@@ -666,12 +674,12 @@ msgstr "Belegungsperiode"
 msgid "Timeframe overlaps with '${overlap}' in the current folder"
 msgstr "Die Belegungsperiod überschneidet sich mit '${overlap}' in diesem Ordner"
 
-#: ./interfaces.py:185
+#: ./interfaces.py:193
 #: ./templates/timeframes.pt:4
 msgid "Timeframes"
 msgstr "Belegungsperioden"
 
-#: ./error.py:82
+#: ./error.py:85
 msgid "Too many reservations in a short time. Wait for a moment before trying again."
 msgstr "Zu viele Reservationen in einer kurzen Zeit. Bitte warten Sie für einen Moment befor Sie es wieder probieren."
 
@@ -679,7 +687,7 @@ msgstr "Zu viele Reservationen in einer kurzen Zeit. Bitte warten Sie für einen
 msgid "Tu"
 msgstr "Di"
 
-#: ./interfaces.py:213
+#: ./interfaces.py:221
 msgid "Until"
 msgstr "Bis"
 
@@ -691,11 +699,11 @@ msgstr "Normalerweise gibt es keinen Grund diese Datensätze zu entfernen, ausse
 msgid "Utils"
 msgstr "Hilfsmittel"
 
-#: ./interfaces.py:249
+#: ./interfaces.py:257
 msgid "Waiting List Spots"
 msgstr "Wartelistenplätze"
 
-#: ./interfaces.py:270
+#: ./interfaces.py:278
 msgid "Waitinglist length must be between the quota and 100"
 msgstr "Die Warteliste muss mindestens so gross wie das Kontingent und kleiner als 100 sein"
 
