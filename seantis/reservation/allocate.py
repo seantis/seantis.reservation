@@ -28,14 +28,18 @@ class AllocationAddForm(AllocationForm):
     grok.name('allocate')
     grok.require(permission)
     
-    fields = field.Fields(IAllocation)
+    fields = field.Fields(IAllocation).select(
+        'id', 'group', 'timeframes', 'start_time', 'end_time',
+        'recurring', 'day', 'recurrence_start', 'recurrence_end', 
+        'days', 'separately', 'quota', 'partly_available', 'raster', 
+        'approve','waitinglist_spots'
+    )
     fields['days'].widgetFactory = CheckBoxFieldWidget
     fields['recurring'].widgetFactory = RadioFieldWidget
 
     label = _(u'Allocation')
 
     def defaults(self):        
-        global days
         if self.start:
             weekday = self.start.weekday()
             daymap = dict([(d.value.weekday, d.value) for d in days])
@@ -46,13 +50,16 @@ class AllocationAddForm(AllocationForm):
         recurrence_start, recurrence_end = self.default_recurrence()
 
         return {
-            'quota': self.scheduler.quota,
             'group': u'',
             'recurrence_start': recurrence_start,
             'recurrence_end': recurrence_end,
             'timeframes': self.json_timeframes(),
             'days': default_days,
-            'waitinglist_spots': self.scheduler.quota
+            'quota': self.context.quota,
+            'approve': self.context.approve,
+            'waitinglist_spots': self.context.waitinglist_spots,
+            'raster': self.context.raster,
+            'partly_available': self.context.partly_available,
         }
 
     def timeframes(self):

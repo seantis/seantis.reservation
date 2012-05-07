@@ -109,7 +109,57 @@ class OverviewletManager(grok.ViewletManager):
 class IReservationFormSet(Interface):
     """ Marks interface as usable for sub-forms in a resource object. """
 
-class IResourceBase(form.Schema):
+class IResourceAllocationDefaults(form.Schema):
+
+    quota = schema.Int(
+        title=_(u'Quota'),
+        description=_(u'Number of times an allocation may be reserved at the same time.'),
+        default=1
+        )
+
+    partly_available = schema.Bool(
+        title=_(u'Partly available'),
+        description=_(u'If the allocation is partly available users may reserve '
+                      u'only a part of it (e.g. half of it). If not the allocation '
+                      u'Must be reserved as a whole or not at all'),
+        default=False
+        )
+
+    raster = schema.Choice(
+        title=_(u'Raster'),
+        description=_(u'Defines the minimum length of any given reservation as well '
+                      u'as the alignment of the start / end of the allocation. E.g. a '
+                      u'raster of 30 minutes means that the allocation can only start '
+                      u'at xx:00 and xx:30 respectively'),
+        values=VALID_RASTER_VALUES,
+        default=30
+        )
+
+    approve = schema.Bool(
+        title=_(u'Approve reservation requests'),
+        description=_(u'If checked a reservation manager must decide if a reservation can '
+                      u'be approved. Until then users are added to the waitinglist. '
+                      u'Reservations are automatically approved if this is not checked. '),
+        default=False
+        )
+    
+    waitinglist_spots = schema.Int(
+        title=_(u'Waiting List Spots'),
+        description=_(u'Number of spots in the waitinglist (must be at least as high as the quota)'),
+        default=100
+        )
+    
+    @invariant
+    def isValidQuota(Allocation):
+        if not (1 <= Allocation.quota and Allocation.quota <= 100):
+            raise Invalid(_(u'Quota must be between 1 and 100'))
+    
+    @invariant
+    def isValidWaitinglist(Allocation):    
+        if not (Allocation.quota <= Allocation.waitinglist_spots and Allocation.waitinglist_spots <= 100):
+            raise Invalid(_(u'Waitinglist length must be between the quota and 100'))
+
+class IResourceBase(IResourceAllocationDefaults):
     """ A resource displaying a calendar. """
 
     title = schema.TextLine(
@@ -139,13 +189,11 @@ class IResourceBase(form.Schema):
             default=23
         )
 
-    quota = schema.Int(
-            title=_(u'Quota'),
-            default=1,
-            description=_(u'The default quota of any allocation made within this '
-                          u'resource. The quota of an allocation is the number of '
-                          u'times the allocation may be reserved at the same time. ')
-        )
+    form.fieldset(
+        'defaults',
+        label=_(u'Default Allocation Values'),
+        fields=('quota', 'partly_available', 'raster', 'approve', 'waitinglist_spots')
+        )    
 
     formsets = schema.List(
             title=_(u'Formsets'),
@@ -178,13 +226,13 @@ class IResourceBase(form.Schema):
 class IResource(IResourceBase):
     pass
 
-class IAllocation(form.Schema):
+class IAllocation(IResourceAllocationDefaults):
     """ An reservable time-slot within a calendar. """
 
     id = schema.Int(
         title=_(u'Id'),
         default=-1,
-        required=False
+        required=False,
         )
 
     group = schema.Text(
@@ -247,42 +295,6 @@ class IAllocation(form.Schema):
         default=False
         )
 
-    partly_available = schema.Bool(
-        title=_(u'Partly available'),
-        description=_(u'If the allocation is partly available users may reserve '
-                      u'only a part of it (e.g. half of it). If not the allocation '
-                      u'Must be reserved as a whole or not at all'),
-        default=False
-        )
-
-    raster = schema.Choice(
-        title=_(u'Raster'),
-        description=_(u'Defines the minimum length of any given reservation as well '
-                      u'as the alignment of the start / end of the allocation. E.g. a '
-                      u'raster of 30 minutes means that the allocation can only start '
-                      u'at xx:00 and xx:30 respectively'),
-        values=VALID_RASTER_VALUES,
-        default=30
-        )
-
-    quota = schema.Int(
-        title=_(u'Quota'),
-        description=_(u'Number of times an allocation may be reserved at the same time.')
-        )
-
-    approve = schema.Bool(
-        title=_(u'Approve reservation requests'),
-        description=_(u'If checked a reservation manager must decide if a reservation can '
-                      u'be approved. Until then users are added to the waitinglist. '
-                      u'Reservations are automatically approved if this is not checked. '),
-        default=False
-        )
-    
-    waitinglist_spots = schema.Int(
-        title=_(u'Waiting List Spots'),
-        description=_(u'Number of spots in the waitinglist (must be at least as high as the quota)')
-        )
-
     @invariant
     def isValidRange(Allocation):
         start, end = utils.get_date_range(
@@ -292,16 +304,6 @@ class IAllocation(form.Schema):
         
         if abs((end - start).seconds // 60) < 5:
             raise Invalid(_(u'The allocation must be at least 5 minutes long'))
-
-    @invariant
-    def isValidQuota(Allocation):
-        if not (1 <= Allocation.quota and Allocation.quota <= 100):
-            raise Invalid(_(u'Quota must be between 1 and 100'))
-
-    @invariant
-    def isValidWaitinglist(Allocation):    
-        if not (Allocation.quota <= Allocation.waitinglist_spots and Allocation.waitinglist_spots <= 100):
-            raise Invalid(_(u'Waitinglist length must be between the quota and 100'))
 
     @invariant
     def isValidOption(Allocation):

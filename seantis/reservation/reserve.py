@@ -81,21 +81,6 @@ class ReservationForm(ResourceBaseForm, ReservationSchemata):
     default_fieldset_label = _(u'General Information')
 
     @property
-    def additionalSchemata(self):
-        scs = []
-        self.fti = dict()
-
-        for ptype in self.context.formsets:
-             fti = queryUtility(IDexterityFTI, name=ptype)
-             if fti:
-                schema = fti.lookupSchema()
-                scs.append((ptype, fti.title, schema))
-                
-                self.fti[ptype] = (fti.title, schema)
-
-        return scs
-
-    @property
     def disabled_fields(self):
         disabled = ['day']
         try:

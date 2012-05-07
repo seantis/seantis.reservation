@@ -207,8 +207,7 @@ class Scheduler(object):
 
     """
 
-    def __init__(self, resource_uuid, quota=1, is_exposed=None, language=None):
-        assert(0 <= quota)
+    def __init__(self, resource_uuid, is_exposed=None, language=None):
 
         try: 
             self.uuid = UUID(resource_uuid)
@@ -216,7 +215,6 @@ class Scheduler(object):
             self.uuid = resource_uuid
         
         self.is_exposed = is_exposed or (lambda allocation: True)
-        self.quota = quota
 
         # the language is used for the events that are being sent
         # if no language is given, then the current site language is used
@@ -257,7 +255,7 @@ class Scheduler(object):
         dates = utils.pairs(dates)
         
         group = new_uuid()
-        quota = quota or self.quota
+        quota = quota or 1
         waitinglist_spots = approve and waitinglist_spots or quota
 
         # if the allocation is not partly available the raster is set to lowest

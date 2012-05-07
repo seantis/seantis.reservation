@@ -352,7 +352,7 @@ class TestScheduler(IntegrationTestCase):
 
     @serialized
     def test_quotas(self):
-        sc = Scheduler(new_uuid(), quota=10)
+        sc = Scheduler(new_uuid())
         
         start = datetime(2011, 1, 1, 15, 0)
         end = datetime(2011, 1, 1, 16, 0)
@@ -370,7 +370,7 @@ class TestScheduler(IntegrationTestCase):
 
         # the 11th time it'll fail
         self.assertRaises(AlreadyReservedError, sc.reserve, reservation_email, [(start, end)])
-        other = Scheduler(new_uuid(), quota=5)
+        other = Scheduler(new_uuid())
 
         # setup an allocation with five spots
         allocations = other.allocate(
@@ -410,13 +410,13 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(4, len(other.allocation_mirrors_by_master(allocation)))
     
     def test_fragmentation(self):
-        sc = Scheduler(new_uuid(), quota=3)
+        sc = Scheduler(new_uuid())
 
         start = datetime(2011, 1, 1, 15, 0)
         end = datetime(2011, 1, 1, 16, 0)
         daterange = (start, end)
 
-        allocation = sc.allocate(daterange)[0]
+        allocation = sc.allocate(daterange, quota=3)[0]
 
         reservation = sc.reserve(reservation_email, daterange)
         slots = sc.approve_reservation(reservation)
@@ -436,13 +436,13 @@ class TestScheduler(IntegrationTestCase):
     
     @serialized
     def test_imaginary_mirrors(self):
-        sc = Scheduler(new_uuid(), quota=3)
+        sc = Scheduler(new_uuid())
 
         start = datetime(2011, 1, 1, 15, 0)
         end = datetime(2011, 1, 1, 16, 0)
         daterange = (start, end)
 
-        allocation = sc.allocate(daterange)[0]
+        allocation = sc.allocate(daterange, quota=3)[0]
         self.assertTrue(allocation.is_master)
 
         mirrors = sc.allocation_mirrors_by_master(allocation)
@@ -472,13 +472,13 @@ class TestScheduler(IntegrationTestCase):
 
     @serialized
     def test_quota_changes(self):
-        sc = Scheduler(new_uuid(), quota=5)
+        sc = Scheduler(new_uuid())
 
         start = datetime(2011, 1, 1, 15, 0)
         end = datetime(2011, 1, 1, 16, 0)
         daterange = (start, end)
 
-        master = sc.allocate(daterange)[0]
+        master = sc.allocate(daterange, quota=5)[0]
 
         reservations = []
         for i in range(0, 5):

@@ -28,7 +28,8 @@ class Resource(Container):
     def scheduler(self, language=None):
         uuid = utils.string_uuid(self.uuid())
         is_exposed = exposure.for_allocations(self, [uuid])
-        return Scheduler(self.uuid(), self.quota, is_exposed, language=language)
+
+        return Scheduler(self.uuid(), is_exposed=is_exposed, language=language)
 
     def timeframes(self):
         return timeframes_by_context(self)
