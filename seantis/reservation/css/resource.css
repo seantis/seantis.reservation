@@ -414,3 +414,12 @@ body .portalMessage {
 #calroot {
     z-index: 10000; /* to overlap the overlay */
 }
+
+.seantis-reservation-form .formHelp {
+    max-width: 50%;
+    margin-left: 5px;
+}
+
+.seantis-reservation-form div.field {
+    margin-bottom: 10px;   
+}
