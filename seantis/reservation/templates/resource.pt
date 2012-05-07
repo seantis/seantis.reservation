@@ -18,10 +18,6 @@
 <metal:main fill-slot="main">
     <tal:main-macro metal:define-macro="main">
 
-        <div tal:replace="structure provider:plone.abovecontenttitle" />
-        <div tal:replace="structure provider:plone.belowcontenttitle" />
-        <div tal:replace="structure provider:plone.abovecontentbody" />
-
         <div class="documentContent" 
             tal:define="multicalendar python: view.calendar_count == 1"
             tal:attributes="class python: view.calendar_count == 1 and 'singlecalendar' or 'multicalendar'">
@@ -37,8 +33,14 @@
                     calendar_id resource/calendar_id;
                     ">
 
+                    <div tal:replace="structure provider:plone.abovecontenttitle" />
+
                     <h1 tal:content="title" class="documentFirstHeading"></h1>
-                    <p tal:content="description" />
+                    
+                    <div tal:replace="structure provider:plone.belowcontenttitle" />
+
+                    <div tal:replace="structure provider:plone.abovecontentbody" />
+                    
                     <div tal:attributes="id calendar_id"></div>
 
                     <div class="legend">
@@ -89,8 +91,6 @@
 
         <div id="inline-page">
         </div>
-
-        <div tal:replace="structure provider:seantis.reservation.overviewletmanager"/>
 
         <div tal:replace="structure provider:plone.belowcontentbody" />
 
