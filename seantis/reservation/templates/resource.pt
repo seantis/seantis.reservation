@@ -43,12 +43,27 @@
                     
                     <div tal:attributes="id calendar_id"></div>
 
-                    <div class="legend">
-                        <div class="icon-fully-booked">
+                    <div class="legend" metal:define-macro="calendar_legend">
+                        <div class="color">
+                            <div class="event-available"></div>
+                            <tal:block i18n:translate="">Fully available</tal:block>
+                        </div>
+
+                        <div class="color">
+                            <div class="event-partly-available"></div>
+                            <tal:block i18n:translate="">Partly available</tal:block>
+                        </div>
+
+                        <div class="color">
+                            <div class="event-unavailable"></div>
+                            <tal:block i18n:translate="">Unavailable</tal:block>
+                        </div>
+
+                        <div class="icon icon-fully-booked">
                             <tal:block i18n:translate="">Fully booked</tal:block>
                         </div>
                         
-                        <div class="icon-full-waitinglist">
+                        <div class="icon icon-full-waitinglist">
                             <tal:block i18n:translate="">Full waitinglist</tal:block>
                         </div>
                     </div>
@@ -70,15 +85,7 @@
                     <h1 tal:content="title" class="documentFirstHeading"></h1>
                     <div tal:attributes="id calendar_id"></div>
 
-                    <div class="legend">
-                        <div class="icon-fully-booked">
-                            <tal:block i18n:translate="">Fully booked</tal:block>
-                        </div>
-                        
-                        <div class="icon-full-waitinglist">
-                            <tal:block i18n:translate="">Full waitinglist</tal:block>
-                        </div>
-                    </div>
+                    <metal:block use-macro="context/@@view/macros/calendar_legend" />
 
                     <div style="clear: both;"></div>
                 </div>

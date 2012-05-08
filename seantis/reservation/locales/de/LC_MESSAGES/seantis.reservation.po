@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-05-07 12:39+0000\n"
+"POT-Creation-Date: 2012-05-08 14:29+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -316,11 +316,15 @@ msgstr "Von"
 msgid "Full Waitinglist"
 msgstr "Warteliste voll"
 
-#: ./templates/resource.pt:52
+#: ./templates/resource.pt:67
 msgid "Full waitinglist"
 msgstr "Warteliste voll"
 
-#: ./templates/resource.pt:48
+#: ./templates/resource.pt:49
+msgid "Fully available"
+msgstr "Verfügbar"
+
+#: ./templates/resource.pt:63
 msgid "Fully booked"
 msgstr "Ausgebucht"
 
@@ -473,6 +477,7 @@ msgid "Orphan Records are records in the database for which no corresponding plo
 msgstr "Verwaiste Datensätze sind Datensätze in der Datenbank für welche es keine abhängige Plone Ressource mehr gibt. Diese Datensätze existieren weil es keinen verlässlichen Weg gibt zu erfahren dass eine Ressource gerade gelöscht wird, weswegen in diesem Fall nicht aufgeräumt wird."
 
 #: ./interfaces.py:121
+#: ./templates/resource.pt:54
 msgid "Partly available"
 msgstr "Teilweise verfügbar"
 
@@ -726,6 +731,10 @@ msgstr "Zu viele Reservationen in einer kurzen Zeit. Bitte warten Sie für einen
 #: ./interfaces.py:29
 msgid "Tu"
 msgstr "Di"
+
+#: ./templates/resource.pt:59
+msgid "Unavailable"
+msgstr "Nicht verfügbar"
 
 #: ./interfaces.py:281
 msgid "Until"

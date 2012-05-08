@@ -247,12 +247,27 @@ a.event-full-waitinglist.event-fully-booked .fc-event-head {
     padding-right: 10px;  
 }
 
+.legend div.color {
+    padding: 0;
+    padding-right: 8px;
+}
+
+.legend div.color div {
+    margin-right: 1px;
+    padding: 0;
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+    position: relative;
+    top: 1px;
+}
+
 @media all and (max-width: 900px) {
     .singlecalendar .fc-event-head {
         background-image: none !important;   
     }
 
-    .singlecalendar .legend {
+    .singlecalendar .legend .icon {
         display: none !important;
     }
 }
@@ -262,7 +277,7 @@ a.event-full-waitinglist.event-fully-booked .fc-event-head {
         background-image: none !important;   
     }
 
-    .multicalendar .legend {
+    .multicalendar .legend .icon {
         display: none !important;
     }
 }
