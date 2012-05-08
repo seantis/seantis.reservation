@@ -1,0 +1,39 @@
+#seantis-overview-calendar {
+    page-break-before: always;
+}
+
+#seantis-overview-calendar td {
+    width: 80px !important;
+    border: none !important;
+}
+
+#seantis-overview-calendar > * {
+    -webkit-print-color-adjust: exact; 
+}
+
+#seantis-overview-calendar .event-unavailable .fc-day-content div:after {
+    content: "0%" !important;
+    font-size: 10px;
+}
+
+#seantis-overview-calendar .event-partly-available .fc-day-content div:after {
+    content: "<100%" !important;
+    font-size: 10px;
+}
+
+#seantis-overview-calendar .event-available .fc-day-content div:after {
+    content: "100%" !important;
+    font-size: 10px;
+}
+
+.overview-utils {
+    display: none;
+}
+
+.timeframes-control, .timeframes-global-control {
+    display: none;
+}
+
+#email_templates {
+    display: none;
+}
