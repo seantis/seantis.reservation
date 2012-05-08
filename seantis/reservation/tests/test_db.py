@@ -689,3 +689,36 @@ class TestScheduler(IntegrationTestCase):
         self.assertTrue(reservation_denied_event.was_fired())
 
         self.assertEqual(reservation_denied_event.event.reservation.token, token)
+
+    @serialized
+    def test_email(self):
+        self.login_as_manager()
+
+        mail = self.mailhost
+        resource = self.create_resource()
+        sc = resource.scheduler()
+
+        start = datetime(2012, 2, 29, 15, 0)
+        end = datetime(2012, 2, 29, 19, 0)
+        dates = (start, end)
+
+        # do an unapproved reservation
+        start = datetime(2012, 1, 1, 15, 0)
+        end = datetime(2012, 1, 1, 19, 0)
+        dates = (start, end)
+
+        # one email is sent if there's no approval
+        sc.allocate(dates, approve=False)
+        token = sc.reserve(reservation_email, dates, data=dict())
+
+        self.assertEqual(len(mail.messages), 1)
+        self.assertTrue('Reservation Added' in mail.messages[0])
+
+        # the mail sending happens after before the (automatic) approval,
+        # so there should be no change after
+        sc.approve_reservation(token)
+
+        self.assertEqual(len(mail.messages), 1)
+        mail.messages = []
+
+        self.logout()
