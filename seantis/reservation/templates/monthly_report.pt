@@ -71,7 +71,7 @@
                                     </div>
                                     <div style="clear:both;"></div>
                                 </div>
-
+                                <div style="clear:both;"></div>
                                 <tal:block repeat="reservation python: resource[rtype]">
                                     <div tal:attributes="
                                         class python: (repeat['reservation'].odd() and 'reservation odd' or 'reservation even') + (view.show_details and ' show-details' or '');

@@ -85,3 +85,47 @@ div.fc > * {
 #email_templates {
     display: none;
 }
+
+.monthly-report {
+    font-family: Verdana, Helvetica, sans-serif;
+}
+
+.day {
+    page-break-after: always;
+    border: none !important;
+    border-width: 0 !important;
+}
+
+.day:last-child {
+    page-break-after: avoid;
+}
+
+.leftcolumn h4 {
+    margin-top: 0;   
+}
+
+.monthly-report * {
+  -webkit-print-color-adjust: exact;   
+}
+
+.reservation {
+    font-size: 10px !important;
+    border: 1px solid black !important;   
+    margin-bottom: 10px !important;
+}
+
+.reservation-urls {
+    display: none;   
+}
+
+.reservation-summary {
+    font-size: 12px;   
+}
+
+.controlbox {
+    display: none;   
+}
+
+.day h2 {
+    border-width: 0 0 1px 0 !important;
+}
