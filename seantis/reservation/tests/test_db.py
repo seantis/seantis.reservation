@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
 from uuid import uuid1 as new_uuid
 
@@ -8,6 +9,8 @@ from seantis.reservation.error import AffectedReservationError
 from seantis.reservation.error import AlreadyReservedError
 from seantis.reservation.error import ReservationTooLong
 from seantis.reservation.error import FullWaitingList
+from seantis.reservation.error import InvalidReservationError
+from seantis.reservation import utils
 from seantis.reservation.session import serialized
 from seantis.reservation import events
 
@@ -83,6 +86,23 @@ class TestScheduler(IntegrationTestCase):
 
         remaining = allocation.free_slots()
         self.assertEqual(len(remaining), 2)
+
+    @serialized
+    def test_invalid_reservation(self):
+        sc = Scheduler(new_uuid())
+
+        # try to reserve aspot that doesn't exist
+        astart = datetime(2012, 1, 1, 15, 0)
+        aend = datetime(2012, 1, 1, 16, 0)
+        adates = (astart, aend)
+
+        rstart = datetime(2012, 2, 1, 15, 0)
+        rend = datetime(2012, 2, 1, 16, 0)
+        rdates = (rstart, rend)
+
+        sc.allocate(dates=adates, approve=True)
+
+        self.assertRaises(InvalidReservationError, sc.reserve, reservation_email, rdates)
 
     @serialized
     def test_waitlist(self):
@@ -702,17 +722,37 @@ class TestScheduler(IntegrationTestCase):
         end = datetime(2012, 2, 29, 19, 0)
         dates = (start, end)
 
+        datestr = start.strftime('%d.%m.%Y %H:%M - ') + end.strftime('%H:%M')
+
+        data = utils.mock_data_dictionary(
+            {
+                'name': u'Björn',
+                'icanhazcharacter': '%s'
+            }
+        )
+
+        def assert_data_in_mail(message, assert_as=True):
+            self.assertEqual('name' in message, assert_as)
+            self.assertEqual('Bj=C3=B6rn' in message, assert_as)
+            self.assertEqual('icanhazcharacter' in message, assert_as)
+            self.assertEqual('%s' in message, assert_as)
+
+            # the date should always be there
+            self.assertTrue(datestr in message)
+
         # do an unapproved reservation
-        start = datetime(2012, 1, 1, 15, 0)
-        end = datetime(2012, 1, 1, 19, 0)
+        start = datetime(2012, 2, 29, 15, 0)
+        end = datetime(2012, 2, 29, 19, 0)
         dates = (start, end)
 
         # one email is sent if there's no approval
-        sc.allocate(dates, approve=False)
-        token = sc.reserve(reservation_email, dates, data=dict())
+        allocation = sc.allocate(dates, approve=False)[0]
+        token = sc.reserve(reservation_email, dates, data=data)
 
         self.assertEqual(len(mail.messages), 1)
         self.assertTrue('Reservation Added' in mail.messages[0])
+        self.assertTrue(reservation_email in mail.messages[0])
+        assert_data_in_mail(mail.messages[0])
 
         # the mail sending happens after before the (automatic) approval,
         # so there should be no change after
@@ -721,4 +761,52 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(len(mail.messages), 1)
         mail.messages = []
 
-        self.logout()
+        # no email also when the reservation is stopped (maybe in the future)
+        sc.remove_reservation(token)
+        self.assertEqual(len(mail.messages), 0)
+
+        sc.remove_allocation(allocation.id)
+
+        # now let's try with an approved reservation
+        allocation = sc.allocate(dates, approve=True)[0]
+        token = sc.reserve(reservation_email, dates, data=data)
+
+        # no manager is defined, so we expect to have one email to the reservee
+        self.assertEqual(len(mail.messages), 1)
+        self.assertTrue('New Reservation' in mail.messages[0])
+        self.assertTrue(reservation_email in mail.messages[0])
+        assert_data_in_mail(mail.messages[0])
+
+        # let's decline that one
+        sc.deny_reservation(token)
+        self.assertEqual(len(mail.messages), 2)
+        self.assertTrue('Denied' in mail.messages[1])
+        self.assertTrue(reservation_email in mail.messages[0])
+        assert_data_in_mail(mail.messages[1], False) # no data here
+
+        # add a manager to the resource and start anew
+        self.assign_reservation_manager('manager@example.com', resource)
+        mail.messages = []
+
+        token = sc.reserve(reservation_email, dates, data=data)
+        self.assertEqual(len(mail.messages), 2)
+
+        # the first email is the one sent to the reservee
+        self.assertTrue('New Reservation' in mail.messages[0])
+        self.assertTrue(reservation_email in mail.messages[0])
+        assert_data_in_mail(mail.messages[0])
+
+        # the second is the on sent to the manager
+        self.assertTrue('New Reservation' in mail.messages[1])
+        self.assertTrue('To approve' in mail.messages[1])
+        self.assertTrue('To deny' in mail.messages[1])
+        self.assertTrue(reservation_email in mail.messages[1])
+        self.assertTrue(str(token) in mail.messages[1])
+        assert_data_in_mail(mail.messages[1])
+
+        # approval results in the last mail
+        sc.approve_reservation(token)
+
+        self.assertEqual(len(mail.messages), 3)
+        self.assertTrue('Reservation for' in mail.messages[2])
+        self.assertTrue(reservation_email in mail.messages[2])

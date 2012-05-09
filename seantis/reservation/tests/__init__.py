@@ -20,6 +20,9 @@ from seantis.reservation.session import ISessionUtility
 from seantis.reservation.testing import SQL_INTEGRATION_TESTING
 from seantis.reservation.testing import SQL_FUNCTIONAL_TESTING
 
+from AccessControl import getSecurityManager
+from Products.CMFCore.utils import getToolByName
+
 class TestCase(unittest.TestCase):
 
     def setUp(self):
@@ -63,6 +66,26 @@ class TestCase(unittest.TestCase):
         login(self.portal, TEST_USER_NAME)
         setRoles(self.portal, TEST_USER_ID, ['Manager'])
         self.logged_in = True
+
+    def assign_reservation_manager(self, email, resource):
+        username = email.split('@')[0]
+        password = 'hunter2'
+
+        acl_users = getToolByName(self.portal, 'acl_users')
+        acl_users.userFolderAddUser(username, password, ['Member'], [])
+        
+        resource.manage_setLocalRoles(username, ['Reservation-Manager'])
+
+        user = acl_users.getUser(username)
+        properties = acl_users.mutable_properties.getPropertiesForUser(user)
+        properties._properties['email'] = email
+        acl_users.mutable_properties.setPropertiesForUser(user, properties)
+
+        # the email will be there after the next retrieval of the user
+        user = acl_users.getUser(username)
+        assert user.getProperty('email') == email
+        
+        return username, password
 
     def logout(self):
         logout()

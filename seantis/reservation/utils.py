@@ -54,6 +54,30 @@ def profile(fn):
     return wrapper
 
 def additional_data_dictionary(data, fti):
+    """ Takes the data from a post request and puts the relevant bits into
+    a dictionary with the following structure:
+
+    {
+        "form_key": {
+            "desc": "Form Description",
+            "interface": "The interface used",
+            "values": [
+                {
+                    "key": "value_key",
+                    "sortkey": 1-n,
+                    "value": "value",
+                    "desc": "Value Description"
+                },
+                ...
+            ]
+        }
+    }
+
+    Interfaces used in the reservation data are the interfaces with the
+    IReservationFormSet marker set.
+
+    The dictionary is later converted to JSON and stored on the reservation.
+    """
 
     result = dict()
     used_data = dict([(k, v) for k, v in data.items() if v])
@@ -83,6 +107,26 @@ def additional_data_dictionary(data, fti):
         result[key] = record
 
     return result
+
+def mock_data_dictionary(data, formset_key='mock', formset_desc='Mocktest'):
+    """ Given a dictionary of key values this function returns a dictionary
+    with the same structure as additional_data_dictionary, without the use
+    of interfaces.
+
+    This function exists for testing purposes.
+    """
+
+    records = list()
+
+    formset = dict()
+    formset['desc'] = formset_desc
+    formset['interface'] = 'mockinterface'
+    formset['values'] = records
+
+    for i, item in enumerate(data.items()):
+        records.append(dict(key=item[0], sortkey=i, value=item[1], desc=item[0]))
+
+    return {formset_key: formset}
 
 def overlaps(start, end, otherstart, otherend):
     if otherstart <= start and start <= otherend:

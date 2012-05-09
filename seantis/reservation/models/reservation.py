@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from sqlalchemy import types
 from sqlalchemy.schema import Column
 from sqlalchemy.schema import Index
@@ -80,7 +82,7 @@ class Reservation(ORMBase, OtherModels):
     def timespans(self, start=None, end=None):
 
         if self.target_type == u'allocation':
-            return [(self.start, self.end)]
+            return [(self.start, self.end + timedelta(microseconds=1))]
         elif self.target_type == u'group':
             return [(a.display_start, a.display_end) for a in self.allocations()]
         else:
