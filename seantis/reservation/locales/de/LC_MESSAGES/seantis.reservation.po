@@ -462,7 +462,7 @@ msgstr "Anzahl von Plätzen in der Warteliste (muss mindestens so gross wie das 
 
 #: ./interfaces.py:116
 msgid "Number of times an allocation may be reserved at the same time."
-msgstr "Anzahl von Reservationen die zur gleichen Zeit gemacht werden können."
+msgstr "Legt fest ob die Ressource mehr als einmal verfügbar ist."
 
 #: ./utils.py:342
 msgid "Occupied"
