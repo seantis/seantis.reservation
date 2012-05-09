@@ -84,11 +84,11 @@ msgstr "Einteilung gespeichert"
 
 #: ./interfaces.py:259
 msgid "Allocations may end every 5 minutes if the allocation is not partly available. If it is partly available the start time may be every x minute where x equals the given raster. The minimum length of an allocation is also either 5 minutes or whatever the value of the raster is."
-msgstr "Einteilungen können alle 5 Minuten beginnen wenn nicht teilweise verfügbar. Wenn die Einteilung teilweise verfügbar ist darf die Startzeit alle x Minuten beginnen wobei x dem Wert des Rasters entspricht"
+msgstr "Einteilungen können alle 5 Minuten enden. Ist die Einstellung 'teilweise verfügbar' gewählt, so kann die Einteilung alle x Minuten enden, wobei x dem Wert des Rasters entspricht."
 
 #: ./interfaces.py:252
 msgid "Allocations may start every 5 minutes if the allocation is not partly available. If it is partly available the start time may be every x minute where x equals the given raster."
-msgstr "Einteilungen können alle 5 Minuten enden wenn nicht teilweise verfügbar. Wenn die Einteilung teilweise verfügbar ist darf die Endzeit alle x Minuten enden wobei x dem Wert des Rasters entspricht"
+msgstr "Einteilungen können alle 5 Minuten beginnen. Ist die Einstellung 'teilweise verfügbar' gewählt, so kann die Einteilung alle x Minuten beginnen, wobei x dem Wert des Rasters entspricht."
 
 #: ./error.py:61
 msgid "An existing reservation would be affected by the requested change"
@@ -147,7 +147,7 @@ msgstr "Standard Einteilungswerte"
 
 #: ./interfaces.py:130
 msgid "Defines the minimum length of any given reservation as well as the alignment of the start / end of the allocation. E.g. a raster of 30 minutes means that the allocation can only start at xx:00 and xx:30 respectively"
-msgstr "Definiert die Mindestlänge der Reservationen für diese Einteilung, sowie die Ausrichtung der Start- / Endzeit. Ein Raster von 30 Minuten bedeuted beispielsweise dass die Einteilung nur um xx:00 Uhr und xx:30 Uhr beginnen kann."
+msgstr "Definiert die Mindestlänge der Reservationen für diese Einteilung, sowie die automatische Anpassung der Start- bzw. Endzeit. Ein Raster von 30 Minuten bedeuted beispielsweise, dass die Einteilung nur um xx:00 Uhr und xx:30 Uhr beginnen kann."
 
 #: ./allocate.py:228
 #: ./mail.py:362
@@ -342,15 +342,15 @@ msgstr "Id"
 
 #: ./interfaces.py:140
 msgid "If checked a reservation manager must decide if a reservation can be approved. Until then users are added to the waitinglist. Reservations are automatically approved if this is not checked. "
-msgstr "Ausgewählt bedeutet dass ein Reservations Manager entscheiden muss ob eine Reservation zugelassen wird. Bis das passiert werden Benutzer zur Warteliste hinzugefügt. Reservationen werden automatisch zugelassen wenn diese Option nicht ausgewählt ist."
+msgstr "Ausgewählt bedeutet, dass ein Reservations-Manager entscheiden muss, ob eine Reservation zugelassen wird. Bis zu dieser Bestätigung werden Reservationen zur Warteliste hinzugefügt. Ist diese Option nicht ausgewählt, so werden Reservationen automatisch zugelassen."
 
 #: ./interfaces.py:292
 msgid "If checked parts of the recurrance may be reserved. If not checkd the recurrance must be reserved as a whole."
-msgstr "Wenn ausgewählt können teile der Wiederholung reserviert werden. Wenn nicht ausgewählt muss die Wiederholung als ganzes reserviert werden."
+msgstr "Falls gewählt, ist eine teilweise separate Reservation der Wiederholung möglich. Ist die Einstellung nicht gewählt, so müssen alle Wiederholungen als Ganzes reserviert werden."
 
 #: ./interfaces.py:122
 msgid "If the allocation is partly available users may reserve only a part of it (e.g. half of it). If not the allocation Must be reserved as a whole or not at all"
-msgstr "Wenn die Einteilung teilweise verfügbar ist kann ein Benutzer einen Bruchteil der Einteilung reservieren. Wenn nicht muss die Einteilung als ganzes reserviert werden."
+msgstr "Falls die Einteilung teilweise verfügbar ist, kann ein Benutzer einen einzelnen Zeitabschnitt der Einteilung reservieren. Falls nicht, muss die Einteilung über die gesamte Zeitdauer reserviert werden."
 
 #: ./templates/controlpanel.pt:35
 msgid "If you do want to get rid of those records be adviced to do a backup of your current SQL database first, before cleaning up."
@@ -458,7 +458,7 @@ msgstr "Anzahl Datensätze in der Datenbank"
 
 #: ./interfaces.py:148
 msgid "Number of spots in the waitinglist (must be at least as high as the quota)"
-msgstr "Anzahl von Plätzen in der Warteliste (muss mindestens so gross wie die Quote sein)"
+msgstr "Anzahl von Plätzen in der Warteliste (muss mindestens so gross wie das Kontingent sein)"
 
 #: ./interfaces.py:116
 msgid "Number of times an allocation may be reserved at the same time."
