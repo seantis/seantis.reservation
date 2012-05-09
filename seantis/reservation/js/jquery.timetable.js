@@ -1,3 +1,6 @@
+if (!this.seantis) this.seantis = {};
+if (!this.seantis.tablecache) this.seantis.tablecache = {};
+
 (function ( $, window, document, undefined ) {
 
     var pluginName = 'timetable',
@@ -8,6 +11,17 @@
             show_header: true,
             timespans: []
         };
+
+    var cache_key = function(options) {
+        var components = [
+            options.min_hour.toString(),
+            options.max_hour.toString(),
+            options.show_text ? '1' : '0',
+            options.show_header ? '1' : '0',
+            JSON.stringify(options.timespans)
+        ];
+        return components.join('');
+    };
 
     function Plugin( element, options ) {
         this.element = element;
@@ -42,8 +56,24 @@
         this.init();
     }
 
+    Plugin.prototype.clearcache = function() {
+        tableCache = {};
+    };
+
     Plugin.prototype.init = function () {
-        this.render();
+        var key = cache_key(this.options);
+        var table = null;
+
+        // cache created tables which makes a huge difference
+        // if a large number of them are the same
+        if (typeof seantis.tablecache[key] === 'undefined') {
+            table = this.render();
+            seantis.tablecache[key] = table;
+        } else {
+            table = seantis.tablecache[key].clone();
+        }
+        
+        this.$.append(table);
     };
     
     Plugin.prototype.parse_time = function(time) {
@@ -155,7 +185,7 @@
     
     Plugin.prototype.render = function() {
         
-        var table = $('<table />').addClass('timetable');
+        var table = $('<table />').addClass('timetable hidden');
         var colcount = (this.options.max_hour - this.options.min_hour + 1);
         var hwidth = 100 / colcount;
 
@@ -227,7 +257,7 @@
             add_empty_row();
         });                
         
-        this.$.append(table);
+        return table;
     };
     
     // Pads the given number
@@ -251,6 +281,38 @@
 
 (function($){
     $(document).ready(function() {
-        $('.timetable-wrapper').timetable();
+        var wrappers = $('.timetable-wrapper');
+        var total = wrappers.length;
+
+        // initializes the timetables
+        var init_timetable = function(ix, el) {
+            $(el).timetable();
+            total -= 1;
+
+            // the countdown reaches its end, so we're finished
+            if (total === 0) {
+
+                // clear the cache to ensure that the GC picks it up
+                seantis.tablecache = {};
+
+                // show the hidden timetables, again try not to block
+                // this whole part takes the bulk amount of time
+                // creating the tables is quite fast thanks to caching
+                $.each($('.timetable'), function(ix, el) {
+                    setTimeout(function() {
+                        $(el).removeClass('hidden');        
+                    }, 0);
+                });
+                
+            }
+        };
+
+        // initialize each timetable with a timeout wrapper 
+        // which makes it a bit slower but ensures that the browser
+        // is not completely blocked if a large number of elements
+        // need to be created
+        wrappers.each(function(ix, el) {
+            setTimeout(function() { init_timetable(ix, el); }, 0);
+        });
     });
 })(jQuery);
