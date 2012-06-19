@@ -9,7 +9,12 @@ seantis.calendars.defaults = {
         week: 'ddd d.M', // Mon 7.9
         day: 'dddd d.M'  // Monday 7.9
     },
-    firstDay: 1
+    titleFormat: {
+        month: 'MMMM yyyy',
+        week: 'MMMM yyyy',
+        day: 'MMMM yyyy',
+    },
+    firstDay: 1,
 };
 
 // Keeps a list of event elements and the event group to which they belong to
@@ -280,6 +285,7 @@ var CalendarGroups = function() {
             var options = {
                 header: {
                     left: 'prev, next today',
+                    center: 'title',
                     right: 'month, agendaWeek, agendaDay'
                 },
                 defaultView: 'agendaWeek',
