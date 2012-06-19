@@ -111,7 +111,7 @@ class Overview(grok.View, CalendarRequest):
         for day, result in days.items():
 
             event_start = datetime(day.year, day.month, day.day, 0, 0)
-            event_end = start + timedelta(days=+1, microseconds=-1)
+            event_end = event_start + timedelta(days=+1, microseconds=-1)
 
             availability, resources = result
             events.append(dict(
