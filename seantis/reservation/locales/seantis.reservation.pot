@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-05-08 14:29+0000\n"
+"POT-Creation-Date: 2012-06-19 12:47+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,15 +21,15 @@ msgstr ""
 msgid "${count} Orphan Records Removed"
 msgstr ""
 
-#: ./utils.py:353
+#: ./utils.py:397
 msgid "%i Spots Available"
 msgstr ""
 
-#: ./utils.py:369
+#: ./utils.py:413
 msgid "%i Waitinglist Spots"
 msgstr ""
 
-#: ./utils.py:346
+#: ./utils.py:390
 msgid "%i%% Free"
 msgstr ""
 
@@ -37,11 +37,11 @@ msgstr ""
 msgid "&lt;&lt; Previous Month"
 msgstr ""
 
-#: ./utils.py:351
+#: ./utils.py:395
 msgid "1 Spot Available"
 msgstr ""
 
-#: ./utils.py:367
+#: ./utils.py:411
 msgid "1 Waitinglist Spot"
 msgstr ""
 
@@ -53,7 +53,7 @@ msgstr ""
 msgid "A pending reservation would be affected by the requested change"
 msgstr ""
 
-#: ./mail.py:354
+#: ./mail.py:350
 msgid "Add email template"
 msgstr ""
 
@@ -124,6 +124,10 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
+#: ./templates/resource.pt:100
+msgid "Click on a calendar block to reserve it."
+msgstr ""
+
 #: ./templates/utils.pt:15
 msgid "Compare Resources"
 msgstr ""
@@ -153,7 +157,7 @@ msgid "Defines the minimum length of any given reservation as well as the alignm
 msgstr ""
 
 #: ./allocate.py:228
-#: ./mail.py:362
+#: ./mail.py:358
 #: ./report.py:240
 msgid "Delete"
 msgstr ""
@@ -201,7 +205,7 @@ msgid "Do you want to reserve the following allocations?"
 msgstr ""
 
 #: ./allocate.py:187
-#: ./mail.py:361
+#: ./mail.py:357
 #: ./resource.py:212
 msgid "Edit"
 msgstr ""
@@ -307,7 +311,7 @@ msgstr ""
 msgid "Fr"
 msgstr ""
 
-#: ./utils.py:344
+#: ./utils.py:388
 msgid "Free"
 msgstr ""
 
@@ -315,7 +319,7 @@ msgstr ""
 msgid "From"
 msgstr ""
 
-#: ./utils.py:371
+#: ./utils.py:415
 msgid "Full Waitinglist"
 msgstr ""
 
@@ -443,7 +447,7 @@ msgstr ""
 msgid "No reservable slot found."
 msgstr ""
 
-#: ./utils.py:355
+#: ./utils.py:399
 msgid "No spots available"
 msgstr ""
 
@@ -467,7 +471,7 @@ msgstr ""
 msgid "Number of times an allocation may be reserved at the same time."
 msgstr ""
 
-#: ./utils.py:342
+#: ./utils.py:386
 msgid "Occupied"
 msgstr ""
 
@@ -597,7 +601,7 @@ msgstr ""
 msgid "Sa"
 msgstr ""
 
-#: ./mail.py:309
+#: ./mail.py:305
 #: ./timeframe.py:76
 msgid "Save"
 msgstr ""
@@ -710,7 +714,7 @@ msgstr ""
 msgid "The resource is being edited by someone else. Please try again."
 msgstr ""
 
-#: ./mail.py:296
+#: ./mail.py:292
 msgid "There's already an Email template in the same folder for the same language"
 msgstr ""
 

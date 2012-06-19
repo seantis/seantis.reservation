@@ -97,6 +97,7 @@
         <div style="clear: both"></div>
 
         <div id="inline-page">
+            <div class="hint" i18n:translate="">Click on a calendar block to reserve it.</div>
         </div>
 
         <div tal:replace="structure provider:plone.belowcontentbody" />

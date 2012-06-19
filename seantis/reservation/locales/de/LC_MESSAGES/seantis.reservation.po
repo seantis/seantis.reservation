@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-05-08 14:29+0000\n"
+"POT-Creation-Date: 2012-06-19 12:47+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,15 +18,15 @@ msgstr ""
 msgid "${count} Orphan Records Removed"
 msgstr "${count} Verwaiste Datensätze entfernt"
 
-#: ./utils.py:353
+#: ./utils.py:397
 msgid "%i Spots Available"
-msgstr "%i Plätze verfügbar"
+msgstr "%i Plätze reservierbar"
 
-#: ./utils.py:369
+#: ./utils.py:413
 msgid "%i Waitinglist Spots"
-msgstr "%i Wartelisten-Plätze"
+msgstr "%i Wartelistenplätze"
 
-#: ./utils.py:346
+#: ./utils.py:390
 msgid "%i%% Free"
 msgstr "%i%% Frei"
 
@@ -34,13 +34,13 @@ msgstr "%i%% Frei"
 msgid "&lt;&lt; Previous Month"
 msgstr "&lt;&lt; Vorheriger Monat"
 
-#: ./utils.py:351
+#: ./utils.py:395
 msgid "1 Spot Available"
-msgstr "Ein Platz verfügbar"
+msgstr "Ein Platz reservierbar"
 
-#: ./utils.py:367
+#: ./utils.py:411
 msgid "1 Waitinglist Spot"
-msgstr "Ein Warteliste-Platz"
+msgstr "Ein Wartelisteplatz"
 
 #: ./error.py:58
 msgid "A conflicting allocation exists for the requested time period."
@@ -50,7 +50,7 @@ msgstr "Es existiert bereits eine Einteilung für den gewählten Zeitraum"
 msgid "A pending reservation would be affected by the requested change"
 msgstr "Ein offene Reservierung wäre durch die Änderung betroffen"
 
-#: ./mail.py:354
+#: ./mail.py:350
 msgid "Add email template"
 msgstr "Email Vorlage hinzufügen"
 
@@ -84,11 +84,11 @@ msgstr "Einteilung gespeichert"
 
 #: ./interfaces.py:259
 msgid "Allocations may end every 5 minutes if the allocation is not partly available. If it is partly available the start time may be every x minute where x equals the given raster. The minimum length of an allocation is also either 5 minutes or whatever the value of the raster is."
-msgstr "Einteilungen können alle 5 Minuten enden. Ist die Einstellung 'teilweise verfügbar' gewählt, so kann die Einteilung alle x Minuten enden, wobei x dem Wert des Rasters entspricht."
+msgstr "Einteilungen können alle 5 Minuten enden. Ist die Einstellung 'teilweise reservierbar' gewählt, so kann die Einteilung alle x Minuten enden, wobei x dem Wert des Rasters entspricht."
 
 #: ./interfaces.py:252
 msgid "Allocations may start every 5 minutes if the allocation is not partly available. If it is partly available the start time may be every x minute where x equals the given raster."
-msgstr "Einteilungen können alle 5 Minuten beginnen. Ist die Einstellung 'teilweise verfügbar' gewählt, so kann die Einteilung alle x Minuten beginnen, wobei x dem Wert des Rasters entspricht."
+msgstr "Einteilungen können alle 5 Minuten beginnen. Ist die Einstellung 'teilweise reservierbar' gewählt, so kann die Einteilung alle x Minuten beginnen, wobei x dem Wert des Rasters entspricht."
 
 #: ./error.py:61
 msgid "An existing reservation would be affected by the requested change"
@@ -121,6 +121,10 @@ msgstr "Zugelassene Reservationen"
 msgid "Cancel"
 msgstr "Abbrechen"
 
+#: ./templates/resource.pt:100
+msgid "Click on a calendar block to reserve it."
+msgstr "Klicken Sie auf einen Kalenderblock um ihn zu reservieren."
+
 #: ./templates/utils.pt:15
 msgid "Compare Resources"
 msgstr "Ressourcen vergleichen"
@@ -150,7 +154,7 @@ msgid "Defines the minimum length of any given reservation as well as the alignm
 msgstr "Definiert die Mindestlänge der Reservationen für diese Einteilung, sowie die automatische Anpassung der Start- bzw. Endzeit. Ein Raster von 30 Minuten bedeuted beispielsweise, dass die Einteilung nur um xx:00 Uhr und xx:30 Uhr beginnen kann."
 
 #: ./allocate.py:228
-#: ./mail.py:362
+#: ./mail.py:358
 #: ./report.py:240
 msgid "Delete"
 msgstr "Löschen"
@@ -198,7 +202,7 @@ msgid "Do you want to reserve the following allocations?"
 msgstr "Möchten Sie die folgenden Einteilungen reservieren?"
 
 #: ./allocate.py:187
-#: ./mail.py:361
+#: ./mail.py:357
 #: ./resource.py:212
 msgid "Edit"
 msgstr "Bearbeiten"
@@ -304,7 +308,7 @@ msgstr "Teilformulare"
 msgid "Fr"
 msgstr "Fr"
 
-#: ./utils.py:344
+#: ./utils.py:388
 msgid "Free"
 msgstr "Frei"
 
@@ -312,7 +316,7 @@ msgstr "Frei"
 msgid "From"
 msgstr "Von"
 
-#: ./utils.py:371
+#: ./utils.py:415
 msgid "Full Waitinglist"
 msgstr "Warteliste voll"
 
@@ -322,7 +326,7 @@ msgstr "Warteliste voll"
 
 #: ./templates/resource.pt:49
 msgid "Fully available"
-msgstr "Verfügbar"
+msgstr "Reservierbar"
 
 #: ./templates/resource.pt:63
 msgid "Fully booked"
@@ -350,7 +354,7 @@ msgstr "Falls gewählt, ist eine teilweise separate Reservation der Wiederholung
 
 #: ./interfaces.py:122
 msgid "If the allocation is partly available users may reserve only a part of it (e.g. half of it). If not the allocation Must be reserved as a whole or not at all"
-msgstr "Falls die Einteilung teilweise verfügbar ist, kann ein Benutzer einen einzelnen Zeitabschnitt der Einteilung reservieren. Falls nicht, muss die Einteilung über die gesamte Zeitdauer reserviert werden."
+msgstr "Falls die Einteilung teilweise reservierbar ist, kann ein Benutzer einen einzelnen Zeitabschnitt der Einteilung reservieren. Falls nicht, muss die Einteilung über die gesamte Zeitdauer reserviert werden."
 
 #: ./templates/controlpanel.pt:35
 msgid "If you do want to get rid of those records be adviced to do a backup of your current SQL database first, before cleaning up."
@@ -440,7 +444,7 @@ msgstr "Nein"
 msgid "No reservable slot found."
 msgstr "Der gewünschte Zeitbereich ist bereits besetzt."
 
-#: ./utils.py:355
+#: ./utils.py:399
 msgid "No spots available"
 msgstr "Keine Plätze frei"
 
@@ -462,9 +466,9 @@ msgstr "Anzahl von Plätzen in der Warteliste (muss mindestens so gross wie das 
 
 #: ./interfaces.py:116
 msgid "Number of times an allocation may be reserved at the same time."
-msgstr "Legt fest ob die Ressource mehr als einmal verfügbar ist."
+msgstr "Legt fest ob die Ressource mehr als einmal zur selben Zeit reservierbar ist."
 
-#: ./utils.py:342
+#: ./utils.py:386
 msgid "Occupied"
 msgstr "Besetzt"
 
@@ -479,11 +483,11 @@ msgstr "Verwaiste Datensätze sind Datensätze in der Datenbank für welche es k
 #: ./interfaces.py:121
 #: ./templates/resource.pt:54
 msgid "Partly available"
-msgstr "Teilweise verfügbar"
+msgstr "Teilweise reservierbar"
 
 #: ./interfaces.py:312
 msgid "Partly available allocations can only be reserved separately"
-msgstr "Teilweise verfügbare Einteilungen können nur separat reserviert werden"
+msgstr "Teilweise reservierbare Einteilungen können nur separat reserviert werden"
 
 #: ./report.py:72
 msgid "Pending"
@@ -594,7 +598,7 @@ msgstr "Ressourcen"
 msgid "Sa"
 msgstr "Sa"
 
-#: ./mail.py:309
+#: ./mail.py:305
 #: ./timeframe.py:76
 msgid "Save"
 msgstr "Speichern"
@@ -693,11 +697,11 @@ msgstr "Die gewünschten Einteilungen konnten nicht gefunden werden"
 
 #: ./error.py:91
 msgid "The requested period is no longer available and the waiting list is full."
-msgstr "Die angefragte Periode ist nicht mehr verfügbar und die Warteliste ist voll."
+msgstr "Die angefragte Periode ist nicht mehr reservierbar und die Warteliste ist voll."
 
 #: ./error.py:73
 msgid "The requested period is no longer available and there is no waiting list."
-msgstr "Die angefragte Periode ist nicht mehr verfügbar und es existiert keine Warteliste."
+msgstr "Die angefragte Periode ist nicht mehr reservierbar und es existiert keine Warteliste."
 
 #: ./templates/reserve_group.pt:18
 msgid "The requested recurrence could not be found"
@@ -707,7 +711,7 @@ msgstr "Die gewünschte Wiederholung konnte nicht gefunden werden"
 msgid "The resource is being edited by someone else. Please try again."
 msgstr "Die Resource wird von jemand anderem bearbeitet. Bitte versuchen Sie es nochmal."
 
-#: ./mail.py:296
+#: ./mail.py:292
 msgid "There's already an Email template in the same folder for the same language"
 msgstr "Es besteht bereits eine Email Vorlage mit dieser Sprache in diesem Order"
 
@@ -734,7 +738,7 @@ msgstr "Di"
 
 #: ./templates/resource.pt:59
 msgid "Unavailable"
-msgstr "Nicht verfügbar"
+msgstr "Nicht reservierbar"
 
 #: ./interfaces.py:281
 msgid "Until"

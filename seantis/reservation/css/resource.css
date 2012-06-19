@@ -438,3 +438,11 @@ body .portalMessage {
 .seantis-reservation-form div.field {
     margin-bottom: 10px;   
 }
+
+#inline-page .hint {
+    font-size: 12px;
+    width: 100%;
+    text-align: center;
+    color: #555;
+    padding-top:8px;
+}
