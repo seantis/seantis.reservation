@@ -30,6 +30,20 @@
 
         <javascript id="++resource++seantis.reservation.js/wizard.js" cacheable="True" compression="safe" cookable="True" enabled="True" inline="False" insert-after="++resource++seantis.reservation.js/formgroups.js"/>
 
+        <!-- 
+        Seantis reservation requires a custom fullcalendar version.
+        The only difference being this pull requests:
+        https://github.com/arshaw/fullcalendar/pull/34
+        
+        Hopefully fullcalendar's pace of development increases again...        
+        -->
+        <javascript id="++resource++collective.js.fullcalendar/fullcalendar.min.js" enabled="False" />
+        <javascript id="++resource++seantis.reservation.js/fullcalendar.js" enabled="True" insert-after="jquery.js" compression="safe" cookable="True"/>
+
+
+        <!--
+        Messes with internet explorer
+        -->
         <javascript id="++resource++kukit.js" enabled="False" />        
         
 </object>
