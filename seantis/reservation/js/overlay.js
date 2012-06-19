@@ -127,7 +127,7 @@ var reservation_overlay_init = null;
         // not showing up
 
         // this function tries to compensate for that by parsing the 
-        // plain html code for those tags and executing theng using eval
+        // plain html code for those tags and executing them using eval
 
         // this is horribly hackish and somewhat insecure (if the user
         // is able to add his own script tags to a document, which he shouldn't)
@@ -144,7 +144,7 @@ var reservation_overlay_init = null;
             return;
         }
 
-        var re = /<script type="text\/javascript">([^]*?)<\/script>/gi;
+        var re = /<script type="text\/javascript">([\s\S]*?)<\/script>/gi;
         var matches = null;
 
         // eval all scripts (index 0 is the whole tag, index 1 is what's within)
