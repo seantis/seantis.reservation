@@ -11,8 +11,8 @@ seantis.calendars.defaults = {
     },
     titleFormat: {
         month: 'MMMM yyyy',
-        week: 'MMMM yyyy',
-        day: 'MMMM yyyy',
+        week: '',
+        day: '',
     },
     firstDay: 1,
 };
