@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-06-19 12:47+0000\n"
+"POT-Creation-Date: 2012-06-20 11:13+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,28 +21,28 @@ msgstr ""
 msgid "${count} Orphan Records Removed"
 msgstr ""
 
-#: ./utils.py:397
-msgid "%i Spots Available"
+#: ./utils.py:391
+msgid "%i%% Free"
+msgstr ""
+
+#: ./utils.py:396
+msgid "%i/%i Spot Available"
+msgstr ""
+
+#: ./utils.py:394
+msgid "%i/%i Spots Available"
+msgstr ""
+
+#: ./utils.py:415
+msgid "%i/%i Waitinglist Spot"
 msgstr ""
 
 #: ./utils.py:413
-msgid "%i Waitinglist Spots"
-msgstr ""
-
-#: ./utils.py:390
-msgid "%i%% Free"
+msgid "%i/%i Waitinglist Spots"
 msgstr ""
 
 #: ./templates/monthly_report.pt:23
 msgid "&lt;&lt; Previous Month"
-msgstr ""
-
-#: ./utils.py:395
-msgid "1 Spot Available"
-msgstr ""
-
-#: ./utils.py:411
-msgid "1 Waitinglist Spot"
 msgstr ""
 
 #: ./error.py:58
@@ -311,16 +311,8 @@ msgstr ""
 msgid "Fr"
 msgstr ""
 
-#: ./utils.py:388
-msgid "Free"
-msgstr ""
-
 #: ./interfaces.py:277
 msgid "From"
-msgstr ""
-
-#: ./utils.py:415
-msgid "Full Waitinglist"
 msgstr ""
 
 #: ./templates/resource.pt:67
@@ -447,10 +439,6 @@ msgstr ""
 msgid "No reservable slot found."
 msgstr ""
 
-#: ./utils.py:399
-msgid "No spots available"
-msgstr ""
-
 #: ./reserve.py:241
 msgid "No such reservation"
 msgstr ""
@@ -469,10 +457,6 @@ msgstr ""
 
 #: ./interfaces.py:116
 msgid "Number of times an allocation may be reserved at the same time."
-msgstr ""
-
-#: ./utils.py:386
-msgid "Occupied"
 msgstr ""
 
 #: ./interfaces.py:39

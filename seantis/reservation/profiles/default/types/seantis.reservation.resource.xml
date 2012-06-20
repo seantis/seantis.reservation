@@ -11,7 +11,7 @@
   <property name="content_icon">++resource++seantis.reservation.images/logo.gif</property>
   <property name="allow_discussion">False</property>
   <property name="global_allow">True</property>
-  <property name="filter_content_types">False</property>
+  <property name="filter_content_types">True</property>
   <property name="allowed_content_types"></property>
  
   <!-- schema interface -->

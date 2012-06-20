@@ -1,3 +1,4 @@
+import math
 from uuid import UUID
 from uuid import uuid1 as new_uuid
 from datetime import datetime, MINYEAR, MAXYEAR
@@ -143,39 +144,29 @@ def availability_by_day(start, end, resources, is_exposed):
 
     for day, allocations in group:
 
-        waitinglist, unapproved = [], []
-        skip_day = True
+        exposed = []
         members = set()
+        unapproved = 0
 
         # count the allocations with / without waitinglist separately
         # to be able to only use one metric on days which have no mixed
         # allocation types (=> more accurate, better performance)
         for a in (a for a in allocations if is_exposed(a)):
-
-            skip_day = False
             members.add(a.mirror_of)
-            
-            if a.approve:
-                waitinglist.append(a)
-            else:
-                unapproved.append(a)
+            exposed.append(a)
+            if not a.approve:
+                unapproved += 1
         
-        if skip_day:
+        if not exposed:
             continue
 
-        if unapproved:
-            unapproved_total = availability_by_allocations(unapproved)
+        total = availability_by_allocations(exposed)
+        wtotal = waitinglist_availabilty_by_allocations(exposed)
 
-        if waitinglist:
-            waitinglist_total = waitinglist_availabilty_by_allocations(waitinglist)
-            assert waitinglist_total is not False
-
-        if unapproved and waitinglist:
-            total = (unapproved_total + waitinglist_total) / 2.0
-        elif unapproved:
-            total = unapproved_total
-        elif waitinglist:
-            total = waitinglist_total
+        if not unapproved:
+            total = math.ceil(wtotal/100.0) * (total + wtotal) / 2
+        else:
+            total = (total + wtotal) / 2
 
         days[day] = (total, members)
 

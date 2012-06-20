@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-06-19 12:47+0000\n"
+"POT-Creation-Date: 2012-06-20 11:13+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,29 +18,29 @@ msgstr ""
 msgid "${count} Orphan Records Removed"
 msgstr "${count} Verwaiste Datensätze entfernt"
 
-#: ./utils.py:397
-msgid "%i Spots Available"
-msgstr "%i Plätze verfügbar"
-
-#: ./utils.py:413
-msgid "%i Waitinglist Spots"
-msgstr "%i Wartelisten-Plätze"
-
-#: ./utils.py:390
+#: ./utils.py:391
 msgid "%i%% Free"
 msgstr "%i%% Frei"
+
+#: ./utils.py:396
+msgid "%i/%i Spot Available"
+msgstr "%i/%i Platz Verfügbar"
+
+#: ./utils.py:394
+msgid "%i/%i Spots Available"
+msgstr "%i/%i Plätze Verfügbar"
+
+#: ./utils.py:415
+msgid "%i/%i Waitinglist Spot"
+msgstr "%i/%i Wartelistenplatz"
+
+#: ./utils.py:413
+msgid "%i/%i Waitinglist Spots"
+msgstr "%i/%i Wartelistenplätze"
 
 #: ./templates/monthly_report.pt:23
 msgid "&lt;&lt; Previous Month"
 msgstr "&lt;&lt; Vorheriger Monat"
-
-#: ./utils.py:395
-msgid "1 Spot Available"
-msgstr "Ein Platz verfügbar"
-
-#: ./utils.py:411
-msgid "1 Waitinglist Spot"
-msgstr "Ein Warteliste-Platz"
 
 #: ./error.py:58
 msgid "A conflicting allocation exists for the requested time period."
@@ -308,17 +308,9 @@ msgstr "Teilformulare"
 msgid "Fr"
 msgstr "Fr"
 
-#: ./utils.py:388
-msgid "Free"
-msgstr "Frei"
-
 #: ./interfaces.py:277
 msgid "From"
 msgstr "Von"
-
-#: ./utils.py:415
-msgid "Full Waitinglist"
-msgstr "Warteliste voll"
 
 #: ./templates/resource.pt:67
 msgid "Full waitinglist"
@@ -444,10 +436,6 @@ msgstr "Nein"
 msgid "No reservable slot found."
 msgstr "Der gewünschte Zeitbereich ist bereits besetzt."
 
-#: ./utils.py:399
-msgid "No spots available"
-msgstr "Keine Plätze frei"
-
 #: ./reserve.py:241
 msgid "No such reservation"
 msgstr "Unbekannte Reservation"
@@ -467,10 +455,6 @@ msgstr "Anzahl von Plätzen in der Warteliste (muss mindestens so gross wie das 
 #: ./interfaces.py:116
 msgid "Number of times an allocation may be reserved at the same time."
 msgstr "Legt fest ob die Ressource mehr als einmal verfügbar ist."
-
-#: ./utils.py:386
-msgid "Occupied"
-msgstr "Besetzt"
 
 #: ./interfaces.py:39
 msgid "Once"

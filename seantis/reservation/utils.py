@@ -370,54 +370,61 @@ def event_class(availability):
     """Returns the event class to be used depending on the availability."""
     if availability == 0:
         return 'event-unavailable'
-    elif availability == 100:
-        return 'event-available'
-    else:
+    elif availability < 75:
         return 'event-partly-available'
+    else:
+        return 'event-available'
 
 def event_availability(context, request, scheduler, allocation):
+    """Returns the availability for an allocation shown as an event in the
+    calendar view.
+
+    """
     a = allocation
     title = lambda msg: translate(context, request, msg)
 
     availability = scheduler.availability(a.start, a.end)
+    spots = int(round(allocation.quota * availability / 100))
 
+    # get the title shown on the calendar block
     if a.partly_available:
-        if availability == 0:
-            text = title(_(u'Occupied'))
-        elif availability == 100:
-            text = title(_(u'Free'))
-        else:
-            text = title(_(u'%i%% Free')) % availability
+        text = title(_(u'%i%% Free')) % availability
     else:
-        spots = int(round(allocation.quota * availability / 100))
-        if spots:
-            if spots == 1:
-                text = title(_(u'1 Spot Available'))
-            else:
-                text = title(_(u'%i Spots Available')) % spots
+        if allocation.quota > 1:
+            text = title(_(u'%i/%i Spots Available')) % (spots, allocation.quota)
         else:
-            text = title(_(u'No spots available'))
+            text = title(_(u'%i/%i Spot Available')) % (spots, allocation.quota)
 
+    # show an icon on the block if it is fully booked
     if availability == 0:
         klass = 'event-fully-booked'
     else:
         klass = ''
 
-    if allocation.approve:
-        open_spots = allocation.open_waitinglist_spots()
-        hint_availability = int( open_spots / float(allocation.waitinglist_spots) * 100.0)
-        if open_spots:
-            if open_spots == 1:
-                text += '\n' + title(_(u'1 Waitinglist Spot'))
-            else:
-                text += '\n' + (title(_(u'%i Waitinglist Spots')) % open_spots)
-        else:
-            text += '\n' + title(_(u'Full Waitinglist'))
-            klass = ('event-full-waitinglist' + ' ' + klass).strip()
-    else:
-        hint_availability = availability
+    # if no approval is required the availability is used as is
+    if not allocation.approve:
+        return text, (klass + ' ' + event_class(availability)).strip()
 
-    return text, (klass + ' ' + event_class(hint_availability)).strip()
+    # with approval the process is more involved
+    open_spots = allocation.open_waitinglist_spots()
+
+    # an additional text with the number of open spots is shown
+    if open_spots > 1:
+        text += '\n' + title(_(u'%i/%i Waitinglist Spots')) % (open_spots, a.waitinglist_spots)
+    else:
+        text += '\n' + title(_(u'%i/%i Waitinglist Spot')) % (open_spots, a.waitinglist_spots)
+    
+    # shown an icon on the block if the waitinglist is full
+    if not open_spots:
+        klass = ('event-full-waitinglist' + ' ' + klass).strip()
+        
+    # partly available alloctions get the average between waitinglist availability
+    # and the allocation avilability
+    import math
+    waitinglist_availability = (open_spots / float(a.waitinglist_spots) * 100.0)
+    shown_availability = math.ceil(waitinglist_availability/100.0) * ((availability + waitinglist_availability) / 2)
+
+    return text, (klass + ' ' + event_class(shown_availability)).strip()
 
 def flatten(l):
     """Generator for flattening irregularly nested lists. 'Borrowed' from here:
