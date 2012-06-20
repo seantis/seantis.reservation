@@ -43,6 +43,11 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
     title="seantis.reservation: Submit Reservation"
 />
 
+<permission
+    id="seantis.reservation.UnthrottledReservations"
+    title="seantis.reservation: Unthrottled Reservations"
+/>
+
 <grok:grok package="." />
 
 <genericsetup:registerProfile

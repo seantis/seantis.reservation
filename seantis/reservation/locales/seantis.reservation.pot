@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-06-20 11:13+0000\n"
+"POT-Creation-Date: 2012-06-20 14:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: seantis.reservation\n"
 
-#: ./settings.py:128
+#: ./settings.py:130
 msgid "${count} Orphan Records Removed"
 msgstr ""
 
@@ -218,11 +218,11 @@ msgstr ""
 msgid "Email"
 msgstr ""
 
-#: ./settings.py:38
+#: ./settings.py:40
 msgid "Email Notifications for Managers"
 msgstr ""
 
-#: ./settings.py:44
+#: ./settings.py:46
 msgid "Email Notifications for Reservees"
 msgstr ""
 
@@ -590,7 +590,7 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-#: ./settings.py:62
+#: ./settings.py:64
 msgid "Seantis Reservation Control Panel"
 msgstr ""
 
@@ -598,11 +598,11 @@ msgstr ""
 msgid "Seantis Reservation Settings"
 msgstr ""
 
-#: ./settings.py:45
+#: ./settings.py:47
 msgid "Send emails about made, approved and denied reservations to the user that made the reservation."
 msgstr ""
 
-#: ./settings.py:39
+#: ./settings.py:41
 msgid "Send emails about new pending reservations to the first reservation managers found in the path."
 msgstr ""
 
@@ -630,7 +630,7 @@ msgstr ""
 msgid "Separately reservable"
 msgstr ""
 
-#: ./settings.py:57
+#: ./settings.py:59
 msgid "Settings"
 msgstr ""
 
@@ -675,7 +675,7 @@ msgid "The item does no longer exist."
 msgstr ""
 
 #: ./settings.py:33
-msgid "The number of minutes a user needs to wait between reservations, use 0 if no throttling should occur."
+msgid "The number of minutes a user needs to wait between reservations, use 0 if no throttling should occur. Users with the 'Unthrottled Reservations' permission are excempt from this rule (Reservation-Managers by default)."
 msgstr ""
 
 #: ./templates/remove_allocation.pt:18

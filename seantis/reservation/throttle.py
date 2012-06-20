@@ -1,10 +1,14 @@
 from datetime import datetime
 
+from zope.security import checkPermission
+
 from seantis.reservation import settings
 from seantis.reservation import error
 from seantis.reservation import utils
 
-def seconds_required():
+def seconds_required(context):
+    if checkPermission('seantis.reservation.UnthrottledReservations', context):
+        return 0
     return settings.get('throttle_minutes') * 60
 
 def session_get(context, key):
@@ -23,7 +27,7 @@ def apply(context, name):
         delta = (datetime.today() - last_change)
         seconds_since = utils.total_timedelta_seconds(delta)
         
-        if seconds_since < seconds_required():
+        if seconds_since < seconds_required(context):
             raise error.ThrottleBlock
 
     session_set(context, key, datetime.today())

@@ -10,6 +10,9 @@
         <permission name="seantis.reservation: View Reservations" acquire="True">
             <role name="Reservation-Manager" />
         </permission>
+        <permission name="seantis.reservation: Unthrottled Reservations" acquire="True">
+            <role name="Reservation-Manager" />
+        </permission>
         <permission name="seantis.reservation: View Hidden Allocations" acquire="True">
             <role name="Reservation-Manager" />
             <role name="Contributor" />

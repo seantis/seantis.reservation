@@ -31,7 +31,9 @@ class ISeantisReservationSettings(Interface):
     throttle_minutes = schema.Int(
         title=_(u"Reservation Throttling"),
         description=_(u'The number of minutes a user needs to wait between '
-                      u'reservations, use 0 if no throttling should occur.')
+                      u'reservations, use 0 if no throttling should occur. '
+                      u'Users with the \'Unthrottled Reservations\' permission '
+                      u'are excempt from this rule (Reservation-Managers by default).')
     )
 
     send_email_to_managers = schema.Bool(
