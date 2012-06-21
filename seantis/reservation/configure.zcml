@@ -50,6 +50,8 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
 
 <grok:grok package="." />
 
+<!-- Setup -->
+
 <genericsetup:registerProfile
     name="default"
     title="seantis.reservation"
@@ -57,6 +59,17 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
     description="Installs the seantis.reservation package"
     provides="Products.GenericSetup.interfaces.EXTENSION"
 />
+
+<!-- Upgrades -->
+
+<genericsetup:upgradeStep
+    title="Upgrade seantis.reservation to 1.0b1"
+    description="Adds timestamps for all records"
+    source="1"
+    destination="1000"
+    handler=".upgrades.upgrade_1_to_1000"
+    profile="seantis.reservation:default">
+</genericsetup:upgradeStep>
 
 <!-- Controlpanel View -->
 <browser:page

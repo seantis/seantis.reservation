@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '0.1'
+version = '1.0b1'
 
 setup(name='seantis.reservation',
       version=version,
@@ -42,7 +42,8 @@ setup(name='seantis.reservation',
           'collective.js.fullcalendar',
           'profilehooks',
           'pytz',
-          'ordereddict'
+          'ordereddict',
+          'alembic'
       ],
       entry_points="""
       # -*- Entry points: -*-

@@ -1,8 +1,13 @@
+from datetime import datetime
+
 from sqlalchemy import types
 from sqlalchemy.orm import deferred
 from sqlalchemy.schema import Column
 from sqlalchemy.sql.expression import text
 from sqlalchemy.ext.declarative import declared_attr
+
+def get_timestamp():
+    return datetime.utcnow()
 
 class TimestampMixin(object):
     """ Mixin providing created/modified timestamps for all records. Pretty
@@ -18,8 +23,8 @@ class TimestampMixin(object):
     def created(cls):
         return deferred(
             Column(
-                types.TIMESTAMP(timezone=True), 
-                server_default=text('CURRENT_TIMESTAMP')
+                types.DateTime(timezone=True), 
+                default=get_timestamp
             )
         )
 
@@ -27,7 +32,7 @@ class TimestampMixin(object):
     def modified(cls):
         return deferred(
             Column(
-                types.TIMESTAMP(timezone=True),
-                server_onupdate=text('CURRENT_TIMESTAMP')
+                types.DateTime(timezone=True),
+                onupdate=get_timestamp
             )
         )
