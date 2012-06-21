@@ -8,9 +8,10 @@ from sqlalchemy.orm import backref
 from seantis.reservation import ORMBase
 from seantis.reservation.raster import rasterize_start, rasterize_end
 from seantis.reservation.models import customtypes
+from seantis.reservation.models.timestamp import TimestampMixin
 from seantis.reservation.models.allocation import Allocation
 
-class ReservedSlot(ORMBase):
+class ReservedSlot(TimestampMixin, ORMBase):
     """Describes a reserved slot within an allocated timespan."""
 
     __tablename__ = 'reserved_slots'

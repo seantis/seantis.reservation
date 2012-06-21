@@ -18,8 +18,9 @@ from seantis.reservation.raster import rasterize_end
 from seantis.reservation.raster import iterate_span
 from seantis.reservation import Session
 from seantis.reservation.models.other import OtherModels
+from seantis.reservation.models.timestamp import TimestampMixin
 
-class Allocation(ORMBase, OtherModels):
+class Allocation(TimestampMixin, ORMBase, OtherModels):
     """Describes a timespan within which one or many timeslots can be reserved.
 
     """

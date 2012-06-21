@@ -4,13 +4,13 @@ from sqlalchemy import types
 from sqlalchemy.schema import Column
 from sqlalchemy.schema import Index
 
-from seantis.reservation import utils
 from seantis.reservation import ORMBase
 from seantis.reservation import Session
 from seantis.reservation.models import customtypes
 from seantis.reservation.models.other import OtherModels
+from seantis.reservation.models.timestamp import TimestampMixin
 
-class Reservation(ORMBase, OtherModels):
+class Reservation(TimestampMixin, ORMBase, OtherModels):
     """Describes a pending or approved reservation.
 
     """
