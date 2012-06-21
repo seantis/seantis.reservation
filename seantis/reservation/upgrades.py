@@ -14,10 +14,6 @@ def upgrade_1_to_1000(setuptools):
     The upgrade uses alembic to create a diff between the existing database
     and the metadata.
 
-    Alembic really is a tool for much more but for now this should cover it.
-    Plus I'd like to be able to run the database upgrades through the
-    add-on interface as administrator.
-
     """
 
     engine = create_engine(utils.get_config('dsn'), isolation_level='SERIALIZABLE')
@@ -32,6 +28,7 @@ def upgrade_1_to_1000(setuptools):
 
         # go through diff and execute the changes on the operations object
         for method, table, col in diff:
+            assert method == 'add_column' #only works with this method!
             getattr(op, method)(table, col.copy())
     
         trans.commit()
