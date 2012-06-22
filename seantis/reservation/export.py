@@ -30,13 +30,17 @@ class ExportView(grok.View, form.ResourceParameterView):
         raise NotImplementedError
 
     @property
+    def language(self):
+        return self.request.get('lang', 'en')
+
+    @property
     def source(self):
         source = sources.get(self.request.get('source'))
         
         if not source:
             raise NotImplementedError
 
-        return lambda: source(self.resources)
+        return lambda: source(self.context, self.request, self.resources, self.language)
 
     def render(self, **kwargs):
         filename = '%s.%s' % (self.context.title, self.file_extension)
@@ -66,8 +70,3 @@ class CsvExportView(ExportView):
     grok.name('resource_export.csv')
     content_type = 'application/csv'
     file_extension = 'csv'
-
-class YamlExportView(ExportView):
-    grok.name('resource_export.yaml')
-    content_type = 'application/x-yaml'
-    file_extension = 'yaml'

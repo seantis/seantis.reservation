@@ -157,4 +157,4 @@ class Utilsviewlet(grok.Viewlet):
         return utils.monthly_report_link(self.context, self.resources)
 
     def reservations_export_link(self, extension):
-        return utils.export_link(extension, 'reservations', self.context, self.resources)
+        return utils.export_link('reservations', extension, self.context, self.resources)
