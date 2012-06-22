@@ -181,11 +181,11 @@ def _exposure():
     return exposure
 
 def compare_link(resources):
-    """Builds the compare link for the given list of resources"""
+    """Builds the compare link for the given list of resources. """
 
     # limit the resources already on the link, as the view needs
     # at least two visible resources to be even callable
-    # another check (for security is made in the resources module later)
+    # (another check for security is made in the resources module later)
     resources = _exposure().limit_resources(resources)
 
     if len(resources) < 2:
@@ -198,6 +198,20 @@ def compare_link(resources):
         link += 'compare_to=' + string_uuid(uuid) + '&'
         
     return link.rstrip('&')
+
+def reservations_export_link(context, resources):
+    """Builds the reservations excel export link for the 
+    given list of resources. 
+
+    """
+
+    uuids = map(string_uuid, (r.uuid() for r in resources))
+
+    url = context.absolute_url()
+    url += '/excel_export'
+    url += '?uuid=' + '&uuid='.join(uuids)
+
+    return url
 
 def monthly_report_link(context, resources):
     """Builds the monthly report link given the list of the resources

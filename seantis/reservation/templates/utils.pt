@@ -15,6 +15,11 @@
                     <tal:block i18n:translate="">Compare Resources</tal:block>
                 </a>
             </li>
+            <li tal:condition="viewlet/reservations_export_link">
+                <a tal:attributes="href viewlet/reservations_export_link">
+                    <tal:block i18n:translate="">Export Reservations (Excel)</tal:block>
+                </a>
+            </li>
         </ul>
     </div>
 </div>

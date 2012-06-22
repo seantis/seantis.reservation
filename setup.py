@@ -43,7 +43,8 @@ setup(name='seantis.reservation',
           'profilehooks',
           'pytz',
           'ordereddict',
-          'alembic'
+          'alembic',
+          'xlwt'
       ],
       entry_points="""
       # -*- Entry points: -*-
