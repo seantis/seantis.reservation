@@ -17,7 +17,7 @@ from seantis.reservation.reserve import ReservationUrls
 
 calendar = Calendar()
 
-class MonthlyReportView(grok.View, form.ReservationDataView):
+class MonthlyReportView(grok.View, form.ReservationDataView, form.ResourceParameterView):
     
     permission = 'seantis.reservation.ViewReservations'
     
@@ -35,29 +35,6 @@ class MonthlyReportView(grok.View, form.ReservationDataView):
     @property
     def month(self):
         return int(self.request.get('month', 0))
-
-    @property
-    @view.memoize
-    def uuids(self):
-        uuids = self.request.get('uuid', [])
-
-        if not hasattr(uuids, '__iter__'):
-            uuids = [uuids]
-
-        return uuids
-
-    @property
-    @view.memoize
-    def resources(self):
-        objs = dict()
-
-        for uuid in self.uuids:
-            try:
-                objs[uuid] = utils.get_resource_by_uuid(self.context, uuid).getObject()
-            except AttributeError:
-                continue
-
-        return objs
 
     @property
     def sorted_resources(self):

@@ -1,20 +1,20 @@
 import json
 
 from datetime import datetime, timedelta
-from itertools import groupby, ifilter
 from functools import wraps
 
 from five import grok
 from plone.directives import form
 from z3c.form import interfaces
 from z3c.form import field
-from z3c.form import button
 from z3c.form.group import GroupForm
 
 from seantis.reservation import _
 from seantis.reservation import utils
 from seantis.reservation.models import Allocation, Reservation
 from seantis.reservation.interfaces import IResourceBase
+
+from plone.memoize import view
 
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from plone.z3cform.fieldsets import utils as z3cutils
@@ -280,6 +280,32 @@ class ReservationDataView(object):
             return _(u'No')
 
         return value
+
+class ResourceParameterView(object):
+    """Mixin for views that accept a list of uuids for resources."""
+
+    @property
+    @view.memoize
+    def uuids(self):
+        uuids = self.request.get('uuid', [])
+
+        if not hasattr(uuids, '__iter__'):
+            uuids = [uuids]
+
+        return uuids
+
+    @property
+    @view.memoize
+    def resources(self):
+        objs = dict()
+
+        for uuid in self.uuids:
+            try:
+                objs[uuid] = utils.get_resource_by_uuid(self.context, uuid).getObject()
+            except AttributeError:
+                continue
+
+        return objs
 
 class ReservationListView(ReservationDataView):
     """Combines functionality of different views which show reservations.
