@@ -5,6 +5,7 @@ from five import grok
 from zope.interface import Interface
 from plone.uuid.interfaces import IUUID
 from plone.memoize import view
+from zope.security import checkPermission
 
 from seantis.reservation.resource import CalendarRequest
 from seantis.reservation import utils
@@ -155,6 +156,5 @@ class Utilsviewlet(grok.Viewlet):
     def monthly_report_link(self):
         return utils.monthly_report_link(self.context, self.resources)
 
-    @property
-    def reservations_export_link(self):
-        return utils.reservations_export_link(self.context, self.resources)
+    def reservations_export_link(self, extension):
+        return utils.export_link(extension, 'reservations', self.context, self.resources)

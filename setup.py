@@ -44,7 +44,8 @@ setup(name='seantis.reservation',
           'pytz',
           'ordereddict',
           'alembic',
-          'xlwt'
+          'xlwt',
+          'tablib'
       ],
       entry_points="""
       # -*- Entry points: -*-

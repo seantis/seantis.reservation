@@ -199,7 +199,7 @@ def compare_link(resources):
         
     return link.rstrip('&')
 
-def reservations_export_link(context, resources):
+def export_link(extension, source, context, resources):
     """Builds the reservations excel export link for the 
     given list of resources. 
 
@@ -208,8 +208,8 @@ def reservations_export_link(context, resources):
     uuids = map(string_uuid, (r.uuid() for r in resources))
 
     url = context.absolute_url()
-    url += '/excel_export'
-    url += '?uuid=' + '&uuid='.join(uuids)
+    url += '/resource_export.' + extension +'?source=' + source
+    url += '&uuid=' + '&uuid='.join(uuids)
 
     return url
 
