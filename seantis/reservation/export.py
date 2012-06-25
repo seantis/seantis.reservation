@@ -40,7 +40,7 @@ class ExportView(grok.View, form.ResourceParameterView):
         if not source:
             raise NotImplementedError
 
-        return lambda: source(self.context, self.request, self.resources, self.language)
+        return lambda: source(self.resources, self.language)
 
     def render(self, **kwargs):
         filename = '%s.%s' % (self.context.title, self.file_extension)

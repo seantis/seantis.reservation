@@ -1,5 +1,4 @@
 import tablib
-import json
 
 from zope import i18n
 
@@ -18,7 +17,7 @@ def translator(language):
 
     return curried
 
-def dataset(context, request, resources, language):
+def dataset(resources, language):
     """ Takes a list of resources and returns a tablib dataset filled with
     all reservations of these resources. The json data of the reservations
     is filled using a single column for each type (form + field).
@@ -49,12 +48,17 @@ def dataset(context, request, resources, language):
 
         token = utils.string_uuid(r.token)
         resource = resources[utils.string_uuid(r.resource)]
-        parent = resource.parent()
+
+        # a parent will almost always be present, but it isn't a requirement
+        if hasattr(resource, 'parent'):
+            parent_title = resource.parent().title
+        else:
+            parent_title = None
         
         for start, end in r.timespans():
             record = [
                 resource.title,
-                parent.title,
+                parent_title,
                 token,
                 r.email,
                 start.strftime('%Y-%m-%d %H:%M'),
