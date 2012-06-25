@@ -1,4 +1,6 @@
 import tablib
+import json
+
 from zope import i18n
 
 from seantis.reservation import _
@@ -13,11 +15,11 @@ def translator(language):
 
     return curried
 
-
 def dataset(context, request, resources, language):
     text = translator(language)
+    reservations = fetch_records(resources)
 
-    headers = (
+    headers = [
         text(_(u'Parent')),
         text(_(u'Resource')),
         text(_(u'Token')),
@@ -25,9 +27,9 @@ def dataset(context, request, resources, language):
         text(_(u'Start')),
         text(_(u'End')),
         text(_(u'Status')),
-    )
-
-    reservations = fetch_records(resources)
+    ]
+    baseheaders = len(headers)
+    headers.extend(additional_headers(reservations))
 
     records = []
     for r in reservations:
@@ -35,7 +37,7 @@ def dataset(context, request, resources, language):
         resource = resources[utils.string_uuid(r.resource)]
         parent = resource.parent()
         for start, end in r.timespans():
-            records.append((
+            record = [
                 resource.title,
                 parent.title,
                 token,
@@ -43,7 +45,10 @@ def dataset(context, request, resources, language):
                 start.strftime('%Y-%m-%d %H:%M'),
                 end.strftime('%Y-%m-%d %H:%M'),
                 r.status
-            ))
+            ]
+            record.extend(additional_columns(r, headers[baseheaders:]))
+            
+            records.append(record)
 
     ds = tablib.Dataset()
     ds.headers = headers
@@ -57,3 +62,32 @@ def fetch_records(resources):
     query = query.filter(Reservation.resource.in_(resources.keys()))
 
     return query.all()
+
+def fieldkey(form, field):
+    return '%s.%s' % (form["desc"], field["desc"])
+
+def additional_headers(reservations):
+    formdata = [r.data.values() for r in reservations]
+
+    headers = []
+    for forms in formdata:
+        for form in forms:
+            for field in sorted(form["values"], key=lambda f: f["sortkey"]):
+                key = fieldkey(form, field)
+                if not key in headers:
+                    headers.append(key)
+
+    return headers
+
+def additional_columns(reservation, headers):
+    forms = reservation.data.values()
+
+    columns = [None] * len(headers)
+    for form in forms:
+        for field in form["values"]:
+            key = fieldkey(form, field)
+            idx = headers.index(key)
+
+            columns[idx] = field["value"]
+
+    return columns
