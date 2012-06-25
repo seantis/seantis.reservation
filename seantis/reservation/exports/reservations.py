@@ -44,10 +44,10 @@ def dataset(context, request, resources, language):
                 r.email,
                 start.strftime('%Y-%m-%d %H:%M'),
                 end.strftime('%Y-%m-%d %H:%M'),
-                r.status
+                text(_(r.status.capitalize()))
             ]
             record.extend(additional_columns(r, headers[baseheaders:]))
-            
+
             records.append(record)
 
     ds = tablib.Dataset()
@@ -60,6 +60,13 @@ def dataset(context, request, resources, language):
 def fetch_records(resources):
     query = Session.query(Reservation)
     query = query.filter(Reservation.resource.in_(resources.keys()))
+    query = query.order_by(
+        Reservation.resource,
+        Reservation.status,
+        Reservation.start,
+        Reservation.email,
+        Reservation.token,
+    )
 
     return query.all()
 
