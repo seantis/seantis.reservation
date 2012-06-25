@@ -1,10 +1,12 @@
 import tablib
 
 from zope import i18n
+from zope.i18nmessageid import Message
 
 from seantis.reservation import _
 from seantis.reservation import Session
 from seantis.reservation import utils
+from seantis.reservation.form import ReservationDataView
 from seantis.reservation.models import Reservation
 
 def translator(language):
@@ -13,6 +15,7 @@ def translator(language):
 
     """
     def curried(text):
+        assert isinstance(text, Message)
         return i18n.translate(text, target_language=language)
 
     return curried
@@ -37,8 +40,11 @@ def dataset(resources, language):
         text(_(u'End')),
         text(_(u'Status')),
     ]
-    baseheaders = len(headers)
-    headers.extend(additional_headers(reservations))
+    dataheaders = additional_headers(reservations)
+    headers.extend(dataheaders)
+
+    # use dataview for display info helper view (yep, could be nicer)
+    dataview = ReservationDataView()
 
     # for each reservation get a record per timeslot (which is a single slot
     # for reservations targeting an allocation and n slots for a reservation
@@ -63,9 +69,14 @@ def dataset(resources, language):
                 r.email,
                 start.strftime('%Y-%m-%d %H:%M'),
                 end.strftime('%Y-%m-%d %H:%M'),
-                text(_(r.status.capitalize()))
+                _(r.status.capitalize())
             ]
-            record.extend(additional_columns(r, headers[baseheaders:]))
+            record.extend(additional_columns(r, dataheaders, dataview.display_info))
+
+            # translate the values in the record
+            for i, col in enumerate(record):
+                if isinstance(col, Message):
+                    record[i] = text(col)
 
             records.append(record)
 
@@ -112,7 +123,7 @@ def additional_headers(reservations):
 
     return headers
 
-def additional_columns(reservation, headers):
+def additional_columns(reservation, headers, display_info=lambda x:x):
     """ Given a reservation and the list of additional headers return a list
     of columns filled with either None or the value of the json data.
 
@@ -128,6 +139,6 @@ def additional_columns(reservation, headers):
             key = fieldkey(form, field)
             idx = headers.index(key)
 
-            columns[idx] = field["value"]
+            columns[idx] = display_info(field["value"])
 
     return columns
