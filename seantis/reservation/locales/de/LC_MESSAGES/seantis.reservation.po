@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-06-20 14:51+0000\n"
+"POT-Creation-Date: 2012-06-25 11:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,23 +18,23 @@ msgstr ""
 msgid "${count} Orphan Records Removed"
 msgstr "${count} Verwaiste Datensätze entfernt"
 
-#: ./utils.py:391
+#: ./utils.py:406
 msgid "%i%% Free"
 msgstr "%i%% Frei"
 
-#: ./utils.py:396
+#: ./utils.py:411
 msgid "%i/%i Spot Available"
 msgstr "%i/%i Platz Verfügbar"
 
-#: ./utils.py:394
+#: ./utils.py:409
 msgid "%i/%i Spots Available"
 msgstr "%i/%i Plätze Verfügbar"
 
-#: ./utils.py:415
+#: ./utils.py:430
 msgid "%i/%i Waitinglist Spot"
 msgstr "%i/%i Wartelistenplatz"
 
-#: ./utils.py:413
+#: ./utils.py:428
 msgid "%i/%i Waitinglist Spots"
 msgstr "%i/%i Wartelistenplätze"
 
@@ -94,7 +94,7 @@ msgstr "Einteilungen können alle 5 Minuten beginnen. Ist die Einstellung 'teilw
 msgid "An existing reservation would be affected by the requested change"
 msgstr "Eine bestehende Reservation wäre durch die Änderung betroffen"
 
-#: ./report.py:243
+#: ./report.py:220
 #: ./reserve.py:245
 #: ./templates/reservations.pt:112
 msgid "Approve"
@@ -108,7 +108,7 @@ msgstr "Reservation zulassen"
 msgid "Approve reservation requests"
 msgstr "Reservations-Anfragen manuell bestätigen"
 
-#: ./report.py:73
+#: ./report.py:50
 msgid "Approved"
 msgstr "Zugelassen"
 
@@ -155,11 +155,11 @@ msgstr "Definiert die Mindestlänge der Reservationen für diese Einteilung, sow
 
 #: ./allocate.py:228
 #: ./mail.py:358
-#: ./report.py:240
+#: ./report.py:217
 msgid "Delete"
 msgstr "Löschen"
 
-#: ./report.py:244
+#: ./report.py:221
 #: ./reserve.py:277
 #: ./templates/reservations.pt:106
 msgid "Deny"
@@ -211,6 +211,7 @@ msgstr "Bearbeiten"
 msgid "Edit allocation"
 msgstr "Einteilung bearbeiten"
 
+#: ./exports/reservations.py:38
 #: ./interfaces.py:88
 msgid "Email"
 msgstr "Email"
@@ -272,6 +273,7 @@ msgstr "Email Text für Erhaltene Reservationen"
 msgid "Email Text for Reservation Pending"
 msgstr "Email Text für Reservationen in der Warteliste"
 
+#: ./exports/reservations.py:40
 #: ./interfaces.py:258
 msgid "End"
 msgstr "Ende"
@@ -291,6 +293,18 @@ msgstr "Alles nach dieser Stunde wird im Kalender nicht angezeigt, was die Anzei
 #: ./interfaces.py:176
 msgid "Everything before this hour is not shown in the calendar, making the calendar display more compact. Should be set to an hour before which there cannot be any reservations."
 msgstr "Alles vor dieser Stunde wird im Kalender nicht angezeigt, was die Anzeige kompakter macht. Sie sollten eine Stunde wählen vor der es keine Reservationen geben kann."
+
+#: ./templates/utils.pt:25
+msgid "Export Reservations (Csv)"
+msgstr "Reservationen-Export (Csv)"
+
+#: ./templates/utils.pt:20
+msgid "Export Reservations (Excel)"
+msgstr "Reservationen-Export (Excel)"
+
+#: ./templates/utils.pt:30
+msgid "Export Reservations (Json)"
+msgstr "Reservationen-Export (Json)"
 
 #: ./interfaces.py:223
 msgid "First hour must be smaller than last hour"
@@ -412,7 +426,7 @@ msgstr "Mo"
 msgid "Monthly Report"
 msgstr "Monatsreport"
 
-#: ./report.py:134
+#: ./report.py:111
 msgid "Monthly Report for ${month} ${year}"
 msgstr "Monatesreport ${month} ${year}"
 
@@ -464,6 +478,10 @@ msgstr "Einmalig"
 msgid "Orphan Records are records in the database for which no corresponding plone resource object can be found. Those records exist because there is no reliable way to detect that a plone resource object is being deleted, hence no cleanup is ever done in this case."
 msgstr "Verwaiste Datensätze sind Datensätze in der Datenbank für welche es keine abhängige Plone Ressource mehr gibt. Diese Datensätze existieren weil es keinen verlässlichen Weg gibt zu erfahren dass eine Ressource gerade gelöscht wird, weswegen in diesem Fall nicht aufgeräumt wird."
 
+#: ./exports/reservations.py:35
+msgid "Parent"
+msgstr ""
+
 #: ./interfaces.py:121
 #: ./templates/resource.pt:54
 msgid "Partly available"
@@ -473,7 +491,7 @@ msgstr "Teilweise verfügbar"
 msgid "Partly available allocations can only be reserved separately"
 msgstr "Teilweise verfügbare Einteilungen können nur separat reserviert werden"
 
-#: ./report.py:72
+#: ./report.py:49
 msgid "Pending"
 msgstr "Warteliste"
 
@@ -566,6 +584,7 @@ msgstr "Reservationen können nicht über mehr als 24 Stunden gemacht werden"
 msgid "Reserve"
 msgstr "Reservieren"
 
+#: ./exports/reservations.py:36
 #: ./profiles/default/types/seantis.reservation.resource.xml
 msgid "Resource"
 msgstr "Ressource"
@@ -635,9 +654,14 @@ msgstr "Einstellungen"
 msgid "Show"
 msgstr "Anzeigen"
 
+#: ./exports/reservations.py:39
 #: ./interfaces.py:251
 msgid "Start"
 msgstr "Start"
+
+#: ./exports/reservations.py:41
+msgid "Status"
+msgstr ""
 
 #: ./templates/monthly_report.pt:37
 msgid "Statuses"
@@ -675,7 +699,6 @@ msgstr "Der Eintrag existiert nicht mehr"
 msgid "The number of minutes a user needs to wait between reservations, use 0 if no throttling should occur. Users with the 'Unthrottled Reservations' permission are excempt from this rule (Reservation-Managers by default)."
 msgstr "Die Anzahl Minuten die ein Benutzer nach dem reservieren warten muss bis die nächste Reservation des Benutzers akzeptiert wird. Wird 0 eingeben gibt es kein Limit. Benutzer mit dem 'Unthrottled Reservations' Recht sind von dieser Regelung ausgenommen (Standardmässig sind dies Reservations-Manager)."
 
-
 #: ./templates/remove_allocation.pt:18
 msgid "The requested allocations could not be found"
 msgstr "Die gewünschten Einteilungen konnten nicht gefunden werden"
@@ -712,6 +735,10 @@ msgstr "Die Belegungsperiod überschneidet sich mit '${overlap}' in diesem Ordne
 #: ./templates/timeframes.pt:4
 msgid "Timeframes"
 msgstr "Belegungsperioden"
+
+#: ./exports/reservations.py:37
+msgid "Token"
+msgstr "Token"
 
 #: ./error.py:85
 msgid "Too many reservations in a short time. Wait for a moment before trying again."

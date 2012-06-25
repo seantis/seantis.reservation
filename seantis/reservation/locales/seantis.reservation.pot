@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-06-20 14:51+0000\n"
+"POT-Creation-Date: 2012-06-25 11:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,23 +21,23 @@ msgstr ""
 msgid "${count} Orphan Records Removed"
 msgstr ""
 
-#: ./utils.py:391
+#: ./utils.py:406
 msgid "%i%% Free"
 msgstr ""
 
-#: ./utils.py:396
+#: ./utils.py:411
 msgid "%i/%i Spot Available"
 msgstr ""
 
-#: ./utils.py:394
+#: ./utils.py:409
 msgid "%i/%i Spots Available"
 msgstr ""
 
-#: ./utils.py:415
+#: ./utils.py:430
 msgid "%i/%i Waitinglist Spot"
 msgstr ""
 
-#: ./utils.py:413
+#: ./utils.py:428
 msgid "%i/%i Waitinglist Spots"
 msgstr ""
 
@@ -97,7 +97,7 @@ msgstr ""
 msgid "An existing reservation would be affected by the requested change"
 msgstr ""
 
-#: ./report.py:243
+#: ./report.py:220
 #: ./reserve.py:245
 #: ./templates/reservations.pt:112
 msgid "Approve"
@@ -111,7 +111,7 @@ msgstr ""
 msgid "Approve reservation requests"
 msgstr ""
 
-#: ./report.py:73
+#: ./report.py:50
 msgid "Approved"
 msgstr ""
 
@@ -158,11 +158,11 @@ msgstr ""
 
 #: ./allocate.py:228
 #: ./mail.py:358
-#: ./report.py:240
+#: ./report.py:217
 msgid "Delete"
 msgstr ""
 
-#: ./report.py:244
+#: ./report.py:221
 #: ./reserve.py:277
 #: ./templates/reservations.pt:106
 msgid "Deny"
@@ -214,6 +214,7 @@ msgstr ""
 msgid "Edit allocation"
 msgstr ""
 
+#: ./exports/reservations.py:38
 #: ./interfaces.py:88
 msgid "Email"
 msgstr ""
@@ -275,6 +276,7 @@ msgstr ""
 msgid "Email Text for Reservation Pending"
 msgstr ""
 
+#: ./exports/reservations.py:40
 #: ./interfaces.py:258
 msgid "End"
 msgstr ""
@@ -293,6 +295,18 @@ msgstr ""
 
 #: ./interfaces.py:176
 msgid "Everything before this hour is not shown in the calendar, making the calendar display more compact. Should be set to an hour before which there cannot be any reservations."
+msgstr ""
+
+#: ./templates/utils.pt:25
+msgid "Export Reservations (Csv)"
+msgstr ""
+
+#: ./templates/utils.pt:20
+msgid "Export Reservations (Excel)"
+msgstr ""
+
+#: ./templates/utils.pt:30
+msgid "Export Reservations (Json)"
 msgstr ""
 
 #: ./interfaces.py:223
@@ -415,7 +429,7 @@ msgstr ""
 msgid "Monthly Report"
 msgstr ""
 
-#: ./report.py:134
+#: ./report.py:111
 msgid "Monthly Report for ${month} ${year}"
 msgstr ""
 
@@ -467,6 +481,10 @@ msgstr ""
 msgid "Orphan Records are records in the database for which no corresponding plone resource object can be found. Those records exist because there is no reliable way to detect that a plone resource object is being deleted, hence no cleanup is ever done in this case."
 msgstr ""
 
+#: ./exports/reservations.py:35
+msgid "Parent"
+msgstr ""
+
 #: ./interfaces.py:121
 #: ./templates/resource.pt:54
 msgid "Partly available"
@@ -476,7 +494,7 @@ msgstr ""
 msgid "Partly available allocations can only be reserved separately"
 msgstr ""
 
-#: ./report.py:72
+#: ./report.py:49
 msgid "Pending"
 msgstr ""
 
@@ -569,6 +587,7 @@ msgstr ""
 msgid "Reserve"
 msgstr ""
 
+#: ./exports/reservations.py:36
 #: ./profiles/default/types/seantis.reservation.resource.xml
 msgid "Resource"
 msgstr ""
@@ -638,8 +657,13 @@ msgstr ""
 msgid "Show"
 msgstr ""
 
+#: ./exports/reservations.py:39
 #: ./interfaces.py:251
 msgid "Start"
+msgstr ""
+
+#: ./exports/reservations.py:41
+msgid "Status"
 msgstr ""
 
 #: ./templates/monthly_report.pt:37
@@ -713,6 +737,10 @@ msgstr ""
 #: ./interfaces.py:245
 #: ./templates/timeframes.pt:4
 msgid "Timeframes"
+msgstr ""
+
+#: ./exports/reservations.py:37
+msgid "Token"
 msgstr ""
 
 #: ./error.py:85
