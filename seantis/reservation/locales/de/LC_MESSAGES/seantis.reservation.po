@@ -480,7 +480,7 @@ msgstr "Verwaiste Datensätze sind Datensätze in der Datenbank für welche es k
 
 #: ./exports/reservations.py:35
 msgid "Parent"
-msgstr ""
+msgstr "Übergeordnetes Element"
 
 #: ./interfaces.py:121
 #: ./templates/resource.pt:54
