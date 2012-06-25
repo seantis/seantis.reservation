@@ -31,11 +31,14 @@ def dataset(context, request, resources, language):
 
     records = []
     for r in reservations:
+        token = utils.string_uuid(r.token)
+        resource = resources[utils.string_uuid(r.resource)]
+        parent = resource.parent()
         for start, end in r.timespans():
             records.append((
-                resources[utils.string_uuid(r.resource)].parent().title,
-                resources[utils.string_uuid(r.resource)].title,
-                utils.string_uuid(r.token),
+                resource.title,
+                parent.title,
+                token,
                 r.email,
                 start.strftime('%Y-%m-%d %H:%M'),
                 end.strftime('%Y-%m-%d %H:%M'),

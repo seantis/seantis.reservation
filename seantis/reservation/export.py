@@ -10,7 +10,7 @@ sources = {
     'reservations': exports.reservations.dataset
 }
 
-extensions = ['xls','csv', 'json', 'yaml']
+extensions = ['xls','csv', 'json']
 
 class ExportView(grok.View, form.ResourceParameterView):
     """Exports the reservations from a list of resources. """
