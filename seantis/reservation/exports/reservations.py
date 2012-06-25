@@ -63,8 +63,8 @@ def dataset(resources, language):
         
         for start, end in r.timespans():
             record = [
-                resource.title,
                 parent_title,
+                resource.title,
                 token,
                 r.email,
                 start.strftime('%Y-%m-%d %H:%M'),
