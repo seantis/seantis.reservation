@@ -131,7 +131,7 @@ class Utilsviewlet(grok.Viewlet):
     grok.require('zope2.View')
     grok.viewletmanager(OverviewletManager)
 
-    grok.order(2)
+    grok.order(10)
 
     template = grok.PageTemplateFile('templates/utils.pt')
 
