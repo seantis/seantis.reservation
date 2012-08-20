@@ -199,11 +199,16 @@ def compare_link(resources):
         
     return link.rstrip('&')
 
-def export_link(source, extension, context, resources):
+def export_link(source, extension, context, request, resources):
     """Builds the reservations excel export link for the 
     given list of resources. 
 
     """
+
+    # ensure that the view may be called
+    viewname = 'resource_export.'+extension
+    if not _exposure().for_views(context, request)(viewname):
+        return ''
 
     uuids = map(string_uuid, (r.uuid() for r in resources))
 
@@ -214,10 +219,15 @@ def export_link(source, extension, context, resources):
 
     return url
 
-def monthly_report_link(context, resources):
+def monthly_report_link(context, request, resources):
     """Builds the monthly report link given the list of the resources
     using the current year and month."""
+    
     if not resources:
+        return ''
+
+    # ensure that the view may be called
+    if not _exposure().for_views(context, request)('monthly_report'):
         return ''
 
     today = datetime.now()
