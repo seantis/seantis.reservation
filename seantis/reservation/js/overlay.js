@@ -93,7 +93,7 @@ var reservation_overlay_init = null;
         var default_options = {
             subtype:          'ajax',
             filter:           common_content_filter,
-            formselector:     'form',
+            formselector:     'form.seantis-reservation-form',
             closeselector:    '[name=form.buttons.cancel]',
             noform:           'close',
             afterpost:        (function() {}),
