@@ -12,7 +12,7 @@
     id="++resource++seantis.reservation.css/report.css" media="all" rel="stylesheet" rendering="link"/>
 
     <stylesheet title="" cacheable="True" compression="safe" cookable="True" enabled="1"
-    id="++resource++seantis.reservation.css/overview.css" media="all" rel="stylesheet" rendering="link"/>
+    id="++resource++seantis.reservation.css/overview.css" media="all" rel="stylesheet" rendering="link" insert-after="++resource++seantis.reservation.css/resource.css" />
 
     <stylesheet title="" cacheable="True" compression="safe" cookable="True" enabled="1" id="++resource++seantis.reservation.css/print.css" media="print" rel="stylesheet" rendering="link"/>
     
