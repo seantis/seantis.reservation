@@ -163,10 +163,13 @@ def availability_by_day(start, end, resources, is_exposed):
         total = availability_by_allocations(exposed)
         wtotal = waitinglist_availabilty_by_allocations(exposed)
 
-        if not unapproved:
-            total = math.ceil(wtotal/100.0) * (total + wtotal) / 2
-        else:
+        if wtotal == False:
+            wtotal = total
+
+        if unapproved:
             total = (total + wtotal) / 2
+        else:
+            total = math.ceil(wtotal/100.0) * (total + wtotal) / 2 
 
         days[day] = (total, members)
 
