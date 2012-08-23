@@ -110,3 +110,7 @@
     margin-top: 15px;
     padding-left: 10px;
 }
+
+.facilityOverview > div {
+    margin-bottom: 20px;
+}
