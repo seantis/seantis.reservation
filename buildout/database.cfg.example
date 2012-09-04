@@ -1,5 +1,5 @@
 [instance]
 zope-conf-additional =
    <product-config seantis.reservation>
-       dsn postgresql+psycopg2://user:password@localhost:port/database
+       dsn postgresql+psycopg2://reservation:password@localhost:6543/reservations
    </product-config>
