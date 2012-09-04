@@ -114,3 +114,8 @@
 .facilityOverview > div {
     margin-bottom: 20px;
 }
+
+.facilityOverview #directoryResultMap {
+    float: none;
+    width: 100%;
+}
