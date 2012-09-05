@@ -1,9 +1,10 @@
 .groupSelection {
-    -webkit-box-shadow: 0px 0px 3px 3px #6DADF2;
-    -moz-box-shadow: 0px 0px 3px 3px #6DADF2;
-    box-shadow: 0px 0px 3px 3px #6DADF2;
-    background-color: #ddd; 
-    zoom: 1;
+    border-color: #0087be !important;
+    box-shadow: 3px 3px 2px #efefef;
+}
+
+.fc .groupSelection {
+    border-color: transparent !important;
 }
 
 #seantis-overview-calendar td.groupSelection {
@@ -23,7 +24,7 @@
 #seantis-overview-calendar .event-unavailable, 
 #seantis-overview-calendar .event-unavailable .fc-event-skin, 
 #seantis-overview-calendar .event-unavailable .fc-event-head {
-    background-color: #a1291e !important;
+    background-color: #d7160f !important;
     border: none;
     opacity: 0.6;
     -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
@@ -34,7 +35,7 @@
 #seantis-overview-calendar .event-available, 
 #seantis-overview-calendar .event-available .fc-event-skin, 
 #seantis-overview-calendar .event-available .fc-event-head {
-    background-color: #379a00 !important;
+    background-color: #79aa00 !important;
     border: none;
     opacity: 0.6;
     -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
@@ -45,7 +46,7 @@
 #seantis-overview-calendar .event-partly-available, 
 #seantis-overview-calendar .event-partly-available .fc-event-skin, 
 #seantis-overview-calendar .event-partly-available .fc-event-head {
-    background-color: #e99623 !important;
+    background-color: #fd671f !important;
     border: none;
     opacity: 0.6;
     -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
@@ -118,4 +119,8 @@
 .facilityOverview #directoryResultMap {
     float: none;
     width: 100%;
+}
+
+#default-cgmap {
+    height: 300px;
 }
