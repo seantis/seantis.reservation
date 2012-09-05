@@ -60,10 +60,15 @@
 #email_templates .resourceTitle,
 #timeframes .resourceTitle {
     margin: 0 5px 0 0;
+    font-size: 14px;
 }
 
 .facilityOverview h2 {
    font-size: 18px;
+}
+
+.facilityOverview .resourceItem {
+   margin: 5px 10px;
 }
 
 .overview-utils ul {
