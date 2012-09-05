@@ -1,5 +1,5 @@
 from datetime import date, time
-
+from DateTime import DateTime
 from five import grok
 
 from plone.dexterity.interfaces import IDexterityFTI
@@ -104,7 +104,8 @@ class ReservationForm(ResourceBaseForm, ReservationSchemata):
         if not isinstance(value, basestring):
             return value
 
-        return time(*map(int, value.split(':')))
+        dt = DateTime(value)
+        return time(dt.hour(), dt.minute())
 
     def validate(self, data):
         try:
