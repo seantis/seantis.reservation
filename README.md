@@ -97,6 +97,10 @@ Download the buildout configs to the folder which will hold your Plone installat
     
     wget -qO - https://raw.github.com/seantis/seantis.reservation/master/buildout/buildouts.sh | bash
 
+Or if you don't have wget (like on OSX):
+
+    curl https://raw.github.com/seantis/seantis.reservation/master/buildout/buildouts.sh | bash 
+
 Edit your database connection settings in the database.cfg file.
 
     nano database.cfg
@@ -104,6 +108,10 @@ Edit your database connection settings in the database.cfg file.
 Download the boostrap script
 
     wget http://python-distribute.org/bootstrap.py
+
+Again, alternatively with curl
+
+    curl http://python-distribute.org/bootstrap.py > bootstrap.py
 
 Bootstrap your environment
 
