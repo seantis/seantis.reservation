@@ -8,4 +8,4 @@ Daten:
 Formulardaten:
 %(data)s
 
-Bitte teilen Sie uns mit wenn Ihre Informatione inkorrekt sind. Wir werden in der Zwischenzeit Ihre Reservaiton prüfen und Ihnen nach unserer Entscheidung eine weitere Email senden.
+Bitte teilen Sie uns mit, wenn Ihre Informationen inkorrekt sind. Wir werden in der Zwischenzeit Ihre Reservation prüfen und Ihnen anschliessend eine weitere Email senden.
