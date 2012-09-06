@@ -122,7 +122,7 @@ Run the installation (and get that coffee machine cracking)
 *Note that due to seantis.reservation being under heavy development, you must 
 currently use develop.cfg instead of the usual buildout.cfg*
 
-    bin/develop -c develop.cfg
+    bin/buildout -c develop.cfg
 
 If everything went well you may now start your instance
 
