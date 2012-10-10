@@ -38,6 +38,7 @@
         Hopefully fullcalendar's pace of development increases again...        
         -->
         <javascript id="++resource++collective.js.fullcalendar/fullcalendar.min.js" enabled="False" />
+        <javascript id="++resource++collective.js.fullcalendar/fullcalendar.gcal.js" enabled="False" />
         <javascript id="++resource++seantis.reservation.js/fullcalendar.js" enabled="True" insert-after="jquery.js" compression="safe" cookable="True"/>
 
 
