@@ -11,8 +11,12 @@ seantis.locale = function(text) {
         
     var ix = locale.ix(lang);
     if (ix < 0) {
-        console.log('language ' + lang + ' is not supported');
-        return text;
+        lang = lang.split('-')[0];
+        ix = locale.ix(lang);
+        if (ix < 0) {
+            console.log('language ' + lang + ' is not supported');
+            return text;
+        }
     }
 
     return locale.dictionary[text][ix];
@@ -47,7 +51,7 @@ seantis.locale.ix = function(language) {
 };
 
 seantis.locale.fullcalendar = function() {
-    if (seantis.locale.language() == 'de') {
+    if (seantis.locale.language().split('-')[0] == 'de') {
         return {
             buttonText: {  
                 today: 'Heute',  
