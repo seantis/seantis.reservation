@@ -1,5 +1,3 @@
-import os
-
 from App.config import getConfiguration, setConfiguration
 from plone.app.testing import PloneSandboxLayer 
 from plone.app.testing import PLONE_FIXTURE 
