@@ -116,6 +116,22 @@ def get_postgres_version(dsn):
     version = re.findall('PostgreSQL (.*?) on', version)[0]
     return map(int, version.split('.'))[:2]
 
+def assert_dsn(dsn):
+    assert dsn, "Database connection not found (database.cfg)"
+
+    if 'test://' in dsn:
+        return dsn
+
+    assert 'postgresql+psycopg2' in dsn, \
+    "Only PostgreSQL combined with psycopg2 is supported" 
+
+    major, minor = get_postgres_version(dsn)
+
+    assert (major >= 9 and minor >=1) or (major >= 10), \
+    "PostgreSQL 9.1+ is required. Your version is %i.%i" % (major, minor)
+
+    return dsn
+
 class ISessionUtility(Interface):
     """Describes the interface of the session utility which provides
     all query functions with the right session.
@@ -134,72 +150,14 @@ class ISessionUtility(Interface):
     def is_serial(self):
         """Returns true if the current session is the serial session."""
 
-class SessionUtility(grok.GlobalUtility):
-    """Global session utility. It wraps two global sessions through which
-    all database interaction (should) be flowing.
+class SessionStore(object):
 
-    As a global utility this object is present only once per ZOPE instance, 
-    so it needs to be aware of different threads.
-    """
+    def __init__(self, dsn):
+        self.readonly = self.create_session(READ_COMMITTED, dsn)
+        self.serial = self.create_session(SERIALIZABLE, dsn)
+        self.current = self.readonly
 
-    implements(ISessionUtility)
-
-    def __init__(self):
-        self.dsn = utils.get_config('dsn')
-        
-        assert 'postgresql+psycopg2' in self.dsn, \
-        "Only PostgreSQL combined with psycopg2 is supported"
-
-        major, minor = get_postgres_version(self.dsn)
-
-        assert (major >= 9 and minor >=1) or (major >= 10), \
-        "PostgreSQL 9.1+ is required. Your version is %i.%i" % (major, minor)
-
-        # Session information is stored independently for each thread.
-        # SQLAlchemy does provide this in a way with scoped_session, but
-        # it seems sane to be independent here
-        self._threadstore = threading.local()
-
-    @property
-    def threadstore(self):
-        """Returns the current threadstore which will be populated with
-        sessions if they are not yet present. 
-
-        """
-        store = self._threadstore
-
-        if not hasattr(store, 'readonly'):
-            store.readonly = self.create_session(READ_COMMITTED)
-            store.serial = self.create_session(SERIALIZABLE)
-            store.current = store.readonly
-
-        return store
-
-    @property
-    def is_serial(self):
-        return self.threadstore.current is self.threadstore.serial
-
-    @property
-    def is_readonly(self):
-        return self.threadstore.current is self.threadstore.readonly
-
-    def is_serial_dirty(self, reset=False):
-        """Returns true if the serial session was used (flushed). False if
-        it was reset (rollback, commited). 
-
-        The idea is to indicate when the serial session has access to uncommited 
-        data which will be invisible to the readonly session.
-
-        """
-        serial = self.threadstore.serial.registry()
-        dirty = hasattr(serial, '_was_used') and serial._was_used
-
-        if dirty and reset:
-            serial._was_used = False
-
-        return dirty
-
-    def create_session(self, isolation_level):
+    def create_session(self, isolation_level, dsn):
         """Creates a session with the given isolation level. 
 
         If the isolation level is serializable (writeable) a hook is created 
@@ -213,7 +171,7 @@ class SessionUtility(grok.GlobalUtility):
 
         """
 
-        engine = create_engine(self.dsn, 
+        engine = create_engine(dsn, 
                 poolclass=SingletonThreadPool,
                 isolation_level=isolation_level
             )
@@ -249,6 +207,80 @@ class SessionUtility(grok.GlobalUtility):
         
         return session
 
+class SessionUtility(grok.GlobalUtility):
+    """Global session utility. It wraps two global sessions through which
+    all database interaction (should) be flowing.
+
+    As a global utility this object is present only once per Zope instance, 
+    so it needs to be aware of different threads.
+    """
+
+    implements(ISessionUtility)
+
+    def __init__(self):
+        # Session information is stored independently for each thread.
+        # SQLAlchemy does provide this in a way with scoped_session, but
+        # it seems sane to be independent here
+        self._threadstore = threading.local()
+        self._default_dsn = utils.get_config('dsn')
+        self._dsn_cache = {}
+
+    def get_dsn(self, site):
+        """ Returns the DSN for the given site. Will look for those dsns
+        in the zope.conf which is preferrably modified using buildout's
+        <product-config> construct. See database.cfg.example for more info.
+        
+        """
+        site_id = site and site.id or '__no_site__'
+
+        if site_id not in self._dsn_cache:
+            specific = utils.get_config('dsn-%s' % site_id)
+
+            dsn = (specific or self._default_dsn).replace('{*}', site_id)
+            self._dsn_cache[site_id] = assert_dsn(dsn)
+
+        return self._dsn_cache[site_id]
+
+    @property
+    def sessionstore(self):
+        """Returns the current sessionstore which will be populated with
+        sessions if they are not yet present. 
+
+        """
+        dsn = self.get_dsn(utils.getSite())
+
+        if not hasattr(self._threadstore, 'sessions'):
+            self._threadstore.sessions = {}
+        
+        if dsn not in self._threadstore.sessions:
+            self._threadstore.sessions[dsn] = SessionStore(dsn)
+        
+        return self._threadstore.sessions[dsn]
+
+    @property
+    def is_serial(self):
+        return self.sessionstore.current is self.sessionstore.serial
+
+    @property
+    def is_readonly(self):
+        return self.sessionstore.current is self.sessionstore.readonly
+
+    def is_serial_dirty(self, reset=False):
+        """Returns true if the serial session was used (flushed). False if
+        it was reset (rollback, commited). 
+
+        The idea is to indicate when the serial session has access to uncommited 
+        data which will be invisible to the readonly session.
+
+        """
+        serial = self.sessionstore.serial.registry()
+        dirty = hasattr(serial, '_was_used') and serial._was_used
+
+        if dirty and reset:
+            serial._was_used = False
+
+        return dirty
+
     def session(self):
         """ Return the current session. Raises DirtyReadOnlySession if the
         session to be returned is read only and the serial session was used.
@@ -267,15 +299,15 @@ class SessionUtility(grok.GlobalUtility):
         if self.is_readonly and self.is_serial_dirty(reset=True):
             raise error.DirtyReadOnlySession
 
-        return self.threadstore.current
+        return self.sessionstore.current
 
     def use_readonly(self):
-        self.threadstore.current = self.threadstore.readonly
-        return self.threadstore.current
+        self.sessionstore.current = self.sessionstore.readonly
+        return self.sessionstore.current
 
     def use_serial(self):
-        self.threadstore.current = self.threadstore.serial
-        return self.threadstore.current
+        self.sessionstore.current = self.sessionstore.serial
+        return self.sessionstore.current
 
 class SessionWrapper(object):
     """ The global session wrapper utility which acts as a replacement for 
@@ -308,7 +340,7 @@ def serialized_call(fn):
 
         # Since a serialized call may be part of another serialized call, we need
         # store the current session and reset it afterwards
-        current = util.threadstore.current
+        current = util.sessionstore.current
 
         serial = util.use_serial()
         serial.begin_nested()
@@ -322,7 +354,7 @@ def serialized_call(fn):
             serial.rollback()
             raise    
         finally:
-            util.threadstore.current = current
+            util.sessionstore.current = current
     
     return wrapper
 

@@ -62,6 +62,8 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
 
 <!-- Upgrades -->
 
+<!-- 
+No longer in use, left as an example
 <genericsetup:upgradeStep
     title="Upgrade seantis.reservation to 1.0b1"
     description="Adds timestamps for all records"
@@ -69,7 +71,7 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
     destination="1000"
     handler=".upgrades.upgrade_1_to_1000"
     profile="seantis.reservation:default">
-</genericsetup:upgradeStep>
+</genericsetup:upgradeStep> -->
 
 <!-- Controlpanel View -->
 <browser:page

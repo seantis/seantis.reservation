@@ -53,8 +53,8 @@ class TestCase(unittest.TestCase):
         sm.registerUtility(aq_base(self.portal._original_MailHost), provided=IMailHost)
 
         util = getUtility(ISessionUtility)
-        util.threadstore.readonly.rollback()
-        util.threadstore.serial.rollback()
+        util.sessionstore.readonly.rollback()
+        util.sessionstore.serial.rollback()
 
         self.logout()
         endInteraction()

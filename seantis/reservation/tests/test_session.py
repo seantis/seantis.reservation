@@ -1,5 +1,7 @@
 import transaction
+import mock
 
+from collections import namedtuple
 from threading import Thread
 from uuid import uuid1 as uuid
 from datetime import datetime
@@ -27,8 +29,9 @@ class SessionIds(Thread):
     
     def run(self):
         util = getUtility(ISessionUtility)
-        self.serial_id = id(util.threadstore.serial)
-        self.readonly_id = id(util.threadstore.readonly)
+
+        self.serial_id = id(util.sessionstore.serial)
+        self.readonly_id = id(util.sessionstore.readonly)
 
 class ExceptionThread(Thread):
     def __init__(self, call):
@@ -55,7 +58,28 @@ def add_something(resource=None):
 
 class TestSession(IntegrationTestCase):
 
-    def test_threadstore(self):
+    @mock.patch('seantis.reservation.utils.get_config')
+    def test_dsnconfig(self, get_config):
+        util = getUtility(ISessionUtility)
+        util._default_dsn = 'test://default'
+
+        MockSite = namedtuple('MockSite', ['id'])
+
+        get_config.return_value = None
+        self.assertEqual(util.get_dsn(MockSite('test')), 'test://default')
+
+        get_config.return_value = 'test://specific'
+        self.assertEqual(util.get_dsn(MockSite('test2')), 'test://specific')
+
+        get_config.return_value = 'test://{*}'
+        self.assertEqual(util.get_dsn(MockSite('test3')), 'test://test3')
+
+        util._default_dsn = 'test://{*}'
+        get_config.return_value = None
+        self.assertEqual(util.get_dsn(MockSite('test4')), 'test://test4')
+
+    def test_sessionstore(self):
+
         t1 = SessionIds()
         t2 = SessionIds()
 

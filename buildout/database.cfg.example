@@ -1,5 +1,27 @@
 [instance]
 zope-conf-additional =
    <product-config seantis.reservation>
-       dsn postgresql+psycopg2://reservation:password@localhost:5432/reservations
+       # seantis.reservation supports multiple database connections on a single
+       # zope instance. Each site on an instance may have its own connection.
+
+       # this can be configured by using absolute values:
+
+       # dsn-mysite postgresql+psycopg2://user:password@localhost:5432/mysite
+       # dsn postgresql+psycopg2://user:password@localhost:5432/default
+
+       # where dsn-mysite is the dsn for the site with the id 'mysite' and
+       # where dsn is the default dsn for all other sites (must be present)
+
+       # alternatively a wildcard may be used:
+
+       # dsn postgresql+psycopg2://user:password@localhost:5432/{*}
+
+       # here, {*} is replaced by the site id and will result in the following
+       # dsn strings for the sites mysite and yoursite:
+
+       # mysite:
+       # postgresql+psycopg2://user:password@localhost:5432/mysite
+
+       # yoursite:
+       # postgresql+psycopg2://user:password@localhost:5432/yoursite
    </product-config>

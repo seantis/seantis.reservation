@@ -45,7 +45,8 @@ setup(name='seantis.reservation',
           'ordereddict',
           'alembic',
           'xlwt',
-          'tablib'
+          'tablib',
+          'mock'
       ],
       entry_points="""
       # -*- Entry points: -*-

@@ -19,7 +19,7 @@ from plone.dexterity.utils import SchemaNameEncoder
 from App.config import getConfiguration
 from Acquisition import aq_inner
 from zope.component import getMultiAdapter
-from zope.component.hooks import getSite
+from zope.component.hooks import getSite, getSiteManager
 from zope import i18n
 from zope import interface
 from Products.CMFCore.utils import getToolByName
@@ -107,6 +107,9 @@ def additional_data_dictionary(data, fti):
         result[key] = record
 
     return result
+
+def plone_sites():
+    man = getSiteManager()
 
 def mock_data_dictionary(data, formset_key='mock', formset_desc='Mocktest'):
     """ Given a dictionary of key values this function returns a dictionary

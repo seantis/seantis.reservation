@@ -1,11 +1,11 @@
-from sqlalchemy import create_engine
+# from sqlalchemy import create_engine
 
-from alembic.migration import MigrationContext
-from alembic.operations import Operations
-from alembic.autogenerate import compare_metadata
+# from alembic.migration import MigrationContext
+# from alembic.operations import Operations
+# from alembic.autogenerate import compare_metadata
 
-from seantis.reservation import ORMBase
-from seantis.reservation import utils
+# from seantis.reservation import ORMBase
+# from seantis.reservation import utils
 
 def upgrade_1_to_1000(setuptools):
     """ Upgrades seantis.reservation, adding modified and created dates to
@@ -16,23 +16,48 @@ def upgrade_1_to_1000(setuptools):
 
     """
 
-    engine = create_engine(utils.get_config('dsn'), isolation_level='SERIALIZABLE')
-    connection = engine.connect()
-    trans = connection.begin()
+    #####################
+    """ 
+    No longer in use, needs to be rewritten to take into account that the
+    session util now carries more than one database connection.
 
-    try:
+    Something like this should do:
 
-        context = MigrationContext.configure(connection)
-        diff = compare_metadata(context, ORMBase.metadata)
-        op = Operations(context)
+    util = getUtility(SessionUtility)
+    upgraded = []
+    for site in seantis.reservation.utils.plone_sites():
+        dsn util.get_dsn(site)
+        if dsn in upgraded:
+            continue
 
-        # go through diff and execute the changes on the operations object
-        for method, table, col in diff:
-            assert method == 'add_column' #only works with this method!
-            getattr(op, method)(table, col.copy())
+        upgrade(dsn)
+        upgraded.append(dsn)
+
+    Unittests would be nice too :)
+    """
+    #####################
+
+    ""
+    # DO NOT USE utils.get_config('dsn') here!!!!
+    # engine = create_engine(utils.get_config('dsn'), isolation_level='SERIALIZABLE')
+    ""
+
+    # connection = engine.connect()
+    # trans = connection.begin()
+
+    # try:
+
+    #     context = MigrationContext.configure(connection)
+    #     diff = compare_metadata(context, ORMBase.metadata)
+    #     op = Operations(context)
+
+    #     # go through diff and execute the changes on the operations object
+    #     for method, table, col in diff:
+    #         assert method == 'add_column' #only works with this method!
+    #         getattr(op, method)(table, col.copy())
     
-        trans.commit()
+    #     trans.commit()
 
-    except:
-        trans.rollback()
-        raise
+    # except:
+    #     trans.rollback()
+    #     raise
