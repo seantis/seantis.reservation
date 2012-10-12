@@ -27,6 +27,9 @@ from Products.CMFPlone.i18nl10n import weekdayname_msgid_abbr, monthname_msgid
 from z3c.form.interfaces import ActionExecutionError
 from plone.i18n.locales.languages import _languagelist
 
+from OFS.interfaces import IApplication
+from Products.CMFPlone.interfaces import IPloneSiteRoot
+
 from seantis.reservation import error
 from seantis.reservation import _
 
@@ -111,8 +114,26 @@ def additional_data_dictionary(data, fti):
 
     return result
 
-def plone_sites():
-    man = getSiteManager()
+def zope_root():
+    this = getSite()
+
+    while not IApplication.providedBy(this):
+        this = this.aq_inner.aq_parent
+
+    return this
+
+def plone_sites(root=None):
+    root = root or zope_root()
+
+    sites = []
+    for id, item in root.items():
+        if not IPloneSiteRoot.providedBy(item):
+            continue
+
+        sites.append(item)
+        sites.extend(plone_sites(item))
+
+    return sites
 
 def mock_data_dictionary(data, formset_key='mock', formset_desc='Mocktest'):
     """ Given a dictionary of key values this function returns a dictionary

@@ -76,13 +76,22 @@ class SeantisReservationSettingsPanelForm(RegistryEditForm):
         ))
 
     def existing_uuids(self):
-        # get a list of all resource uuids
-        catalog = getToolByName(self.context, 'portal_catalog')
-        brains = catalog.unrestrictedSearchResults(
-            object_provides=IResource.__identifier__
-        )
 
-        return map(lambda brain: IUUID(brain.getObject()), brains)
+        def by_site(site):
+            # get a list of all resource uuids
+            catalog = getToolByName(site, 'portal_catalog')
+
+            brains = catalog.unrestrictedSearchResults(
+                object_provides=IResource.__identifier__
+            )
+            return map(lambda brain: IUUID(brain.getObject()), brains)
+
+        # do this on all items in the zope instance, not just the site!
+        uuids = []
+        for site in utils.plone_sites():
+            uuids.extend(by_site(site))
+
+        return uuids
 
     def number_of_orphan_records(self):
         uuids = self.existing_uuids()
