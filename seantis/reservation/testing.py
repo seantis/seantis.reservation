@@ -7,7 +7,13 @@ from plone.app.testing import applyProfile
 from plone.app.testing import quickInstallProduct
 from plone.testing import z2
 from zope.configuration import xmlconfig
-from seantis.reservation import test_database
+
+try:
+    from seantis.reservation import test_database
+except ImportError:
+    from seantis.reservation.utils import ConfigurationError
+    msg = 'No test database configured in seantis.reservation.test_database.'
+    raise ConfigurationError(msg)
 
 class SqlLayer(PloneSandboxLayer):
     default_bases = (PLONE_FIXTURE,)

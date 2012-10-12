@@ -20,7 +20,6 @@ from seantis.reservation.session import ISessionUtility
 from seantis.reservation.testing import SQL_INTEGRATION_TESTING
 from seantis.reservation.testing import SQL_FUNCTIONAL_TESTING
 
-from AccessControl import getSecurityManager
 from Products.CMFCore.utils import getToolByName
 
 class TestCase(unittest.TestCase):

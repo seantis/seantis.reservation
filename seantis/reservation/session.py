@@ -222,8 +222,12 @@ class SessionUtility(grok.GlobalUtility):
         # SQLAlchemy does provide this in a way with scoped_session, but
         # it seems sane to be independent here
         self._threadstore = threading.local()
-        self._default_dsn = utils.get_config('dsn')
         self._dsn_cache = {}
+
+        try:
+            self._default_dsn = utils.get_config('dsn')
+        except utils.ConfigurationError:
+            raise utils.ConfigurationError('No database configuration found.')
 
     def get_dsn(self, site):
         """ Returns the DSN for the given site. Will look for those dsns
