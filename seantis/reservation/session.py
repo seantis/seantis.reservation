@@ -145,7 +145,10 @@ class SessionUtility(grok.GlobalUtility):
     implements(ISessionUtility)
 
     def __init__(self):
-        self.dsn = utils.get_config('dsn')
+        try:
+            self.dsn = utils.get_config('dsn')
+        except utils.ConfigurationError:
+            raise utils.ConfigurationError('No PostgreSQL database configuration found.')
         
         assert 'postgresql+psycopg2' in self.dsn, \
         "Only PostgreSQL combined with psycopg2 is supported"

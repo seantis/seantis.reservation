@@ -39,6 +39,9 @@ from seantis.reservation.sortedcollection import SortedCollection
 
 dexterity_encoder = SchemaNameEncoder()
 
+class ConfigurationError(Exception):
+    pass
+
 def profile(fn):
     """ Naive profiling of a function.. on unix systems only. """
 
@@ -483,6 +486,9 @@ def pairwise(iterable):
 
 def get_config(key):
     config = getConfiguration()
+    if not hasattr(config, 'product_config'):
+        raise ConfigurationError('No configuration found.')
+
     configuration = config.product_config.get('seantis.reservation', dict())
     return configuration.get(key)
 
