@@ -8,5 +8,5 @@ install:
     - mkdir -p buildout-cache/downloads
     - python bootstrap.py -c travis.cfg
     - bin/buildout -N -t 3 -c travis.cfg
-before_script:
-  - psql -c 'create database reservations;' -U postgres
+before_script: psql -c 'create database reservations;' -U postgres
+script: bin/test -s seantis.reservation
