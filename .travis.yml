@@ -10,5 +10,5 @@ install:
     - bin/buildout -N -t 3 -c travis.cfg
 before_script:
     - psql -c 'create database reservations;' -U postgres
-    - echo 'testdsn = "postgresql+psycopg2://postgres@127.0.0.1:5432/reservations"' >seantis/reservations/test_database.py
+    - echo 'testdsn = "postgresql+psycopg2://postgres@127.0.0.1:5432/reservations"' >seantis/reservation/test_database.py
 script: bin/test -s seantis.reservation
