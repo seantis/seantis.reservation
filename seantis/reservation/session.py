@@ -1,5 +1,6 @@
 """
-The session module provides the sqlalchemy session for all of seantis.reservation
+The session module provides the sqlalchemy session for all of
+seantis.reservation
 
 Read the following doc for the why and how:
 
@@ -14,9 +15,9 @@ sqlalchemy transaction is commited (or rolled back) at the same time.
 Transaction isolation
 =====================
 
-A feature of postgres (and indeed other databases) is the ability to use varying
-degrees of transaction isolation. Simply put, some transactions are less
-isolated than others. 
+A feature of postgres (and indeed other databases) is the ability to use
+varying degrees of transaction isolation. Simply put, some transactions are
+less isolated than others.
 
 The better the isolation, the worse the performance.
 
@@ -26,8 +27,8 @@ http://www.postgresql.org/docs/current/static/transaction-iso.html
 Required Levels
 ===============
 
-There are two levels we need for reservations. One is the Read Commited Isolation 
-Level for fast database reads when browsing the calendar.
+There are two levels we need for reservations. One is the Read Commited
+Isolation Level for fast database reads when browsing the calendar.
 
 The other is the Serializable Isolation Level for database writes. This level
 ensures that no two transactions are processed at the same time. Bad news for
@@ -50,9 +51,10 @@ Usage
 =====
 
 A function which should, within it's scope, force all database requests to go
-through the isolated transaction, can do so by using the @serializable decorator
-or the serializable_call function. These two functions will switch the current 
-thread to the serializable isolation session and back for whatever they wrap.
+through the isolated transaction, can do so by using the @serializable
+decorator or the serializable_call function. These two functions will switch
+the current thread to the serializable isolation session and back for whatever
+they wrap.
 
 Since all functions get their session from the global session utility this
 means that the transaction isolation can be globally switched.
@@ -100,6 +102,7 @@ from sqlalchemy import event
 SERIALIZABLE = 'SERIALIZABLE'
 READ_COMMITTED = 'READ_COMMITTED'
 
+
 def get_postgres_version(dsn):
     """ Returns the postgres version in a tuple with the first value being
     the major version, the second being the minor version.
@@ -116,6 +119,7 @@ def get_postgres_version(dsn):
     version = re.findall('PostgreSQL (.*?) on', version)[0]
     return map(int, version.split('.'))[:2]
 
+
 def assert_dsn(dsn):
     assert dsn, "Database connection not found (database.cfg)"
 
@@ -123,14 +127,15 @@ def assert_dsn(dsn):
         return dsn
 
     assert 'postgresql+psycopg2' in dsn, \
-    "Only PostgreSQL combined with psycopg2 is supported" 
+        "Only PostgreSQL combined with psycopg2 is supported"
 
     major, minor = get_postgres_version(dsn)
 
-    assert (major >= 9 and minor >=1) or (major >= 10), \
-    "PostgreSQL 9.1+ is required. Your version is %i.%i" % (major, minor)
+    assert (major >= 9 and minor >= 1) or (major >= 10), \
+        "PostgreSQL 9.1+ is required. Your version is %i.%i" % (major, minor)
 
     return dsn
+
 
 class ISessionUtility(Interface):
     """Describes the interface of the session utility which provides
@@ -150,6 +155,7 @@ class ISessionUtility(Interface):
     def is_serial(self):
         """Returns true if the current session is the serial session."""
 
+
 class SessionStore(object):
 
     def __init__(self, dsn):
@@ -158,9 +164,9 @@ class SessionStore(object):
         self.current = self.readonly
 
     def create_session(self, isolation_level, dsn):
-        """Creates a session with the given isolation level. 
+        """Creates a session with the given isolation level.
 
-        If the isolation level is serializable (writeable) a hook is created 
+        If the isolation level is serializable (writeable) a hook is created
         which will mark the session as used once it is flushed, as unused when
         the session is commited or rolledback.
 
@@ -171,10 +177,11 @@ class SessionStore(object):
 
         """
 
-        engine = create_engine(dsn, 
-                poolclass=SingletonThreadPool,
-                isolation_level=isolation_level
-            )
+        engine = create_engine(
+            dsn,
+            poolclass=SingletonThreadPool,
+            isolation_level=isolation_level
+        )
 
         session = scoped_session(sessionmaker(
             bind=engine, autocommit=False, autoflush=True,
@@ -182,16 +189,16 @@ class SessionStore(object):
         ))
 
         if isolation_level == READ_COMMITTED:
-            
+
             def guard_changes(session, *args):
                 changelists = [session.dirty, session.deleted, session.new]
-                
+
                 # sum up the len of all changelists
-                if sum(map(len, changelists)): 
+                if sum(map(len, changelists)):
                     raise error.ModifiedReadOnlySession
 
             event.listen(session, 'before_flush', guard_changes)
-        
+
         if isolation_level == SERIALIZABLE:
 
             def reset_serial(session, *args):
@@ -199,19 +206,20 @@ class SessionStore(object):
 
             def mark_serial(session, *args):
                 session._was_used = True
-                
+
             event.listen(session, 'after_commit', reset_serial)
             event.listen(session, 'after_rollback', reset_serial)
             event.listen(session, 'after_soft_rollback', reset_serial)
             event.listen(session, 'after_flush', mark_serial)
-        
+
         return session
+
 
 class SessionUtility(grok.GlobalUtility):
     """Global session utility. It wraps two global sessions through which
     all database interaction (should) be flowing.
 
-    As a global utility this object is present only once per Zope instance, 
+    As a global utility this object is present only once per Zope instance,
     so it needs to be aware of different threads.
     """
 
@@ -233,7 +241,7 @@ class SessionUtility(grok.GlobalUtility):
         """ Returns the DSN for the given site. Will look for those dsns
         in the zope.conf which is preferrably modified using buildout's
         <product-config> construct. See database.cfg.example for more info.
-        
+
         """
         site_id = site and site.id or '__no_site__'
 
@@ -248,17 +256,17 @@ class SessionUtility(grok.GlobalUtility):
     @property
     def sessionstore(self):
         """Returns the current sessionstore which will be populated with
-        sessions if they are not yet present. 
+        sessions if they are not yet present.
 
         """
         dsn = self.get_dsn(utils.getSite())
 
         if not hasattr(self._threadstore, 'sessions'):
             self._threadstore.sessions = {}
-        
+
         if dsn not in self._threadstore.sessions:
             self._threadstore.sessions[dsn] = SessionStore(dsn)
-        
+
         return self._threadstore.sessions[dsn]
 
     @property
@@ -271,10 +279,10 @@ class SessionUtility(grok.GlobalUtility):
 
     def is_serial_dirty(self, reset=False):
         """Returns true if the serial session was used (flushed). False if
-        it was reset (rollback, commited). 
+        it was reset (rollback, commited).
 
-        The idea is to indicate when the serial session has access to uncommited 
-        data which will be invisible to the readonly session.
+        The idea is to indicate when the serial session has access to
+        uncommited data which will be invisible to the readonly session.
 
         """
         serial = self.sessionstore.serial.registry()
@@ -290,14 +298,15 @@ class SessionUtility(grok.GlobalUtility):
         session to be returned is read only and the serial session was used.
 
         The readonly session at this point would not see uncommitted changes.
-        The serial session would, but it should not be used for that if possible,
-        since every read on the serial session spreads the possible locks
-        within the postgres database.
+        The serial session would, but it should not be used for that if
+        possible, since every read on the serial session spreads the possible
+        locks within the postgres database.
 
         If information is needed after using the serial session, either cache
         what you need before flushing (if you need stuff which is only in the
         serial session at the time). Or use the read session before using the
-        serial session (which leads to the same result in a way, but is explicit).
+        serial session (which leads to the same result in a way, but is
+        explicit).
 
         """
         if self.is_readonly and self.is_serial_dirty(reset=True):
@@ -313,8 +322,9 @@ class SessionUtility(grok.GlobalUtility):
         self.sessionstore.current = self.sessionstore.serial
         return self.sessionstore.current
 
+
 class SessionWrapper(object):
-    """ The global session wrapper utility which acts as a replacement for 
+    """ The global session wrapper utility which acts as a replacement for
     the session_maker factory. Will return the same session for any calls
     done within the same thread.
 
@@ -329,10 +339,11 @@ class SessionWrapper(object):
 
 Session = SessionWrapper()
 
+
 def serialized_call(fn):
     """ Wrapper function which wraps any function with a serial session.
     All methods called by this wrapped function will uuse the serial session.
-    
+
     (Provided they are using seantis.reservation.Session and not some other
     means of talking to the database).
 
@@ -342,28 +353,30 @@ def serialized_call(fn):
 
         util = getUtility(ISessionUtility)
 
-        # Since a serialized call may be part of another serialized call, we need
-        # store the current session and reset it afterwards
+        # Since a serialized call may be part of another serialized call, we
+        # need store the current session and reset it afterwards
         current = util.sessionstore.current
 
         serial = util.use_serial()
         serial.begin_nested()
-        
-        try:    
+
+        try:
             result = fn(*args, **kwargs)
             serial.flush()
             serial.expire_all()
             return result
         except:
             serial.rollback()
-            raise    
+            raise
         finally:
             util.sessionstore.current = current
-    
+
     return wrapper
 
+
 def serialized(fn):
-    """ A decorator to apply to any class method that needs to be serialized. """
+    """ A decorator to apply to any class method that needs to be serialized.
+    """
     @functools.wraps(fn)
     def wrapper(self, *args, **kwargs):
         return serialized_call(fn)(self, *args, **kwargs)
