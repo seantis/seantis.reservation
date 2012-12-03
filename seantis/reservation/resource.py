@@ -14,6 +14,7 @@ from seantis.reservation.timeframe import timeframes_by_context
 from seantis.reservation.form import AllocationGroupView
 from seantis.reservation.interfaces import IResourceBase
 
+
 class Resource(Container):
 
     # Do not use @property here as it messes with the acquisition context.
@@ -34,12 +35,13 @@ class Resource(Container):
     def timeframes(self):
         return timeframes_by_context(self)
 
+
 class View(grok.View):
     permission = 'zope2.View'
 
     grok.context(IResourceBase)
     grok.require(permission)
-    
+
     template = grok.PageTemplateFile('templates/resource.pt')
 
     @view.memoize
@@ -61,7 +63,6 @@ class View(grok.View):
 
     def title(self, resource):
         return utils.get_resource_title(resource)
-
 
     def javascript(self):
         template = """
@@ -89,7 +90,7 @@ class View(grok.View):
             id:'#%s',
             options:%s,
             addurl:'%s'
-        })        
+        })
         """
         baseurl = resource.absolute_url_path()
         addurl = baseurl + '/allocate'
@@ -126,7 +127,7 @@ class GroupView(grok.View, AllocationGroupView):
 
     def title(self):
         return self.group
-        
+
 
 class CalendarRequest(object):
 
@@ -134,7 +135,7 @@ class CalendarRequest(object):
     def range(self):
         start = self.request.get('start', None)
         end = self.request.get('end', None)
-        
+
         if not all((start, end)):
             return None, None
 
@@ -149,11 +150,12 @@ class CalendarRequest(object):
             return json.dumps([])
 
         events = self.events()
-        
+
         return json.dumps(events, cls=utils.UUIDEncoder)
 
     def events(self):
         raise NotImplementedError
+
 
 class Slots(grok.View, CalendarRequest):
     permission = 'zope2.View'
@@ -178,7 +180,7 @@ class Slots(grok.View, CalendarRequest):
         as well as other links associated with the event.
 
         """
-        
+
         items = utils.EventUrls(self.context, self.request, exposure)
 
         start = utils.utctimestamp(allocation.display_start)
@@ -187,45 +189,58 @@ class Slots(grok.View, CalendarRequest):
         items.move_url('edit-allocation', dict(id=allocation.id))
 
         # Reservation
-        res_add = lambda n, v, p, t: items.menu_add(_(u'Reservations'), n, v, p, t)
+        res_add = lambda n, v, p, t: \
+            items.menu_add(_(u'Reservations'), n, v, p, t)
         if allocation.is_separate:
-            res_add(_(u'Reserve'), 'reserve', 
+            res_add(
+                _(u'Reserve'), 'reserve',
                 dict(id=allocation.id, start=start, end=end), 'overlay'
             )
-            items.default_url('reserve', 
-                dict(id=allocation.id, start=start, end=end)
+            items.default_url(
+                'reserve', dict(id=allocation.id, start=start, end=end)
             )
         else:
-            res_add(_(u'Reserve'), 'reserve-group', 
-                dict(group=allocation.group), 'overlay'
+            res_add(
+                _(u'Reserve'), 'reserve-group', dict(group=allocation.group),
+                'overlay'
             )
-            items.default_url('reserve', 
-                dict(group=allocation.group)
+            items.default_url(
+                'reserve', dict(group=allocation.group)
             )
 
-        res_add(_(u'Manage'), 
-            'reservations', dict(group=allocation.group), 'inpage')
+        res_add(
+            _(u'Manage'), 'reservations', dict(group=allocation.group),
+            'inpage'
+        )
 
         # menu entries for single items
-        entry_add = lambda n, v, p, t: items.menu_add(_('Entry'), n, v, p, t)
+        entry_add = lambda n, v, p, t: \
+            items.menu_add(_('Entry'), n, v, p, t)
 
-        entry_add(_(u'Edit'), 
-            'edit-allocation', dict(id=allocation.id), 'overlay')
+        entry_add(
+            _(u'Edit'), 'edit-allocation', dict(id=allocation.id), 'overlay'
+        )
 
-        entry_add(_(u'Remove'), 
-            'remove-allocation', dict(id=allocation.id), 'overlay')
+        entry_add(
+            _(u'Remove'), 'remove-allocation', dict(id=allocation.id),
+            'overlay'
+        )
 
         if not allocation.in_group:
             return items
 
         # menu entries for group items
-        group_add = lambda n, v, p, t: items.menu_add(_('Recurrences'), n, v, p, t)
-        
-        group_add(_(u'List'), 
-            'group', dict(name=allocation.group), 'overlay')
+        group_add = lambda n, v, p, t: \
+            items.menu_add(_('Recurrences'), n, v, p, t)
 
-        group_add(_(u'Remove'), 
-            'remove-allocation', dict(group=allocation.group), 'overlay')
+        group_add(
+            _(u'List'), 'group', dict(name=allocation.group), 'overlay'
+        )
+
+        group_add(
+            _(u'Remove'), 'remove-allocation', dict(group=allocation.group),
+            'overlay'
+        )
 
         return items
 
@@ -243,14 +258,14 @@ class Slots(grok.View, CalendarRequest):
                 continue
 
             start, end = alloc.display_start, alloc.display_end
-            
+
             # get the urls
             urls = self.urls(alloc)
-          
+
             # calculate the availability for title and class
             title, klass = utils.event_availability(
-                    resource, self.request, scheduler, alloc
-                )
+                resource, self.request, scheduler, alloc
+            )
 
             if not alloc.partly_available:
                 # TODO get rid of this workaround
@@ -262,18 +277,18 @@ class Slots(grok.View, CalendarRequest):
                 partitions = alloc.availability_partitions()
 
             events.append(dict(
-                title=title, 
+                title=title,
                 start=start.isoformat(),
                 end=end.isoformat(),
                 className=klass,
                 url=urls.default,
                 menu=urls.menu,
                 menuorder=urls.order,
-                allocation = alloc.id,
-                partitions = partitions,
-                group = alloc.group,
+                allocation=alloc.id,
+                partitions=partitions,
+                group=alloc.group,
                 allDay=False,
                 moveurl=urls.move
             ))
-        
+
         return events
