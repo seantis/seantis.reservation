@@ -11,22 +11,22 @@ from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 
 from seantis.reservation.throttle import throttled
 from seantis.reservation.interfaces import (
-        IResourceBase,
-        IReservation,
-        IGroupReservation,
-        IRemoveReservation,
-        IApproveReservation,
-    )
+    IResourceBase,
+    IReservation,
+    IGroupReservation,
+    IRemoveReservation,
+    IApproveReservation,
+)
 
 from seantis.reservation.error import DirtyReadOnlySession
 from seantis.reservation import _
 from seantis.reservation import utils
 from seantis.reservation.form import (
-        ResourceBaseForm,
-        AllocationGroupView,
-        ReservationListView,
-        extract_action_data
-    )
+    ResourceBaseForm,
+    AllocationGroupView,
+    ReservationListView,
+    extract_action_data
+)
 
 from seantis.reservation.error import NoResultFound
 
