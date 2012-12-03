@@ -1,5 +1,6 @@
 models = None
 
+
 class OtherModels(object):
     """ Mixin class which allows for all models to access the other model
     classes without causing circular imports. """

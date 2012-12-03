@@ -4,6 +4,7 @@ import json
 from sqlalchemy.types import TypeDecorator, CHAR, TEXT
 from sqlalchemy.dialects.postgresql import UUID
 
+
 class GUID(TypeDecorator):
     """Platform-independent GUID type.
 
@@ -36,6 +37,7 @@ class GUID(TypeDecorator):
             return value
         else:
             return uuid.UUID(value)
+
 
 class JSONEncodedDict(TypeDecorator):
     """Represents an immutable structure as a json-encoded string.

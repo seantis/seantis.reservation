@@ -10,6 +10,7 @@ from seantis.reservation.models import customtypes
 from seantis.reservation.models.other import OtherModels
 from seantis.reservation.models.timestamp import TimestampMixin
 
+
 class Reservation(TimestampMixin, ORMBase, OtherModels):
     """Describes a pending or approved reservation.
 
@@ -54,7 +55,7 @@ class Reservation(TimestampMixin, ORMBase, OtherModels):
     )
 
     status = Column(
-        types.Enum(u'pending', u'approved', name="reservation_status"), 
+        types.Enum(u'pending', u'approved', name="reservation_status"),
         nullable=False
     )
 
@@ -84,7 +85,9 @@ class Reservation(TimestampMixin, ORMBase, OtherModels):
         if self.target_type == u'allocation':
             return [(self.start, self.end + timedelta(microseconds=1))]
         elif self.target_type == u'group':
-            return [(a.display_start, a.display_end) for a in self.allocations()]
+            return [
+                (a.display_start, a.display_end) for a in self.allocations()
+            ]
         else:
             raise NotImplementedError
 
