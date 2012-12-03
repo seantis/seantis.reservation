@@ -7,7 +7,6 @@ from zope.component import queryUtility
 
 from z3c.form import field
 from z3c.form import button
-from z3c.form import group
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 
 from seantis.reservation.throttle import throttled
@@ -23,13 +22,14 @@ from seantis.reservation.error import DirtyReadOnlySession
 from seantis.reservation import _
 from seantis.reservation import utils
 from seantis.reservation.form import (
-        ResourceBaseForm, 
+        ResourceBaseForm,
         AllocationGroupView,
         ReservationListView,
         extract_action_data
     )
 
 from seantis.reservation.error import NoResultFound
+
 
 class ReservationUrls(object):
 
@@ -48,6 +48,7 @@ class ReservationUrls(object):
         base = context.absolute_url()
         return base + u'/deny-reservation?reservation=%s' % token
 
+
 class ReservationSchemata(object):
 
     @property
@@ -56,14 +57,15 @@ class ReservationSchemata(object):
         self.fti = dict()
 
         for ptype in self.context.formsets:
-             fti = queryUtility(IDexterityFTI, name=ptype)
-             if fti:
+            fti = queryUtility(IDexterityFTI, name=ptype)
+            if fti:
                 schema = fti.lookupSchema()
                 scs.append((ptype, fti.title, schema))
-                
+
                 self.fti[ptype] = (fti.title, schema)
 
         return scs
+
 
 class ReservationForm(ResourceBaseForm, ReservationSchemata):
     permission = 'seantis.reservation.SubmitReservation'
@@ -128,11 +130,11 @@ class ReservationForm(ResourceBaseForm, ReservationSchemata):
     @button.buttonAndHandler(_(u'Reserve'))
     @extract_action_data
     def reserve(self, data):
-        
+
         start, end = self.validate(data)
         autoapprove = not self.allocation(data['id']).approve
 
-        def reserve(): 
+        def reserve():
             email = data['email']
             additional_data = utils.additional_data_dictionary(
                 data, self.fti
@@ -140,7 +142,7 @@ class ReservationForm(ResourceBaseForm, ReservationSchemata):
             token = self.scheduler.reserve(
                 email, (start, end), data=additional_data
             )
-            
+
             if autoapprove:
                 self.scheduler.approve_reservation(token)
                 self.flash(_(u'Reservation successful'))
@@ -154,7 +156,9 @@ class ReservationForm(ResourceBaseForm, ReservationSchemata):
     def cancel(self, action):
         self.redirect_to_context()
 
-class GroupReservationForm(ResourceBaseForm, AllocationGroupView, ReservationSchemata):
+
+class GroupReservationForm(ResourceBaseForm, AllocationGroupView,
+                           ReservationSchemata):
     permission = 'seantis.reservation.SubmitReservation'
 
     grok.name('reserve-group')
@@ -180,7 +184,8 @@ class GroupReservationForm(ResourceBaseForm, AllocationGroupView, ReservationSch
     def reserve(self, data):
 
         sc = self.scheduler
-        autoapprove = not sc.allocations_by_group(data['group']).first().approve
+        autoapprove = not sc.allocations_by_group(data['group']) \
+            .first().approve
 
         def reserve():
             email = data['email']
@@ -188,7 +193,9 @@ class GroupReservationForm(ResourceBaseForm, AllocationGroupView, ReservationSch
                 data, self.fti
             )
 
-            token = sc.reserve(email, group=data['group'], data=additional_data)
+            token = sc.reserve(
+                email, group=data['group'], data=additional_data
+            )
 
             if autoapprove:
                 sc.approve_reservation(token)
@@ -203,8 +210,10 @@ class GroupReservationForm(ResourceBaseForm, AllocationGroupView, ReservationSch
     def cancel(self, action):
         self.redirect_to_context()
 
-class ReservationDecisionForm(ResourceBaseForm, ReservationListView, ReservationUrls):
-    
+
+class ReservationDecisionForm(ResourceBaseForm, ReservationListView,
+                              ReservationUrls):
+
     grok.baseclass()
 
     fields = field.Fields(IApproveReservation)
@@ -220,17 +229,20 @@ class ReservationDecisionForm(ResourceBaseForm, ReservationListView, Reservation
     @property
     def reservation(self):
         data = self.data
-        return self.request.get('reservation', (data and data['reservation'] or None))
+        return self.request.get(
+            'reservation', (data and data['reservation'] or None)
+        )
 
     def defaults(self):
         return dict(
             reservation=unicode(self.reservation)
         )
 
+
 class ReservationApprovalForm(ReservationDecisionForm):
-    
+
     permission = 'seantis.reservation.ApproveReservations'
-    
+
     grok.name('approve-reservation')
     grok.require(permission)
 
@@ -259,10 +271,11 @@ class ReservationApprovalForm(ReservationDecisionForm):
     def cancel(self, action):
         self.redirect_to_context()
 
+
 class ReservationDenialForm(ReservationDecisionForm):
 
     permission = 'seantis.reservation.ApproveReservations'
-    
+
     grok.name('deny-reservation')
     grok.require(permission)
 
@@ -291,8 +304,10 @@ class ReservationDenialForm(ReservationDecisionForm):
     def cancel(self, action):
         self.redirect_to_context()
 
-class ReservationRemoveForm(ResourceBaseForm, ReservationListView, ReservationUrls):
-    
+
+class ReservationRemoveForm(ResourceBaseForm, ReservationListView,
+                            ReservationUrls):
+
     permission = 'seantis.reservation.ApproveReservations'
 
     grok.name('remove-reservation')
@@ -300,7 +315,7 @@ class ReservationRemoveForm(ResourceBaseForm, ReservationListView, ReservationUr
 
     fields = field.Fields(IRemoveReservation)
     template = ViewPageTemplateFile('templates/remove_reservation.pt')
-    
+
     label = _(u'Remove reservation')
 
     hidden_fields = ['reservation', 'start', 'end']
@@ -325,8 +340,10 @@ class ReservationRemoveForm(ResourceBaseForm, ReservationListView, ReservationUr
             return _(u'No such reservation')
 
         if self.reservation and not all((self.start, self.end)):
-            return _(u'Do you really want to remove the following reservations?')
-        
+            return _(
+                u'Do you really want to remove the following reservations?'
+            )
+
         if self.reservation and all((self.start, self.end)):
             return _(u'Do you really want to remove '
                      u'the following timespans from the reservation?')
@@ -349,7 +366,7 @@ class ReservationRemoveForm(ResourceBaseForm, ReservationListView, ReservationUr
 
 
 class ReservationList(grok.View, ReservationListView, ReservationUrls):
-    
+
     permission = "seantis.reservation.ViewReservations"
 
     grok.name('reservations')
@@ -362,8 +379,8 @@ class ReservationList(grok.View, ReservationListView, ReservationUrls):
     @property
     def id(self):
         return utils.request_id_as_int(self.request.get('id'))
-      
-    @property  
+
+    @property
     def group(self):
         if 'group' in self.request:
             return unicode(self.request['group'].decode('utf-8'))
