@@ -19,9 +19,11 @@ from plone.memoize import view
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from plone.z3cform.fieldsets import utils as z3cutils
 
+
 def extract_action_data(fn):
     """ Decorator which inserted after a buttonAndHandler directive will
-    extract the data if possible or return before calling the decorated function
+    extract the data if possible or return before calling the decorated
+    function.
 
     """
 
@@ -37,9 +39,10 @@ def extract_action_data(fn):
 
     return wrapper
 
+
 def from_timestamp(fn):
     """ Decorator which inserted after a property will convert the return value
-    from a timestamp to datetime. 
+    from a timestamp to datetime.
 
     """
 
@@ -54,14 +57,15 @@ def from_timestamp(fn):
 
     return converter
 
+
 class ResourceBaseForm(GroupForm, form.Form):
-    """Baseform for all forms that work with resources as their context. 
+    """Baseform for all forms that work with resources as their context.
     Provides helpful functions to all of them.
 
     """
     grok.baseclass()
     grok.context(IResourceBase)
-    
+
     ignoreContext = True
     ignore_requirements = False
 
@@ -79,8 +83,8 @@ class ResourceBaseForm(GroupForm, form.Form):
         for f in self.hidden_fields:
             if f in self.widgets:
                 self.widgets[f].mode = interfaces.HIDDEN_MODE
-        
-        # Forces the wigets to completely ignore requirements 
+
+        # Forces the wigets to completely ignore requirements
         if self.ignore_requirements:
             self.widgets.hasRequiredFields = False
 
@@ -107,7 +111,7 @@ class ResourceBaseForm(GroupForm, form.Form):
             self.widgets['metadata'].value = json.dumps(metadata)
 
     def get_data(self, data, key):
-        """ Return the key of the given data dictionary, 
+        """ Return the key of the given data dictionary,
         consulting the metadata dictionary.
 
         """
@@ -128,7 +132,7 @@ class ResourceBaseForm(GroupForm, form.Form):
     @utils.memoize
     def scheduler(self):
         """ Returns the scheduler of the resource. """
-        language = utils.get_current_language(self.context, self.request) 
+        language = utils.get_current_language(self.context, self.request)
         return self.context.scheduler(language=language)
 
     def metadata(self, data):
@@ -146,7 +150,7 @@ class ResourceBaseForm(GroupForm, form.Form):
             widget = self.widgets['start']
             if all(widget.day, widget.month, widget.year):
                 return widget.value
-            
+
         return None
 
     @property
@@ -158,7 +162,7 @@ class ResourceBaseForm(GroupForm, form.Form):
             widget = self.widgets['end']
             if all(widget.day, widget.month, widget.year):
                 return widget.value
-        
+
         return None
 
     @property
@@ -169,7 +173,7 @@ class ResourceBaseForm(GroupForm, form.Form):
             value = self.widgets['id'].value
         else:
             return 0
-        
+
         if value in (None, u'', ''):
             return 0
         else:
@@ -181,7 +185,7 @@ class ResourceBaseForm(GroupForm, form.Form):
             return unicode(self.request['group'].decode('utf-8'))
         elif self.widgets and 'group' in self.widgets:
             return unicode(self.widgets['group'].value)
-        
+
         return u''
 
     def flash(self, message, type='info'):
@@ -194,7 +198,9 @@ class ResourceBaseForm(GroupForm, form.Form):
             return
 
         for prefix, group, schema in self.additionalSchemata:
-            z3cutils.add(self.form, field.Fields(schema, prefix=prefix), group=group)
+            z3cutils.add(
+                self.form, field.Fields(schema, prefix=prefix), group=group
+            )
 
     def update(self, **kwargs):
         self.updateFields()
@@ -207,7 +213,7 @@ class ResourceBaseForm(GroupForm, form.Form):
                 self.fields['start_time'].field.default = start.time()
             if 'end_time' in self.fields:
                 self.fields['end_time'].field.default = end.time()
-        
+
         other_defaults = self.defaults()
         for k, v in other_defaults.items():
             self.fields[k].field.default = v
@@ -216,8 +222,9 @@ class ResourceBaseForm(GroupForm, form.Form):
 
         self.disableFields()
 
+
 class AllocationGroupView(object):
-    """Combines functionality of different views which show groups 
+    """Combines functionality of different views which show groups
     of allocations like in group.pt.
 
     The class with which it is used needs to offer the properties id and group
@@ -243,18 +250,19 @@ class AllocationGroupView(object):
     @utils.memoize
     def event_availability(self, allocation):
         return utils.event_availability(
-                self.context,
-                self.request,
-                self.context.scheduler(),
-                allocation
-            )
+            self.context,
+            self.request,
+            self.context.scheduler(),
+            allocation
+        )
 
     def event_class(self, allocation):
         base = 'fc-event fc-event-inner fc-event-skin groupListTime'
-        return base  + ' ' + self.event_availability(allocation)[1]
+        return base + ' ' + self.event_availability(allocation)[1]
 
     def event_title(self, allocation):
         return self.event_availability(allocation)[0]
+
 
 class ReservationDataView(object):
     """Mixin for reservation-data showing."""
@@ -275,11 +283,12 @@ class ReservationDataView(object):
 
         if value is True:
             return _(u'Yes')
-        
+
         if value is False:
             return _(u'No')
 
         return value
+
 
 class ResourceParameterView(object):
     """Mixin for views that accept a list of uuids for resources."""
@@ -301,11 +310,13 @@ class ResourceParameterView(object):
 
         for uuid in self.uuids:
             try:
-                objs[uuid] = utils.get_resource_by_uuid(self.context, uuid).getObject()
+                objs[uuid] = utils.get_resource_by_uuid(self.context, uuid) \
+                    .getObject()
             except AttributeError:
                 continue
 
         return objs
+
 
 class ReservationListView(ReservationDataView):
     """Combines functionality of different views which show reservations.
@@ -336,14 +347,14 @@ class ReservationListView(ReservationDataView):
     def highlight_group(self):
         """ Returns the group id to highlight when hovering over any result.
         As there is no reservation view with multiple groups, only one result
-        can be returned. 
+        can be returned.
 
         """
         return hasattr(self, 'group') and utils.string_uuid(self.group) or u''
 
     def reservation_info(self, token):
         """ Returns the registration information to be printed
-        on the header of the reservation. 
+        on the header of the reservation.
 
         """
 
@@ -356,7 +367,9 @@ class ReservationListView(ReservationDataView):
         return u''
 
     def extended_info(self, token):
-        """ Returns the extended info dictionary to be printed in the detail view. """
+        """ Returns the extended info dictionary to be printed in the detail
+        view.
+        """
 
         if token in self.pending_reservations():
             return self.pending_reservations()[token][0].data
@@ -373,11 +386,11 @@ class ReservationListView(ReservationDataView):
             return start.strftime('%d.%m.%Y %H:%M - ') + end.strftime('%H:%M')
         else:
             return start.strftime('%d.%m.%Y %H:%M - ') \
-                 + end.strftime('%d.%m.%Y %H:%M')
+                + end.strftime('%d.%m.%Y %H:%M')
 
     def reservations(self, status):
         """ Returns all reservations relevant to this list in a dictionary
-        keyed by reservation token. 
+        keyed by reservation token.
 
         """
         scheduler = self.context.scheduler()
