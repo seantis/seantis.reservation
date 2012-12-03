@@ -25,7 +25,8 @@ It does so by providing a way to deal with the following usecases:
    is done internally (maybe through an already existing software). The addon
    is used in a read only fashion.
 
-# Build Status
+Build Status
+------------
 
 [![Build Status](https://secure.travis-ci.org/seantis/seantis.reservation.png)](http://travis-ci.org/seantis/seantis.reservation)
 
