@@ -13,40 +13,42 @@ from seantis.reservation import _
 from seantis.reservation import utils
 from seantis.reservation.interfaces import IAllocation, days
 from seantis.reservation.form import (
-        ResourceBaseForm, 
-        AllocationGroupView,
-        extract_action_data,
-    )
+    ResourceBaseForm,
+    AllocationGroupView,
+    extract_action_data,
+)
+
 
 class AllocationForm(ResourceBaseForm):
     grok.baseclass()
     hidden_fields = ['id', 'group', 'timeframes']
+
 
 class AllocationAddForm(AllocationForm):
     permission = 'cmf.AddPortalContent'
 
     grok.name('allocate')
     grok.require(permission)
-    
+
     fields = field.Fields(IAllocation).select(
         'id', 'group', 'timeframes', 'start_time', 'end_time',
-        'recurring', 'day', 'recurrence_start', 'recurrence_end', 
-        'days', 'separately', 'quota', 'partly_available', 'raster', 
-        'approve','waitinglist_spots'
+        'recurring', 'day', 'recurrence_start', 'recurrence_end',
+        'days', 'separately', 'quota', 'partly_available', 'raster',
+        'approve', 'waitinglist_spots'
     )
     fields['days'].widgetFactory = CheckBoxFieldWidget
     fields['recurring'].widgetFactory = RadioFieldWidget
 
     label = _(u'Allocation')
 
-    def defaults(self):        
+    def defaults(self):
         if self.start:
             weekday = self.start.weekday()
             daymap = dict([(d.value.weekday, d.value) for d in days])
             default_days = [daymap[weekday]]
         else:
             default_days = []
-            
+
         recurrence_start, recurrence_end = self.default_recurrence()
 
         return {
@@ -69,10 +71,11 @@ class AllocationAddForm(AllocationForm):
         results = []
         for frame in self.timeframes():
             results.append(
-                    dict(title=frame.title, start=frame.start, end=frame.end)
-                )
+                dict(title=frame.title, start=frame.start, end=frame.end)
+            )
 
-        dthandler = lambda obj: obj.isoformat() if isinstance(obj, date) else None
+        dthandler = lambda obj: \
+            obj.isoformat() if isinstance(obj, date) else None
         return unicode(json.dumps(results, default=dthandler))
 
     def default_recurrence(self):
@@ -81,7 +84,7 @@ class AllocationAddForm(AllocationForm):
 
         if not all((start, end)):
             return None, None
-        
+
         for frame in sorted(self.timeframes(), key=lambda f: f.start):
             if frame.start <= start and start <= frame.end:
                 return (frame.start, frame.end)
@@ -94,43 +97,48 @@ class AllocationAddForm(AllocationForm):
 
         """
 
-        start, end = utils.get_date_range(data['day'], data['start_time'], data['end_time'])
+        start, end = utils.get_date_range(
+            data['day'], data['start_time'], data['end_time']
+        )
 
         if not data['recurring']:
             return ((start, end))
 
         rule = rrule.rrule(
-                rrule.DAILY,
-                byweekday=data['days'],
-                dtstart=data['recurrence_start'], 
-                until=data['recurrence_end'],
-            )
-    
-        event = lambda d:utils.get_date_range(d, data['start_time'], data['end_time'])
-        
+            rrule.DAILY,
+            byweekday=data['days'],
+            dtstart=data['recurrence_start'],
+            until=data['recurrence_end'],
+        )
+
+        event = lambda d: \
+            utils.get_date_range(d, data['start_time'], data['end_time'])
+
         return [event(d) for d in rule]
 
     @button.buttonAndHandler(_(u'Allocate'))
     @extract_action_data
-    def allocate(self,data):
+    def allocate(self, data):
         dates = self.get_dates(data)
 
-        def allocate(): 
-            self.scheduler.allocate(dates, 
+        def allocate():
+            self.scheduler.allocate(
+                dates,
                 raster=data['raster'],
                 quota=data['quota'],
                 partly_available=data['partly_available'],
-                grouped= not data['separately'],
+                grouped=not data['separately'],
                 waitinglist_spots=data['waitinglist_spots'],
                 approve=data['approve']
             )
             self.flash(_(u'Allocation added'))
-        
+
         utils.handle_action(action=allocate, success=self.redirect_to_context)
 
     @button.buttonAndHandler(_(u'Cancel'))
     def cancel(self, action):
         self.redirect_to_context()
+
 
 class AllocationEditForm(AllocationForm):
     permission = 'cmf.ModifyPortalContent'
@@ -139,15 +147,15 @@ class AllocationEditForm(AllocationForm):
     grok.require(permission)
 
     fields = field.Fields(IAllocation).select(
-            'id', 
-            'group', 
-            'start_time', 
-            'end_time', 
-            'day', 
-            'quota', 
-            'approve',
-            'waitinglist_spots',
-        )
+        'id',
+        'group',
+        'start_time',
+        'end_time',
+        'day',
+        'quota',
+        'approve',
+        'waitinglist_spots',
+    )
     label = _(u'Edit allocation')
 
     @property
@@ -161,9 +169,9 @@ class AllocationEditForm(AllocationForm):
         """ Fills the defaults depending on the POST arguments given. """
 
         if not self.id:
-            self.status = utils.translate(self.context, self.request, 
-                    _(u'Invalid arguments')
-                )
+            self.status = utils.translate(
+                self.context, self.request, _(u'Invalid arguments')
+            )
         else:
             allocation = self.allocation
 
@@ -178,9 +186,9 @@ class AllocationEditForm(AllocationForm):
             self.fields['day'].field.default = start.date()
             self.fields['quota'].field.default = allocation.quota
             self.fields['approve'].field.default \
-            = allocation.approve
+                = allocation.approve
             self.fields['waitinglist_spots'].field.default \
-            = allocation.waitinglist_spots
+                = allocation.waitinglist_spots
 
         super(AllocationEditForm, self).update(**kwargs)
 
@@ -190,26 +198,30 @@ class AllocationEditForm(AllocationForm):
 
         scheduler = self.context.scheduler()
 
-        start, end = utils.get_date_range(data['day'], data['start_time'], data['end_time'])
-        
+        start, end = utils.get_date_range(
+            data['day'], data['start_time'], data['end_time']
+        )
+
         args = (
-            data['id'], 
-            start, 
-            end, 
-            unicode(data['group'] or u''), 
-            data['quota'], 
+            data['id'],
+            start,
+            end,
+            unicode(data['group'] or u''),
+            data['quota'],
             data['waitinglist_spots'],
             data['approve']
         )
-        def edit(): 
+
+        def edit():
             scheduler.move_allocation(*args)
             self.flash(_(u'Allocation saved'))
-        
+
         utils.handle_action(action=edit, success=self.redirect_to_context)
 
     @button.buttonAndHandler(_(u'Cancel'))
     def cancel(self, action):
         self.redirect_to_context()
+
 
 class AllocationRemoveForm(AllocationForm, AllocationGroupView):
     permission = 'cmf.ModifyPortalContent'
@@ -219,7 +231,7 @@ class AllocationRemoveForm(AllocationForm, AllocationGroupView):
 
     fields = field.Fields(IAllocation).select('id', 'group')
     template = ViewPageTemplateFile('templates/remove_allocation.pt')
-    
+
     label = _(u'Remove allocations')
 
     hidden_fields = ['id', 'group']
@@ -230,15 +242,17 @@ class AllocationRemoveForm(AllocationForm, AllocationGroupView):
     def delete(self, data):
 
         # TODO since we can't trust the id here there should be another check
-        # to make sure the user has the right to work with it. 
+        # to make sure the user has the right to work with it.
 
-        assert bool(data['id']) != bool(data['group']), "Either id or group, not both"
+        assert bool(data['id']) != bool(data['group']), \
+            "Either id or group, not both"
 
         scheduler = self.scheduler
+
         def delete():
             scheduler.remove_allocation(id=data['id'], group=data['group'])
             self.flash(_(u'Allocation removed'))
-        
+
         utils.handle_action(action=delete, success=self.redirect_to_context)
 
     @button.buttonAndHandler(_(u'Cancel'))
