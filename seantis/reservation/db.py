@@ -34,7 +34,8 @@ from seantis.reservation.raster import rasterize_span, MIN_RASTER_VALUE
 from seantis.reservation.interfaces import validate_email
 from seantis.reservation import utils
 from seantis.reservation import Session
-    
+
+
 def all_allocations_in_range(start, end):
     # Query version of utils.overlaps
     return Session.query(Allocation).filter(
@@ -50,29 +51,34 @@ def all_allocations_in_range(start, end):
         )
     )
 
+
 def grouped_reservation_view(query):
     """Takes a query of reserved slots joined with allocations and uses it
-    to return reservation uuid, allocation id and the start and end dates within
-    the referenced allocation.
+    to return reservation uuid, allocation id and the start and end dates
+    within the referenced allocation.
 
     If the above sentence does not make sense: It essentialy builds the data
     needed for the ManageReservationsForm.
 
     """
     query = query.with_entities(
-            ReservedSlot.reservation_token, 
-            Allocation.id,
-            func.min(ReservedSlot.start),
-            func.max(ReservedSlot.end)
-        )
+        ReservedSlot.reservation_token,
+        Allocation.id,
+        func.min(ReservedSlot.start),
+        func.max(ReservedSlot.end)
+    )
     query = query.group_by(ReservedSlot.reservation_token, Allocation.id)
-    query = query.order_by(ReservedSlot.reservation_token, 'min_1', Allocation.id)
+    query = query.order_by(
+        ReservedSlot.reservation_token, 'min_1', Allocation.id
+    )
 
     return query
 
+
 def availability_by_allocations(allocations):
-    """Takes any iterator with alloctions and calculates the availability. Counts
-    missing mirrors as 100% free and returns a value between 0-100 in any case.
+    """Takes any iterator with alloctions and calculates the availability.
+    Counts missing mirrors as 100% free and returns a value between 0-100 in
+    any case.
     For single allocations check the allocation.availability property.
 
     """
@@ -88,11 +94,12 @@ def availability_by_allocations(allocations):
 
     if not expected_count:
         return 0
-    
+
     missing = expected_count - count
     total += missing * 100
 
     return total / expected_count
+
 
 def waitinglist_availabilty_by_allocations(allocations):
     relevant = [a for a in allocations if a.approve and a.is_master]
@@ -105,10 +112,11 @@ def waitinglist_availabilty_by_allocations(allocations):
 
     query = Session.query(Reservation.id)
     query = query.filter(Reservation.status == u'pending')
-    query = query.filter(Reservation.target.in_(groups))    
+    query = query.filter(Reservation.target.in_(groups))
     pending = query.count()
 
     return 100.0 - (float(pending) / float(spots) * 100.0)
+
 
 def availability_by_range(start, end, resources, is_exposed):
     """Returns the availability for the given resources in the given range.
@@ -117,13 +125,14 @@ def availability_by_range(start, end, resources, is_exposed):
     return value.
 
     """
-    
+
     query = all_allocations_in_range(start, end)
     query = query.filter(Allocation.mirror_of.in_(resources))
     query = query.options(joinedload(Allocation.reserved_slots))
 
     allocations = (a for a in query if is_exposed(a))
     return availability_by_allocations(allocations)
+
 
 def availability_by_day(start, end, resources, is_exposed):
     """Availability by range with a twist. Instead of returning a grand total,
@@ -156,36 +165,37 @@ def availability_by_day(start, end, resources, is_exposed):
             exposed.append(a)
             if not a.approve:
                 unapproved += 1
-        
+
         if not exposed:
             continue
 
         total = availability_by_allocations(exposed)
         wtotal = waitinglist_availabilty_by_allocations(exposed)
 
-        if wtotal == False:
+        if wtotal is False:
             wtotal = total
 
         if unapproved:
             total = (total + wtotal) / 2
         else:
-            total = math.ceil(wtotal/100.0) * (total + wtotal) / 2 
+            total = math.ceil(wtotal / 100.0) * (total + wtotal) / 2
 
         days[day] = (total, members)
 
     return days
 
+
 class Scheduler(object):
-    """Used to manage a resource as well as all connected mirrors. 
+    """Used to manage a resource as well as all connected mirrors.
 
     Master -> Mirror relationship
     =============================
 
-    Mirrors are viewed as resources which mirror a master resource. These mirrors
-    do not really exist as seantis.reservation.resource types in plone (unlike
-    the master). Instead they have their own resource uuids which are calculated
-    by creating new uuids from the master's uuid and the number of the mirror.
-    (See utils.generate_uuids).
+    Mirrors are viewed as resources which mirror a master resource. These
+    mirrors do not really exist as seantis.reservation.resource types in plone
+    (unlike the master). Instead they have their own resource uuids which are
+    calculated by creating new uuids from the master's uuid and the number of
+    the mirror (see utils.generate_uuids).
 
     The reason for this mechanism is to ensure two things:
 
@@ -203,11 +213,11 @@ class Scheduler(object):
 
     def __init__(self, resource_uuid, is_exposed=None, language=None):
 
-        try: 
+        try:
             self.uuid = UUID(resource_uuid)
-        except AttributeError: 
+        except AttributeError:
             self.uuid = resource_uuid
-        
+
         self.is_exposed = is_exposed or (lambda allocation: True)
 
         # the language is used for the events that are being sent
@@ -218,36 +228,37 @@ class Scheduler(object):
             self.language = utils.get_current_site_language()
 
     @serialized
-    def allocate(self, dates, raster=15, quota=None, partly_available=False, 
+    def allocate(self, dates, raster=15, quota=None, partly_available=False,
                  grouped=False, waitinglist_spots=None, approve=True):
         """Allocates a spot in the calendar.
 
-        An allocation defines a timerange which can be reserved. No reservations
-        can exist outside of existing allocations. In fact any reserved slot will
-        link to an allocation.
+        An allocation defines a timerange which can be reserved. No
+        reservations can exist outside of existing allocations. In fact any
+        reserved slot will link to an allocation.
 
         An allocation may be available as a whole (to reserve all or nothing).
         It may also be partly available which means reservations can be made
-        for parts of the allocation. 
+        for parts of the allocation.
 
         If an allocation is partly available a raster defines the granularity
-        with which a reservation can be made (e.g. a raster of 15min will ensure 
-        that reservations are at least 15 minutes long and start either at 
-        :00, :15, :30 or :45)
+        with which a reservation can be made (e.g. a raster of 15min will
+        ensure that reservations are at least 15 minutes long and start either
+        at :00, :15, :30 or :45)
 
-        The reason for the raster is mainly to ensure that different reservations
-        trying to reserve overlapping times need the same keys in the reserved_slots
-        table, ensuring integrity at the database level.
+        The reason for the raster is mainly to ensure that different
+        reservations trying to reserve overlapping times need the same keys in
+        the reserved_slots table, ensuring integrity at the database level.
 
-        Allocations may have a quota, which determines how many times an allocation
-        may be reserved. Quotas are enabled using a master-mirrors relationship.
+        Allocations may have a quota, which determines how many times an
+        allocation may be reserved. Quotas are enabled using a master-mirrors
+        relationship.
 
         The master is the first allocation to be created. The mirrors copies of
         that allocation. See Scheduler.__doc__
 
         """
         dates = utils.pairs(dates)
-        
+
         group = new_uuid()
         quota = quota or 1
         waitinglist_spots = approve and waitinglist_spots or quota
@@ -259,7 +270,7 @@ class Scheduler(object):
         # Make sure that this span does not overlap another master
         for start, end in dates:
             start, end = rasterize_span(start, end, raster)
-            
+
             query = all_allocations_in_range(start, end)
             query = query.filter(Allocation.resource == self.uuid)
 
@@ -269,7 +280,7 @@ class Scheduler(object):
 
         # ensure that the waitinglist is at least as big as the quota
         assert not approve or waitinglist_spots >= quota
-        
+
         # Write the master allocations
         allocations = []
         for start, end in dates:
@@ -287,7 +298,7 @@ class Scheduler(object):
                 allocation.group = group
             else:
                 allocation.group = new_uuid()
-                
+
             allocations.append(allocation)
 
         Session.add_all(allocations)
@@ -300,9 +311,9 @@ class Scheduler(object):
 
         Fails if the quota is already exhausted.
 
-        When the quota is decreased a reorganization of the mirrors is triggered.
-        Reorganizing means eliminating gaps in the chain of mirrors that emerge
-        when reservations are removed:
+        When the quota is decreased a reorganization of the mirrors is
+        triggered. Reorganizing means eliminating gaps in the chain of mirrors
+        that emerge when reservations are removed:
 
         Initial State:
         1   (master)    Free
@@ -342,7 +353,7 @@ class Scheduler(object):
 
         This would make it impossible to calculate the mirror keys. Instead the
         existing keys would have to queried from the database.
-        
+
         """
 
         assert new_quota > 0, "Quota must be greater than 0"
@@ -367,13 +378,13 @@ class Scheduler(object):
         required = master.quota - new_quota
         if len(free_allocations) < required:
             raise AffectedReservationError(None)
-        
+
         # get a map pointing from the existing uuid to the newly assigned uuid
         reordered = self.reordered_keylist(allocations, new_quota)
 
         # unused keys are the ones not present in the newly assignd uuid list
         unused = set(reordered.keys()) - set(reordered.values()) - set((None,))
-        
+
         # get a map for resource_uuid -> allocation.id
         ids = dict(((a.resource, a.id) for a in allocations))
 
@@ -386,7 +397,7 @@ class Scheduler(object):
             new_resource = reordered[allocation.resource]
             if not new_resource:
                 continue
-            
+
             # move all slots to the mapped allocation id
             new_id = ids[new_resource]
 
@@ -397,17 +408,16 @@ class Scheduler(object):
 
                 query = Session.query(ReservedSlot)
                 query = query.filter(and_(
-                        ReservedSlot.resource == slot.resource,
-                        ReservedSlot.allocation_id == slot.allocation_id,
-                        ReservedSlot.start == slot.start
-                    ))
+                    ReservedSlot.resource == slot.resource,
+                    ReservedSlot.allocation_id == slot.allocation_id,
+                    ReservedSlot.start == slot.start
+                ))
                 query.update(
-                        {
-                            ReservedSlot.resource: new_resource, 
-                            ReservedSlot.allocation_id: new_id
-                        }
-                    )
-                
+                    {
+                        ReservedSlot.resource: new_resource,
+                        ReservedSlot.allocation_id: new_id
+                    }
+                )
 
         # get rid of the unused allocations (always preserving the master)
         if unused:
@@ -416,12 +426,11 @@ class Scheduler(object):
             query = query.filter(Allocation.id != master.id)
             query = query.filter(Allocation._start == master._start)
             query.delete('fetch')
-        
-    
-    def reordered_keylist(self, allocations, new_quota):
-        """ Creates the map for the keylist reorganzation. 
 
-        Each key of the returned dictionary is a resource uuid pointing to the 
+    def reordered_keylist(self, allocations, new_quota):
+        """ Creates the map for the keylist reorganzation.
+
+        Each key of the returned dictionary is a resource uuid pointing to the
         resource uuid it should be moved to. If the allocation should not be
         moved they key-value is None.
 
@@ -431,11 +440,11 @@ class Scheduler(object):
 
         master = masters[0]
         allocations = dict(((a.resource, a) for a in allocations))
-        
+
         # generate the keylist (the allocation resources may be unordered)
         keylist = [master.resource]
         keylist.extend(utils.generate_uuids(master.resource, master.quota))
-        
+
         # prefill the map
         reordered = dict(((k, None) for k in keylist))
 
@@ -449,7 +458,6 @@ class Scheduler(object):
                 reordered[key] = keylist[ix - offset]
 
         return reordered
-
 
     def allocation_by_id(self, id):
         query = Session.query(Allocation)
@@ -470,7 +478,9 @@ class Scheduler(object):
 
     def allocations_by_reservation(self, reservation_token):
         query = Session.query(Allocation).join(ReservedSlot)
-        query = query.filter(ReservedSlot.reservation_token == reservation_token)
+        query = query.filter(
+            ReservedSlot.reservation_token == reservation_token
+        )
         return query
 
     def allocation_by_date(self, start, end):
@@ -498,8 +508,9 @@ class Scheduler(object):
         return availability_by_range(start, end, [self.uuid], self.is_exposed)
 
     @serialized
-    def move_allocation(self, master_id, new_start=None, new_end=None, group=None, 
-                        new_quota=None, waitinglist_spots=None, approve=None):
+    def move_allocation(self, master_id, new_start=None, new_end=None,
+                        group=None, new_quota=None, waitinglist_spots=None,
+                        approve=None):
 
         assert master_id
         assert any([new_start and new_end, group, new_quota])
@@ -534,10 +545,9 @@ class Scheduler(object):
                         raise AffectedReservationError(reservation)
 
                 # pending reservations
-                if change.is_master: # (mirrors return the same values)
+                if change.is_master:  # (mirrors return the same values)
                     for pending in change.pending_reservations.with_entities(
-                            Reservation.start, Reservation.end
-                        ):
+                            Reservation.start, Reservation.end):
                         if not new.contains(*pending):
                             raise AffectedPendingReservationError(pending)
 
@@ -545,11 +555,15 @@ class Scheduler(object):
                 # confirmed reservations
                 if change.start != new.start or change.end != new.end:
                     if len(change.reserved_slots):
-                        raise AffectedReservationError(change.reserved_slots[0])
+                        raise AffectedReservationError(
+                            change.reserved_slots[0]
+                        )
 
-                    if change.is_master and change.pending_reservations.count():
-                        raise AffectedPendingReservationError(change.pending_reservations[0])
-                        
+                    if change.is_master and \
+                            change.pending_reservations.count():
+                        raise AffectedPendingReservationError(
+                            change.pending_reservations[0]
+                        )
 
         if new_quota is not None:
             self.change_quota(master, new_quota)
@@ -574,13 +588,15 @@ class Scheduler(object):
             allocations = query.all()
         else:
             raise NotImplementedError
-        
+
         for allocation in allocations:
             if len(allocation.reserved_slots) > 0:
                 raise AffectedReservationError(allocation.reserved_slots[0])
 
             if allocation.pending_reservations.count():
-                raise AffectedPendingReservationError(allocation.pending_reservations[0])
+                raise AffectedPendingReservationError(
+                    allocation.pending_reservations[0]
+                )
 
         for allocation in allocations:
             if not allocation.is_transient:
@@ -645,7 +661,7 @@ class Scheduler(object):
         # ok, we're good to go
         token = new_uuid()
         found = 0
-        
+
         # groups are reserved by group-identifier - so all members of a group
         # or none of them. As such there's no start / end date which is defined
         # implicitly by the allocation
@@ -662,7 +678,7 @@ class Scheduler(object):
             Session.add(reservation)
         else:
             groups = []
-            
+
             for start, end in dates:
 
                 for allocation in self.allocations_in_range(start, end):
@@ -687,13 +703,12 @@ class Scheduler(object):
 
                     groups.append(allocation.group)
 
-
-
             # check if no group reservation is made with this request.
             # reserve by group in this case (or make this function
             # do that automatically)
-            assert len(groups) == len(set(groups)), 'wrongly trying to reserve a group'
-        
+            assert len(groups) == len(set(groups)), \
+                'wrongly trying to reserve a group'
+
         if found:
             notify(ReservationMadeEvent(reservation, self.language))
         else:
@@ -710,7 +725,7 @@ class Scheduler(object):
 
         """
 
-        # get the reservation 
+        # get the reservation
         query = Session.query(Reservation)
         query = query.filter(Reservation.token == reservation_token)
 
@@ -720,7 +735,8 @@ class Scheduler(object):
         # write out the slots
         slots_to_reserve = []
 
-        # we must expect multiple reservation entries per token in the near future
+        # we must expect multiple reservation entries per token in the near
+        # future
         for reservation in query:
 
             if reservation.target_type == u'group':
@@ -736,7 +752,8 @@ class Scheduler(object):
                     if not self.is_exposed(allocation):
                         raise NotReservableError
 
-                    for slot_start, slot_end in allocation.all_slots(start, end):
+                    for slot_start, slot_end in \
+                            allocation.all_slots(start, end):
                         slot = ReservedSlot()
                         slot.start = slot_start
                         slot.end = slot_end
@@ -775,7 +792,7 @@ class Scheduler(object):
             raise InvalidReservationToken
 
         reservation = query.one()
-        query.delete();
+        query.delete()
 
         notify(ReservationDeniedEvent(reservation, self.language))
 
@@ -783,8 +800,8 @@ class Scheduler(object):
     def remove_reservation(self, token, start=None, end=None):
         """ Removes all reserved slots of the given reservation token.
 
-        Optionnaly, only slots between start and end are deleted. Once all slots 
-        are deleted the reservation itself is deleted.
+        Optionnaly, only slots between start and end are deleted. Once all
+        slots are deleted the reservation itself is deleted.
 
         This implies of course that a reservation record may not be that
         consistent with the reserved slots. TODO?
@@ -804,16 +821,16 @@ class Scheduler(object):
         if not slots_left.count():
 
             reservations = Session.query(Reservation).filter(
-                Reservation.token==token
+                Reservation.token == token
             )
-        
+
             for r in reservations:
                 Session.delete(r)
 
     def find_spot(self, master_allocation, start, end):
         """ Returns the first free allocation spot amongst the master and the
-        mirrors. Honors the quota set on the master and will only try the master
-        if the quota is set to 1.
+        mirrors. Honors the quota set on the master and will only try the
+        master if the quota is set to 1.
 
         If no spot can be found, None is returned.
 
@@ -824,7 +841,7 @@ class Scheduler(object):
 
         if master.quota == 1:
             return None
-        
+
         mirrors = self.allocation_mirrors_by_master(master)
         tries = master.quota - 1
 
@@ -839,7 +856,7 @@ class Scheduler(object):
 
     def reservation_targets(self, start, end):
         """ Returns a list of allocations that are free within start and end.
-        These allocations may come from the master or any of the mirrors. 
+        These allocations may come from the master or any of the mirrors.
 
         """
         targets = []
@@ -850,10 +867,10 @@ class Scheduler(object):
         for master_allocation in query:
 
             if not master_allocation.overlaps(start, end):
-                continue # may happen because start and end are not rasterized
+                continue  # may happen because start and end are not rasterized
 
             found = self.find_spot(master_allocation, start, end)
-            
+
             if not found:
                 raise AlreadyReservedError
 
@@ -875,7 +892,9 @@ class Scheduler(object):
         assert reservation_token
 
         query = self.managed_reserved_slots()
-        query = query.filter(ReservedSlot.reservation_token == reservation_token)
+        query = query.filter(
+            ReservedSlot.reservation_token == reservation_token
+        )
 
         return query
 
@@ -889,7 +908,8 @@ class Scheduler(object):
         slots = []
         for slot in query:
             if not slot.allocation.overlaps(start, end):
-                continue # Might happen because start and end are not rasterized
+                # Might happen because start and end are not rasterized
+                continue
 
             slots.append(slot)
 
@@ -914,13 +934,13 @@ class Scheduler(object):
     def managed_reservations(self):
         query = Session.query(Reservation)
         query = query.filter(Reservation.resource == self.uuid)
-        
+
         return query
 
     def reservations_by_token(self, token):
         query = self.managed_reservations()
         query = query.filter(Reservation.token == token)
-    
+
         return query
 
     def reservations_by_group(self, group):
