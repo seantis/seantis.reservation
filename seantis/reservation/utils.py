@@ -1,7 +1,6 @@
 import re
 import time
 import json
-import random
 import collections
 import functools
 
@@ -19,7 +18,7 @@ from plone.dexterity.utils import SchemaNameEncoder
 from App.config import getConfiguration
 from Acquisition import aq_inner
 from zope.component import getMultiAdapter
-from zope.component.hooks import getSite, getSiteManager
+from zope.component.hooks import getSite
 from zope import i18n
 from zope import interface
 from Products.CMFCore.utils import getToolByName
@@ -34,16 +33,20 @@ from seantis.reservation import error
 from seantis.reservation import _
 
 try:
-    from collections import OrderedDict #python >= 2.7
+    from collections import OrderedDict  # python >= 2.7
+    OrderedDict  # Pyflakes
 except ImportError:
-    from ordereddict import OrderedDict #python < 2.7
+    from ordereddict import OrderedDict  # python < 2.7
+    OrderedDict  # Pyflakes
 
 from seantis.reservation.sortedcollection import SortedCollection
 
 dexterity_encoder = SchemaNameEncoder()
 
+
 class ConfigurationError(Exception):
     pass
+
 
 def profile(fn):
     """ Naive profiling of a function.. on unix systems only. """
@@ -58,6 +61,7 @@ def profile(fn):
         return result
 
     return wrapper
+
 
 def additional_data_dictionary(data, fti):
     """ Takes the data from a post request and puts the relevant bits into
@@ -114,6 +118,7 @@ def additional_data_dictionary(data, fti):
 
     return result
 
+
 def zope_root():
     this = getSite()
 
@@ -121,6 +126,7 @@ def zope_root():
         this = this.aq_inner.aq_parent
 
     return this
+
 
 def plone_sites(root=None):
     root = root or zope_root()
@@ -134,6 +140,7 @@ def plone_sites(root=None):
         sites.extend(plone_sites(item))
 
     return sites
+
 
 def mock_data_dictionary(data, formset_key='mock', formset_desc='Mocktest'):
     """ Given a dictionary of key values this function returns a dictionary
@@ -151,9 +158,12 @@ def mock_data_dictionary(data, formset_key='mock', formset_desc='Mocktest'):
     formset['values'] = records
 
     for i, item in enumerate(data.items()):
-        records.append(dict(key=item[0], sortkey=i, value=item[1], desc=item[0]))
+        records.append(
+            dict(key=item[0], sortkey=i, value=item[1], desc=item[0])
+        )
 
     return {formset_key: formset}
+
 
 def overlaps(start, end, otherstart, otherend):
     if otherstart <= start and start <= otherend:
@@ -165,47 +175,55 @@ def overlaps(start, end, otherstart, otherend):
     return False
 
 _requestid_expr = re.compile(r'\d')
+
+
 def request_id_as_int(string):
     """Returns the id of a request as int without throwing an error if invalid
     characters are in the requested string (like ?id=11.11).
 
     """
-    if string == None:
+    if string is None:
         return 0
-        
+
     return int(''.join(re.findall(_requestid_expr, string)))
 
+
 class memoize(object):
-   """Decorator that caches a function's return value each time it is called.
-   If called later with the same arguments, the cached value is returned, and
-   not re-evaluated.
-   """
-   def __init__(self, func):
-      self.func = func
-      self.cache = {}
-   def __call__(self, *args):
-      try:
-         return self.cache[args]
-      except KeyError:
-         value = self.func(*args)
-         self.cache[args] = value
-         return value
-      except TypeError:
-         # uncachable -- for instance, passing a list as an argument.
-         # Better to not cache than to blow up entirely.
-         return self.func(*args)
-   def __repr__(self):
-      """Return the function's docstring."""
-      return self.func.__doc__
-   def __get__(self, obj, objtype):
-      """Support instance methods."""
-      return functools.partial(self.__call__, obj)
+    """Decorator that caches a function's return value each time it is called.
+    If called later with the same arguments, the cached value is returned, and
+    not re-evaluated.
+    """
+    def __init__(self, func):
+        self.func = func
+        self.cache = {}
+
+    def __call__(self, *args):
+        try:
+            return self.cache[args]
+        except KeyError:
+            value = self.func(*args)
+            self.cache[args] = value
+            return value
+        except TypeError:
+            # uncachable -- for instance, passing a list as an argument.
+            # Better to not cache than to blow up entirely.
+            return self.func(*args)
+
+    def __repr__(self):
+        """Return the function's docstring."""
+        return self.func.__doc__
+
+    def __get__(self, obj, objtype):
+        """Support instance methods."""
+        return functools.partial(self.__call__, obj)
+
 
 @memoize
 def _exposure():
     # keep direct imports out of utils as it will lead to circular imports
     from seantis.reservation import exposure
     return exposure
+
 
 def compare_link(resources):
     """Builds the compare link for the given list of resources. """
@@ -223,33 +241,35 @@ def compare_link(resources):
 
     for uuid in compare_to:
         link += 'compare_to=' + string_uuid(uuid) + '&'
-        
+
     return link.rstrip('&')
 
+
 def export_link(source, extension, context, request, resources):
-    """Builds the reservations excel export link for the 
-    given list of resources. 
+    """Builds the reservations excel export link for the
+    given list of resources.
 
     """
 
     # ensure that the view may be called
-    viewname = 'resource_export.'+extension
+    viewname = 'resource_export.' + extension
     if not _exposure().for_views(context, request)(viewname):
         return ''
 
     uuids = map(string_uuid, (r.uuid() for r in resources))
 
     url = context.absolute_url()
-    url += '/resource_export.' + extension +'?source=' + source
+    url += '/resource_export.' + extension + '?source=' + source
     url += '&uuid=' + '&uuid='.join(uuids)
     url += '&lang=' + get_current_site_language()
 
     return url
 
+
 def monthly_report_link(context, request, resources):
     """Builds the monthly report link given the list of the resources
     using the current year and month."""
-    
+
     if not resources:
         return ''
 
@@ -271,11 +291,15 @@ def monthly_report_link(context, request, resources):
 
     return url
 
+
 def get_current_language(context, request):
     """Returns the current language of the request"""
     context = aq_inner(context)
-    portal_state = getMultiAdapter((context, request), name=u'plone_portal_state')
+    portal_state = getMultiAdapter(
+        (context, request), name=u'plone_portal_state'
+    )
     return portal_state.language()
+
 
 def get_current_site_language():
     """Returns the current language of the current site"""
@@ -285,6 +309,7 @@ def get_current_site_language():
     langs = portal_languages.getSupportedLanguages()
 
     return langs and langs[0] or u'en'
+
 
 def get_site_email_sender():
     """Returns the default sender of emails of the current site in the
@@ -304,6 +329,7 @@ def get_site_email_sender():
     else:
         return address
 
+
 def translator(context, request):
     """Returns a function which takes a single string and translates it using
     the curried values for context & request.
@@ -313,16 +339,20 @@ def translator(context, request):
         return translate(context, request, text)
     return curried
 
+
 def translate(context, request, text, domain=None):
     """Translates the given text using context & request."""
     lang = get_current_language(context, request)
     return i18n.translate(text, target_language=lang, domain=domain)
 
+
 def translate_workflow(context, request, text):
     return translate(context, request, text, domain='plone')
 
+
 def native_language_name(code):
     return _languagelist[code]['native']
+
 
 def handle_action(action=None, success=None, message_handler=None):
     """Calls 'action' and then 'success' if everything went well or
@@ -334,8 +364,10 @@ def handle_action(action=None, success=None, message_handler=None):
     """
     try:
         result = None
-        if action: result = action()
-        if success: success()
+        if action:
+            result = action()
+        if success:
+            success()
 
         return result
 
@@ -343,8 +375,10 @@ def handle_action(action=None, success=None, message_handler=None):
         e = hasattr(e, 'orig') and e.orig or e
         handle_exception(e, message_handler)
 
+
 def form_error(msg):
     raise ActionExecutionError(interface.Invalid(msg))
+
 
 def handle_exception(ex, message_handler=None):
     msg = error.errormap.get(type(ex))
@@ -357,27 +391,35 @@ def handle_exception(ex, message_handler=None):
     else:
         form_error(msg)
 
-_uuid_regex = re.compile('[a-f0-9]{8}-?[a-f0-9]{4}-?[a-f0-9]{4}-?[a-f0-9]{4}-?[a-f0-9]{12}')
+_uuid_regex = re.compile(
+    '[a-f0-9]{8}-?[a-f0-9]{4}-?[a-f0-9]{4}-?[a-f0-9]{4}-?[a-f0-9]{12}'
+)
+
+
 def is_uuid(obj):
     """Returns true if the given obj is a uuid. The obj may be a string
     or of type UUID. If it's a string, the uuid is checked with a regex.
     """
     if isinstance(obj, basestring):
         return re.match(_uuid_regex, unicode(obj))
-    
+
     return isinstance(obj, UUID)
+
 
 def string_uuid(uuid):
     return UUID(str(uuid)).hex
+
 
 # TODO cache this incrementally
 def generate_uuids(uuid, quota):
     mirror = lambda n: new_uuid_mirror(uuid, str(n))
     return [mirror(n) for n in xrange(1, quota)]
 
+
 def uuid_query(uuid):
     """ Returns a tuple of uuids for querying the zodb. See why:
-    http://stackoverflow.com/questions/10137632/querying-portal-catalog-using-typed-uuids-instead-of-string-uuids
+    http://stackoverflow.com/questions/10137632/
+    querying-portal-catalog-using-typed-uuids-instead-of-string-uuids
 
     """
 
@@ -388,11 +430,13 @@ def uuid_query(uuid):
     return (uuid, '-'.join([
         uuid[:8], uuid[8:12], uuid[12:16], uuid[16:20], uuid[20:]]))
 
+
 def get_resource_by_uuid(context, uuid):
     """Returns the zodb object with the given uuid."""
     catalog = getToolByName(context, 'portal_catalog')
     results = catalog(UID=uuid_query(uuid))
     return len(results) == 1 and results[0] or None
+
 
 def get_resource_title(resource):
     if hasattr(resource, '__parent__'):
@@ -404,6 +448,7 @@ def get_resource_title(resource):
 
     return ' - '.join((parent, resource.title))
 
+
 class UUIDEncoder(json.JSONEncoder):
     """Encodes UUID objects as string in JSON."""
     def default(self, obj):
@@ -411,12 +456,14 @@ class UUIDEncoder(json.JSONEncoder):
             return string_uuid(obj)
         return json.JSONEncoder.default(self, obj)
 
+
 class SortedCollectionEncoder(json.JSONEncoder):
     """Encodes SortedCollectionEncoder objects as string in JSON."""
     def default(self, obj):
         if isinstance(obj, SortedCollection):
             return [o for o in obj]
         return json.JSONEncoder.default(self, obj)
+
 
 def event_class(availability):
     """Returns the event class to be used depending on the availability."""
@@ -426,6 +473,7 @@ def event_class(availability):
         return 'event-partly-available'
     else:
         return 'event-available'
+
 
 def event_availability(context, request, scheduler, allocation):
     """Returns the availability for an allocation shown as an event in the
@@ -443,9 +491,13 @@ def event_availability(context, request, scheduler, allocation):
         text = title(_(u'%i%% Free')) % availability
     else:
         if allocation.quota > 1:
-            text = title(_(u'%i/%i Spots Available')) % (spots, allocation.quota)
+            text = title(_(u'%i/%i Spots Available')) % (
+                spots, allocation.quota
+            )
         else:
-            text = title(_(u'%i/%i Spot Available')) % (spots, allocation.quota)
+            text = title(_(u'%i/%i Spot Available')) % (
+                spots, allocation.quota
+            )
 
     # show an icon on the block if it is fully booked
     if availability == 0:
@@ -462,43 +514,56 @@ def event_availability(context, request, scheduler, allocation):
 
     # an additional text with the number of open spots is shown
     if open_spots > 1:
-        text += '\n' + title(_(u'%i/%i Waitinglist Spots')) % (open_spots, a.waitinglist_spots)
+        text += '\n' + title(_(u'%i/%i Waitinglist Spots')) % (
+            open_spots, a.waitinglist_spots
+        )
     else:
-        text += '\n' + title(_(u'%i/%i Waitinglist Spot')) % (open_spots, a.waitinglist_spots)
-    
+        text += '\n' + title(_(u'%i/%i Waitinglist Spot')) % (
+            open_spots, a.waitinglist_spots
+        )
+
     # shown an icon on the block if the waitinglist is full
     if not open_spots:
         klass = ('event-full-waitinglist' + ' ' + klass).strip()
-        
-    # partly available alloctions get the average between waitinglist availability
-    # and the allocation avilability
+
+    # partly available alloctions get the average between waitinglist
+    # availability and the allocation avilability
     import math
-    waitinglist_availability = (open_spots / float(a.waitinglist_spots) * 100.0)
-    shown_availability = math.ceil(waitinglist_availability/100.0) * ((availability + waitinglist_availability) / 2)
+    waitinglist_availability = (
+        open_spots / float(a.waitinglist_spots) * 100.0
+    )
+    shown_availability = math.ceil(waitinglist_availability / 100.0) * \
+        ((availability + waitinglist_availability) / 2)
 
     return text, (klass + ' ' + event_class(shown_availability)).strip()
 
+
 def flatten(l):
     """Generator for flattening irregularly nested lists. 'Borrowed' from here:
-    
-    http://stackoverflow.com/questions/2158395/flatten-an-irregular-list-of-lists-in-python
+
+    http://stackoverflow.com/questions/2158395/
+    flatten-an-irregular-list-of-lists-in-python
     """
     for el in l:
-        if isinstance(el, collections.Iterable) and not isinstance(el, basestring):
+        if isinstance(el, collections.Iterable) and \
+                not isinstance(el, basestring):
             for sub in flatten(el):
                 yield sub
         else:
             yield el
 
+
 def pairs(l):
     """Takes any list and returns pairs:
     ((a,b),(c,d)) => ((a,b),(c,d))
     (a,b,c,d) => ((a,b),(c,d))
-    
-    http://opensourcehacker.com/2011/02/23/tuplifying-a-list-or-pairs-in-python/
+
+    http://opensourcehacker.com/2011/02/23/
+    tuplifying-a-list-or-pairs-in-python/
     """
     l = list(flatten(l))
-    return zip(*[l[x::2] for x in (0,1)])
+    return zip(*[l[x::2] for x in (0, 1)])
+
 
 def pairwise(iterable):
     """Almost like paris, but not quite:
@@ -508,6 +573,7 @@ def pairwise(iterable):
     next(b, None)
     return izip(a, b)
 
+
 def get_config(key):
     config = getConfiguration()
     if not hasattr(config, 'product_config'):
@@ -516,9 +582,12 @@ def get_config(key):
     configuration = config.product_config.get('seantis.reservation', dict())
     return configuration.get(key)
 
+
 # obsolete in python 2.7
 def total_timedelta_seconds(td):
-    return (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
+    return (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10 ** 6) / \
+        10 ** 6
+
 
 def utc_mktime(utc_tuple):
     """Returns number of seconds elapsed since epoch
@@ -533,16 +602,18 @@ def utc_mktime(utc_tuple):
         utc_tuple += (0, 0, 0)
     return time.mktime(utc_tuple) - time.mktime((1970, 1, 1, 0, 0, 0, 0, 0, 0))
 
+
 def utctimestamp(dt):
     dt = dt.replace(tzinfo=pytz.utc)
-    return utc_mktime(dt.timetuple())   
+    return utc_mktime(dt.timetuple())
+
 
 def merge_reserved_slots(slots):
-    """Given a list of reserved slots a list of tuples with from-to datetimes is
-    formed, with adjacent slots being combined into one continious timespan. 
-    Usually this leaves reserved_slots be, but if the slots in the list come from
-    a partially available allocation the reserved_slots of such an allocation can
-    be merged into one timespan.
+    """Given a list of reserved slots a list of tuples with from-to datetimes
+    is formed, with adjacent slots being combined into one continious timespan.
+    Usually this leaves reserved_slots be, but if the slots in the list come
+    from a partially available allocation the reserved_slots of such an
+    allocation can be merged into one timespan.
 
     So instead of
     08:00 - 08:14:59:59
@@ -562,12 +633,12 @@ def merge_reserved_slots(slots):
         return [Timespan(slots[0].start, slots[0].end)]
 
     slots = sorted(slots, key=lambda s: s.start)
-    
+
     merged = []
     current = Timespan(None, None)
 
     for this, next in pairwise(slots):
-        
+
         if abs((next.start - this.end).seconds) <= 1:
             current.start = current.start and current.start or this.start
             current.end = next.end
@@ -580,15 +651,18 @@ def merge_reserved_slots(slots):
 
     return merged
 
+
 def urlparam(base, url, params):
     """Joins an url, adding parameters as query parameters."""
-    if not base.endswith('/'): base += '/'
+    if not base.endswith('/'):
+        base += '/'
 
     urlquote = lambda fragment: quote(unicode(fragment).encode('utf-8'))
     querypair = lambda pair: pair[0] + '=' + urlquote(pair[1])
 
     query = '?' + '&'.join(map(querypair, params.items()))
     return ''.join(reduce(urljoin, (base, url, query)))
+
 
 class EventUrls(object):
     def __init__(self, resource, request, exposure):
@@ -601,7 +675,7 @@ class EventUrls(object):
         self.exposure = exposure
         self.default = ""
         self.move = ""
-    
+
     @memoize
     def restricted_url(self, view):
         """Returns a function which can be used to build an url with optional
@@ -624,13 +698,15 @@ class EventUrls(object):
     @memoize
     def get_restricted(self, view, params):
         urlfactory = self.restricted_url(view)
-        if not urlfactory: return None
+        if not urlfactory:
+            return None
 
         return urlfactory(params)
 
     def menu_add(self, group, name, view, params, target):
         url = self.get_restricted(view, params)
-        if not url: return
+        if not url:
+            return
 
         group = self.translate(group)
         name = self.translate(name)
@@ -643,15 +719,18 @@ class EventUrls(object):
 
     def default_url(self, view, params):
         url = self.get_restricted(view, params)
-        if not url: return
+        if not url:
+            return
 
         self.default = url
 
     def move_url(self, view, params):
         url = self.get_restricted(view, params)
-        if not url: return
+        if not url:
+            return
 
         self.move = url
+
 
 def get_date_range(day, start_time, end_time):
     """Returns the date-range of a date a start and an end time."""
@@ -660,18 +739,22 @@ def get_date_range(day, start_time, end_time):
 
     # since the user can only one date with separate times it is assumed
     # that an end before a start is meant for the following day
-    if end < start: end += timedelta(days=1)
+    if end < start:
+        end += timedelta(days=1)
 
     return start, end
 
+
 def flash(context, message, type='info'):
     context.plone_utils.addPortalMessage(message, type)
+
 
 def month_name(context, request, month):
     """Returns the text for the given month (1-12)."""
     assert (1 <= month and month <= 12)
     msgid = monthname_msgid(month)
     return translate(context, request, msgid, 'plonelocales')
+
 
 def weekdayname_abbr(context, request, day):
     """Returns the text for the given day (0-6), 0 being sunday.
@@ -681,8 +764,10 @@ def weekdayname_abbr(context, request, day):
     msgid = weekdayname_msgid_abbr(day)
     return translate(context, request, msgid, 'plonelocales')
 
+
 def shift_day(stdday):
-    return abs(0 - (stdday+1) % 7)
+    return abs(0 - (stdday + 1) % 7)
+
 
 def portal_type_in_context(context, portal_type):
     """Returns the given portal types _within_ the current context."""
@@ -690,13 +775,14 @@ def portal_type_in_context(context, portal_type):
 
     catalog = getToolByName(context, 'portal_catalog')
     results = catalog(
-            portal_type = portal_type,
-            path={'query': path, 'depth': 1}
-        )
+        portal_type=portal_type,
+        path={'query': path, 'depth': 1}
+    )
     return results
 
+
 def portal_type_by_context(context, portal_type):
-    """Returns the given portal_type _for_ the current context. Portal types 
+    """Returns the given portal_type _for_ the current context. Portal types
     for a context are required by traversing up the acquisition context.
 
     """
@@ -711,7 +797,7 @@ def portal_type_by_context(context, portal_type):
         path = context.getPath()
     else:
         path = context.getPhysicalPath()
-    
+
     context = context.aq_inner.unrestrictedTraverse(path)
 
     def traverse(context, portal_type):
@@ -723,7 +809,7 @@ def portal_type_by_context(context, portal_type):
                 return []
             if context.portal_type == 'Plone Site':
                 return []
-            
+
             parent = context.aq_inner.aq_parent
             return traverse(parent, portal_type)
 
