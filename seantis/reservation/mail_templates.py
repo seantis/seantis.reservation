@@ -5,9 +5,11 @@ from os import path
 logger = logging.getLogger('seantis.reservation')
 folder = path.join(path.dirname(path.abspath(__file__)), 'mail_templates')
 
+
 def get_filename(key, language):
     filename = '%s.%s.txt' % (key, language)
     return path.join(folder, filename)
+
 
 class MailTemplate(object):
 
@@ -33,7 +35,9 @@ class MailTemplate(object):
         if self.is_translated(language):
             return self.load_language(language)
 
-        logger.warning('Email template for language %s does not exist', language)
+        logger.warning(
+            'Email template for language %s does not exist', language
+        )
 
         return self.get('en')
 
@@ -44,7 +48,7 @@ class MailTemplate(object):
         return self.get(language)[1]
 
     def parse_file(self, template_file):
-        
+
         subject = u''
         body = []
 
@@ -52,7 +56,7 @@ class MailTemplate(object):
 
             if line.startswith('#'):
                 continue
-            
+
             if not subject:
                 subject = line
                 continue

@@ -7,6 +7,7 @@ from seantis.reservation.interfaces import (
     IReservationDeniedEvent
 )
 
+
 class ReservationBaseEvent(object):
     implements(IReservationBaseEvent)
 
@@ -14,11 +15,14 @@ class ReservationBaseEvent(object):
         self.reservation = reservation
         self.language = language
 
+
 class ReservationMadeEvent(ReservationBaseEvent):
     implements(IReservationMadeEvent)
 
+
 class ReservationApprovedEvent(ReservationBaseEvent):
     implements(IReservationApprovedEvent)
+
 
 class ReservationDeniedEvent(ReservationBaseEvent):
     implements(IReservationDeniedEvent)

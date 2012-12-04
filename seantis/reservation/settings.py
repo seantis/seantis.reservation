@@ -26,40 +26,50 @@ from seantis.reservation import utils
 from seantis.reservation.interfaces import IResource
 from seantis.reservation import _
 
+
 class ISeantisReservationSettings(Interface):
 
     throttle_minutes = schema.Int(
         title=_(u"Reservation Throttling"),
-        description=_(u'The number of minutes a user needs to wait between '
-                      u'reservations, use 0 if no throttling should occur. '
-                      u'Users with the \'Unthrottled Reservations\' permission '
-                      u'are excempt from this rule (Reservation-Managers by default).')
+        description=_(
+            u'The number of minutes a user needs to wait between '
+            u'reservations, use 0 if no throttling should occur. '
+            u'Users with the \'Unthrottled Reservations\' permission '
+            u'are excempt from this rule (Reservation-Managers by default).'
+        )
     )
 
     send_email_to_managers = schema.Bool(
         title=_(u"Email Notifications for Managers"),
-        description=_(u'Send emails about new pending reservations to '
-                      u'the first reservation managers found in the path.')
+        description=_(
+            u'Send emails about new pending reservations to '
+            u'the first reservation managers found in the path.'
+        )
     )
 
     send_email_to_reservees = schema.Bool(
         title=_(u"Email Notifications for Reservees"),
-        description=_(u'Send emails about made, approved and denied reservations '
-                      u'to the user that made the reservation.')
+        description=_(
+            u'Send emails about made, approved and denied reservations '
+            u'to the user that made the reservation.'
+        )
     )
 
+
 def get(name, default=None):
-    registry = getUtility(IRegistry)    
+    registry = getUtility(IRegistry)
     settings = registry.forInterface(ISeantisReservationSettings)
-    
+
     assert hasattr(settings, name), "Unknown setting: %s" % name
     return getattr(settings, name)
+
 
 class SettingsGroup(Group):
     label = _(u'Settings')
     fields = Fields(ISeantisReservationSettings)
 
-class SeantisReservationSettingsPanelForm(RegistryEditForm): 
+
+class SeantisReservationSettingsPanelForm(RegistryEditForm):
     schema = ISeantisReservationSettings
     label = _(u"Seantis Reservation Control Panel")
     groups = (SettingsGroup, )
@@ -97,9 +107,15 @@ class SeantisReservationSettingsPanelForm(RegistryEditForm):
         uuids = self.existing_uuids()
 
         return sum((
-            Session.query(Allocation).filter(not_(Allocation.mirror_of.in_(uuids))).count(),
-            Session.query(ReservedSlot).filter(not_(ReservedSlot.resource.in_(uuids))).count(),
-            Session.query(Reservation).filter(not_(Reservation.resource.in_(uuids))).count()
+            Session.query(Allocation).filter(
+                not_(Allocation.mirror_of.in_(uuids))
+            ).count(),
+            Session.query(ReservedSlot).filter(
+                not_(ReservedSlot.resource.in_(uuids))
+            ).count(),
+            Session.query(Reservation).filter(
+                not_(Reservation.resource.in_(uuids))
+            ).count()
         ))
 
     def remove_orphan_records(self):
@@ -108,9 +124,15 @@ class SeantisReservationSettingsPanelForm(RegistryEditForm):
 
         logger.info('Removing %i Orphan Records', count)
 
-        allocations = Session.query(Allocation).filter(not_(Allocation.mirror_of.in_(uuids)))
-        slots = Session.query(ReservedSlot).filter(not_(ReservedSlot.resource.in_(uuids)))
-        reservations = Session.query(Reservation).filter(not_(Reservation.resource.in_(uuids)))
+        allocations = Session.query(Allocation).filter(
+            not_(Allocation.mirror_of.in_(uuids))
+        )
+        slots = Session.query(ReservedSlot).filter(
+            not_(ReservedSlot.resource.in_(uuids))
+        )
+        reservations = Session.query(Reservation).filter(
+            not_(Reservation.resource.in_(uuids))
+        )
 
         # be very paranoid about this by double-checking the uuids
         dead_uuids = set()
@@ -122,8 +144,12 @@ class SeantisReservationSettingsPanelForm(RegistryEditForm):
             dead_uuids.add(allocation.mirror_of)
 
         for dead_uuid in dead_uuids:
-            if utils.get_resource_by_uuid(utils.getSite(), dead_uuid) != None:
-                raise AssertionError('Tried to Delete a Non-Orphan Record (uuid: %s)' % dead_uuid)
+            if utils.get_resource_by_uuid(utils.getSite(), dead_uuid) \
+                    is not None:
+                raise AssertionError(
+                    'Tried to Delete a Non-Orphan Record (uuid: %s)' %
+                    dead_uuid
+                )
 
         reservations.delete('fetch')
         slots.delete('fetch')
@@ -132,16 +158,16 @@ class SeantisReservationSettingsPanelForm(RegistryEditForm):
         return count
 
     def update(self, *args, **kwargs):
-        super(SeantisReservationSettingsPanelForm, self).update(*args, **kwargs)
+        super(SeantisReservationSettingsPanelForm, self).update(
+            *args, **kwargs
+        )
         if self.request.get('form.actions.remove_orphans'):
             count = self.remove_orphan_records()
-            utils.flash(self.context, 
-                _(u'${count} Orphan Records Removed', mapping={
-                    'count': count
-                })
+            utils.flash(
+                self.context,
+                _(u'${count} Orphan Records Removed', mapping={'count': count})
             )
 
-    
 SeantisReservationControlPanelView = layout.wrap_form(
-        SeantisReservationSettingsPanelForm, ControlPanelFormWrapper
-    )
+    SeantisReservationSettingsPanelForm, ControlPanelFormWrapper
+)

@@ -1,58 +1,68 @@
 from five import grok
 from plone.directives import form, dexterity
 from plone.dexterity.content import Item
-from plone.app.layout.viewlets.interfaces import IBelowContentBody
 from plone.memoize import view
 from Products.CMFCore.utils import getToolByName
 from z3c.form import button
 
 from seantis.reservation import _
-from seantis.reservation.interfaces import IOverview, OverviewletManager
+from seantis.reservation.interfaces import OverviewletManager
 from seantis.reservation.interfaces import ITimeframe
 from seantis.reservation import utils
 
 # TODO cache all timeframe stuff for an hour or so.. no frequent updates needed
 
+
 class Timeframe(Item):
     @property
     def timestr(self):
         return u'%s - %s' % (
-                self.start.strftime('%d.%m.%Y'),
-                self.end.strftime('%d.%m.%Y')
-            )
-    
+            self.start.strftime('%d.%m.%Y'),
+            self.end.strftime('%d.%m.%Y')
+        )
+
     # Can't set a property here for some odd reason. Why does it work for
     # timestr? Same in resource.py.. it does not make sense.
     def visible(self):
         workflowTool = getToolByName(self, "portal_workflow")
         status = workflowTool.getStatusOf("timeframe_workflow", self)
         return status['review_state'] == 'visible'
-        
+
+
 def validate_timeframe(context, request, data):
     overlap = overlapping_timeframe(context, data['start'], data['end'])
     if overlap:
-        msg = utils.translate(context, request, 
+        msg = utils.translate(
+            context, request,
             _(
                 u"Timeframe overlaps with '${overlap}' in the current folder",
                 mapping={'overlap': overlap.title}
             ))
         utils.form_error(msg)
 
+
 def timeframes_in_context(context):
-    return utils.portal_type_in_context(context, 'seantis.reservation.timeframe')
+    return utils.portal_type_in_context(
+        context, 'seantis.reservation.timeframe'
+    )
+
 
 def timeframes_by_context(context):
-    return utils.portal_type_by_context(context, 'seantis.reservation.timeframe')
+    return utils.portal_type_by_context(
+        context, 'seantis.reservation.timeframe'
+    )
+
 
 def timeframes_by_uuid(context, uuid):
     return timeframes_by_context(utils.get_resource_by_uuid(context, uuid))
+
 
 def overlapping_timeframe(context, start, end):
     if context.portal_type == 'seantis.reservation.timeframe':
         folder = context.aq_inner.aq_parent
     else:
         folder = context
-    
+
     frames = timeframes_in_context(folder)
 
     for frame in frames:
@@ -63,6 +73,7 @@ def overlapping_timeframe(context, start, end):
             return frame.getObject()
 
     return None
+
 
 class TimeframeAddForm(dexterity.AddForm):
 
@@ -79,6 +90,7 @@ class TimeframeAddForm(dexterity.AddForm):
         validate_timeframe(self.context, self.request, data)
         dexterity.AddForm.handleAdd(self, action)
 
+
 class TimeframeEditForm(dexterity.EditForm):
 
     permission = 'cmf.ModifyPortalContent'
@@ -92,13 +104,14 @@ class TimeframeEditForm(dexterity.EditForm):
         validate_timeframe(self.context, self.request, data)
         dexterity.EditForm.handleApply(self, action)
 
+
 class TimeframeViewlet(grok.Viewlet):
 
     permission = 'cmf.ModifyPortalContent'
 
     grok.context(form.Schema)
     grok.require(permission)
-    
+
     grok.name('seantis.reservation.timeframeviewlet')
     grok.viewletmanager(OverviewletManager)
 
@@ -123,7 +136,7 @@ class TimeframeViewlet(grok.Viewlet):
         it does not return updated values for me, just some old ones.
 
         The listWFStatesByTitle function on the other hand contains
-        the right information and I will just use that instead. 
+        the right information and I will just use that instead.
 
         Once this breaks I'll read the source of the workflow tool, until this
         happens I'm off to do useful things.
@@ -134,14 +147,18 @@ class TimeframeViewlet(grok.Viewlet):
         return dict(((t[1], t[0]) for t in titles))
 
     def state(self, timeframe):
-        state = self.workflowTool.getStatusOf("timeframe_workflow", timeframe)['review_state']
+        state = self.workflowTool.getStatusOf(
+            "timeframe_workflow", timeframe
+        )['review_state']
         title = self.titles[state]
-        return state, utils.translate_workflow(self.context, self.request, title)
+        return state, utils.translate_workflow(
+            self.context, self.request, title
+        )
 
     def render(self, **kwargs):
-        if self.context == None:
+        if self.context is None:
             return u''
-        
+
         return self._template.render(self)
 
     def visible(self, frame):
@@ -153,9 +170,9 @@ class TimeframeViewlet(grok.Viewlet):
         # global links
         if not frame:
             baseurl = self.context.absolute_url()
-            return [(_(u'Add timeframe'), 
+            return [(_(u'Add timeframe'),
                     baseurl + '/++add++seantis.reservation.timeframe')]
-        
+
         # frame specific links
         links = []
 
@@ -172,5 +189,5 @@ class TimeframeViewlet(grok.Viewlet):
         baseurl = frame.absolute_url()
         links.append((_(u'Edit'), baseurl + '/edit'))
         links.append((_(u'Delete'), baseurl + '/delete_confirmation'))
-        
+
         return links

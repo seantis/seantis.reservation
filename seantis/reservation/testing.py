@@ -1,6 +1,6 @@
 from App.config import getConfiguration, setConfiguration
-from plone.app.testing import PloneSandboxLayer 
-from plone.app.testing import PLONE_FIXTURE 
+from plone.app.testing import PloneSandboxLayer
+from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import IntegrationTesting
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import applyProfile
@@ -14,6 +14,7 @@ except ImportError:
     from seantis.reservation.utils import ConfigurationError
     msg = 'No test database configured in seantis.reservation.test_database.'
     raise ConfigurationError(msg)
+
 
 class SqlLayer(PloneSandboxLayer):
     default_bases = (PLONE_FIXTURE,)
@@ -29,7 +30,7 @@ class SqlLayer(PloneSandboxLayer):
         config = getConfiguration()
         if not hasattr(config, 'product_config'):
             config.product_config = {}
-        
+
         config.product_config['seantis.reservation'] = dict(dsn=self.dsn)
 
         setConfiguration(config)
@@ -39,8 +40,9 @@ class SqlLayer(PloneSandboxLayer):
         self.init_config()
 
         import seantis.reservation
-        xmlconfig.file('configure.zcml',
-            seantis.reservation, 
+        xmlconfig.file(
+            'configure.zcml',
+            seantis.reservation,
             context=configurationContext
         )
 
@@ -58,11 +60,11 @@ class SqlLayer(PloneSandboxLayer):
 SQL_FIXTURE = SqlLayer()
 
 SQL_INTEGRATION_TESTING = IntegrationTesting(
-        bases=(SQL_FIXTURE, ),
-        name="SqlLayer:Integration"
-    )
+    bases=(SQL_FIXTURE, ),
+    name="SqlLayer:Integration"
+)
 
 SQL_FUNCTIONAL_TESTING = FunctionalTesting(
-        bases=(SQL_FIXTURE, ),
-        name="SqlLayer:Functional"
-    )
+    bases=(SQL_FIXTURE, ),
+    name="SqlLayer:Functional"
+)

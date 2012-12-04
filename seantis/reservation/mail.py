@@ -7,12 +7,10 @@ from email.MIMEText import MIMEText
 from email.Header import Header
 from email.Utils import parseaddr, formataddr
 
-from zope.app.component.hooks import getSite 
+from zope.app.component.hooks import getSite
 from plone.dexterity.content import Item
 from plone.directives import form, dexterity
-from plone.app.layout.viewlets.interfaces import IBelowContentBody
 from plone.memoize import view
-from Products.CMFCore.utils import getToolByName
 from z3c.form import button
 
 from seantis.reservation.form import ReservationDataView
@@ -27,44 +25,61 @@ from seantis.reservation import utils
 from seantis.reservation import settings
 from seantis.reservation import _
 
+
 @grok.subscribe(IReservationMadeEvent)
 def on_reservation_made(event):
     if event.reservation.autoapprovable:
         if settings.get('send_email_to_reservees', True):
-            send_reservation_mail(event.reservation, 'reservation_autoapproved', event.language)
+            send_reservation_mail(
+                event.reservation, 'reservation_autoapproved', event.language
+            )
     else:
         if settings.get('send_email_to_reservees', True):
-            send_reservation_mail(event.reservation, 'reservation_received', event.language)
+            send_reservation_mail(
+                event.reservation, 'reservation_received', event.language
+            )
 
         if settings.get('send_email_to_managers', True):
-            send_reservation_mail(event.reservation, 'reservation_pending', event.language, to_managers=True)
+            send_reservation_mail(
+                event.reservation, 'reservation_pending', event.language,
+                to_managers=True
+            )
+
 
 @grok.subscribe(IReservationApprovedEvent)
 def on_reservation_approved(event):
     if not settings.get('send_email_to_reservees', False):
         return
     if not event.reservation.autoapprovable:
-        send_reservation_mail(event.reservation, 'reservation_approved', event.language)
+        send_reservation_mail(
+            event.reservation, 'reservation_approved', event.language
+        )
+
 
 @grok.subscribe(IReservationDeniedEvent)
 def on_reservation_denied(event):
     if not settings.get('send_email_to_reservees', False):
         return
     if not event.reservation.autoapprovable:
-        send_reservation_mail(event.reservation, 'reservation_denied', event.language)
+        send_reservation_mail(
+            event.reservation, 'reservation_denied', event.language
+        )
+
 
 class EmailTemplate(Item):
     def get_title(self):
-        return _(u'Email Template') + u' ' + utils.native_language_name(self.language)
+        return _(u'Email Template') + u' ' + \
+            utils.native_language_name(self.language)
 
     def set_title(self, title):
         pass
 
     title = property(get_title, set_title)
 
+
 def get_managers_by_context(context):
     managers = context.users_with_local_role('Reservation-Manager')
-    
+
     if managers:
         return managers
 
@@ -75,6 +90,7 @@ def get_managers_by_context(context):
         return []
 
     return get_managers_by_context(context.aq_inner.aq_parent)
+
 
 def get_manager_emails_by_context(context):
     managers = get_managers_by_context(context)
@@ -102,6 +118,7 @@ def get_manager_emails_by_context(context):
 
     return emails
 
+
 def get_email_content(context, email_type, language):
     user_templates = utils.portal_type_by_context(
         context, portal_type='seantis.reservation.emailtemplate'
@@ -117,8 +134,10 @@ def get_email_content(context, email_type, language):
         return subject, body
 
     return templates[email_type].get(language)
-    
-def send_reservation_mail(reservation, email_type, language, to_managers=False):
+
+
+def send_reservation_mail(reservation, email_type, language,
+                          to_managers=False):
 
     context = getSite()
     resource = utils.get_resource_by_uuid(context, reservation.resource)
@@ -148,7 +167,8 @@ def send_reservation_mail(reservation, email_type, language, to_managers=False):
     subject, body = get_email_content(resource, email_type, language)
 
     for recipient in recipients:
-        mail = ReservationMail(resource, reservation,
+        mail = ReservationMail(
+            resource, reservation,
             sender=sender,
             recipient=recipient,
             subject=subject,
@@ -157,19 +177,22 @@ def send_reservation_mail(reservation, email_type, language, to_managers=False):
 
         send_mail(resource, mail)
 
+
 def send_mail(context, mail):
     context.MailHost.send(mail.as_string(), immediate=False)
 
+
 class ReservationMail(ReservationDataView, ReservationUrls):
 
-    sender=u''
-    recipient=u''
-    subject=u''
-    body=u''
+    sender = u''
+    recipient = u''
+    subject = u''
+    body = u''
 
     def __init__(self, resource, reservation, **kwargs):
-        for k,v in kwargs.items():
-            if hasattr(self, k): setattr(self, k, v)
+        for k, v in kwargs.items():
+            if hasattr(self, k):
+                setattr(self, k, v)
 
         # get information for the body/subject string
 
@@ -206,14 +229,18 @@ class ReservationMail(ReservationDataView, ReservationUrls):
 
                 lines.append(interface['desc'])
                 for value in self.sorted_values(interface['values']):
-                    lines.append('\t' + value['desc'] + ': '+ unicode(self.display_info(value['value'])))
-
+                    lines.append(
+                        '\t' + value['desc'] + ': ' +
+                        unicode(self.display_info(value['value']))
+                    )
 
             p['data'] = '\n'.join(lines)
 
         # approval link
         if is_needed('approval_link'):
-            p['approval_link'] = self.approve_all_url(reservation.token, resource)
+            p['approval_link'] = self.approve_all_url(
+                reservation.token, resource
+            )
 
         # denial links
         if is_needed('denial_link'):
@@ -226,6 +253,7 @@ class ReservationMail(ReservationDataView, ReservationUrls):
         body = self.body % self.parameters
         mail = create_email(self.sender, self.recipient, subject, body)
         return mail.as_string()
+
 
 def create_email(sender, recipient, subject, body):
     """Create an email message.
@@ -264,6 +292,7 @@ def create_email(sender, recipient, subject, body):
 
     return msg
 
+
 # The following is quite similar to the timeframe.py stuff
 # surely this can be merged somewhat => #TODO
 
@@ -272,7 +301,7 @@ def validate_template(context, request, data):
         folder = context.aq_inner.aq_parent
     else:
         folder = context
-    
+
     templates = utils.portal_type_in_context(
         folder, portal_type='seantis.reservation.emailtemplate'
     )
@@ -288,10 +317,13 @@ def validate_template(context, request, data):
             break
 
     if duplicate:
-        msg = utils.translate(context, request, 
-            _(u"There's already an Email template in the same folder for the same language")
+        msg = utils.translate(
+            context, request,
+            _(u"There's already an Email template in the same folder for the "
+              u"same language")
         )
         utils.form_error(msg)
+
 
 class TemplateAddForm(dexterity.AddForm):
 
@@ -308,6 +340,7 @@ class TemplateAddForm(dexterity.AddForm):
         validate_template(self.context, self.request, data)
         dexterity.AddForm.handleAdd(self, action)
 
+
 class TemplateEditForm(dexterity.EditForm):
 
     permission = 'cmf.ModifyPortalContent'
@@ -320,6 +353,7 @@ class TemplateEditForm(dexterity.EditForm):
         data, errors = self.extractData()
         validate_template(self.context, self.request, data)
         dexterity.EditForm.handleApply(self, action)
+
 
 class TemplatesViewlet(grok.Viewlet):
 
@@ -347,20 +381,22 @@ class TemplatesViewlet(grok.Viewlet):
         # global links
         if not template:
             baseurl = self.context.absolute_url()
-            return [(_(u'Add email template'),
-                baseurl + '/++add++seantis.reservation.emailtemplate')]
+            return [(
+                _(u'Add email template'),
+                baseurl + '/++add++seantis.reservation.emailtemplate'
+            )]
 
         # template specific links
         links = []
-        
+
         baseurl = template.absolute_url()
         links.append((_(u'Edit'), baseurl + '/edit'))
         links.append((_(u'Delete'), baseurl + '/delete_confirmation'))
-        
+
         return links
 
     def render(self, **kwargs):
-        if self.context == None:
+        if self.context is None:
             return u''
-        
+
         return self._template.render(self)

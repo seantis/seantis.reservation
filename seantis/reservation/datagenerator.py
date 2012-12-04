@@ -11,12 +11,13 @@ from plone.dexterity.utils import createContentInContainer
 from seantis.reservation.models import Allocation
 from seantis.reservation.session import serialized, Session
 from seantis.reservation.error import (
-    OverlappingAllocationError, 
+    OverlappingAllocationError,
     ReservationError
 )
 from seantis.reservation.raster import VALID_RASTER_VALUES
 
 import transaction
+
 
 class DataGeneratorView(grok.View):
 
@@ -66,8 +67,9 @@ class DataGeneratorView(grok.View):
 
     def create_resource(self):
         resource = createContentInContainer(
-            self.context, 'seantis.reservation.resource', 
-            title=u'random @ ' + datetime.today().strftime('%d.%m.%Y %H:%M'))
+            self.context, 'seantis.reservation.resource',
+            title=u'random @ ' + datetime.today().strftime('%d.%m.%Y %H:%M')
+        )
         resource.first_hour = self.first_hour
         resource.last_hour = self.last_hour
         return resource
@@ -97,19 +99,20 @@ class DataGeneratorView(grok.View):
 
                 try:
                     scheduler.allocate(
-                        (timespan[0], timespan[1]), 
+                        (timespan[0], timespan[1]),
                         raster=timespan[2],
-                        partly_available=bool(random.randrange(0,2)),
+                        partly_available=bool(random.randrange(0, 2)),
                         grouped=False,
                         quota=quota,
                         waitinglist_spots=random.randrange(quota, 100),
-                        approve=bool(random.randrange(0,2))
+                        approve=bool(random.randrange(0, 2))
                     )
                 except OverlappingAllocationError:
                     pass
 
             # we must commit regularly or the postgres serial session
-            # must track so many queries it goes to the barn and puts itself down
+            # must track so many queries it goes to the barn and puts itself
+            # down
 
             transaction.commit()
 
@@ -137,14 +140,19 @@ class DataGeneratorView(grok.View):
                 total = (allocation.end - allocation.start).seconds / 60
 
                 if total > allocation.raster:
-                    start_minute = random.randrange(0, total-allocation.raster, allocation.raster)
-                    end_minute = random.randrange(start_minute + allocation.raster, total, allocation.raster)
+                    start_minute = random.randrange(
+                        0, total - allocation.raster, allocation.raster
+                    )
+                    end_minute = random.randrange(
+                        start_minute + allocation.raster, total,
+                        allocation.raster
+                    )
                 else:
                     start_minute = 0
                     end_minute = total
 
-                start = start + timedelta(start_minute*60)
-                end = start + timedelta(end_minute*60)
+                start = start + timedelta(start_minute * 60)
+                end = start + timedelta(end_minute * 60)
             else:
                 start, end = allocation.start, allocation.display_end
 
@@ -153,9 +161,9 @@ class DataGeneratorView(grok.View):
             else:
                 limit = allocation.quota
 
-            for i in xrange(0, random.randrange(0, limit+1)):
+            for i in xrange(0, random.randrange(0, limit + 1)):
                 try:
-                    print 'r @',start, end
+                    print 'r @', start, end
                     token = scheduler.reserve(email, dates=(start, end))
                     if not allocation.approve:
                         scheduler.approve_reservation(token)
@@ -186,11 +194,15 @@ class DataGeneratorView(grok.View):
             if max_minute - min_minute <= offset:
                 break
 
-            start_minute = random.randrange(min_minute, max_minute - offset, raster)
-            end_minute = random.randrange(start_minute + offset, max_minute, raster)
+            start_minute = random.randrange(
+                min_minute, max_minute - offset, raster
+            )
+            end_minute = random.randrange(
+                start_minute + offset, max_minute, raster
+            )
 
-            start = base + timedelta(seconds=start_minute*60)
-            end = base + timedelta(seconds=end_minute*60)
+            start = base + timedelta(seconds=start_minute * 60)
+            end = base + timedelta(seconds=end_minute * 60)
 
             timespans.append((start, end, raster))
 

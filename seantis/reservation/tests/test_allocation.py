@@ -8,6 +8,7 @@ from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation.models import Allocation
 from seantis.reservation.session import serialized
 
+
 class TestAllocation(IntegrationTestCase):
 
     @serialized
@@ -47,6 +48,6 @@ class TestAllocation(IntegrationTestCase):
 
         start = datetime(2011, 1, 1, 13, 00)
         end = datetime(2011, 1, 1, 15, 00)
-        
+
         self.assertTrue(allocation.overlaps(start, end))
         self.assertFalse(allocation.contains(start, end))

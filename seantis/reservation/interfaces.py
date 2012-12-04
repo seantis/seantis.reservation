@@ -22,24 +22,27 @@ from seantis.reservation.raster import VALID_RASTER_VALUES
 
 from seantis.reservation.mail_templates import templates
 
-from seantis.reservation.utils import _languagelist 
+from seantis.reservation.utils import _languagelist
 
 days = SimpleVocabulary(
-        [SimpleTerm(value=rrule.MO, title=_(u'Mo')),
-         SimpleTerm(value=rrule.TU, title=_(u'Tu')),
-         SimpleTerm(value=rrule.WE, title=_(u'We')),
-         SimpleTerm(value=rrule.TH, title=_(u'Th')),
-         SimpleTerm(value=rrule.FR, title=_(u'Fr')),
-         SimpleTerm(value=rrule.SA, title=_(u'Sa')),
-         SimpleTerm(value=rrule.SU, title=_(u'Su')),
-        ]
-    )
-    
+    [
+        SimpleTerm(value=rrule.MO, title=_(u'Mo')),
+        SimpleTerm(value=rrule.TU, title=_(u'Tu')),
+        SimpleTerm(value=rrule.WE, title=_(u'We')),
+        SimpleTerm(value=rrule.TH, title=_(u'Th')),
+        SimpleTerm(value=rrule.FR, title=_(u'Fr')),
+        SimpleTerm(value=rrule.SA, title=_(u'Sa')),
+        SimpleTerm(value=rrule.SU, title=_(u'Su')),
+    ]
+)
+
 recurrence = SimpleVocabulary(
-        [SimpleTerm(value=False, title=_(u'Once')),
-         SimpleTerm(value=True, title=_(u'Daily')),
-        ]
-    )
+    [
+        SimpleTerm(value=False, title=_(u'Once')),
+        SimpleTerm(value=True, title=_(u'Daily')),
+    ]
+)
+
 
 @grok.provider(IContextSourceBinder)
 def form_interfaces(context):
@@ -49,12 +52,15 @@ def form_interfaces(context):
     """
     dutils = getallutils(IDexterityFTI)
     behavior = 'seantis.reservation.interfaces.IReservationFormSet'
-    interfaces = [(u.title, u.lookupSchema()) for u in dutils if behavior in u.behaviors]
-    
+    interfaces = [
+        (u.title, u.lookupSchema()) for u in dutils if behavior in u.behaviors
+    ]
+
     def get_term(item):
         return SimpleTerm(title=item[0], value=getname(item[1].__name__))
 
     return SimpleVocabulary(map(get_term, interfaces))
+
 
 @grok.provider(IContextSourceBinder)
 def plone_languages(context):
@@ -65,6 +71,7 @@ def plone_languages(context):
 
     return SimpleVocabulary(terms)
 
+
 # TODO -> Move this to a separate module as it is also used in seantis.dir.base
 def validate_email(value):
     try:
@@ -73,6 +80,7 @@ def validate_email(value):
     except EmailAddressInvalid:
         raise Invalid(_(u'Invalid email address'))
     return True
+
 
 class EmailField(schema.TextLine):
 
@@ -90,128 +98,156 @@ EmailFieldFactory = FieldFactory(EmailField, _(u'Email'))
 from plone.supermodel.exportimport import BaseHandler
 EmailFieldHandler = BaseHandler(EmailField)
 
+
 class IOverview(Interface):
     """ Views implementing this interface may use the OverviewletManager to
     display an overview of a list of resources. """
 
     def items(self):
-        """ Returns a list of items to use for the overview. Each item must have
-        a method 'resources' which returns a list of seantis.reservation.resource
-        objects.
+        """ Returns a list of items to use for the overview. Each item must
+        have a method 'resources' which returns a list of
+        seantis.reservation.resource objects.
 
         """
+
 
 class OverviewletManager(grok.ViewletManager):
     """ Manages the viewlets shown in the overview. """
     grok.context(Interface)
     grok.name('seantis.reservation.overviewletmanager')
 
+
 class IReservationFormSet(Interface):
     """ Marks interface as usable for sub-forms in a resource object. """
+
 
 class IResourceAllocationDefaults(form.Schema):
 
     quota = schema.Int(
         title=_(u'Quota'),
-        description=_(u'Number of times an allocation may be reserved at the same time.'),
+        description=_(
+            u'Number of times an allocation may be reserved at the same time.'
+        ),
         default=1
-        )
+    )
 
     partly_available = schema.Bool(
         title=_(u'Partly available'),
-        description=_(u'If the allocation is partly available users may reserve '
-                      u'only a part of it (e.g. half of it). If not the allocation '
-                      u'Must be reserved as a whole or not at all'),
+        description=_(
+            u'If the allocation is partly available users may reserve '
+            u'only a part of it (e.g. half of it). If not the allocation '
+            u'Must be reserved as a whole or not at all'
+        ),
         default=False
-        )
+    )
 
     raster = schema.Choice(
         title=_(u'Raster'),
-        description=_(u'Defines the minimum length of any given reservation as well '
-                      u'as the alignment of the start / end of the allocation. E.g. a '
-                      u'raster of 30 minutes means that the allocation can only start '
-                      u'at xx:00 and xx:30 respectively'),
+        description=_(
+            u'Defines the minimum length of any given reservation as well '
+            u'as the alignment of the start / end of the allocation. E.g. a '
+            u'raster of 30 minutes means that the allocation can only start '
+            u'at xx:00 and xx:30 respectively'
+        ),
         values=VALID_RASTER_VALUES,
         default=30
-        )
+    )
 
     approve = schema.Bool(
         title=_(u'Approve reservation requests'),
-        description=_(u'If checked a reservation manager must decide if a reservation can '
-                      u'be approved. Until then users are added to the waitinglist. '
-                      u'Reservations are automatically approved if this is not checked. '),
+        description=_(
+            u'If checked a reservation manager must decide if a reservation '
+            u'can be approved. Until then users are added to the waitinglist. '
+            u'Reservations are automatically approved if this is not checked. '
+        ),
         default=False
-        )
-    
+    )
+
     waitinglist_spots = schema.Int(
         title=_(u'Waiting List Spots'),
-        description=_(u'Number of spots in the waitinglist (must be at least as high as the quota)'),
+        description=_(
+            u'Number of spots in the waitinglist (must be at least as high as '
+            u'the quota)'
+        ),
         default=100
-        )
-    
+    )
+
     @invariant
     def isValidQuota(Allocation):
         if not (1 <= Allocation.quota and Allocation.quota <= 100):
             raise Invalid(_(u'Quota must be between 1 and 100'))
-    
+
     @invariant
-    def isValidWaitinglist(Allocation):    
-        if not (Allocation.quota <= Allocation.waitinglist_spots and Allocation.waitinglist_spots <= 100):
-            raise Invalid(_(u'Waitinglist length must be between the quota and 100'))
+    def isValidWaitinglist(Allocation):
+        if not (Allocation.quota <= Allocation.waitinglist_spots and
+                Allocation.waitinglist_spots <= 100):
+            raise Invalid(
+                _(u'Waitinglist length must be between the quota and 100')
+            )
+
 
 class IResourceBase(IResourceAllocationDefaults):
     """ A resource displaying a calendar. """
 
     title = schema.TextLine(
-            title=_(u'Name')
-        )
+        title=_(u'Name')
+    )
 
     description = schema.Text(
-            title=_(u'Description'),
-            required=False
-        )
+        title=_(u'Description'),
+        required=False
+    )
 
     first_hour = schema.Int(
-            title=_(u'First hour of the day'),
-            description=_(u'Everything before this hour is not shown in the '
-                          u'calendar, making the calendar display more compact. '
-                          u'Should be set to an hour before which there cannot '
-                          u'be any reservations.'),
-            default=7
-        )
+        title=_(u'First hour of the day'),
+        description=_(
+            u'Everything before this hour is not shown in the '
+            u'calendar, making the calendar display more compact. '
+            u'Should be set to an hour before which there cannot '
+            u'be any reservations.'
+        ),
+        default=7
+    )
 
     last_hour = schema.Int(
-            title=_(u'Last hour of the day'),
-            description=_(u'Everything after this hour is not shown in the '
-                          u'calendar, making the calendar display more compact. '
-                          u'Should be set to an hour after which there cannot '
-                          u'be any reservations.'),
-            default=23
-        )
+        title=_(u'Last hour of the day'),
+        description=_(
+            u'Everything after this hour is not shown in the '
+            u'calendar, making the calendar display more compact. '
+            u'Should be set to an hour after which there cannot '
+            u'be any reservations.'
+        ),
+        default=23
+    )
 
     form.fieldset(
         'defaults',
         label=_(u'Default Allocation Values'),
-        fields=('quota', 'partly_available', 'raster', 'approve', 'waitinglist_spots')
-        )    
+        fields=(
+            'quota', 'partly_available', 'raster', 'approve',
+            'waitinglist_spots'
+        )
+    )
 
     formsets = schema.List(
-            title=_(u'Formsets'),
-            description=_(u'Subforms that need to be filled out to make a reservation. '
-                          u'Forms can currently only be created by a site-administrator.'),
-            value_type=schema.Choice(
-                source=form_interfaces,
-            ),
-            required=False
-        )
-        
+        title=_(u'Formsets'),
+        description=_(
+            u'Subforms that need to be filled out to make a reservation. '
+            u'Forms can currently only be created by a site-administrator.'
+        ),
+        value_type=schema.Choice(
+            source=form_interfaces,
+        ),
+        required=False
+    )
+
     form.widget(formsets=CheckBoxFieldWidget)
 
     @invariant
     def isValidFirstLastHour(Resource):
         in_valid_range = lambda h: 0 <= h and h <= 24
         first_hour, last_hour = Resource.first_hour, Resource.last_hour
-        
+
         if not in_valid_range(first_hour):
             raise Invalid(_(u'Invalid first hour'))
 
@@ -220,11 +256,13 @@ class IResourceBase(IResourceAllocationDefaults):
 
         if last_hour <= first_hour:
             raise Invalid(
-                    _(u'First hour must be smaller than last hour')
-                )                  
+                _(u'First hour must be smaller than last hour')
+            )
+
 
 class IResource(IResourceBase):
     pass
+
 
 class IAllocation(IResourceAllocationDefaults):
     """ An reservable time-slot within a calendar. """
@@ -233,75 +271,81 @@ class IAllocation(IResourceAllocationDefaults):
         title=_(u'Id'),
         default=-1,
         required=False,
-        )
+    )
 
     group = schema.Text(
         title=_(u'Recurrence'),
         default=u'',
         required=False
-        )
+    )
 
     timeframes = schema.Text(
         title=_(u'Timeframes'),
         default=u'',
         required=False
-        )
+    )
 
     start_time = schema.Time(
         title=_(u'Start'),
-        description=_(u'Allocations may start every 5 minutes if the allocation '
-                      u'is not partly available. If it is partly available the start '
-                      u'time may be every x minute where x equals the given raster.')
+        description=_(
+            u'Allocations may start every 5 minutes if the allocation '
+            u'is not partly available. If it is partly available the start '
+            u'time may be every x minute where x equals the given raster.'
         )
+    )
 
     end_time = schema.Time(
         title=_(u'End'),
-        description=_(u'Allocations may end every 5 minutes if the allocation '
-                      u'is not partly available. If it is partly available the start '
-                      u'time may be every x minute where x equals the given raster. '
-                      u'The minimum length of an allocation is also either 5 minutes '
-                      u'or whatever the value of the raster is.')
+        description=_(
+            u'Allocations may end every 5 minutes if the allocation '
+            u'is not partly available. If it is partly available the start '
+            u'time may be every x minute where x equals the given raster. '
+            u'The minimum length of an allocation is also either 5 minutes '
+            u'or whatever the value of the raster is.'
         )
+    )
 
     recurring = schema.Choice(
         title=_(u'Recurrence'),
         vocabulary=recurrence,
         default=False
-        )
+    )
 
     day = schema.Date(
         title=_(u'Day'),
-        )
+    )
 
     recurrence_start = schema.Date(
         title=_(u'From'),
-        )
+    )
 
     recurrence_end = schema.Date(
         title=_(u'Until')
-        )
+    )
 
     days = schema.List(
         title=_(u'Days'),
         value_type=schema.Choice(vocabulary=days),
         required=False
-        )
+    )
 
     separately = schema.Bool(
         title=_(u'Separately reservable'),
-        description=_(u'If checked parts of the recurrance may be reserved. '
-                      u'If not checkd the recurrance must be reserved as a whole.'),
+        description=_(
+            u'If checked parts of the recurrance may be reserved. '
+            u'If not checkd the recurrance must be reserved as a whole.'
+        ),
         required=False,
         default=False
-        )
+    )
 
     @invariant
     def isValidRange(Allocation):
         start, end = utils.get_date_range(
-                Allocation.day, 
-                Allocation.start_time, Allocation.end_time
-            )
-        
+            Allocation.day,
+            Allocation.start_time, Allocation.end_time
+        )
+
         if abs((end - start).seconds // 60) < 5:
             raise Invalid(_(u'The allocation must be at least 5 minutes long'))
 
@@ -309,109 +353,122 @@ class IAllocation(IResourceAllocationDefaults):
     def isValidOption(Allocation):
         if Allocation.recurring:
             if Allocation.partly_available and not Allocation.separately:
-                raise Invalid(_(u'Partly available allocations can only be reserved separately'))
+                raise Invalid(_(
+                    u'Partly available allocations can only be reserved '
+                    u'separately'
+                ))
+
 
 class ITimeframe(form.Schema):
     """ A timespan which is either visible or hidden. """
 
     title = schema.TextLine(
-            title=_(u'Name')
-        )
+        title=_(u'Name')
+    )
 
     start = schema.Date(
-            title=_(u'Start')
-        )
+        title=_(u'Start')
+    )
 
     end = schema.Date(
-            title=_(u'End')
-        )
+        title=_(u'End')
+    )
 
     @invariant
     def isValidDateRange(Timeframe):
         if Timeframe.start > Timeframe.end:
             raise Invalid(_(u'End date before start date'))
 
-template_variables = _(u'May contain the following template variables:<br>'
-                      u'%(resource)s - title of the resource<br>'
-                      u'%(dates)s - list of dates reserved<br>'
-                      u'%(reservation_mail)s - email of reservee<br>'
-                      u'%(data)s - formdata associated with the reservation<br>'
-                      u'%(approval_link)s - link to the approval view<br>'
-                      u'%(denial_link)s - link to the denial view'
-                    )
+template_variables = _(
+    u'May contain the following template variables:<br>'
+    u'%(resource)s - title of the resource<br>'
+    u'%(dates)s - list of dates reserved<br>'
+    u'%(reservation_mail)s - email of reservee<br>'
+    u'%(data)s - formdata associated with the reservation<br>'
+    u'%(approval_link)s - link to the approval view<br>'
+    u'%(denial_link)s - link to the denial view'
+)
+
 
 class IEmailTemplate(form.Schema):
     """ An email template used for custom email messages """
 
     language = schema.Choice(
         title=_(u'Language'),
-        source = plone_languages
-        )
+        source=plone_languages
+    )
 
     reservation_pending_subject = schema.TextLine(
         title=_(u'Email Subject for Reservation Pending'),
-        description=_(u'Sent to <b>managers</b> when a new pending reservation is made. '
-                      u'May contain the template variables listed below.'),
+        description=_(
+            u'Sent to <b>managers</b> when a new pending reservation is made. '
+            u'May contain the template variables listed below.'
+        ),
         default=templates['reservation_pending'].get_subject('en')
-        )
+    )
 
     reservation_pending_content = schema.Text(
         title=_(u'Email Text for Reservation Pending'),
         description=template_variables,
         default=templates['reservation_pending'].get_body('en')
-        )
+    )
 
     reservation_received_subject = schema.TextLine(
         title=_(u'Email Subject for Received Reservations'),
-        description=_(u'Sent to <b>users</b> when a new pending reservation is made. '
-                      u'May contain the template variables listed below.'),
+        description=_(
+            u'Sent to <b>users</b> when a new pending reservation is made. '
+            u'May contain the template variables listed below.'
+        ),
         default=templates['reservation_received'].get_subject('en')
-        )
+    )
 
     reservation_received_content = schema.Text(
         title=_(u'Email Text for Received Reservations'),
         description=template_variables,
         default=templates['reservation_received'].get_body('en')
-        )
+    )
 
     reservation_autoapproved_subject = schema.TextLine(
         title=_(u'Email Subject for Automatically Approved Reservations'),
-        description=_(u'Sent to <b>users</b> when a new reservation is made. '
-                      u'May contain the template variables listed below.'),
+        description=_(
+            u'Sent to <b>users</b> when a new reservation is made. '
+            u'May contain the template variables listed below.'
+        ),
         default=templates['reservation_autoapproved'].get_subject('en')
-        )
+    )
 
     reservation_autoapproved_content = schema.Text(
         title=_(u'Email Text for Automatically Approved Reservations'),
         description=template_variables,
         default=templates['reservation_autoapproved'].get_body('en')
-        )
+    )
 
     reservation_approved_subject = schema.TextLine(
         title=_(u'Email Subject for Approved Reservations'),
         description=_(u'Sent to <b>users</b> when a reservation is approved. '
                       u'May contain the template variables listed below.'),
         default=templates['reservation_approved'].get_subject('en')
-        )
+    )
 
     reservation_approved_content = schema.Text(
         title=_(u'Email Text for Approved Reservations'),
         description=template_variables,
         default=templates['reservation_approved'].get_body('en')
-        )
+    )
 
     reservation_denied_subject = schema.TextLine(
         title=_(u'Email Subject for Denied Reservations'),
         description=_(u'Sent to <b>users</b> when a reservation is denied. '
                       u'May contain the template variables listed below.'),
         default=templates['reservation_denied'].get_subject('en')
-        )
+    )
 
     reservation_denied_content = schema.Text(
         title=_(u'Email Text for Denied Reservations'),
         description=template_variables,
         default=templates['reservation_denied'].get_body('en')
-        )
+    )
+
 
 def get_default_language(adapter):
     return utils.get_current_site_language()
@@ -420,6 +477,7 @@ DefaultLanguage = widget.ComputedWidgetAttribute(
     get_default_language, field=IEmailTemplate['language']
 )
 
+
 class IReservation(Interface):
     """ A reservation of an allocation (may be pending or approved). """
 
@@ -427,33 +485,34 @@ class IReservation(Interface):
         title=_(u'Id'),
         default=-1,
         required=False
-        )
+    )
 
     metadata = schema.TextLine(
         title=_(u'Metadata'),
         default=u'',
         required=False
-        )
+    )
 
     day = schema.Date(
         title=_(u'Day'),
         required=False
-        )
+    )
 
     start_time = schema.Time(
         title=_(u'Start'),
         required=False
-        )
+    )
 
     end_time = schema.Time(
         title=_(u'End'),
         required=False
-        )
+    )
 
     email = EmailField(
         title=_(u'Email'),
         required=True
-        )
+    )
+
 
 class IGroupReservation(Interface):
     """ A reservation of an allocation group. """
@@ -461,12 +520,13 @@ class IGroupReservation(Interface):
     group = schema.Text(
         title=_(u'Recurrence'),
         required=False
-        )
+    )
 
     email = EmailField(
         title=_(u'Email'),
         required=True
-        )
+    )
+
 
 class IRemoveReservation(Interface):
     """ For the reservation removal form. """
@@ -474,17 +534,18 @@ class IRemoveReservation(Interface):
     reservation = schema.Text(
         title=_(u'Reservation'),
         required=False
-        )
+    )
 
     start = schema.Datetime(
         title=_(u'Start'),
         required=False
-        )
-        
+    )
+
     end = schema.Datetime(
         title=_(u'End'),
         required=False
-        )    
+    )
+
 
 class IApproveReservation(Interface):
     """ For the reservation approval form. """
@@ -492,7 +553,8 @@ class IApproveReservation(Interface):
     reservation = schema.Text(
         title=_(u'Reservation'),
         required=False
-        )
+    )
+
 
 class IReservationBaseEvent(Interface):
     """ Base Interface for reservation events (not actually fired). """
@@ -500,14 +562,17 @@ class IReservationBaseEvent(Interface):
     reservation = Attribute("The reservation record associated with the event")
     language = Attribute("The language of the site or current request")
 
+
 class IReservationMadeEvent(IReservationBaseEvent):
     """ Event triggered when a reservation is made (directly written or
         added to the pending reservation list).
 
     """
 
+
 class IReservationApprovedEvent(IReservationBaseEvent):
     """ Event triggered when a reservation is approved. """
+
 
 class IReservationDeniedEvent(IReservationBaseEvent):
     """ Event triggered when a reservation is denied. """

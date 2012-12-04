@@ -8,30 +8,32 @@ from datetime import datetime
 from seantis.reservation.tests import IntegrationTestCase
 
 from seantis.reservation.session import (
-        getUtility, 
-        ISessionUtility, 
-        serialized_call
-    )
+    getUtility,
+    ISessionUtility,
+    serialized_call
+)
 
 from seantis.reservation import Session
 from seantis.reservation.models import Allocation
 from seantis.reservation.error import (
-        DirtyReadOnlySession, 
-        ModifiedReadOnlySession,
-        TransactionRollbackError
-    )
+    DirtyReadOnlySession,
+    ModifiedReadOnlySession,
+    TransactionRollbackError
+)
+
 
 class SessionIds(Thread):
     def __init__(self):
         Thread.__init__(self)
         self.serial_id = None
         self.readonly_id = None
-    
+
     def run(self):
         util = getUtility(ISessionUtility)
 
         self.serial_id = id(util.sessionstore.serial)
         self.readonly_id = id(util.sessionstore.readonly)
+
 
 class ExceptionThread(Thread):
     def __init__(self, call):
@@ -42,10 +44,12 @@ class ExceptionThread(Thread):
     def run(self):
         try:
             self.call()
-            import time; time.sleep(1)
+            import time
+            time.sleep(1)
             transaction.commit()
         except Exception, e:
             self.exception = e
+
 
 def add_something(resource=None):
     resource = resource or uuid()
@@ -55,6 +59,7 @@ def add_something(resource=None):
     allocation.group = uuid()
 
     Session.add(allocation)
+
 
 class TestSession(IntegrationTestCase):
 
@@ -101,11 +106,11 @@ class TestSession(IntegrationTestCase):
 
     def test_dirty_protection(self):
 
-        Session.flush() # should not throw an exception
+        Session.flush()  # should not throw an exception
 
         serialized_call(lambda: None)()
 
-        Session.flush() # nothing happened, no exception
+        Session.flush()  # nothing happened, no exception
 
         serialized_call(add_something)()
 
@@ -119,7 +124,7 @@ class TestSession(IntegrationTestCase):
             transaction.commit()
 
         serialized_call(commit)()
-        
+
         try:
             def change_allocation():
                 allocation = Session.query(Allocation).one()
@@ -136,9 +141,10 @@ class TestSession(IntegrationTestCase):
 
             exceptions = (t1.exception, t2.exception)
 
-            is_rollback = lambda ex: ex and isinstance(ex.orig, TransactionRollbackError)
+            is_rollback = lambda ex: \
+                ex and isinstance(ex.orig, TransactionRollbackError)
             is_nothing = lambda ex: not is_rollback(ex)
-            
+
             rollbacks = filter(is_rollback, exceptions)
             updates = filter(is_nothing, exceptions)
 
@@ -161,7 +167,7 @@ class TestSession(IntegrationTestCase):
             transaction.commit()
 
         serialized_call(commit)()
-        
+
         try:
             def change_allocation():
                 allocation = Session.query(Allocation).one()
@@ -182,7 +188,8 @@ class TestSession(IntegrationTestCase):
 
             exceptions = (t1.exception, t2.exception)
 
-            is_rollback = lambda ex: ex and isinstance(ex.orig, TransactionRollbackError)
+            is_rollback = lambda ex: \
+                ex and isinstance(ex.orig, TransactionRollbackError)
             rollbacks = filter(is_rollback, exceptions)
 
             self.assertEqual(0, len(rollbacks))

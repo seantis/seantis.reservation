@@ -9,6 +9,7 @@ from seantis.reservation import utils
 from seantis.reservation.form import ReservationDataView
 from seantis.reservation.models import Reservation
 
+
 def translator(language):
     """ Returns a function which will return the translation for a given text
     in the once defined language.
@@ -19,6 +20,7 @@ def translator(language):
         return i18n.translate(text, target_language=language)
 
     return curried
+
 
 def dataset(resources, language):
     """ Takes a list of resources and returns a tablib dataset filled with
@@ -60,7 +62,7 @@ def dataset(resources, language):
             parent_title = resource.parent().title
         else:
             parent_title = None
-        
+
         for start, end in r.timespans():
             record = [
                 parent_title,
@@ -71,7 +73,9 @@ def dataset(resources, language):
                 end.strftime('%Y-%m-%d %H:%M'),
                 _(r.status.capitalize())
             ]
-            record.extend(additional_columns(r, dataheaders, dataview.display_info))
+            record.extend(
+                additional_columns(r, dataheaders, dataview.display_info)
+            )
 
             # translate the values in the record
             for i, col in enumerate(record):
@@ -88,6 +92,7 @@ def dataset(resources, language):
 
     return ds
 
+
 def fetch_records(resources):
     """ Returns the records used for the dataset. """
     query = Session.query(Reservation)
@@ -102,14 +107,18 @@ def fetch_records(resources):
 
     return query.all()
 
+
 def fieldkey(form, field):
     """ Returns the fieldkey for any given json data field + form. """
     return '%s.%s' % (form["desc"], field["desc"])
 
+
 def additional_headers(reservations):
-    """ Go through all reservations and build a list of all possible headers. """
+    """ Go through all reservations and build a list of all possible headers.
+
+    """
     formdata = [r.data.values() for r in reservations]
-    
+
     headers = []
     for forms in formdata:
         for form in forms:
@@ -118,17 +127,18 @@ def additional_headers(reservations):
                 # A set could be used here, but then a separate step for
                 # sorting would be needed
                 key = fieldkey(form, field)
-                if not key in headers: 
+                if not key in headers:
                     headers.append(key)
 
     return headers
 
-def additional_columns(reservation, headers, display_info=lambda x:x):
+
+def additional_columns(reservation, headers, display_info=lambda x: x):
     """ Given a reservation and the list of additional headers return a list
     of columns filled with either None or the value of the json data.
 
     The resulting list will always be of the same length as the given headers
-    list. 
+    list.
 
     """
     forms = reservation.data.values()

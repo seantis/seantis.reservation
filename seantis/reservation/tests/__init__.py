@@ -22,6 +22,7 @@ from seantis.reservation.testing import SQL_FUNCTIONAL_TESTING
 
 from Products.CMFCore.utils import getToolByName
 
+
 class TestCase(unittest.TestCase):
 
     def setUp(self):
@@ -37,7 +38,9 @@ class TestCase(unittest.TestCase):
         self.portal.email_from_address = 'noreply@example.com'
 
         # remove all test event subscribers
-        event.subscribers = [e for e in event.subscribers if type(e) != TestEventSubscriber]
+        event.subscribers = [
+            e for e in event.subscribers if type(e) != TestEventSubscriber
+        ]
         setuphandlers.dbsetup(None)
 
         self.logged_in = False
@@ -49,7 +52,9 @@ class TestCase(unittest.TestCase):
         self.portal.MailHost = self.portal._original_MailHost
         sm = getSiteManager(context=self.portal)
         sm.unregisterUtility(provided=IMailHost)
-        sm.registerUtility(aq_base(self.portal._original_MailHost), provided=IMailHost)
+        sm.registerUtility(
+            aq_base(self.portal._original_MailHost), provided=IMailHost
+        )
 
         util = getUtility(ISessionUtility)
         util.sessionstore.readonly.rollback()
@@ -72,7 +77,7 @@ class TestCase(unittest.TestCase):
 
         acl_users = getToolByName(self.portal, 'acl_users')
         acl_users.userFolderAddUser(username, password, ['Member'], [])
-        
+
         resource.manage_setLocalRoles(username, ['Reservation-Manager'])
 
         user = acl_users.getUser(username)
@@ -83,7 +88,7 @@ class TestCase(unittest.TestCase):
         # the email will be there after the next retrieval of the user
         user = acl_users.getUser(username)
         assert user.getProperty('email') == email
-        
+
         return username, password
 
     def logout(self):
@@ -91,7 +96,9 @@ class TestCase(unittest.TestCase):
         self.logged_in = False
 
     def create_resource(self):
-        return createContentInContainer(getSite(), 'seantis.reservation.resource')
+        return createContentInContainer(
+            getSite(), 'seantis.reservation.resource'
+        )
 
     def subscribe(self, eventclass):
         subscriber = TestEventSubscriber(eventclass)
@@ -101,6 +108,7 @@ class TestCase(unittest.TestCase):
     @property
     def mailhost(self):
         return self.portal.MailHost
+
 
 class TestEventSubscriber(object):
 
@@ -113,16 +121,18 @@ class TestEventSubscriber(object):
             self.event = event
 
     def was_fired(self):
-        return self.event != None
+        return self.event is not None
 
     def reset(self):
         self.event = None
-        
+
+
 class IntegrationTestCase(TestCase):
     layer = SQL_INTEGRATION_TESTING
 
     def setUp(self):
         super(IntegrationTestCase, self).setUp()
+
 
 class FunctionalTestCase(TestCase):
     layer = SQL_FUNCTIONAL_TESTING

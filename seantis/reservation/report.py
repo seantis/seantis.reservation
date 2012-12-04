@@ -1,7 +1,7 @@
 import json
 
 from calendar import Calendar
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 
 from five import grok
 from zope.interface import Interface
@@ -17,14 +17,16 @@ from seantis.reservation.reserve import ReservationUrls
 
 calendar = Calendar()
 
-class MonthlyReportView(grok.View, form.ReservationDataView, form.ResourceParameterView):
-    
+
+class MonthlyReportView(grok.View, form.ReservationDataView,
+                        form.ResourceParameterView):
+
     permission = 'seantis.reservation.ViewReservations'
-    
+
     grok.require(permission)
 
     grok.context(Interface)
-    grok.name('monthly_report') # note that this text is copied in utils.py
+    grok.name('monthly_report')  # note that this text is copied in utils.py
 
     template = grok.PageTemplateFile('templates/monthly_report.pt')
 
@@ -57,12 +59,18 @@ class MonthlyReportView(grok.View, form.ReservationDataView, form.ResourceParame
     @property
     @view.memoize
     def min_hour(self):
-        return min((r.first_hour for r in self.resources.values() if hasattr(r, 'first_hour')))
+        return min(
+            (r.first_hour for r in self.resources.values()
+                if hasattr(r, 'first_hour'))
+        )
 
     @property
     @view.memoize
     def max_hour(self):
-        return max((r.last_hour for r in self.resources.values() if hasattr(r, 'last_hour')))
+        return max(
+            (r.last_hour for r in self.resources.values()
+                if hasattr(r, 'last_hour'))
+        )
 
     @property
     @view.memoize
@@ -92,7 +100,7 @@ class MonthlyReportView(grok.View, form.ReservationDataView, form.ResourceParame
             month = 1
         else:
             month += 1
-        
+
         return self.build_url(year, month)
 
     def backward_url(self):
@@ -108,15 +116,20 @@ class MonthlyReportView(grok.View, form.ReservationDataView, form.ResourceParame
 
     @property
     def title(self):
-        return _(u'Monthly Report for ${month} ${year}', mapping={
-                'month': utils.month_name(self.context, self.request, self.month),
+        return _(
+            u'Monthly Report for ${month} ${year}',
+            mapping={
+                'month': utils.month_name(
+                    self.context, self.request, self.month
+                ),
                 'year': self.year
-            })
+            }
+        )
 
     def format_day(self, day):
         daydate = date(self.year, self.month, day)
-        weekday = utils.weekdayname_abbr(self.context, self.request, 
-            utils.shift_day(daydate.weekday())
+        weekday = utils.weekdayname_abbr(
+            self.context, self.request, utils.shift_day(daydate.weekday())
         )
         return weekday + daydate.strftime(', %d. %m')
 
@@ -135,9 +148,11 @@ class MonthlyReportView(grok.View, form.ReservationDataView, form.ResourceParame
     @view.memoize
     def data_macro_path(self):
         resource = self.resources[self.uuids[0]]
-        url = resource.absolute_url() + '/@@reservations/macros/reservation_data'
+        url = resource.absolute_url() + \
+            '/@@reservations/macros/reservation_data'
 
         return url.replace(self.context.absolute_url(), 'context')
+
 
 def monthly_report(year, month, resources):
 
@@ -161,8 +176,8 @@ def monthly_report(year, month, resources):
         day = d.day
         last_day = max(last_day, day)
         report[day] = utils.OrderedDict()
-        
-        for uuid in ordered_uuids:    
+
+        for uuid in ordered_uuids:
             report[day][uuid] = dict()
             report[day][uuid][u'title'] = titles[uuid]
             report[day][uuid][u'approved'] = list()
@@ -204,6 +219,7 @@ def monthly_report(year, month, resources):
         return json.dumps([dict(start=start, end=end)])
 
     used_days = dict([(i, False) for i in range(1, 32)])
+
     def add_reservation(start, end, reservation):
         day = start.day
 
@@ -214,20 +230,32 @@ def monthly_report(year, month, resources):
 
         context = resources[utils.string_uuid(reservation.resource)]
         if reservation.status == u'approved':
-            urls = [(_(u'Delete'), reservation_urls.remove_all_url(reservation.token, context))]
+            urls = [(
+                _(u'Delete'),
+                reservation_urls.remove_all_url(reservation.token, context)
+            )]
         elif reservation.status == u'pending':
             urls = [
-                (_(u'Approve'), reservation_urls.approve_all_url(reservation.token, context)),
-                (_(u'Deny'), reservation_urls.deny_all_url(reservation.token, context)),
+                (
+                    _(u'Approve'),
+                    reservation_urls.approve_all_url(
+                        reservation.token, context
+                    )
+                ),
+                (
+                    _(u'Deny'),
+                    reservation_urls.deny_all_url(reservation.token, context)
+                ),
             ]
         else:
             raise NotImplementedError
 
-        report[day][utils.string_uuid(reservation.resource)][reservation.status].append(
+        report[day][utils.string_uuid(reservation.resource)]
+        [reservation.status].append(
             dict(
-                start=start, 
-                end=end, 
-                email=reservation.email, 
+                start=start,
+                end=end,
+                email=reservation.email,
                 data=reservation.data,
                 timespans=json_timespans(start, end),
                 urls=urls,

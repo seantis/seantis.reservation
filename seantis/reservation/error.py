@@ -4,8 +4,10 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from seantis.reservation import _
 
+
 class ReservationError(Exception):
     pass
+
 
 class OverlappingAllocationError(ReservationError):
 
@@ -14,47 +16,59 @@ class OverlappingAllocationError(ReservationError):
         self.end = end
         self.existing = existing
 
+
 class AffectedReservationError(ReservationError):
 
     def __init__(self, existing):
         self.existing = existing
 
+
 class AffectedPendingReservationError(AffectedReservationError):
     pass
+
 
 class AlreadyReservedError(ReservationError):
     pass
 
+
 class DirtyReadOnlySession(ReservationError):
     pass
+
 
 class ModifiedReadOnlySession(ReservationError):
     pass
 
+
 class NotReservableError(ReservationError):
     pass
+
 
 class ReservationTooLong(ReservationError):
     pass
 
+
 class ThrottleBlock(ReservationError):
     pass
+
 
 class ReservationParametersInvalid(ReservationError):
     pass
 
+
 class FullWaitingList(ReservationError):
     pass
 
+
 class InvalidReservationToken(ReservationError):
     pass
+
 
 class InvalidReservationError(ReservationError):
     pass
 
 errormap = {
 
-    OverlappingAllocationError: 
+    OverlappingAllocationError:
     _(u'A conflicting allocation exists for the requested time period.'),
 
     AffectedReservationError:
@@ -70,10 +84,12 @@ errormap = {
     _(u'The item does no longer exist.'),
 
     AlreadyReservedError:
-    _(u'The requested period is no longer available and there is no waiting list.'),
+    _(u'The requested period is no longer available and there is no waiting '
+      u'list.'),
 
     IntegrityError:
-    _(u'Invalid change. Your request may have already been processed earlier.'),
+    _(u'Invalid change. Your request may have already been processed '
+      u'earlier.'),
 
     NotReservableError:
     _(u'No reservable slot found.'),
@@ -82,13 +98,15 @@ errormap = {
     _(u"Reservations can't be made for more than 24 hours at a time"),
 
     ThrottleBlock:
-    _(u'Too many reservations in a short time. Wait for a moment before trying again.'),
+    _(u'Too many reservations in a short time. Wait for a moment before '
+      u'trying again.'),
 
     ReservationParametersInvalid:
     _(u'The given reservation paramters are invalid.'),
 
     FullWaitingList:
-    _(u'The requested period is no longer available and the waiting list is full.'),
+    _(u'The requested period is no longer available and the waiting list is '
+      u'full.'),
 
     InvalidReservationToken:
     _(u'The given reservation token is invalid.'),

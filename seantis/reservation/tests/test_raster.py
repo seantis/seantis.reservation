@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from seantis.reservation.tests import IntegrationTestCase
 
@@ -6,6 +6,7 @@ from seantis.reservation.raster import rasterize_start
 from seantis.reservation.raster import rasterize_end
 from seantis.reservation.raster import iterate_span
 from seantis.reservation.raster import VALID_RASTER_VALUES
+
 
 class TestRaster(IntegrationTestCase):
 
@@ -30,7 +31,7 @@ class TestRaster(IntegrationTestCase):
         rastered = rasterize_end(end, 15)
 
         self.assertEqual(rastered.minute, 59)
-        self.assertEqual(rastered.hour, end.hour-1)
+        self.assertEqual(rastered.hour, end.hour - 1)
 
     def test_iterator(self):
         start = datetime(2011, 1, 1, 0)
@@ -38,4 +39,4 @@ class TestRaster(IntegrationTestCase):
 
         for raster in VALID_RASTER_VALUES:
             results = list(iterate_span(start, end, raster))
-            self.assertEqual(len(results), 24*60/raster)
+            self.assertEqual(len(results), 24 * 60 / raster)

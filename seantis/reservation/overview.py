@@ -5,13 +5,13 @@ from five import grok
 from zope.interface import Interface
 from plone.uuid.interfaces import IUUID
 from plone.memoize import view
-from zope.security import checkPermission
 
 from seantis.reservation.resource import CalendarRequest
 from seantis.reservation import utils
 from seantis.reservation import db
 from seantis.reservation import exposure
 from seantis.reservation.interfaces import OverviewletManager, IOverview
+
 
 class Overviewlet(grok.Viewlet):
     grok.context(Interface)
@@ -20,7 +20,7 @@ class Overviewlet(grok.Viewlet):
     grok.viewletmanager(OverviewletManager)
     grok.order(1)
 
-    overview_id = "seantis-overview-calendar";
+    overview_id = "seantis-overview-calendar"
 
     _template = u"""\
         <script type="text/javascript">
@@ -36,10 +36,10 @@ class Overviewlet(grok.Viewlet):
     @view.memoize
     def uuidmap(self):
         uuids = {}
-        
+
         for item in self.view.items:
             for resource in item.resources():
-                uuids[utils.string_uuid(IUUID(resource))] = item.id 
+                uuids[utils.string_uuid(IUUID(resource))] = item.id
 
         return uuids
 
@@ -72,15 +72,16 @@ class Overviewlet(grok.Viewlet):
             return ''
 
         return self._template % {
-                "id": self.overview_id, 
-                "options": self.calendar_options()
-            }
+            "id": self.overview_id,
+            "options": self.calendar_options()
+        }
+
 
 class Overview(grok.View, CalendarRequest):
     grok.context(Interface)
     grok.name('overview')
     grok.require('zope2.View')
-    
+
     def uuids(self):
         # The uuids are transmitted by the fullcalendar call, which seems to
         # mangle the the uuid options as follows:
@@ -125,6 +126,7 @@ class Overview(grok.View, CalendarRequest):
 
         return events
 
+
 class Utilsviewlet(grok.Viewlet):
     grok.context(Interface)
     grok.name('seantis.reservation.utilslet')
@@ -145,7 +147,7 @@ class Utilsviewlet(grok.Viewlet):
 
         for item in self.view.items:
             resources.extend(item.resources())
-        
+
         return resources
 
     @property
@@ -159,6 +161,7 @@ class Utilsviewlet(grok.Viewlet):
         )
 
     def reservations_export_link(self, extension):
-        return utils.export_link('reservations', 
-            extension, self.context, self.request, self.resources
+        return utils.export_link(
+            'reservations', extension, self.context, self.request,
+            self.resources
         )

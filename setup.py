@@ -11,9 +11,9 @@ setup(name='seantis.reservation',
       # Get more strings from
       # http://pypi.python.org/pypi?:action=list_classifiers
       classifiers=[
-        "Framework :: Plone",
-        "Programming Language :: Python",
-        ],
+          "Framework :: Plone",
+          "Programming Language :: Python",
+      ],
       keywords='Reservation, Calendar, Zug, Seantis',
       author='Seantis GmbH',
       author_email='info@seantis.ch',

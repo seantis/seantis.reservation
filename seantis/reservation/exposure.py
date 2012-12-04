@@ -3,10 +3,12 @@ from uuid import UUID
 from zope.security import checkPermission
 from zope.component import getMultiAdapter
 
-from seantis.reservation.utils import is_uuid, get_resource_by_uuid, string_uuid
+from seantis.reservation.utils import is_uuid, get_resource_by_uuid
+from seantis.reservation.utils import string_uuid
 from seantis.reservation.timeframe import timeframes_by_context
 
 from plone.uuid.interfaces import IUUID
+
 
 def for_allocations(context, resources):
     """Returns a function which takes an allocation and returns true if the
@@ -30,8 +32,10 @@ def for_allocations(context, resources):
     for uuid, resource in resource_objects.items():
 
         # Don't load the timeframes of the resources for which the user has
-        # special access to. This way they won't get checked later in 'is_exposed'
-        if checkPermission('seantis.reservation.ViewHiddenAllocations', resource):
+        # special access to. This way they won't get checked later in
+        # 'is_exposed'
+        if checkPermission(
+                'seantis.reservation.ViewHiddenAllocations', resource):
             timeframes[uuid] = []
         else:
             timeframes[uuid] = timeframes_by_context(resource)
@@ -56,6 +60,7 @@ def for_allocations(context, resources):
 
     return is_exposed
 
+
 def for_views(context, request):
     """Returns a function which takes a viewname and returns true if the user
     has the right to see the view.
@@ -68,10 +73,11 @@ def for_views(context, request):
     def is_exposed(viewname):
         view = get_view(viewname)
         assert hasattr(view, 'permission'), "missing permission attribute"
-        
+
         return checkPermission(view.permission, view)
 
     return is_exposed
+
 
 def for_calendar(resource):
     """Returns a function which takes a calendar option and returns true
@@ -80,8 +86,8 @@ def for_calendar(resource):
     """
 
     option_permissions = {
-        'selectable': 'cmf.AddPortalContent', # drag and drop creation
-        'editable': 'cmf.ModifyPortalContent', # drag and drop resizing
+        'selectable': 'cmf.AddPortalContent',  # drag and drop creation
+        'editable': 'cmf.ModifyPortalContent',  # drag and drop resizing
     }
 
     # right now there's nothing sophisticated to see here
@@ -92,6 +98,7 @@ def for_calendar(resource):
             return False
 
     return is_exposed
+
 
 def for_resources(resources):
     """Returns a function which takes a resource (object or uuid) and
@@ -113,6 +120,7 @@ def for_resources(resources):
 
     return is_exposed
 
+
 def limit_resources(resources):
     """Given a list of resources or a dictionary with uuid -> resources,
     this function will return the subset of the argument depending on the
@@ -128,7 +136,7 @@ def limit_resources(resources):
         resdict = dict(((IUUID(r), r) for r in resources))
     else:
         resdict = resources
-    
+
     is_exposed = for_resources(resdict.values())
 
     to_remove = []

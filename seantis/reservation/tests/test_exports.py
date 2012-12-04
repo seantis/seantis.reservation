@@ -4,7 +4,8 @@ from datetime import datetime
 from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation import utils
 from seantis.reservation.session import serialized
-from seantis.reservation import exports    
+from seantis.reservation import exports
+
 
 class TestExports(IntegrationTestCase):
 
@@ -21,8 +22,9 @@ class TestExports(IntegrationTestCase):
 
         reservation_email = u'test@example.com'
         sc.allocate(dates, approve=False, quota=2)[0]
-        
-        token1 = sc.reserve(reservation_email, dates, 
+
+        token1 = sc.reserve(
+            reservation_email, dates,
             data=utils.mock_data_dictionary(
                 {
                     'stop': u'hammertime!',
@@ -31,7 +33,8 @@ class TestExports(IntegrationTestCase):
             )
         )
 
-        token2 = sc.reserve(reservation_email, dates, 
+        token2 = sc.reserve(
+            reservation_email, dates,
             data=utils.mock_data_dictionary(
                 {
                     'never': u'gonna',
@@ -39,8 +42,10 @@ class TestExports(IntegrationTestCase):
                 }
             )
         )
-            
-        dataset = exports.reservations.dataset({resource.uuid():resource}, 'en')
+
+        dataset = exports.reservations.dataset(
+            {resource.uuid(): resource}, 'en'
+        )
 
         self.assertEqual(len(dataset), 2)
         self.assertEqual(len(dataset.headers), 7 + 4)
