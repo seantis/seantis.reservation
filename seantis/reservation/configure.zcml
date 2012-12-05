@@ -73,6 +73,15 @@ No longer in use, left as an example
     profile="seantis.reservation:default">
 </genericsetup:upgradeStep> -->
 
+<genericsetup:upgradeStep
+    title="Adds 'session_id column' to 'reservations' SQL DB table"
+    description=""
+    source="*"
+    destination="1001"
+    handler=".upgrades.upgrade_to_1001"
+    profile="seantis.reservation:default">
+</genericsetup:upgradeStep>
+
 <!-- Controlpanel View -->
 <browser:page
     for="plone.app.layout.navigation.interfaces.INavigationRoot"

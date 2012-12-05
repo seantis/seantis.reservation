@@ -69,6 +69,10 @@ class Reservation(TimestampMixin, ORMBase, OtherModels):
         nullable=False
     )
 
+    session_id = Column(
+        customtypes.GUID()
+    )
+
     __table_args__ = (
         Index('target_status_ix', 'status', 'target', 'id'),
     )

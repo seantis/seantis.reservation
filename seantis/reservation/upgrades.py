@@ -1,11 +1,15 @@
-# from sqlalchemy import create_engine
+from zope.component import getUtility
+from sqlalchemy import create_engine
+from sqlalchemy import types
+from sqlalchemy import MetaData
+from sqlalchemy import Table
+from sqlalchemy.schema import Column
+from alembic.migration import MigrationContext
+from alembic.operations import Operations
 
-# from alembic.migration import MigrationContext
-# from alembic.operations import Operations
-# from alembic.autogenerate import compare_metadata
+from seantis.reservation.models import customtypes
+from seantis.reservation.session import ISessionUtility
 
-# from seantis.reservation import ORMBase
-# from seantis.reservation import utils
 
 def upgrade_1_to_1000(setuptools):
     """ Upgrades seantis.reservation, adding modified and created dates to
@@ -17,7 +21,7 @@ def upgrade_1_to_1000(setuptools):
     """
 
     #####################
-    """ 
+    """
     No longer in use, needs to be rewritten to take into account that the
     session util now carries more than one database connection.
 
@@ -39,7 +43,9 @@ def upgrade_1_to_1000(setuptools):
 
     ""
     # DO NOT USE utils.get_config('dsn') here!!!!
-    # engine = create_engine(utils.get_config('dsn'), isolation_level='SERIALIZABLE')
+    # engine = create_engine(
+    #    utils.get_config('dsn'), isolation_level='SERIALIZABLE'
+    # )
     ""
 
     # connection = engine.connect()
@@ -55,9 +61,38 @@ def upgrade_1_to_1000(setuptools):
     #     for method, table, col in diff:
     #         assert method == 'add_column' #only works with this method!
     #         getattr(op, method)(table, col.copy())
-    
+
     #     trans.commit()
 
     # except:
     #     trans.rollback()
     #     raise
+
+
+def upgrade_to_1001(context):
+
+    util = getUtility(ISessionUtility)
+    dsn = util.get_dsn(context)
+
+    engine = create_engine(dsn, isolation_level='SERIALIZABLE')
+    connection = engine.connect()
+    trans = connection.begin()
+    try:
+        context = MigrationContext.configure(connection)
+        op = Operations(context)
+
+        # Check whether column exists already (happens when several plone sites
+        # share the same SQL DB and this upgrade step is run in each one)
+        metadata = MetaData(bind=engine)
+        reservations_table = Table('reservations', metadata, autoload=True)
+        if 'session_id' not in reservations_table.columns:
+            op.add_column(
+                'reservations',
+                Column('session_id', customtypes.GUID())
+            )
+
+            trans.commit()
+
+    except:
+        trans.rollback()
+        raise
