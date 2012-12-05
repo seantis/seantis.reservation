@@ -1,5 +1,9 @@
-if (!this.seantis) this.seantis = {};
-if (!this.seantis.calendars) this.seantis.calendars = [];
+if (!this.seantis) {
+    this.seantis = {};
+}
+if (!this.seantis.calendars) {
+    this.seantis.calendars = [];
+}
 
 seantis.calendars.defaults = {
     timeFormat: 'HH:mm{ - HH:mm}',
@@ -12,9 +16,9 @@ seantis.calendars.defaults = {
     titleFormat: {
         month: 'MMMM yyyy',
         week: '',
-        day: '',
+        day: ''
     },
-    firstDay: 1,
+    firstDay: 1
 };
 
 // Keeps a list of event elements and the event group to which they belong to
@@ -23,8 +27,9 @@ var CalendarGroups = function() {
 
     // add a group and its element
     this.add = function(group, element) {
-        if (_.isUndefined(group) || _.isEmpty(group))
+        if (_.isUndefined(group) || _.isEmpty(group)) {
             return;
+        }
 
         groups.push({group:group, element:element});
     };
@@ -37,7 +42,7 @@ var CalendarGroups = function() {
 
     // empty the list
     this.clear = function() {
-        groups.length = 0;  
+        groups.length = 0;
     };
 };
 
@@ -45,7 +50,9 @@ var CalendarGroups = function() {
     $(document).ready(function() {
 
         // only run if there are any calendars
-        if (!seantis.calendars.length) return;
+        if (!seantis.calendars.length) {
+            return;
+        }
 
         // initializes all calendars on the site
         var init = function() {
@@ -60,7 +67,7 @@ var CalendarGroups = function() {
                 calendar.is_moving = false;
                 
                 // refetch the calendar events
-                calendar.refetch = function() { 
+                calendar.refetch = function() {
                     calendar.element.fullCalendar('refetchEvents');
                 };
 
@@ -76,7 +83,9 @@ var CalendarGroups = function() {
                             window.seantis_inline.fetch();
                         }
 
-                        if (onclose) _.defer(onclose);
+                        if (onclose) {
+                            _.defer(onclose);
+                        }
                     };
 
                     var before_load = function() {
@@ -107,21 +116,21 @@ var CalendarGroups = function() {
                             var result = $(filter, $(data));
 
                             // add a close button in front of the result
-                            var close = '<div id="inlineClose"></div>\
-                                         <div style="clear:both;"></div>';
+                            var close = '<div id="inlineClose"></div>' +
+                                        '<div style="clear:both;"></div>';
 
                             target.html(close + result.html());
 
                             // hookup the close button
                             target.find('#inlineClose').click(function() {
-                               target.html(''); 
+                               target.html('');
                                window.seantis_inline = null;
                             });
 
                             // setup all links with overlays
                             $.each($('a', target), function(ix, link) {
 
-                                calendar.overlay_init($(link)); 
+                                calendar.overlay_init($(link));
 
                             });
 
@@ -131,14 +140,16 @@ var CalendarGroups = function() {
                             
                             groups.mouseenter(function() {
                                 var group = $(this).attr('data-group');
-                                if (!_.isEmpty(group))
+                                if (!_.isEmpty(group)) {
                                     calendar.highlight_group(group, true);
+                                }
                             });
 
                             groups.mouseleave(function() {
                                 var group = $(this).attr('data-group');
-                                if (!_.isEmpty(group))
+                                if (!_.isEmpty(group)) {
                                     calendar.highlight_group(group, false);
+                                }
                             });
 
                             // hide loading gif
@@ -147,7 +158,7 @@ var CalendarGroups = function() {
                     };
 
                     element.click(function(event) {
-                        window.seantis_inline = { 
+                        window.seantis_inline = {
                             fetch: fetch
                         };
                         fetch();
@@ -158,7 +169,7 @@ var CalendarGroups = function() {
 
                 calendar.highlight_group = function(group, highlight) {
                     _.each(calendar.groups.find(group), function(el) {
-                        el.toggleClass('groupSelection', highlight);  
+                        el.toggleClass('groupSelection', highlight);
                     });
                 };
 
@@ -209,7 +220,7 @@ var CalendarGroups = function() {
         };
 
         var render_event = function(event, element, calendar) {
-            // Don't perform the following operations immediatly, but 
+            // Don't perform the following operations immediatly, but
             // only once the ui thread is idle
             _.defer(function() {
                 // Cache the element with the group for later usage
@@ -222,8 +233,9 @@ var CalendarGroups = function() {
                 render_partitions(event, element, calendar);
 
                 // Init overlay for the click on the event
-                if (seantis.contextmenu.simple(event))
+                if (seantis.contextmenu.simple(event)) {
                     calendar.overlay_init(element);
+                }
             });
         };
 
@@ -255,7 +267,7 @@ var CalendarGroups = function() {
             var calendar = cal;
 
             var add = function(start, end, allDay) {
-                add_event(start, end, allDay, calendar);  
+                add_event(start, end, allDay, calendar);
             };
 
             var move = function(event) {
@@ -305,7 +317,7 @@ var CalendarGroups = function() {
                 eventDragStart: function(event) { event.is_moving = true; }
             };
 
-            // Merge the options with the ones defined by the resource view as 
+            // Merge the options with the ones defined by the resource view as
             // well as with the defaults
             $.extend(options, seantis.locale.fullcalendar());
             $.extend(options, seantis.calendars.defaults);
@@ -318,7 +330,7 @@ var CalendarGroups = function() {
         var all_calendars = function(originid, fn, arg) {
             _.each(seantis.calendars, function(calendar) {
                 if (calendar.id !== originid) {
-                    calendar.element.fullCalendar(fn, arg); 
+                    calendar.element.fullCalendar(fn, arg);
                 }
             });
         };
@@ -355,8 +367,8 @@ var CalendarGroups = function() {
                     var arg = synced_buttons[button][1];
                     
                     $(button, element).click(function() {
-                        all_calendars(id, fn, arg); 
-                    }); 
+                        all_calendars(id, fn, arg);
+                    });
                 });
 
                 //sync scrolling
@@ -366,7 +378,7 @@ var CalendarGroups = function() {
                 var block = $('div > div > div > div', calendar.element);
                 
                 block.scroll(function() {
-                    scroll_calendars(id, block.scrollTop(), block.scrollLeft()); 
+                    scroll_calendars(id, block.scrollTop(), block.scrollLeft());
                 });
 
             });
