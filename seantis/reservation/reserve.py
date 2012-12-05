@@ -32,6 +32,7 @@ from seantis.reservation.error import NoResultFound
 
 
 class ReservationUrls(object):
+    """ Mixin class to create admin URLs for a specific reservation. """
 
     def remove_all_url(self, token, context=None):
         context = context or self.context
@@ -50,6 +51,10 @@ class ReservationUrls(object):
 
 
 class ReservationSchemata(object):
+    """ Mixin class to get additional fields to be shown on reservation forms.
+        (e.g., additional contact informations).
+
+    """
 
     @property
     def additionalSchemata(self):
@@ -213,6 +218,7 @@ class GroupReservationForm(ResourceBaseForm, AllocationGroupView,
 
 class ReservationDecisionForm(ResourceBaseForm, ReservationListView,
                               ReservationUrls):
+    """ Base class for admin's approval / denial forms. """
 
     grok.baseclass()
 
