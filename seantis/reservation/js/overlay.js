@@ -16,8 +16,9 @@ var reservation_overlay_init = null;
             return !_.isEmpty($.trim($(m).find('dd').text()));
         });
 
-        if (!messages.length)
+        if (!messages.length) {
             return {};
+        }
 
         messages = $(messages);
         
@@ -36,8 +37,9 @@ var reservation_overlay_init = null;
 
     // call with the result of get_popup_messages to show / hide
     var show_popup_messages = function(get_result) {
-        if (!get_result)
+        if (!get_result) {
             return;
+        }
 
         setTimeout(get_result.show, 0);
         setTimeout(get_result.hide, 4000);
@@ -126,19 +128,23 @@ var reservation_overlay_init = null;
         // script tags from the forms which results in calendar widgets
         // not showing up
 
-        // this function tries to compensate for that by parsing the 
+        // this function tries to compensate for that by parsing the
         // plain html code for those tags and executing them using eval
 
         // this is horribly hackish and somewhat insecure (if the user
         // is able to add his own script tags to a document, which he shouldn't)
 
         // I must confess though that it was way more fun to write than it should
-        // have been... 
+        // have been...
         
         // only do it on whitelisted forms
         var whitelisted = false;
-        if (/kssattr-formname-allocate/gi.test(responseText)) whitelisted = true;
-        if (/kssattr-formname-@@edit/gi.test(responseText)) whitelisted = true;
+        if (/kssattr-formname-allocate/gi.test(responseText)) {
+            whitelisted = true;
+        }
+        if (/kssattr-formname-@@edit/gi.test(responseText)) {
+            whitelisted = true;
+        }
 
         if (!whitelisted) {
             return;
@@ -152,13 +158,13 @@ var reservation_overlay_init = null;
             try {
                 eval(matches[1]);
             } catch (e) {}
-        }    
+        }
     };
 
     $(document).ready(function() {
         $(document).bind('formOverlayLoadSuccess', function(e, overlay, form, api, pb, ajax_parent) {
             $(document).trigger('seantis.formload_success', [ajax_parent, form]);
-        }); 
+        });
         $(document).bind('formOverlayLoadFailure', function(e, overlay, form, api, pb, ajax_parent) {
             $(document).trigger('seantis.formload_failure', [ajax_parent, form]);
         });
