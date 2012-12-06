@@ -7,7 +7,10 @@ from zope.component import queryUtility
 
 from z3c.form import field
 from z3c.form import button
+from z3c.form.browser.radio import RadioFieldWidget
+from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
+from zope.schema import Choice, List
 
 from seantis.reservation.throttle import throttled
 from seantis.reservation.interfaces import (
@@ -52,8 +55,11 @@ class ReservationUrls(object):
 
 
 class ReservationSchemata(object):
-    """ Mixin class to get additional fields to be shown on reservation forms.
-        (e.g., additional contact informations).
+    """ Mixin to use with plone.autoform and IResourceBase which makes the
+    form it is used on display the formsets defined by the user.
+
+    A formset is a Dexterity Type defined through the admin interface or
+    code which has the behavior IReservationFormset.
 
     """
 
@@ -194,6 +200,30 @@ class ReservationForm(ResourceBaseForm, ReservationSchemata):
     @button.buttonAndHandler(_(u'Cancel'))
     def cancel(self, action):
         self.redirect_to_context()
+
+    def customize_fields(self, fields):
+        """ This function is called by ResourceBaseForm every time fields are
+        created from the schema by z3c. This allows for changes before the
+        fields are properly integrated into the form.
+
+        Here, we want to make sure that all formset schemas have sane widgets.
+
+        """
+
+        for field in fields.values():
+
+            field_type = type(field.field)
+
+            if field_type is List:
+                field.widgetFactory = CheckBoxFieldWidget
+
+            elif field_type is Choice:
+                field.widgetFactory = RadioFieldWidget
+
+    def updateActions(self):
+        """ Ensure that the 'Reserve' Button has the context css class. """
+        super(ReservationForm, self).updateActions()
+        self.actions['reserve'].addClass("context")
 
 
 class GroupReservationForm(ResourceBaseForm, AllocationGroupView,
