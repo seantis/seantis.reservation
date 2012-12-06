@@ -21,6 +21,7 @@ from seantis.reservation.interfaces import (
 from seantis.reservation.error import DirtyReadOnlySession
 from seantis.reservation import _
 from seantis.reservation import utils
+from seantis.reservation import plone_session
 from seantis.reservation.form import (
     ResourceBaseForm,
     AllocationGroupView,
@@ -71,6 +72,27 @@ class ReservationSchemata(object):
 
         return scs
 
+    def email(self, form_data=None):
+        email = plone_session.get_email(self.context)
+        if email is None and form_data is not None:
+            email = form_data['email']
+            plone_session.set_email(self.context, email)
+        return email
+
+    def additional_data(self, form_data=None):
+        additional_data = plone_session.get_additional_data(self.context)
+        if additional_data is None and form_data is not None:
+            additional_data = utils.additional_data_dictionary(
+                form_data, self.fti
+            )
+            plone_session.set_additional_data(
+                self.context, additional_data
+            )
+        return additional_data
+
+    def session_id(self):
+        return plone_session.get_session_id(self.context)
+
 
 class ReservationForm(ResourceBaseForm, ReservationSchemata):
     permission = 'seantis.reservation.SubmitReservation'
@@ -97,6 +119,16 @@ class ReservationForm(ResourceBaseForm, ReservationSchemata):
             pass
 
         return disabled
+
+    def updateFields(self):
+        self.form.groups = []
+        if self.email() is not None:
+            self.fields = self.fields.omit('email')
+
+        if self.additional_data() is not None:
+            return
+
+        ResourceBaseForm.updateFields(self)
 
     def defaults(self, **kwargs):
         return dict(id=self.id)
@@ -140,12 +172,14 @@ class ReservationForm(ResourceBaseForm, ReservationSchemata):
         autoapprove = not self.allocation(data['id']).approve
 
         def reserve():
-            email = data['email']
-            additional_data = utils.additional_data_dictionary(
-                data, self.fti
-            )
+
+            email = self.email(data)
+            additional_data = self.additional_data(data)
+            session_id = self.session_id()
+
             token = self.scheduler.reserve(
-                email, (start, end), data=additional_data
+                email, (start, end), data=additional_data,
+                session_id=session_id
             )
 
             if autoapprove:
@@ -193,13 +227,13 @@ class GroupReservationForm(ResourceBaseForm, AllocationGroupView,
             .first().approve
 
         def reserve():
-            email = data['email']
-            additional_data = utils.additional_data_dictionary(
-                data, self.fti
-            )
+            email = self.email(data)
+            additional_data = self.additional_data(data)
+            session_id = self.session_id()
 
             token = sc.reserve(
-                email, group=data['group'], data=additional_data
+                email, group=data['group'], data=additional_data,
+                session_id=session_id,
             )
 
             if autoapprove:

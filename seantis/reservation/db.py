@@ -603,7 +603,8 @@ class Scheduler(object):
                 Session.delete(allocation)
 
     @serialized
-    def reserve(self, email, dates=None, group=None, data=None):
+    def reserve(self, email, dates=None, group=None, data=None,
+                session_id=None):
         """ First step of the reservation.
 
         Seantis.reservation uses a two-step reservation process. The first
@@ -674,6 +675,7 @@ class Scheduler(object):
             reservation.target_type = u'group'
             reservation.resource = self.uuid
             reservation.data = data
+            reservation.session_id = session_id
             reservation.email = email
             Session.add(reservation)
         else:
@@ -698,6 +700,7 @@ class Scheduler(object):
                     reservation.target_type = u'allocation'
                     reservation.resource = self.uuid
                     reservation.data = data
+                    reservation.session_id = session_id
                     reservation.email = email
                     Session.add(reservation)
 
