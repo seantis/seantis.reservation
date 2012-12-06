@@ -198,9 +198,12 @@ class ResourceBaseForm(GroupForm, form.Form):
             return
 
         for prefix, group, schema in self.additionalSchemata:
-            z3cutils.add(
-                self.form, field.Fields(schema, prefix=prefix), group=group
-            )
+            fields = field.Fields(schema, prefix=prefix)
+
+            if hasattr(self, 'customize_fields'):
+                self.customize_fields(fields)
+
+            z3cutils.add(self.form, fields, group=group)
 
     def update(self, **kwargs):
         self.updateFields()
