@@ -50,6 +50,13 @@ class ReservationUrls(object):
 
 
 class ReservationSchemata(object):
+    """ Mixin to use with plone.autoform and IResourceBase which makes the
+    form it is used on display the formsets defined by the user.
+
+    A formset is a Dexterity Type defined through the admin interface or
+    code which has the behavior IReservationFormset.
+
+    """
 
     @property
     def additionalSchemata(self):
