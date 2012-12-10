@@ -46,8 +46,6 @@ class SqlLayer(PloneSandboxLayer):
             context=configurationContext
         )
 
-        z2.installProduct(app, 'seantis.reservation')
-
     def setUpPloneSite(self, portal):
 
         quickInstallProduct(portal, 'plone.app.dexterity')
