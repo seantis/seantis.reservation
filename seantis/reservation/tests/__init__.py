@@ -8,6 +8,7 @@ from Acquisition import aq_base
 from zope.component import getSiteManager
 from Products.CMFPlone.tests.utils import MockMailHost
 from Products.MailHost.interfaces import IMailHost
+from Testing import ZopeTestCase as ztc
 
 from plone.dexterity.utils import createContentInContainer
 from plone.app.testing import TEST_USER_NAME, TEST_USER_ID
@@ -127,11 +128,18 @@ class TestEventSubscriber(object):
         self.event = None
 
 
+class Session(dict):
+    def set(self, key, value):
+        self[key] = value
+
+
 class IntegrationTestCase(TestCase):
     layer = SQL_INTEGRATION_TESTING
 
     def setUp(self):
         super(IntegrationTestCase, self).setUp()
+        # Set up sessioning objects
+        ztc.utils.setupCoreSessions(self.app)
 
 
 class FunctionalTestCase(TestCase):
