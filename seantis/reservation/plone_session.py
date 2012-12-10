@@ -1,10 +1,11 @@
 import uuid
 from zope.site.hooks import getSite
+from Products.CMFCore.utils import getToolByName
 
 
 def get_session(context, key):
     """Gets the key from the session."""
-    session_manager = context.session_data_manager
+    session_manager = getToolByName(context, 'session_data_manager')
 
     if not session_manager.hasSessionData():
         return None
@@ -19,7 +20,7 @@ def get_session(context, key):
 
 def set_session(context, key, value):
     """Stores the given value with the key in the session."""
-    session_manager = context.session_data_manager
+    session_manager = getToolByName(context, 'session_data_manager')
     session = session_manager.getSessionData()
     session[key] = value
 
