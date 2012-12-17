@@ -1,0 +1,28 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="seantis.reservation"
+>
+
+<body>
+<metal:main fill-slot="main">
+<tal:main-macro metal:define-macro="main">
+
+<h1>My reservations</h1>
+
+<ul>
+	<li tal:repeat="reservation view/reservation_data">
+		<span tal:content="reservation/title"></span><br/>
+		<span tal:content="reservation/time"></span>
+	</li>
+</ul>
+
+<metal:block use-macro="context/@@ploneform-macros/titlelessform" />
+
+
+</tal:main-macro>
+</metal:main>
+</body>
+</html>

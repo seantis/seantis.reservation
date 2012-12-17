@@ -1,9 +1,11 @@
-from datetime import date, time
+from datetime import date, time, timedelta
 from DateTime import DateTime
 from five import grok
 
+from plone.app.uuid.utils import uuidToObject
 from plone.dexterity.interfaces import IDexterityFTI
 from zope.component import queryUtility
+from plone.directives import form
 
 from z3c.form import field
 from z3c.form import button
@@ -20,11 +22,13 @@ from seantis.reservation.interfaces import (
     IRemoveReservation,
     IApproveReservation,
 )
-
+from seantis.reservation.models import Reservation
 from seantis.reservation.error import DirtyReadOnlySession
 from seantis.reservation import _
 from seantis.reservation import utils
 from seantis.reservation import plone_session
+from seantis.reservation import Session
+from seantis.reservation.session import serialized
 from seantis.reservation.form import (
     ResourceBaseForm,
     AllocationGroupView,
@@ -170,6 +174,9 @@ class ReservationForm(ResourceBaseForm, ReservationSchemata):
         except NoResultFound:
             utils.form_error(_(u'Invalid reservation request'))
 
+    def redirect_to_my_reservations(self):
+        self.request.response.redirect(self.context.absolute_url() + '/my_reservations')
+
     @button.buttonAndHandler(_(u'Reserve'))
     @extract_action_data
     def reserve(self, data):
@@ -195,7 +202,7 @@ class ReservationForm(ResourceBaseForm, ReservationSchemata):
                 self.flash(_(u'Added to waitinglist'))
 
         action = throttled(reserve, self.context, 'reserve')
-        utils.handle_action(action=action, success=self.redirect_to_context)
+        utils.handle_action(action=action, success=self.redirect_to_my_reservations)
 
     @button.buttonAndHandler(_(u'Cancel'))
     def cancel(self, action):
@@ -278,6 +285,65 @@ class GroupReservationForm(ResourceBaseForm, AllocationGroupView,
     @button.buttonAndHandler(_(u'Cancel'))
     def cancel(self, action):
         self.redirect_to_context()
+
+
+class MyReservations(form.Form):
+
+    permission = "seantis.reservation.SubmitReservation"
+
+    grok.name('my_reservations')
+    grok.require(permission)
+
+    grok.context(IResourceBase)
+
+    css_class = 'seantis-reservation-form'
+
+    template = grok.PageTemplateFile('templates/my_reservations.pt')
+
+    def display_date(self, start, end):
+        """ Formates the date range given for display. """
+        end += timedelta(microseconds=1)
+        if start.date() == end.date():
+            return start.strftime('%d.%m.%Y %H:%M - ') + end.strftime('%H:%M')
+        else:
+            return start.strftime('%d.%m.%Y %H:%M - ') \
+                + end.strftime('%d.%m.%Y %H:%M')
+
+    def reservations(self):
+        """ Returns all reservations in the user's session """
+        session_id = plone_session.get_session_id(self.context)
+        query = Session.query(Reservation)
+        query = query.filter(Reservation.session_id == session_id)
+        return query.all()
+
+    def reservation_data(self):
+        """ Prepares data to be shown in the my reservation's table """
+        reservations = []
+        for reservation in self.reservations():
+            resource_uid = str(reservation.resource).replace('-', '')
+            resource = uuidToObject(resource_uid)
+            if resource is not None:
+                data = {}
+                data['title'] = utils.get_resource_title(resource)
+                # TODO: Multiple timespans?
+                start, end = reservation.timespans()[0]
+                data['time'] = self.display_date(start, end)
+                reservations.append(data)
+
+        return reservations
+
+    @button.buttonAndHandler(_(u'finish'))
+    @serialized
+    def finish(self, data):
+        # Remove session_id from all reservations in the current session.
+        for reservation in self.reservations():
+            reservation.session_id = None
+        self.request.response.redirect(self.context.absolute_url())
+
+    @button.buttonAndHandler(_(u'proceed'))
+    def proceed(self, data):
+        # Don't do anything, reservations stay in the session.
+        self.request.response.redirect(self.context.absolute_url())
 
 
 class ReservationDecisionForm(ResourceBaseForm, ReservationListView,
