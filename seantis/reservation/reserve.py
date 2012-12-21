@@ -331,7 +331,7 @@ class MyReservations(form.Form, MyReservationsData):
     grok.name('my_reservations')
     grok.require(permission)
 
-    grok.context(IResourceBase)
+    grok.context(Interface)
 
     css_class = 'seantis-reservation-form'
 
@@ -363,6 +363,9 @@ class MyReservationsViewlet(grok.Viewlet, MyReservationsData):
 
     def available(self):
         return self.reservations() != []
+
+    def finish_url(self):
+        return self.context.absolute_url() + '/my_reservations'
 
 
 class ReservationDecisionForm(ResourceBaseForm, ReservationListView,
