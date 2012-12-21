@@ -6,6 +6,7 @@ from plone.app.uuid.utils import uuidToObject
 from plone.dexterity.interfaces import IDexterityFTI
 from zope.component import queryUtility
 from plone.directives import form
+from zope.interface import Interface
 
 from z3c.form import field
 from z3c.form import button
@@ -36,6 +37,7 @@ from seantis.reservation.form import (
     extract_action_data
 )
 
+from seantis.reservation.overview import OverviewletManager
 from seantis.reservation.error import NoResultFound
 
 
@@ -287,18 +289,7 @@ class GroupReservationForm(ResourceBaseForm, AllocationGroupView,
         self.redirect_to_context()
 
 
-class MyReservations(form.Form):
-
-    permission = "seantis.reservation.SubmitReservation"
-
-    grok.name('my_reservations')
-    grok.require(permission)
-
-    grok.context(IResourceBase)
-
-    css_class = 'seantis-reservation-form'
-
-    template = grok.PageTemplateFile('templates/my_reservations.pt')
+class MyReservationsData(object):
 
     def display_date(self, start, end):
         """ Formates the date range given for display. """
@@ -332,6 +323,20 @@ class MyReservations(form.Form):
 
         return reservations
 
+
+class MyReservations(form.Form, MyReservationsData):
+
+    permission = "seantis.reservation.SubmitReservation"
+
+    grok.name('my_reservations')
+    grok.require(permission)
+
+    grok.context(IResourceBase)
+
+    css_class = 'seantis-reservation-form'
+
+    template = grok.PageTemplateFile('templates/my_reservations.pt')
+
     @button.buttonAndHandler(_(u'finish'))
     @serialized
     def finish(self, data):
@@ -344,6 +349,20 @@ class MyReservations(form.Form):
     def proceed(self, data):
         # Don't do anything, reservations stay in the session.
         self.request.response.redirect(self.context.absolute_url())
+
+
+class MyReservationsViewlet(grok.Viewlet, MyReservationsData):
+    grok.context(Interface)
+    grok.name('seantis.reservation.myreservationsviewlet')
+    grok.require('zope2.View')
+    grok.viewletmanager(OverviewletManager)
+
+    grok.order(0)
+
+    template = grok.PageTemplateFile('templates/my_reservations_viewlet.pt')
+
+    def available(self):
+        return self.reservations() != []
 
 
 class ReservationDecisionForm(ResourceBaseForm, ReservationListView,
