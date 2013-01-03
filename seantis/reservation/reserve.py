@@ -23,12 +23,12 @@ from seantis.reservation.interfaces import (
     IRemoveReservation,
     IApproveReservation,
 )
-from seantis.reservation.models import Reservation
+
 from seantis.reservation.error import DirtyReadOnlySession
 from seantis.reservation import _
+from seantis.reservation import db
 from seantis.reservation import utils
 from seantis.reservation import plone_session
-from seantis.reservation import Session
 from seantis.reservation.session import serialized
 from seantis.reservation.form import (
     ResourceBaseForm,
@@ -177,7 +177,9 @@ class ReservationForm(ResourceBaseForm, ReservationSchemata):
             utils.form_error(_(u'Invalid reservation request'))
 
     def redirect_to_my_reservations(self):
-        self.request.response.redirect(self.context.absolute_url() + '/my_reservations')
+        self.request.response.redirect(
+            self.context.absolute_url() + '/my_reservations'
+        )
 
     @button.buttonAndHandler(_(u'Reserve'))
     @extract_action_data
@@ -204,7 +206,9 @@ class ReservationForm(ResourceBaseForm, ReservationSchemata):
                 self.flash(_(u'Added to waitinglist'))
 
         action = throttled(reserve, self.context, 'reserve')
-        utils.handle_action(action=action, success=self.redirect_to_my_reservations)
+        utils.handle_action(
+            action=action, success=self.redirect_to_my_reservations
+        )
 
     @button.buttonAndHandler(_(u'Cancel'))
     def cancel(self, action):
@@ -303,9 +307,12 @@ class MyReservationsData(object):
     def reservations(self):
         """ Returns all reservations in the user's session """
         session_id = plone_session.get_session_id(self.context)
-        query = Session.query(Reservation)
-        query = query.filter(Reservation.session_id == session_id)
-        return query.all()
+        return db.reservations_by_session(session_id).all()
+
+    @property
+    def has_reservations(self):
+        session_id = plone_session.get_session_id(self.context)
+        return bool(db.reservations_by_session(session_id).first())
 
     def reservation_data(self):
         """ Prepares data to be shown in the my reservation's table """

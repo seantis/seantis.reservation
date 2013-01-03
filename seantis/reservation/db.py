@@ -185,6 +185,14 @@ def availability_by_day(start, end, resources, is_exposed):
     return days
 
 
+def reservations_by_session(session_id):
+
+    query = Session.query(Reservation)
+    query = query.filter(Reservation.session_id == session_id)
+
+    return query
+
+
 class Scheduler(object):
     """Used to manage a resource as well as all connected mirrors.
 
