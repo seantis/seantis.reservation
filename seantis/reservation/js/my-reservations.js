@@ -18,12 +18,12 @@ this.seantis.my_reservations.update = function() {
         return;
     }
 
-    var url = window.location + '/my-reservations';
+    /* this is wicked, the current page is reloaded, the fragment we are concerned
+    about is extracted and drawn into the current page */
+    var url = window.location;
     
     $('.my-reservations-container').load(url + ' .my-reservations', function() {
-        $(this).find('h1').replaceWith(function() {
-            return '<h2>' + $(this).text() + '</h2>';
-        });
+        seantis.my_reservations.init();
     });
 };
 
