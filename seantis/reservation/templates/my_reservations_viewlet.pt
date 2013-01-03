@@ -4,6 +4,7 @@
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       i18n:domain="seantis.reservation"
       tal:condition="viewlet/available"
+      class="my-reservations"
 >
 
 <h2 i18n:translate="">My reservations</h2>
