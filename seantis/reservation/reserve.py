@@ -178,7 +178,7 @@ class ReservationForm(ResourceBaseForm, ReservationSchemata):
 
     def redirect_to_my_reservations(self):
         self.request.response.redirect(
-            self.context.absolute_url() + '/my_reservations'
+            self.context.absolute_url() + '/my-reservations'
         )
 
     @button.buttonAndHandler(_(u'Reserve'))
@@ -335,7 +335,7 @@ class MyReservations(form.Form, MyReservationsData):
 
     permission = "seantis.reservation.SubmitReservation"
 
-    grok.name('my_reservations')
+    grok.name('my-reservations')
     grok.require(permission)
 
     grok.context(Interface)
@@ -372,7 +372,7 @@ class MyReservationsViewlet(grok.Viewlet, MyReservationsData):
         return self.reservations() != []
 
     def finish_url(self):
-        return self.context.absolute_url() + '/my_reservations'
+        return self.context.absolute_url() + '/my-reservations'
 
 
 class ReservationDecisionForm(ResourceBaseForm, ReservationListView,
