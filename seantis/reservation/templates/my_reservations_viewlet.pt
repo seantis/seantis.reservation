@@ -17,20 +17,6 @@
 </ul>
 
 <div>
-	<script type="text/javascript">
-		(function($) {
-    		$(document).ready(function() {
-    			var options = {
-	            	config: {
-	                	onClose: function() {
-	                    	window.location.reload();
-	                	},
-	            	}
-	            };
-				reservation_overlay_init($('.my_reservations_link'), options);
-			});
-		})(jQuery);
-	</script>
 	<a tal:attributes="href viewlet/finish_url" i18n:translate="" class="my_reservations_link">finish</a>
 </div>
 

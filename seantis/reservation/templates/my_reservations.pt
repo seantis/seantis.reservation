@@ -10,17 +10,18 @@
 <metal:main fill-slot="main">
 <tal:main-macro metal:define-macro="main">
 
-<h1 i18n:translate="">My reservations</h1>
+<div class="my-reservations">
+    <h1 i18n:translate="">My reservations</h1>
 
-<ul>
-	<li tal:repeat="reservation view/reservation_data">
-		<span tal:content="reservation/title"></span><br/>
-		<span tal:content="reservation/time"></span>
-	</li>
-</ul>
+    <ul>
+    	<li tal:repeat="reservation view/reservation_data">
+    		<span tal:content="reservation/title"></span><br/>
+    		<span tal:content="reservation/time"></span>
+    	</li>
+    </ul>
 
-<metal:block use-macro="context/@@ploneform-macros/titlelessform" />
-
+    <metal:block use-macro="context/@@ploneform-macros/titlelessform" />
+</div>
 
 </tal:main-macro>
 </metal:main>
