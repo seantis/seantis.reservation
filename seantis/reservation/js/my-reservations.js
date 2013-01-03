@@ -2,14 +2,7 @@ if (!this.seantis) this.seantis = {};
 if (!this.seantis.my_reservations) this.seantis.my_reservations = {};
 
 this.seantis.my_reservations.init = function() {
-    var options = {
-        config: {
-            onClose: function() {
-                window.location.reload();
-            }
-        }
-    };
-    reservation_overlay_init($('.my_reservations_link'), options);
+    reservation_overlay_init($('.my_reservations_link'), {});
 };
 
 this.seantis.my_reservations.update = function() {
