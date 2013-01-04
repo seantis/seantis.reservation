@@ -41,6 +41,12 @@
 
                     <div tal:replace="structure provider:plone.abovecontentbody" />
                     
+                    <div class="my-reservations-container">
+                        <tal:block content="structure view/my_reservations">
+                            My reservations
+                        </tal:block>
+                    </div>
+
                     <div tal:attributes="id calendar_id"></div>
 
                     <div class="legend" metal:define-macro="calendar_legend">
@@ -76,6 +82,12 @@
             <tal:block 
                 condition="not: multicalendar" 
                 repeat="resource view/resources">
+
+                <div class="my-reservations-container" tal:condition="repeat/resource/start">
+                    <tal:block content="structure view/my_reservations">
+                        My reservations
+                    </tal:block>
+                </div><br/>
                 
                 <div class="multiCalendarContainer" tal:define="
                     title       python: view.title(resource);

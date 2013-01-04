@@ -375,7 +375,7 @@ class MyReservationsViewlet(grok.Viewlet, MyReservationsData):
     template = grok.PageTemplateFile('templates/my_reservations_viewlet.pt')
 
     def available(self):
-        return self.reservations() != []
+        return self.has_reservations
 
     def finish_url(self):
         return self.context.absolute_url() + '/my-reservations'

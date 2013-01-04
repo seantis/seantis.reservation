@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
 
+from Acquisition import aq_inner
 from five import grok
 from plone.dexterity.content import Container
 from plone.uuid.interfaces import IUUID
@@ -110,6 +111,22 @@ class View(grok.View):
     @property
     def calendar_count(self):
         return len(self.resources())
+
+    @utils.cached_property
+    def my_reservations(self):
+
+        # circular imports.. better things to do than fixing that right now..
+        # grumble, grumble
+        from seantis.reservation.reserve import MyReservationsViewlet
+
+        context = aq_inner(self.context)
+        viewlet = MyReservationsViewlet(context, self.request, None, None)
+
+        if not viewlet.has_reservations:
+            return ""
+
+        viewlet.update()
+        return viewlet.render()
 
 
 class GroupView(grok.View, AllocationGroupView):
