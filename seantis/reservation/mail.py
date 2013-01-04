@@ -140,7 +140,7 @@ def send_reservation_mail(reservation, email_type, language,
                           to_managers=False):
 
     context = getSite()
-    resource = utils.get_resource_by_uuid(context, reservation.resource)
+    resource = utils.get_resource_by_uuid(reservation.resource)
 
     # the resource doesn't currently exist in testing so we quietly
     # exit. This should be changed => #TODO

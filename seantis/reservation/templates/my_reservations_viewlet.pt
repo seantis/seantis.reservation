@@ -11,7 +11,7 @@
 
 <ul>
 	<li tal:repeat="reservation viewlet/reservation_data">
-		<span tal:content="reservation/title"></span><br/>
+		<a tal:attributes="href reservation/url" tal:content="reservation/title"></a>
 		<span tal:content="reservation/time"></span>
 	</li>
 </ul>

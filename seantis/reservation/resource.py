@@ -52,7 +52,7 @@ class View(grok.View):
 
         resources = [self.context]
         for uid in uids:
-            resource = utils.get_resource_by_uuid(self.context, uid)
+            resource = utils.get_resource_by_uuid(uid)
             resources.append(resource.getObject())
 
         template = 'seantis-reservation-calendar-%i'

@@ -53,10 +53,6 @@ def timeframes_by_context(context):
     )
 
 
-def timeframes_by_uuid(context, uuid):
-    return timeframes_by_context(utils.get_resource_by_uuid(context, uuid))
-
-
 def overlapping_timeframe(context, start, end):
     if context.portal_type == 'seantis.reservation.timeframe':
         folder = context.aq_inner.aq_parent

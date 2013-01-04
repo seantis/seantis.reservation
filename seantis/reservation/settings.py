@@ -144,7 +144,7 @@ class SeantisReservationSettingsPanelForm(RegistryEditForm):
             dead_uuids.add(allocation.mirror_of)
 
         for dead_uuid in dead_uuids:
-            if utils.get_resource_by_uuid(utils.getSite(), dead_uuid) \
+            if utils.get_resource_by_uuid(dead_uuid) \
                     is not None:
                 raise AssertionError(
                     'Tried to Delete a Non-Orphan Record (uuid: %s)' %

@@ -21,7 +21,7 @@ def for_allocations(context, resources):
     # get a dictionary with uuids as keys and resources as values
     def get_object(obj):
         if is_uuid(obj):
-            return UUID(obj), get_resource_by_uuid(context, obj)
+            return UUID(obj), get_resource_by_uuid(obj)
         else:
             return UUID(obj.uuid()), obj
 

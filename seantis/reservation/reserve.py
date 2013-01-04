@@ -1,8 +1,10 @@
-from datetime import date, time, timedelta
+from logging import getLogger
+log = getLogger('seantis.reservation')
+
+from datetime import date, time
 from DateTime import DateTime
 from five import grok
 
-from plone.app.uuid.utils import uuidToObject
 from plone.dexterity.interfaces import IDexterityFTI
 from zope.component import queryUtility
 from zope.interface import Interface
@@ -294,15 +296,6 @@ class GroupReservationForm(ResourceBaseForm, AllocationGroupView,
 
 class MyReservationsData(object):
 
-    def display_date(self, start, end):
-        """ Formates the date range given for display. """
-        end += timedelta(microseconds=1)
-        if start.date() == end.date():
-            return start.strftime('%d.%m.%Y %H:%M - ') + end.strftime('%H:%M')
-        else:
-            return start.strftime('%d.%m.%Y %H:%M - ') \
-                + end.strftime('%d.%m.%Y %H:%M')
-
     def reservations(self):
         """ Returns all reservations in the user's session """
         session_id = plone_session.get_session_id(self.context)
@@ -317,15 +310,23 @@ class MyReservationsData(object):
         """ Prepares data to be shown in the my reservation's table """
         reservations = []
         for reservation in self.reservations():
-            resource_uid = str(reservation.resource).replace('-', '')
-            resource = uuidToObject(resource_uid)
-            if resource is not None:
-                data = {}
-                data['title'] = utils.get_resource_title(resource)
-                # TODO: Multiple timespans?
-                start, end = reservation.timespans()[0]
-                data['time'] = self.display_date(start, end)
-                reservations.append(data)
+            resource = utils.get_resource_by_uuid(reservation.resource)
+
+            if resource is None:
+                log.warn('Invalid UUID %s' % str(reservation.resource))
+                continue
+
+            resource = resource.getObject()
+            data = dict(title=utils.get_resource_title(resource))
+
+            timespans = []
+            for start, end in reservation.timespans():
+                timespans.append(utils.display_date(start, end))
+
+            data['time'] = '<br />'.join(timespans)
+
+            data['url'] = resource.absolute_url()
+            reservations.append(data)
 
         return reservations
 

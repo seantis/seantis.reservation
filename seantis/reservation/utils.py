@@ -431,9 +431,9 @@ def uuid_query(uuid):
         uuid[:8], uuid[8:12], uuid[12:16], uuid[16:20], uuid[20:]]))
 
 
-def get_resource_by_uuid(context, uuid):
+def get_resource_by_uuid(uuid):
     """Returns the zodb object with the given uuid."""
-    catalog = getToolByName(context, 'portal_catalog')
+    catalog = getToolByName(getSite(), 'portal_catalog')
     results = catalog(UID=uuid_query(uuid))
     return len(results) == 1 and results[0] or None
 
@@ -814,3 +814,13 @@ def portal_type_by_context(context, portal_type):
             return traverse(parent, portal_type)
 
     return traverse(context, portal_type)
+
+
+def display_date(start, end):
+    """ Formates the date range given for display. """
+    end += timedelta(microseconds=1)
+    if start.date() == end.date():
+        return start.strftime('%d.%m.%Y %H:%M - ') + end.strftime('%H:%M')
+    else:
+        return start.strftime('%d.%m.%Y %H:%M - ') \
+            + end.strftime('%d.%m.%Y %H:%M')

@@ -1,6 +1,6 @@
 import json
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from functools import wraps
 
 from five import grok
@@ -313,7 +313,7 @@ class ResourceParameterView(object):
 
         for uuid in self.uuids:
             try:
-                objs[uuid] = utils.get_resource_by_uuid(self.context, uuid) \
+                objs[uuid] = utils.get_resource_by_uuid(uuid) \
                     .getObject()
             except AttributeError:
                 continue
@@ -383,13 +383,7 @@ class ReservationListView(ReservationDataView):
         return dict()
 
     def display_date(self, start, end):
-        """ Formates the date range given for display. """
-        end += timedelta(microseconds=1)
-        if start.date() == end.date():
-            return start.strftime('%d.%m.%Y %H:%M - ') + end.strftime('%H:%M')
-        else:
-            return start.strftime('%d.%m.%Y %H:%M - ') \
-                + end.strftime('%d.%m.%Y %H:%M')
+        return utils.display_date(start, end)  # kept here for use in template
 
     def reservations(self, status):
         """ Returns all reservations relevant to this list in a dictionary
