@@ -343,7 +343,7 @@ class MyReservations(ResourceBaseForm, MyReservationsData):
 
     template = grok.PageTemplateFile('templates/my_reservations.pt')
 
-    @button.buttonAndHandler(_(u'Submit Reservations'))
+    @button.buttonAndHandler(_(u'Submit Reservations'), name="finish")
     @serialized
     def finish(self, data):
         # Remove session_id from all reservations in the current session.
@@ -352,10 +352,15 @@ class MyReservations(ResourceBaseForm, MyReservationsData):
         self.request.response.redirect(self.context.absolute_url())
         self.flash(_(u'Reservations Successfully Submitted'))
 
-    @button.buttonAndHandler(_(u'Reserve More'))
+    @button.buttonAndHandler(_(u'Reserve More'), name="proceed")
     def proceed(self, data):
         # Don't do anything, reservations stay in the session.
         self.request.response.redirect(self.context.absolute_url())
+
+    def updateActions(self):
+        """ Ensure that the 'Finish' Button has the context css class. """
+        super(MyReservations, self).updateActions()
+        self.actions['finish'].addClass("context")
 
 
 class MyReservationsViewlet(grok.Viewlet, MyReservationsData):

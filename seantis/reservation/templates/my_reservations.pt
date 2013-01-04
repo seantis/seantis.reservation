@@ -10,7 +10,7 @@
 <metal:main fill-slot="main">
 <tal:main-macro metal:define-macro="main">
 
-<div class="my-reservations">
+<div class="my-reservations-view">
     <h1 i18n:translate="">My reservations</h1>
 
     <ul>
