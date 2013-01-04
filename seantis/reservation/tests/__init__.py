@@ -38,6 +38,9 @@ class TestCase(unittest.TestCase):
 
         self.portal.email_from_address = 'noreply@example.com'
 
+        # Set up sessioning objects
+        #ztc.utils.setupCoreSessions(self.app)
+
         # remove all test event subscribers
         event.subscribers = [
             e for e in event.subscribers if type(e) != TestEventSubscriber
@@ -128,18 +131,8 @@ class TestEventSubscriber(object):
         self.event = None
 
 
-class Session(dict):
-    def set(self, key, value):
-        self[key] = value
-
-
 class IntegrationTestCase(TestCase):
     layer = SQL_INTEGRATION_TESTING
-
-    def setUp(self):
-        super(IntegrationTestCase, self).setUp()
-        # Set up sessioning objects
-        ztc.utils.setupCoreSessions(self.app)
 
 
 class FunctionalTestCase(TestCase):

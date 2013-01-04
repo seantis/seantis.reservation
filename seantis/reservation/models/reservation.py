@@ -101,8 +101,7 @@ class Reservation(TimestampMixin, ORMBase, OtherModels):
 
     @property
     def autoapprovable(self):
-        Allocation = self.models.Allocation
         query = self.allocations()
-        query = query.filter(Allocation.approve == True)
+        query = query.filter(self.models.Allocation.approve == True)
 
-        return query.count() == 0
+        return query.first() is None
