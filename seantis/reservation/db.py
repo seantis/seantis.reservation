@@ -1,3 +1,6 @@
+from logging import getLogger
+log = getLogger('seantis.reservation')
+
 import math
 from uuid import UUID
 from uuid import uuid1 as new_uuid
@@ -187,10 +190,30 @@ def availability_by_day(start, end, resources, is_exposed):
 
 def reservations_by_session(session_id):
 
+    # be sure to not query for all reservations. since a query should be
+    # returned in any case we just use an impossible clause
+
+    # this is mainly a security feature
+    if not session_id:
+        log.warn('Empty session id')
+        return Session.query(Reservation).filter("0=1")
+
     query = Session.query(Reservation)
     query = query.filter(Reservation.session_id == session_id)
 
     return query
+
+
+@serialized
+def remove_reservation_from_session(session_id, token):
+
+    assert token
+
+    query = reservations_by_session(session_id)
+    query = query.filter(Reservation.token == token)
+
+    reservation = query.one()
+    Session.delete(reservation)
 
 
 class Scheduler(object):

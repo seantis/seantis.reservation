@@ -3,6 +3,14 @@ if (!this.seantis.your_reservations) this.seantis.your_reservations = {};
 
 this.seantis.your_reservations.init = function() {
     reservation_overlay_init($('.your_reservations_link'), {});
+
+    $(".your-reservations .remove-url").click(function(e) {
+        $(".your-reservations").parent().load($(this).attr('href') + ' .your-reservations', function() {
+            seantis.your_reservations.init();
+        });
+
+        e.preventDefault();
+    });
 };
 
 this.seantis.your_reservations.update = function() {
@@ -14,7 +22,7 @@ this.seantis.your_reservations.update = function() {
     /* this is wicked, the current page is reloaded, the fragment we are concerned
     about is extracted and drawn into the current page */
     var url = window.location;
-    
+
     $('.your-reservations-container').load(url + ' .your-reservations', function() {
         seantis.your_reservations.init();
     });
@@ -22,6 +30,6 @@ this.seantis.your_reservations.update = function() {
 
 (function($) {
     $(document).ready(function() {
-        seantis.your_reservations.init();   
+        seantis.your_reservations.init();
     });
 })(jQuery);

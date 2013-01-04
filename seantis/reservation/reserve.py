@@ -306,6 +306,10 @@ class YourReservationsData(object):
         session_id = plone_session.get_session_id(self.context)
         return bool(db.reservations_by_session(session_id).first())
 
+    def remove_reservation(self, token):
+        session_id = plone_session.get_session_id(self.context)
+        db.remove_reservation_from_session(session_id, token)
+
     def reservation_data(self):
         """ Prepares data to be shown in the my reservation's table """
         reservations = []
@@ -326,6 +330,11 @@ class YourReservationsData(object):
             data['time'] = '<br />'.join(timespans)
 
             data['url'] = resource.absolute_url()
+            data['remove-url'] = ''.join((
+                resource.absolute_url(),
+                '/your-reservations?remove=',
+                reservation.token.hex
+            ))
             reservations.append(data)
 
         return reservations
@@ -362,6 +371,14 @@ class YourReservations(ResourceBaseForm, YourReservationsData):
         """ Ensure that the 'Finish' Button has the context css class. """
         super(YourReservations, self).updateActions()
         self.actions['finish'].addClass("context")
+
+    def update(self):
+        if 'remove' in self.request and utils.is_uuid(self.request['remove']):
+            self.remove_reservation(self.request['remove'])
+
+            self.request.response.redirect(self.context.absolute_url())
+
+        super(YourReservations, self).update()
 
 
 class YourReservationsViewlet(grok.Viewlet, YourReservationsData):
