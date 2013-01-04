@@ -5,7 +5,10 @@ this.seantis.your_reservations.init = function() {
     reservation_overlay_init($('.your_reservations_link'), {});
 
     $(".your-reservations .remove-url").click(function(e) {
-        $(".your-reservations").parent().load($(this).attr('href') + ' .your-reservations', function() {
+        $(".your-reservations").load($(this).attr('href') + ' .your-reservations', function() {
+            if ($(this).children().length === 0) {
+                $(".your-reservations").remove();
+            }
             seantis.your_reservations.init();
         });
 
