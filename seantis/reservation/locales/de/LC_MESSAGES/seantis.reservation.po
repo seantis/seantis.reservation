@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-12-20 07:02+0000\n"
+"POT-Creation-Date: 2013-01-04 09:07+0000\n"
 "PO-Revision-Date: 2012-09-06 11:33+0100\n"
 "Last-Translator: Fabian Reinhard <fabian.reinhard@seantis.ch>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -58,7 +58,7 @@ msgstr "Email Vorlage hinzufügen"
 msgid "Add timeframe"
 msgstr "Belegungsperiode hinzufügen"
 
-#: ./reserve.py:204
+#: ./reserve.py:206
 msgid "Added to waitinglist"
 msgstr "In Warteliste eingetragen"
 
@@ -95,12 +95,12 @@ msgid "An existing reservation would be affected by the requested change"
 msgstr "Eine bestehende Reservation wäre durch die Änderung betroffen"
 
 #: ./report.py:240
-#: ./reserve.py:413
+#: ./reserve.py:424
 #: ./templates/reservations.pt:112
 msgid "Approve"
 msgstr "Zulassen"
 
-#: ./reserve.py:404
+#: ./reserve.py:415
 msgid "Approve reservation"
 msgstr "Reservation zulassen"
 
@@ -117,7 +117,7 @@ msgid "Approved Reservations"
 msgstr "Zugelassene Reservationen"
 
 #: ./allocate.py:138
-#: ./reserve.py:209
+#: ./reserve.py:213
 msgid "Cancel"
 msgstr "Abbrechen"
 
@@ -160,12 +160,12 @@ msgid "Delete"
 msgstr "Löschen"
 
 #: ./report.py:246
-#: ./reserve.py:446
+#: ./reserve.py:457
 #: ./templates/reservations.pt:106
 msgid "Deny"
 msgstr "Ablehnen"
 
-#: ./reserve.py:437
+#: ./reserve.py:448
 msgid "Deny reservation"
 msgstr "Reservation ablehnen"
 
@@ -177,11 +177,11 @@ msgstr "Beschreibung"
 msgid "Details"
 msgstr "Details"
 
-#: ./reserve.py:411
+#: ./reserve.py:422
 msgid "Do you really want to approve the following reservations?"
 msgstr "Möchten Sie die folgende Reservation wirklich zulassen?"
 
-#: ./reserve.py:444
+#: ./reserve.py:455
 msgid "Do you really want to deny the following reservations?"
 msgstr "Möchten Sie die folgende Reservation wirklich ablehnen?"
 
@@ -189,11 +189,11 @@ msgstr "Möchten Sie die folgende Reservation wirklich ablehnen?"
 msgid "Do you really want to remove the following allocations?"
 msgstr "Möchten Sie die folgenden Einteilungen wirklich löschen?"
 
-#: ./reserve.py:498
+#: ./reserve.py:509
 msgid "Do you really want to remove the following reservations?"
 msgstr "Möchten Sie die folgenden Reservation wirklich löschen?"
 
-#: ./reserve.py:503
+#: ./reserve.py:514
 msgid "Do you really want to remove the following timespans from the reservation?"
 msgstr "Möchten Sie die folgenden Zeiträume wirklich von der Reservation entfernen?"
 
@@ -430,8 +430,8 @@ msgstr "Monatsreport"
 msgid "Monthly Report for ${month} ${year}"
 msgstr "Monatesreport ${month} ${year}"
 
-#: ./templates/my_reservations.pt:13
-#: ./templates/my_reservations_viewlet.pt:9
+#: ./templates/my_reservations.pt:14
+#: ./templates/my_reservations_viewlet.pt:10
 msgid "My reservations"
 msgstr "Meine Reservationen"
 
@@ -455,7 +455,7 @@ msgstr "Nein"
 msgid "No reservable slot found."
 msgstr "Der gewünschte Zeitbereich ist bereits besetzt."
 
-#: ./reserve.py:409
+#: ./reserve.py:420
 msgid "No such reservation"
 msgstr "Unbekannte Reservation"
 
@@ -516,7 +516,7 @@ msgstr "Kontingent muss zwischen 1 und 100 liegen"
 msgid "Raster"
 msgstr "Raster"
 
-#: ./reserve.py:246
+#: ./reserve.py:250
 msgid "Recurrance reservation"
 msgstr "Wiederholung reservieren"
 
@@ -544,7 +544,7 @@ msgstr "Verwaiste Datensätze entfernen"
 msgid "Remove allocations"
 msgstr "Einteilungen entfernen"
 
-#: ./reserve.py:474
+#: ./reserve.py:485
 msgid "Remove reservation"
 msgstr "Reservation entfernen"
 
@@ -556,11 +556,11 @@ msgstr "Reservation"
 msgid "Reservation Throttling"
 msgstr "Reservations-Beschränkung"
 
-#: ./reserve.py:421
+#: ./reserve.py:432
 msgid "Reservation confirmed"
 msgstr "Reservation bestätigt"
 
-#: ./reserve.py:454
+#: ./reserve.py:465
 msgid "Reservation denied"
 msgstr "Reservation abgelehnt"
 
@@ -568,11 +568,11 @@ msgstr "Reservation abgelehnt"
 msgid "Reservation out of bounds"
 msgstr "Reservation ausserhalb des gültigen Bereichs"
 
-#: ./reserve.py:514
+#: ./reserve.py:525
 msgid "Reservation removed"
 msgstr "Reservation entfernt"
 
-#: ./reserve.py:202
+#: ./reserve.py:204
 msgid "Reservation successful"
 msgstr "Reservation erfolgreich"
 
@@ -580,14 +580,22 @@ msgstr "Reservation erfolgreich"
 msgid "Reservations"
 msgstr "Reservationen"
 
+#: ./reserve.py:354
+msgid "Reservations Successfully Submitted"
+msgstr "Reservierung erfolgreich abgeschlossen"
+
 #: ./error.py:98
 msgid "Reservations can't be made for more than 24 hours at a time"
 msgstr "Reservationen können nicht über mehr als 24 Stunden gemacht werden"
 
-#: ./reserve.py:182
+#: ./reserve.py:184
 #: ./resource.py:196
 msgid "Reserve"
 msgstr "Reservieren"
+
+#: ./reserve.py:356
+msgid "Reserve More"
+msgstr "Weitere Reservationen"
 
 #: ./exports/reservations.py:38
 #: ./profiles/default/types/seantis.reservation.resource.xml
@@ -679,6 +687,11 @@ msgstr "So"
 #: ./interfaces.py:234
 msgid "Subforms that need to be filled out to make a reservation. Forms can currently only be created by a site-administrator."
 msgstr "Unterformulare die ausgefüllt werden müssen um eine Reservation zu machen. Unterformulare können zur Zeit nur durch Administratoren erstellt werden."
+
+#: ./reserve.py:347
+#: ./templates/my_reservations_viewlet.pt:20
+msgid "Submit Reservations"
+msgstr "Bestätigen und abschliessen"
 
 #: ./interfaces.py:32
 msgid "Th"
@@ -784,12 +797,4 @@ msgstr "Mi"
 #: ./form.py:288
 msgid "Yes"
 msgstr "Ja"
-
-#: ./reserve.py:340
-msgid "finish"
-msgstr "Bestätigen und abschliessen"
-
-#: ./reserve.py:348
-msgid "proceed"
-msgstr "Weitere Reservationen"
 

@@ -5,7 +5,6 @@ from five import grok
 from plone.app.uuid.utils import uuidToObject
 from plone.dexterity.interfaces import IDexterityFTI
 from zope.component import queryUtility
-from plone.directives import form
 from zope.interface import Interface
 
 from z3c.form import field
@@ -331,7 +330,7 @@ class MyReservationsData(object):
         return reservations
 
 
-class MyReservations(form.Form, MyReservationsData):
+class MyReservations(ResourceBaseForm, MyReservationsData):
 
     permission = "seantis.reservation.SubmitReservation"
 
@@ -344,15 +343,16 @@ class MyReservations(form.Form, MyReservationsData):
 
     template = grok.PageTemplateFile('templates/my_reservations.pt')
 
-    @button.buttonAndHandler(_(u'finish'))
+    @button.buttonAndHandler(_(u'Submit Reservations'))
     @serialized
     def finish(self, data):
         # Remove session_id from all reservations in the current session.
         for reservation in self.reservations():
             reservation.session_id = None
         self.request.response.redirect(self.context.absolute_url())
+        self.flash(_(u'Reservations Successfully Submitted'))
 
-    @button.buttonAndHandler(_(u'proceed'))
+    @button.buttonAndHandler(_(u'Reserve More'))
     def proceed(self, data):
         # Don't do anything, reservations stay in the session.
         self.request.response.redirect(self.context.absolute_url())
