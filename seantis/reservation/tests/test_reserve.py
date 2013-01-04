@@ -1,12 +1,12 @@
 from datetime import datetime
 
-from seantis.reservation.reserve import MyReservations
+from seantis.reservation.reserve import YourReservations
 from seantis.reservation.session import serialized
 from seantis.reservation import plone_session
 from seantis.reservation.tests import IntegrationTestCase
 
 
-class TestMyReservations(IntegrationTestCase):
+class TestYourReservations(IntegrationTestCase):
 
     @serialized
     def test_reservation_data(self):
@@ -21,7 +21,7 @@ class TestMyReservations(IntegrationTestCase):
         scheduler.allocate(dates, approve=False)
 
         request = self.portal.REQUEST
-        view = MyReservations(resource, request)
+        view = YourReservations(resource, request)
         self.assertEqual(0, len(view.reservations()))
 
         session_id = plone_session.get_session_id(resource)
@@ -29,5 +29,5 @@ class TestMyReservations(IntegrationTestCase):
             u'test@seantis.ch', dates, data={}, session_id=session_id
         )
 
-        view = MyReservations(resource, request)
+        view = YourReservations(resource, request)
         self.assertEqual(1, len(view.reservations()))

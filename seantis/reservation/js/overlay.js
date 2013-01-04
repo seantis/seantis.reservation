@@ -78,7 +78,7 @@ var reservation_overlay_init = null;
 
         var after_post = function(el) {
             seantis.formgroups.init(el);
-            seantis.my_reservations.update();
+            seantis.your_reservations.update();
             popups = get_popup_messages(el);
 
             // z3cform renders views with widget-only errors

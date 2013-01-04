@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-01-04 09:07+0000\n"
+"POT-Creation-Date: 2013-01-04 14:13+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -57,11 +57,11 @@ msgstr ""
 msgid "Add email template"
 msgstr ""
 
-#: ./timeframe.py:173
+#: ./timeframe.py:169
 msgid "Add timeframe"
 msgstr ""
 
-#: ./reserve.py:206
+#: ./reserve.py:207
 msgid "Added to waitinglist"
 msgstr ""
 
@@ -98,12 +98,12 @@ msgid "An existing reservation would be affected by the requested change"
 msgstr ""
 
 #: ./report.py:240
-#: ./reserve.py:424
+#: ./reserve.py:429
 #: ./templates/reservations.pt:112
 msgid "Approve"
 msgstr ""
 
-#: ./reserve.py:415
+#: ./reserve.py:420
 msgid "Approve reservation"
 msgstr ""
 
@@ -120,11 +120,11 @@ msgid "Approved Reservations"
 msgstr ""
 
 #: ./allocate.py:138
-#: ./reserve.py:213
+#: ./reserve.py:214
 msgid "Cancel"
 msgstr ""
 
-#: ./templates/resource.pt:100
+#: ./templates/resource.pt:112
 msgid "Click on a calendar block to reserve it."
 msgstr ""
 
@@ -163,12 +163,12 @@ msgid "Delete"
 msgstr ""
 
 #: ./report.py:246
-#: ./reserve.py:457
+#: ./reserve.py:462
 #: ./templates/reservations.pt:106
 msgid "Deny"
 msgstr ""
 
-#: ./reserve.py:448
+#: ./reserve.py:453
 msgid "Deny reservation"
 msgstr ""
 
@@ -180,11 +180,11 @@ msgstr ""
 msgid "Details"
 msgstr ""
 
-#: ./reserve.py:422
+#: ./reserve.py:427
 msgid "Do you really want to approve the following reservations?"
 msgstr ""
 
-#: ./reserve.py:455
+#: ./reserve.py:460
 msgid "Do you really want to deny the following reservations?"
 msgstr ""
 
@@ -192,11 +192,11 @@ msgstr ""
 msgid "Do you really want to remove the following allocations?"
 msgstr ""
 
-#: ./reserve.py:509
+#: ./reserve.py:514
 msgid "Do you really want to remove the following reservations?"
 msgstr ""
 
-#: ./reserve.py:514
+#: ./reserve.py:519
 msgid "Do you really want to remove the following timespans from the reservation?"
 msgstr ""
 
@@ -206,7 +206,7 @@ msgstr ""
 
 #: ./allocate.py:195
 #: ./mail.py:393
-#: ./resource.py:221
+#: ./resource.py:238
 msgid "Edit"
 msgstr ""
 
@@ -285,7 +285,7 @@ msgstr ""
 msgid "End date before start date"
 msgstr ""
 
-#: ./resource.py:218
+#: ./resource.py:235
 msgid "Entry"
 msgstr ""
 
@@ -329,19 +329,19 @@ msgstr ""
 msgid "From"
 msgstr ""
 
-#: ./templates/resource.pt:67
+#: ./templates/resource.pt:73
 msgid "Full waitinglist"
 msgstr ""
 
-#: ./templates/resource.pt:49
+#: ./templates/resource.pt:55
 msgid "Fully available"
 msgstr ""
 
-#: ./templates/resource.pt:63
+#: ./templates/resource.pt:69
 msgid "Fully booked"
 msgstr ""
 
-#: ./reserve.py:122
+#: ./reserve.py:123
 msgid "General Information"
 msgstr ""
 
@@ -389,7 +389,7 @@ msgstr ""
 msgid "Invalid last hour"
 msgstr ""
 
-#: ./reserve.py:177
+#: ./reserve.py:178
 msgid "Invalid reservation request"
 msgstr ""
 
@@ -401,7 +401,7 @@ msgstr ""
 msgid "Last hour of the day"
 msgstr ""
 
-#: ./resource.py:237
+#: ./resource.py:254
 msgid "List"
 msgstr ""
 
@@ -409,7 +409,7 @@ msgstr ""
 msgid "Maintenance"
 msgstr ""
 
-#: ./resource.py:212
+#: ./resource.py:229
 msgid "Manage"
 msgstr ""
 
@@ -433,11 +433,6 @@ msgstr ""
 msgid "Monthly Report for ${month} ${year}"
 msgstr ""
 
-#: ./templates/my_reservations.pt:14
-#: ./templates/my_reservations_viewlet.pt:10
-msgid "My reservations"
-msgstr ""
-
 #: ./interfaces.py:193
 msgid "Name"
 msgstr ""
@@ -458,7 +453,7 @@ msgstr ""
 msgid "No reservable slot found."
 msgstr ""
 
-#: ./reserve.py:420
+#: ./reserve.py:425
 msgid "No such reservation"
 msgstr ""
 
@@ -491,7 +486,7 @@ msgid "Parent"
 msgstr ""
 
 #: ./interfaces.py:135
-#: ./templates/resource.pt:54
+#: ./templates/resource.pt:60
 msgid "Partly available"
 msgstr ""
 
@@ -519,7 +514,7 @@ msgstr ""
 msgid "Raster"
 msgstr ""
 
-#: ./reserve.py:250
+#: ./reserve.py:251
 msgid "Recurrance reservation"
 msgstr ""
 
@@ -531,11 +526,11 @@ msgstr ""
 msgid "Recurrence View"
 msgstr ""
 
-#: ./resource.py:234
+#: ./resource.py:251
 msgid "Recurrences"
 msgstr ""
 
-#: ./resource.py:225
+#: ./resource.py:242
 msgid "Remove"
 msgstr ""
 
@@ -547,7 +542,7 @@ msgstr ""
 msgid "Remove allocations"
 msgstr ""
 
-#: ./reserve.py:485
+#: ./reserve.py:490
 msgid "Remove reservation"
 msgstr ""
 
@@ -559,27 +554,27 @@ msgstr ""
 msgid "Reservation Throttling"
 msgstr ""
 
-#: ./reserve.py:432
+#: ./reserve.py:437
 msgid "Reservation confirmed"
 msgstr ""
 
-#: ./reserve.py:465
+#: ./reserve.py:470
 msgid "Reservation denied"
 msgstr ""
 
-#: ./reserve.py:173
+#: ./reserve.py:174
 msgid "Reservation out of bounds"
 msgstr ""
 
-#: ./reserve.py:525
+#: ./reserve.py:530
 msgid "Reservation removed"
 msgstr ""
 
-#: ./reserve.py:204
+#: ./reserve.py:205
 msgid "Reservation successful"
 msgstr ""
 
-#: ./resource.py:193
+#: ./resource.py:210
 msgid "Reservations"
 msgstr ""
 
@@ -591,8 +586,8 @@ msgstr ""
 msgid "Reservations can't be made for more than 24 hours at a time"
 msgstr ""
 
-#: ./reserve.py:184
-#: ./resource.py:196
+#: ./reserve.py:185
+#: ./resource.py:213
 msgid "Reserve"
 msgstr ""
 
@@ -605,7 +600,7 @@ msgstr ""
 msgid "Resource"
 msgstr ""
 
-#: ./reserve.py:116
+#: ./reserve.py:117
 msgid "Resource reservation"
 msgstr ""
 
@@ -618,7 +613,7 @@ msgid "Sa"
 msgstr ""
 
 #: ./mail.py:337
-#: ./timeframe.py:87
+#: ./timeframe.py:83
 msgid "Save"
 msgstr ""
 
@@ -692,7 +687,7 @@ msgid "Subforms that need to be filled out to make a reservation. Forms can curr
 msgstr ""
 
 #: ./reserve.py:347
-#: ./templates/my_reservations_viewlet.pt:20
+#: ./templates/your_reservations_viewlet.pt:19
 msgid "Submit Reservations"
 msgstr ""
 
@@ -769,7 +764,7 @@ msgstr ""
 msgid "Tu"
 msgstr ""
 
-#: ./templates/resource.pt:59
+#: ./templates/resource.pt:65
 msgid "Unavailable"
 msgstr ""
 
@@ -799,5 +794,10 @@ msgstr ""
 
 #: ./form.py:288
 msgid "Yes"
+msgstr ""
+
+#: ./templates/your_reservations.pt:14
+#: ./templates/your_reservations_viewlet.pt:9
+msgid "Your reservations"
 msgstr ""
 

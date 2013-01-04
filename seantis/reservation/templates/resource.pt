@@ -41,9 +41,9 @@
 
                     <div tal:replace="structure provider:plone.abovecontentbody" />
                     
-                    <div class="my-reservations-container">
-                        <tal:block content="structure view/my_reservations">
-                            My reservations
+                    <div class="your-reservations-container">
+                        <tal:block content="structure view/your_reservations">
+                            Your reservations
                         </tal:block>
                     </div>
 
@@ -83,9 +83,9 @@
                 condition="not: multicalendar" 
                 repeat="resource view/resources">
 
-                <div class="my-reservations-container" tal:condition="repeat/resource/start">
-                    <tal:block content="structure view/my_reservations">
-                        My reservations
+                <div class="your-reservations-container" tal:condition="repeat/resource/start">
+                    <tal:block content="structure view/your_reservations">
+                        Your reservations
                     </tal:block>
                 </div><br/>
                 

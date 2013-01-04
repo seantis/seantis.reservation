@@ -113,14 +113,14 @@ class View(grok.View):
         return len(self.resources())
 
     @utils.cached_property
-    def my_reservations(self):
+    def your_reservations(self):
 
         # circular imports.. better things to do than fixing that right now..
         # grumble, grumble
-        from seantis.reservation.reserve import MyReservationsViewlet
+        from seantis.reservation.reserve import YourReservationsViewlet
 
         context = aq_inner(self.context)
-        viewlet = MyReservationsViewlet(context, self.request, None, None)
+        viewlet = YourReservationsViewlet(context, self.request, None, None)
 
         if not viewlet.has_reservations:
             return ""

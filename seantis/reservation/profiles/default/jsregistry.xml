@@ -30,7 +30,7 @@
 
         <javascript id="++resource++seantis.reservation.js/wizard.js" cacheable="True" compression="safe" cookable="True" enabled="True" inline="False" insert-after="++resource++seantis.reservation.js/formgroups.js"/>
 
-        <javascript id="++resource++seantis.reservation.js/my-reservations.js" cacheable="True" compression="safe" cookable="True" enabled="True" inline="False" insert-after="++resource++seantis.reservation.js/overlay.js"/>
+        <javascript id="++resource++seantis.reservation.js/your-reservations.js" cacheable="True" compression="safe" cookable="True" enabled="True" inline="False" insert-after="++resource++seantis.reservation.js/overlay.js"/>
 
         <!-- 
         Seantis reservation requires a custom fullcalendar version.

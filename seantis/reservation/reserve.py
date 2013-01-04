@@ -177,9 +177,9 @@ class ReservationForm(ResourceBaseForm, ReservationSchemata):
         except NoResultFound:
             utils.form_error(_(u'Invalid reservation request'))
 
-    def redirect_to_my_reservations(self):
+    def redirect_to_your_reservations(self):
         self.request.response.redirect(
-            self.context.absolute_url() + '/my-reservations'
+            self.context.absolute_url() + '/your-reservations'
         )
 
     @button.buttonAndHandler(_(u'Reserve'))
@@ -208,7 +208,7 @@ class ReservationForm(ResourceBaseForm, ReservationSchemata):
 
         action = throttled(reserve, self.context, 'reserve')
         utils.handle_action(
-            action=action, success=self.redirect_to_my_reservations
+            action=action, success=self.redirect_to_your_reservations
         )
 
     @button.buttonAndHandler(_(u'Cancel'))
@@ -294,7 +294,7 @@ class GroupReservationForm(ResourceBaseForm, AllocationGroupView,
         self.redirect_to_context()
 
 
-class MyReservationsData(object):
+class YourReservationsData(object):
 
     def reservations(self):
         """ Returns all reservations in the user's session """
@@ -331,18 +331,18 @@ class MyReservationsData(object):
         return reservations
 
 
-class MyReservations(ResourceBaseForm, MyReservationsData):
+class YourReservations(ResourceBaseForm, YourReservationsData):
 
     permission = "seantis.reservation.SubmitReservation"
 
-    grok.name('my-reservations')
+    grok.name('your-reservations')
     grok.require(permission)
 
     grok.context(Interface)
 
     css_class = 'seantis-reservation-form'
 
-    template = grok.PageTemplateFile('templates/my_reservations.pt')
+    template = grok.PageTemplateFile('templates/your_reservations.pt')
 
     @button.buttonAndHandler(_(u'Submit Reservations'), name="finish")
     @serialized
@@ -360,25 +360,25 @@ class MyReservations(ResourceBaseForm, MyReservationsData):
 
     def updateActions(self):
         """ Ensure that the 'Finish' Button has the context css class. """
-        super(MyReservations, self).updateActions()
+        super(YourReservations, self).updateActions()
         self.actions['finish'].addClass("context")
 
 
-class MyReservationsViewlet(grok.Viewlet, MyReservationsData):
+class YourReservationsViewlet(grok.Viewlet, YourReservationsData):
     grok.context(Interface)
-    grok.name('seantis.reservation.myreservationsviewlet')
+    grok.name('seantis.reservation.YourReservationsviewlet')
     grok.require('zope2.View')
     grok.viewletmanager(OverviewletManager)
 
     grok.order(0)
 
-    template = grok.PageTemplateFile('templates/my_reservations_viewlet.pt')
+    template = grok.PageTemplateFile('templates/your_reservations_viewlet.pt')
 
     def available(self):
         return self.has_reservations
 
     def finish_url(self):
-        return self.context.absolute_url() + '/my-reservations'
+        return self.context.absolute_url() + '/your-reservations'
 
 
 class ReservationDecisionForm(ResourceBaseForm, ReservationListView,
