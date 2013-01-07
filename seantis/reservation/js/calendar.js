@@ -62,7 +62,7 @@ var CalendarGroups = function() {
                 calendar.index = index;
                 calendar.groups = new CalendarGroups();
                 
-                //indicate that the calendar an event is being resized or moved
+                // indicate that the calendar an event is being resized or moved
                 calendar.is_resizing = false;
                 calendar.is_moving = false;
                 
@@ -70,6 +70,12 @@ var CalendarGroups = function() {
                 calendar.refetch = function() {
                     calendar.element.fullCalendar('refetchEvents');
                 };
+
+                // have an event listener in place to refetch the calendar
+                // data from anywhere
+                $(document).bind("reservations-changed", function() {
+                    calendar.refetch();
+                });
 
                 // Sets an element on the calendar up with an overlay
                 calendar.overlay_init = function(element, onclose) {
