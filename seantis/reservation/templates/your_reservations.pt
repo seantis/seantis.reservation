@@ -16,7 +16,7 @@
     <ul>
     	<li tal:repeat="reservation view/reservation_data">
     		<span tal:content="reservation/title"></span><br/>
-    		<span tal:content="reservation/time"></span>
+    		<span tal:content="structure reservation/time"></span>
     	</li>
     </ul>
 
