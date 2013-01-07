@@ -164,8 +164,45 @@ class YourReservationsData(object):
         )
 
 
+class ReservationBaseForm(ResourceBaseForm):
+
+    def updateFields(self):
+        self.form.groups = []
+        if self.email() is not None:
+            self.fields = self.fields.omit('email')
+
+        if self.additional_data() is not None:
+            return
+
+        ResourceBaseForm.updateFields(self)
+
+    def run_reserve(self, data, autoapprove, start=None, end=None, group=None):
+
+        assert (start and end) or group
+        assert not (start and end and group)
+
+        email = self.email(data)
+        additional_data = self.additional_data(data)
+        session_id = self.session_id()
+
+        if start and end:
+            token = self.scheduler.reserve(email,
+                (start, end), data=additional_data, session_id=session_id
+            )
+        else:
+            token = self.scheduler.reserve(email,
+                group=group, data=additional_data, session_id=session_id,
+            )
+
+        if autoapprove:
+            self.scheduler.approve_reservation(token)
+            self.flash(_(u'Reservation successful'))
+        else:
+            self.flash(_(u'Added to waitinglist'))
+
+
 class ReservationForm(
-        ResourceBaseForm,
+        ReservationBaseForm,
         ReservationSchemata,
         YourReservationsData
     ):
@@ -194,16 +231,6 @@ class ReservationForm(
             pass
 
         return disabled
-
-    def updateFields(self):
-        self.form.groups = []
-        if self.email() is not None:
-            self.fields = self.fields.omit('email')
-
-        if self.additional_data() is not None:
-            return
-
-        ResourceBaseForm.updateFields(self)
 
     def defaults(self, **kwargs):
         return dict(id=self.id)
@@ -247,21 +274,9 @@ class ReservationForm(
         autoapprove = not self.allocation(data['id']).approve
 
         def reserve():
-
-            email = self.email(data)
-            additional_data = self.additional_data(data)
-            session_id = self.session_id()
-
-            token = self.scheduler.reserve(
-                email, (start, end), data=additional_data,
-                session_id=session_id
+            self.run_reserve(
+                data=data, autoapprove=autoapprove, start=start, end=end
             )
-
-            if autoapprove:
-                self.scheduler.approve_reservation(token)
-                self.flash(_(u'Reservation successful'))
-            else:
-                self.flash(_(u'Added to waitinglist'))
 
         action = throttled(reserve, self.context, 'reserve')
         utils.handle_action(
@@ -297,8 +312,12 @@ class ReservationForm(
         self.actions['reserve'].addClass("context")
 
 
-class GroupReservationForm(ResourceBaseForm, AllocationGroupView,
-                           ReservationSchemata, YourReservationsData):
+class GroupReservationForm(
+        ReservationBaseForm,
+        AllocationGroupView,
+        ReservationSchemata,
+        YourReservationsData
+    ):
     permission = 'seantis.reservation.SubmitReservation'
 
     grok.name('reserve-group')
@@ -323,25 +342,13 @@ class GroupReservationForm(ResourceBaseForm, AllocationGroupView,
     @extract_action_data
     def reserve(self, data):
 
-        sc = self.scheduler
-        autoapprove = not sc.allocations_by_group(data['group']) \
+        autoapprove = not self.scheduler.allocations_by_group(data['group']) \
             .first().approve
 
         def reserve():
-            email = self.email(data)
-            additional_data = self.additional_data(data)
-            session_id = self.session_id()
-
-            token = sc.reserve(
-                email, group=data['group'], data=additional_data,
-                session_id=session_id,
+            self.run_reserve(
+                data=data, autoapprove=autoapprove, group=data['group']
             )
-
-            if autoapprove:
-                sc.approve_reservation(token)
-                self.flash(_(u'Reservation successful'))
-            else:
-                self.flash(_(u'Added to waitinglist'))
 
         action = throttled(reserve, self.context, 'reserve')
         utils.handle_action(
