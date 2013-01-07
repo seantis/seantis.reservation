@@ -205,9 +205,28 @@ def reservations_by_session(session_id):
 
 
 @serialized
-def remove_reservation_from_session(session_id, token):
+def confirm_reservations_for_session(session_id, token=None):
+    """ Confirms all reservations of the given session id. Optionally
+    confirms only the reservations with the given token. All if None.
 
-    assert token
+    """
+
+    assert session_id
+
+    reservations = reservations_by_session(session_id)
+
+    if token:
+        reservations = reservations.filter(Reservation.token == token)
+
+    for reservation in reservations.all():
+        reservation.session_id = None
+
+
+@serialized
+def remove_reservation_from_session(session_id, token):
+    """ Removes the reservation with the given session_id and token. """
+
+    assert token and session_id
 
     query = reservations_by_session(session_id)
     query = query.filter(Reservation.token == token)

@@ -30,7 +30,6 @@ from seantis.reservation import _
 from seantis.reservation import db
 from seantis.reservation import utils
 from seantis.reservation import plone_session
-from seantis.reservation.session import serialized
 from seantis.reservation.form import (
     ResourceBaseForm,
     AllocationGroupView,
@@ -107,7 +106,70 @@ class ReservationSchemata(object):
         return plone_session.get_session_id(self.context)
 
 
-class ReservationForm(ResourceBaseForm, ReservationSchemata):
+class YourReservationsData(object):
+    """ Mixin providing functions to deal with 'your' reservations. """
+
+    def reservations(self):
+        """ Returns all reservations in the user's session """
+        session_id = plone_session.get_session_id(self.context)
+        return db.reservations_by_session(session_id).all()
+
+    @property
+    def has_reservations(self):
+        session_id = plone_session.get_session_id(self.context)
+        return bool(db.reservations_by_session(session_id).first())
+
+    def confirm_reservations(self, token=None):
+        # Remove session_id from all reservations in the current session.
+        db.confirm_reservations_for_session(
+            plone_session.get_session_id(self.context), token
+        )
+
+    def remove_reservation(self, token):
+        session_id = plone_session.get_session_id(self.context)
+        db.remove_reservation_from_session(session_id, token)
+
+    def reservation_data(self):
+        """ Prepares data to be shown in the my reservation's table """
+        reservations = []
+        for reservation in self.reservations():
+            resource = utils.get_resource_by_uuid(reservation.resource)
+
+            if resource is None:
+                log.warn('Invalid UUID %s' % str(reservation.resource))
+                continue
+
+            resource = resource.getObject()
+            data = dict(title=utils.get_resource_title(resource))
+
+            timespans = []
+            for start, end in reservation.timespans():
+                timespans.append(utils.display_date(start, end))
+
+            data['time'] = '<br />'.join(timespans)
+
+            data['url'] = resource.absolute_url()
+            data['remove-url'] = ''.join((
+                resource.absolute_url(),
+                '/your-reservations?remove=',
+                reservation.token.hex
+            ))
+            reservations.append(data)
+
+        return reservations
+
+    def redirect_to_your_reservations(self):
+        self.request.response.redirect(
+            self.context.absolute_url() + '/your-reservations'
+        )
+
+
+class ReservationForm(
+        ResourceBaseForm,
+        ReservationSchemata,
+        YourReservationsData
+    ):
+
     permission = 'seantis.reservation.SubmitReservation'
 
     grok.name('reserve')
@@ -177,11 +239,6 @@ class ReservationForm(ResourceBaseForm, ReservationSchemata):
         except NoResultFound:
             utils.form_error(_(u'Invalid reservation request'))
 
-    def redirect_to_your_reservations(self):
-        self.request.response.redirect(
-            self.context.absolute_url() + '/your-reservations'
-        )
-
     @button.buttonAndHandler(_(u'Reserve'))
     @extract_action_data
     def reserve(self, data):
@@ -241,7 +298,7 @@ class ReservationForm(ResourceBaseForm, ReservationSchemata):
 
 
 class GroupReservationForm(ResourceBaseForm, AllocationGroupView,
-                           ReservationSchemata):
+                           ReservationSchemata, YourReservationsData):
     permission = 'seantis.reservation.SubmitReservation'
 
     grok.name('reserve-group')
@@ -287,57 +344,13 @@ class GroupReservationForm(ResourceBaseForm, AllocationGroupView,
                 self.flash(_(u'Added to waitinglist'))
 
         action = throttled(reserve, self.context, 'reserve')
-        utils.handle_action(action=action, success=self.redirect_to_context)
+        utils.handle_action(
+            action=action, success=self.redirect_to_your_reservations
+        )
 
     @button.buttonAndHandler(_(u'Cancel'))
     def cancel(self, action):
         self.redirect_to_context()
-
-
-class YourReservationsData(object):
-
-    def reservations(self):
-        """ Returns all reservations in the user's session """
-        session_id = plone_session.get_session_id(self.context)
-        return db.reservations_by_session(session_id).all()
-
-    @property
-    def has_reservations(self):
-        session_id = plone_session.get_session_id(self.context)
-        return bool(db.reservations_by_session(session_id).first())
-
-    def remove_reservation(self, token):
-        session_id = plone_session.get_session_id(self.context)
-        db.remove_reservation_from_session(session_id, token)
-
-    def reservation_data(self):
-        """ Prepares data to be shown in the my reservation's table """
-        reservations = []
-        for reservation in self.reservations():
-            resource = utils.get_resource_by_uuid(reservation.resource)
-
-            if resource is None:
-                log.warn('Invalid UUID %s' % str(reservation.resource))
-                continue
-
-            resource = resource.getObject()
-            data = dict(title=utils.get_resource_title(resource))
-
-            timespans = []
-            for start, end in reservation.timespans():
-                timespans.append(utils.display_date(start, end))
-
-            data['time'] = '<br />'.join(timespans)
-
-            data['url'] = resource.absolute_url()
-            data['remove-url'] = ''.join((
-                resource.absolute_url(),
-                '/your-reservations?remove=',
-                reservation.token.hex
-            ))
-            reservations.append(data)
-
-        return reservations
 
 
 class YourReservations(ResourceBaseForm, YourReservationsData):
@@ -354,11 +367,8 @@ class YourReservations(ResourceBaseForm, YourReservationsData):
     template = grok.PageTemplateFile('templates/your_reservations.pt')
 
     @button.buttonAndHandler(_(u'Submit Reservations'), name="finish")
-    @serialized
     def finish(self, data):
-        # Remove session_id from all reservations in the current session.
-        for reservation in self.reservations():
-            reservation.session_id = None
+        self.confirm_reservations()
         self.request.response.redirect(self.context.absolute_url())
         self.flash(_(u'Reservations Successfully Submitted'))
 
