@@ -234,6 +234,16 @@ def remove_reservation_from_session(session_id, token):
     reservation = query.one()
     Session.delete(reservation)
 
+    # if we get here the token must be valid, we should then check if the
+    # token is used in the reserved slots, because with autoapproval these
+    # slots may be created straight away.
+
+    slots = Session.query(ReservedSlot).filter(
+        ReservedSlot.reservation_token == token
+    )
+    for slot in slots.all():
+        Session.delete(slot)
+
 
 class Scheduler(object):
     """Used to manage a resource as well as all connected mirrors.
