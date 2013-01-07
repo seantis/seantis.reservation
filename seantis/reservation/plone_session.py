@@ -40,12 +40,32 @@ def get_additional_data(context):
     return get_session(context, sid) or None
 
 
+user_namespace = uuid.UUID('3b4e603a-1d41-4281-b162-4c2ecd767de0')
+
+
+def generate_session_id(context):
+    membership = getToolByName(context, 'portal_membership')
+
+    if membership.isAnonymousUser():
+        return uuid.uuid4()
+
+    # logged in users always getthe same session id so they can log in
+    # from different places to access their reservations and keep their
+    # reservations between server restarts
+
+    user = membership.getAuthenticatedMember().getId()
+
+    return uuid.uuid5(user_namespace, user)
+
+
 def get_session_id(context):
     sid = session_key('session_id')
     session_id = get_session(context, sid)
+
     if session_id is None:
-        session_id = uuid.uuid4()
+        session_id = generate_session_id(context)
         set_session(context, sid, session_id)
+
     return session_id
 
 
