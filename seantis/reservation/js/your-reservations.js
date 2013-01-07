@@ -8,10 +8,12 @@ this.seantis.your_reservations.init = function() {
         $(".your-reservations").load($(this).attr('href') + ' .your-reservations', function() {
             if ($(this).children().length === 0) {
                 $(".your-reservations").remove();
-
-                $(document).trigger('reservations-changed');
+            } else {
+                $(this).replaceWith($(this).children());
             }
             seantis.your_reservations.init();
+
+            $(document).trigger('reservations-changed');
         });
 
         e.preventDefault();
