@@ -212,6 +212,8 @@ class ReservationForm(
     grok.name('reserve')
     grok.require(permission)
 
+    context_buttons = ('reserve', )
+
     fields = field.Fields(IReservation)
     label = _(u'Resource reservation')
 
@@ -306,11 +308,6 @@ class ReservationForm(
             elif field_type is Choice:
                 field.widgetFactory = RadioFieldWidget
 
-    def updateActions(self):
-        """ Ensure that the 'Reserve' Button has the context css class. """
-        super(ReservationForm, self).updateActions()
-        self.actions['reserve'].addClass("context")
-
 
 class GroupReservationForm(
         ReservationBaseForm,
@@ -322,6 +319,8 @@ class GroupReservationForm(
 
     grok.name('reserve-group')
     grok.require(permission)
+
+    context_buttons = ('reserve', )
 
     fields = field.Fields(IGroupReservation)
     label = _(u'Recurrance reservation')
@@ -367,6 +366,8 @@ class YourReservations(ResourceBaseForm, YourReservationsData):
     grok.name('your-reservations')
     grok.require(permission)
 
+    context_buttons = ('finish', )
+
     grok.context(Interface)
 
     css_class = 'seantis-reservation-form'
@@ -383,11 +384,6 @@ class YourReservations(ResourceBaseForm, YourReservationsData):
     def proceed(self, data):
         # Don't do anything, reservations stay in the session.
         self.request.response.redirect(self.context.absolute_url())
-
-    def updateActions(self):
-        """ Ensure that the 'Finish' Button has the context css class. """
-        super(YourReservations, self).updateActions()
-        self.actions['finish'].addClass("context")
 
     def update(self):
         if 'remove' in self.request and utils.is_uuid(self.request['remove']):
@@ -451,6 +447,8 @@ class ReservationApprovalForm(ReservationDecisionForm):
     grok.name('approve-reservation')
     grok.require(permission)
 
+    context_buttons = ('approve', )
+
     label = _(u'Approve reservation')
 
     @property
@@ -483,6 +481,8 @@ class ReservationDenialForm(ReservationDecisionForm):
 
     grok.name('deny-reservation')
     grok.require(permission)
+
+    context_buttons = ('deny', )
 
     label = _(u'Deny reservation')
 
@@ -517,6 +517,8 @@ class ReservationRemoveForm(ResourceBaseForm, ReservationListView,
 
     grok.name('remove-reservation')
     grok.require(permission)
+
+    context_buttons = ('delete', )
 
     fields = field.Fields(IRemoveReservation)
     template = ViewPageTemplateFile('templates/remove_reservation.pt')

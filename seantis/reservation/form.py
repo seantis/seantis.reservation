@@ -72,6 +72,8 @@ class ResourceBaseForm(GroupForm, form.Form):
     disabled_fields = []
     hidden_fields = ['id', 'metadata']
 
+    context_buttons = tuple()
+
     css_class = 'seantis-reservation-form wizard'
 
     template = ViewPageTemplateFile('templates/form.pt')
@@ -204,6 +206,12 @@ class ResourceBaseForm(GroupForm, form.Form):
                 self.customize_fields(fields)
 
             z3cutils.add(self.form, fields, group=group)
+
+    def updateActions(self):
+        super(ResourceBaseForm, self).updateActions()
+
+        for button in self.context_buttons:
+            self.actions[button].addClass("context")
 
     def update(self, **kwargs):
         self.updateFields()

@@ -30,6 +30,8 @@ class AllocationAddForm(AllocationForm):
     grok.name('allocate')
     grok.require(permission)
 
+    context_buttons = ('allocate', )
+
     fields = field.Fields(IAllocation).select(
         'id', 'group', 'timeframes', 'start_time', 'end_time',
         'recurring', 'day', 'recurrence_start', 'recurrence_end',
@@ -146,6 +148,8 @@ class AllocationEditForm(AllocationForm):
     grok.name('edit-allocation')
     grok.require(permission)
 
+    context_buttons = ('edit', )
+
     fields = field.Fields(IAllocation).select(
         'id',
         'group',
@@ -228,6 +232,8 @@ class AllocationRemoveForm(AllocationForm, AllocationGroupView):
 
     grok.name('remove-allocation')
     grok.require(permission)
+
+    context_buttons = ('delete', )
 
     fields = field.Fields(IAllocation).select('id', 'group')
     template = ViewPageTemplateFile('templates/remove_allocation.pt')
