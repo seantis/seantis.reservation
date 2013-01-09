@@ -114,7 +114,8 @@ var CalendarGroups = function() {
                     //fetches the requested url
                     var fetch = function() {
                         
-                        // show loading gif
+                        // show loading gif and hide help text
+                        target.find('.hint').hide();
                         target.toggleClass('loading', true);
 
                         // load the page
