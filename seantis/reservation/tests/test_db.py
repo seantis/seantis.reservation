@@ -89,6 +89,44 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(len(remaining), 2)
 
     @serialized
+    def test_group_reserve(self):
+        sc = Scheduler(new_uuid())
+
+        dates = [
+            (datetime(2013, 4, 6, 12, 0), datetime(2013, 4, 6, 16, 0)),
+            (datetime(2013, 4, 7, 12, 0), datetime(2013, 4, 7, 16, 0))
+        ]
+
+        allocations = sc.allocate(dates,
+            grouped=True, approve=True, quota=3, waitinglist_spots=3
+        )
+
+        self.assertEqual(len(allocations), 2)
+
+        group = allocations[0].group
+
+        # reserve the same thing three times, which should yield equal results
+
+        def reserve():
+            token = sc.reserve('test@example.com', group=group)
+            reservations = sc.reservations_by_token(token).all()
+            self.assertEqual(len(reservations), 1)
+
+            reservation = reservations[0]
+
+            targets = reservation._target_allocations().all()
+            self.assertEqual(len(targets), 2)
+
+            sc.approve_reservation(token)
+
+            targets = reservation._target_allocations().all()
+            self.assertEqual(len(targets), 2)
+
+        reserve()
+        reserve()
+        reserve()
+
+    @serialized
     def test_invalid_reservation(self):
         sc = Scheduler(new_uuid())
 

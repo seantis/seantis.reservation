@@ -493,6 +493,10 @@ class Scheduler(object):
     def dates_by_group(self, group):
         query = Session.query(Allocation._start, Allocation._end)
         query = query.filter(Allocation.group == group)
+
+        # masters only to avoid duplicate dates
+        query = query.filter(Allocation.resource == Allocation.mirror_of)
+
         return query.all()
 
     def render_allocation(self, allocation):

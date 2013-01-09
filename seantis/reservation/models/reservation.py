@@ -73,10 +73,24 @@ class Reservation(TimestampMixin, ORMBase, OtherModels):
         Index('target_status_ix', 'status', 'target', 'id'),
     )
 
-    def allocations(self):
+    def _target_allocations(self):
+        """ Returns the allocations this reservation is targeting. This should
+        NOT be confused with db.allocations_by_reservation. The method in
+        the db module returns the actual allocations belonging to an approved
+        reservation.
+
+        This method only returns the master allocations to get information
+        about timespans and other properties. If you don't know exactly
+        what you're doing you do not want to use this method as misuse might
+        be dangerous.
+
+        """
         Allocation = self.models.Allocation
         query = Session.query(Allocation)
         query = query.filter(Allocation.group == self.target)
+
+        # master allocations only
+        query = query.filter(Allocation.resource == Allocation.mirror_of)
 
         return query
 
@@ -86,7 +100,10 @@ class Reservation(TimestampMixin, ORMBase, OtherModels):
             return [(self.start, self.end + timedelta(microseconds=1))]
         elif self.target_type == u'group':
             return [
-                (a.display_start, a.display_end) for a in self.allocations()
+                (
+                    a.display_start, a.display_end
+                )
+                for a in self._target_allocations()
             ]
         else:
             raise NotImplementedError
@@ -97,8 +114,10 @@ class Reservation(TimestampMixin, ORMBase, OtherModels):
 
     @property
     def autoapprovable(self):
-        Allocation = self.models.Allocation
-        query = self.allocations()
-        query = query.filter(Allocation.approve == True)
+        query = self._target_allocations()
+        query = query.filter(self.models.Allocation.approve == True)
 
-        return query.count() == 0
+        # A reservation is deemed autoapprovable if no allocation
+        # requires explicit approval
+
+        return query.first() is None
