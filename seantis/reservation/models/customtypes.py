@@ -1,6 +1,8 @@
 import uuid
 import json
 
+from seantis.reservation import utils
+
 from sqlalchemy.types import TypeDecorator, CHAR, TEXT
 from sqlalchemy.dialects.postgresql import UUID
 
@@ -52,11 +54,11 @@ class JSONEncodedDict(TypeDecorator):
 
     def process_bind_param(self, value, dialect):
         if value is not None:
-            value = json.dumps(value)
+            value = json.dumps(value, cls=utils.UserFormDataEncoder)
 
         return value
 
     def process_result_value(self, value, dialect):
         if value is not None:
-            value = json.loads(value)
+            value = json.loads(value, cls=utils.UserFormDataDecoder)
         return value

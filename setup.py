@@ -46,7 +46,8 @@ setup(name='seantis.reservation',
           'alembic',
           'xlwt',
           'tablib',
-          'mock'
+          'mock',
+          'isodate'
       ],
       entry_points="""
       # -*- Entry points: -*-

@@ -3,8 +3,10 @@ import time
 import json
 import collections
 import functools
+import isodate
+import base64
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from urlparse import urljoin
 from urllib import quote
 from itertools import tee, izip
@@ -25,6 +27,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.i18nl10n import weekdayname_msgid_abbr, monthname_msgid
 from z3c.form.interfaces import ActionExecutionError
 from plone.i18n.locales.languages import _languagelist
+from plone.app.textfield.value import RichTextValue
 
 from OFS.interfaces import IApplication
 from Products.CMFPlone.interfaces import IPloneSiteRoot
@@ -463,6 +466,71 @@ class SortedCollectionEncoder(json.JSONEncoder):
         if isinstance(obj, SortedCollection):
             return [o for o in obj]
         return json.JSONEncoder.default(self, obj)
+
+
+class UserFormDataEncoder(json.JSONEncoder):
+    """Encodes additional user data."""
+
+    def default(self, obj):
+
+        if isinstance(obj, datetime):
+            return '__datetime__@%s' % isodate.datetime_isoformat(obj)
+
+        if isinstance(obj, date):
+            return '__date__@%s' % isodate.date_isoformat(obj)
+
+        if isinstance(obj, RichTextValue):
+            return '__richtext__@%s' % base64.b64encode(json.dumps(dict(
+                raw=obj.raw,
+                encoding=obj.encoding,
+                mime=obj.mimeType,
+                output_mime=obj.outputMimeType
+            )))
+
+        return json.JSONEncoder.default(self, obj)
+
+
+class UserFormDataDecoder(json.JSONDecoder):
+    """Decodes additional user data."""
+
+    def decode(self, s):
+        decoded = userformdata_decode(s)
+        return decoded or json.JSONDecoder.decode(self, s)
+
+
+def userformdata_decode(s):
+    if s.startswith('__date__@'):
+        return isodate.parse_date(s[9:19])
+
+    if s.startswith('__datetime__@'):
+        return isodate.parse_datetime(s[13:32])
+
+    if s.startswith('__richtext__@'):
+        data = json.loads(base64.b64decode(s[13:]))
+        return RichTextValue(
+            raw=data['raw'],
+            mimeType=data['mime'],
+            outputMimeType=data['output_mime'],
+            encoding=data['encoding']
+        )
+
+    return None
+
+
+def decode_for_display(s):
+
+    decoded = userformdata_decode(s)
+
+    if isinstance(decoded, datetime):
+        return decoded.strftime('%d.%m.%Y %H:%M')
+
+    if isinstance(decoded, date):
+        return decoded.strftime('%d.%m.%Y')
+
+    if isinstance(decoded, RichTextValue):
+        return decoded.output
+
+    return s
 
 
 def event_class(availability):

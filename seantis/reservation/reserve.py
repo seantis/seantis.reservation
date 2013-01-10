@@ -84,23 +84,44 @@ class ReservationSchemata(object):
 
         return scs
 
+
+class SessionFormdataMixin(ReservationSchemata):
+
     def email(self, form_data=None):
-        email = plone_session.get_email(self.context)
-        if email is None and form_data is not None:
+
+        if not form_data or not form_data.get('email'):
+            email = plone_session.get_email(self.context)
+        else:
             email = form_data['email']
             plone_session.set_email(self.context, email)
+
         return email
 
+    def merge_formdata(self, existing, new):
+
+        for form in new:
+            existing[form] = new[form]
+
+        return existing
+
     def additional_data(self, form_data=None):
-        additional_data = plone_session.get_additional_data(self.context)
-        if additional_data is None and form_data is not None:
-            additional_data = utils.additional_data_dictionary(
-                form_data, self.fti
+
+        if not form_data:
+            data = plone_session.get_additional_data(self.context)
+        else:
+            data = plone_session.get_additional_data(self.context) or dict()
+
+            # merge the formdata for session use only, committing the
+            # reservation only forms defined in the resource are
+            # stored with the reservation to get proper separation
+            data = self.merge_formdata(
+                plone_session.get_additional_data(self.context) or dict(),
+                utils.additional_data_dictionary(form_data, self.fti)
             )
-            plone_session.set_additional_data(
-                self.context, additional_data
-            )
-        return additional_data
+
+            plone_session.set_additional_data(self.context, data)
+
+        return data
 
     def session_id(self):
         return plone_session.get_session_id(self.context)
@@ -168,13 +189,30 @@ class ReservationBaseForm(ResourceBaseForm):
 
     def updateFields(self):
         self.form.groups = []
-        if self.email() is not None:
-            self.fields = self.fields.omit('email')
-
-        if self.additional_data() is not None:
-            return
 
         ResourceBaseForm.updateFields(self)
+
+        self.form.fields['email'].field.default = self.email() or u''
+
+        data = self.additional_data()
+
+        if not data:
+            return
+
+        fieldvalues = dict()
+
+        for form in data:
+            for field in data[form]['values']:
+                fieldvalues["%s.%s" % (form, field['key'])] = field['value']
+
+        for group in self.form.groups:
+
+            for key, field in group.fields.items():
+
+                if not key in fieldvalues:
+                    continue
+
+                field.field.default = fieldvalues[key]
 
     def run_reserve(self, data, autoapprove, start=None, end=None, group=None):
 
@@ -184,6 +222,11 @@ class ReservationBaseForm(ResourceBaseForm):
         email = self.email(data)
         additional_data = self.additional_data(data)
         session_id = self.session_id()
+
+        # only store forms defined in the formsets list
+        additional_data = dict(
+            (form, additional_data[form]) for form in self.context.formsets
+        )
 
         if start and end:
             token = self.scheduler.reserve(email,
@@ -203,7 +246,7 @@ class ReservationBaseForm(ResourceBaseForm):
 
 class ReservationForm(
         ReservationBaseForm,
-        ReservationSchemata,
+        SessionFormdataMixin,
         YourReservationsData
     ):
 
