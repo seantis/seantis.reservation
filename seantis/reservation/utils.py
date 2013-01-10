@@ -474,13 +474,13 @@ class UserFormDataEncoder(json.JSONEncoder):
     def default(self, obj):
 
         if isinstance(obj, datetime):
-            return '__datetime__@%s' % isodate.datetime_isoformat(obj)
+            return u'__datetime__@%s' % isodate.datetime_isoformat(obj)
 
         if isinstance(obj, date):
-            return '__date__@%s' % isodate.date_isoformat(obj)
+            return u'__date__@%s' % isodate.date_isoformat(obj)
 
         if isinstance(obj, RichTextValue):
-            return '__richtext__@%s' % base64.b64encode(json.dumps(dict(
+            return u'__richtext__@%s' % base64.b64encode(json.dumps(dict(
                 raw=obj.raw,
                 encoding=obj.encoding,
                 mime=obj.mimeType,
@@ -499,13 +499,13 @@ class UserFormDataDecoder(json.JSONDecoder):
 
 
 def userformdata_decode(s):
-    if s.startswith('__date__@'):
+    if s.startswith(u'__date__@'):
         return isodate.parse_date(s[9:19])
 
-    if s.startswith('__datetime__@'):
+    if s.startswith(u'__datetime__@'):
         return isodate.parse_datetime(s[13:32])
 
-    if s.startswith('__richtext__@'):
+    if s.startswith(u'__richtext__@'):
         data = json.loads(base64.b64decode(s[13:]))
         return RichTextValue(
             raw=data['raw'],
@@ -674,6 +674,11 @@ def utc_mktime(utc_tuple):
 def utctimestamp(dt):
     dt = dt.replace(tzinfo=pytz.utc)
     return utc_mktime(dt.timetuple())
+
+
+def utcnow():
+    """Returns the utc now function result with the correct timezone set. """
+    return datetime.utcnow().replace(tzinfo=pytz.utc)
 
 
 def merge_reserved_slots(slots):

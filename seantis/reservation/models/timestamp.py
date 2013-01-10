@@ -1,3 +1,5 @@
+import pytz
+
 from datetime import datetime
 
 from sqlalchemy import types
@@ -7,7 +9,7 @@ from sqlalchemy.ext.declarative import declared_attr
 
 
 def get_timestamp():
-    return datetime.utcnow()
+    return datetime.utcnow().replace(tzinfo=pytz.utc)
 
 
 class TimestampMixin(object):

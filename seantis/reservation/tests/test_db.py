@@ -108,7 +108,7 @@ class TestScheduler(IntegrationTestCase):
         # reserve the same thing three times, which should yield equal results
 
         def reserve():
-            token = sc.reserve('test@example.com', group=group)
+            token = sc.reserve(u'test@example.com', group=group)
             reservations = sc.reservations_by_token(token).all()
             self.assertEqual(len(reservations), 1)
 

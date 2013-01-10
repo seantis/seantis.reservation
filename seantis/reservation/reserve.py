@@ -225,7 +225,9 @@ class ReservationBaseForm(ResourceBaseForm):
 
         # only store forms defined in the formsets list
         additional_data = dict(
-            (form, additional_data[form]) for form in self.context.formsets
+            (
+                form, additional_data[form]
+            ) for form in self.context.formsets if form in additional_data
         )
 
         if start and end:
@@ -636,3 +638,21 @@ class ReservationList(grok.View, ReservationListView, ReservationUrls):
             return unicode(self.request['group'].decode('utf-8'))
         else:
             return u''
+
+
+class RemoveExpiredSessions(grok.View):
+
+    permission = "zope2.View"
+
+    grok.name('remove-expired-sessions')
+    grok.require(permission)
+
+    grok.context(Interface)
+
+    def render(self):
+        removed = db.remove_expired_reservation_sessions()
+
+        # don't give out the session ids to the public
+        log.info('removed the following reservation sessions: %s' % removed)
+
+        return "removed %i reservation sessions" % len(removed)

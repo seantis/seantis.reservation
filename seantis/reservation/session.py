@@ -378,7 +378,7 @@ def serialized(fn):
     """ A decorator to apply to any class method that needs to be serialized.
     """
     @functools.wraps(fn)
-    def wrapper(self, *args, **kwargs):
-        return serialized_call(fn)(self, *args, **kwargs)
+    def wrapper(*args, **kwargs):
+        return serialized_call(fn)(*args, **kwargs)
 
     return wrapper

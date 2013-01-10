@@ -4,7 +4,7 @@ log = getLogger('seantis.reservation')
 import math
 from uuid import UUID
 from uuid import uuid1 as new_uuid
-from datetime import datetime, MINYEAR, MAXYEAR
+from datetime import datetime, timedelta, MINYEAR, MAXYEAR
 from itertools import groupby
 
 from zope.event import notify
@@ -241,8 +241,60 @@ def remove_reservation_from_session(session_id, token):
     slots = Session.query(ReservedSlot).filter(
         ReservedSlot.reservation_token == token
     )
-    for slot in slots.all():
-        Session.delete(slot)
+
+    slots.delete('fetch')
+
+
+@serialized
+def remove_expired_reservation_sessions(expiration_date=None):
+    """ Goes through all reservations and removes the unconfirmed ones
+    which are older than the given expiration date. By default the
+    expiration date is now - 15 minutes.
+
+    Note that this method goes through ALL RESERVATIONS OF THE DATABASE. If
+    this is not desired have a look at buildout/database.cfg.example to
+    setup each site with its own database.
+
+    Since this only concerns 'old' sessions it shouldn't be a problem
+    however.
+
+    """
+
+    expiration_date = expiration_date or (
+        utils.utcnow() - timedelta(minutes=15)
+    )
+
+    # first get the session ids which are expired
+    query = Session.query(
+        Reservation.session_id,
+        func.max(Reservation.created),
+        func.max(Reservation.modified)
+    )
+
+    query = query.group_by(Reservation.session_id)
+    query = query.filter(Reservation.session_id != None)
+
+    # the idea is to remove all reservations belonging to sessions whose
+    # latest update is expired - either delete the whole session or let
+    # all of it be
+    expired_sessions = []
+
+    for session_id, created, modified in query.all():
+
+        modified = modified or created
+        assert created and modified
+
+        if created < expiration_date and modified < expiration_date:
+            expired_sessions.append(session_id)
+
+    # remove those session ids
+    if expired_sessions:
+        query = Session.query(Reservation)
+        query = query.filter(Reservation.session_id.in_(expired_sessions))
+
+        query.delete('fetch')
+
+    return expired_sessions
 
 
 class Scheduler(object):
