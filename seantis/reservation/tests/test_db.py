@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 from uuid import uuid1 as new_uuid
 
 from seantis.reservation.tests import IntegrationTestCase
-from seantis.reservation.db import Scheduler
 from seantis.reservation.error import OverlappingAllocationError
 from seantis.reservation.error import AffectedReservationError
 from seantis.reservation.error import AlreadyReservedError
@@ -13,6 +12,9 @@ from seantis.reservation.error import InvalidReservationError
 from seantis.reservation import utils
 from seantis.reservation.session import serialized
 from seantis.reservation import events
+
+from seantis.reservation import db
+Scheduler = db.Scheduler
 
 reservation_email = u'test@example.com'
 
@@ -125,6 +127,48 @@ class TestScheduler(IntegrationTestCase):
         reserve()
         reserve()
         reserve()
+
+    @serialized
+    def test_session_expiration(self):
+        sc = Scheduler(new_uuid())
+
+        session_id = new_uuid()
+
+        start, end = datetime(2013, 5, 1, 13, 0), datetime(2013, 5, 1, 14)
+
+        sc.allocate(dates=(start, end), approve=True)
+
+        sc.reserve(u'test@example.com', (start, end), session_id=session_id)
+
+        created = utils.utcnow()
+        db.Session.query(db.Reservation).filter(
+            db.Reservation.session_id == session_id
+        ).update({'created': created, 'modified': None})
+
+        expired = db.find_expired_reservation_sessions(expiration_date=created)
+        self.assertEqual(len(expired), 0)
+
+        expired = db.find_expired_reservation_sessions(
+            expiration_date=created + timedelta(microseconds=1)
+        )
+        self.assertEqual(len(expired), 1)
+
+        db.Session.query(db.Reservation).filter(
+            db.Reservation.session_id == session_id
+        ).update({
+            'created': created, 
+            'modified': created + timedelta(microseconds=1)
+        })
+
+        expired = db.find_expired_reservation_sessions(
+            expiration_date=created + timedelta(microseconds=1)
+        )
+        self.assertEqual(len(expired), 0)
+
+        expired = db.find_expired_reservation_sessions(
+            expiration_date=created + timedelta(microseconds=2)
+        )
+        self.assertEqual(len(expired), 1)
 
     @serialized
     def test_invalid_reservation(self):

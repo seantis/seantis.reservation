@@ -257,18 +257,14 @@ def remove_reservation_from_session(session_id, token):
     query.update({"modified": utils.utcnow()})
 
 
-@serialized
-def remove_expired_reservation_sessions(expiration_date=None):
-    """ Goes through all reservations and removes the unconfirmed ones
-    which are older than the given expiration date. By default the
-    expiration date is now - 15 minutes.
+def find_expired_reservation_sessions(expiration_date):
+    """ Goes through all reservations and returns the session ids of the
+    unconfirmed ones which are older than the given expiration date.
+    By default the expiration date is now - 15 minutes.
 
     Note that this method goes through ALL RESERVATIONS OF THE DATABASE. If
     this is not desired have a look at buildout/database.cfg.example to
     setup each site with its own database.
-
-    Since this only concerns 'old' sessions it shouldn't be a problem
-    however.
 
     """
 
@@ -296,8 +292,23 @@ def remove_expired_reservation_sessions(expiration_date=None):
         modified = modified or created
         assert created and modified
 
-        if created < expiration_date and modified < expiration_date:
+        if max(created, modified) < expiration_date:
             expired_sessions.append(session_id)
+
+    return expired_sessions
+
+
+@serialized
+def remove_expired_reservation_sessions(expiration_date=None):
+    """ Removes all reservations from all databases which have an
+    expired session_id.
+
+    Since this only concerns 'old' sessions it shouldn't be a problem
+    however.
+
+    """
+
+    expired_sessions = find_expired_reservation_sessions(expiration_date)
 
     # remove those session ids
     if expired_sessions:
