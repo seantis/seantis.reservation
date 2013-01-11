@@ -84,11 +84,6 @@ var CalendarGroups = function() {
                         calendar.is_moving = false;
                         calendar.refetch();
 
-                        // reload the inline view if it exists
-                        if (window.seantis_inline) {
-                            window.seantis_inline.fetch();
-                        }
-
                         if (onclose) {
                             _.defer(onclose);
                         }
@@ -136,9 +131,7 @@ var CalendarGroups = function() {
 
                             // setup all links with overlays
                             $.each($('a', target), function(ix, link) {
-
                                 calendar.overlay_init($(link));
-
                             });
 
                             // if there are data-group elements hook them up
@@ -168,6 +161,11 @@ var CalendarGroups = function() {
                         window.seantis_inline = {
                             fetch: fetch
                         };
+                        $(document).bind("reservations-changed", function() {
+                            if (window.seantis_inline) {
+                                window.seantis_inline.fetch();    
+                            }
+                        });
                         fetch();
                         seantis.contextmenu.close();
                         event.preventDefault();

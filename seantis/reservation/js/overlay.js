@@ -80,6 +80,7 @@ var reservation_overlay_init = null;
             seantis.formgroups.init(el);
             seantis.your_reservations.update();
             popups = get_popup_messages(el);
+            $(document).trigger('reservations-changed');
 
             // z3cform renders views with widget-only errors
             // with an empty field.error div

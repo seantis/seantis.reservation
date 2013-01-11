@@ -12,6 +12,10 @@
 
 <div class="inline-reservations" tal:attributes="data-group python: view.highlight_group">
   
+  <div class="uncommitted" i18n:translate="" tal:condition="view/uncommitted_reservations_count">
+    <tal:block content="view/uncommitted_reservations"></tal:block>
+  </div>
+
   <div class="splitscreen" >
 
     <h2 class="documentFirstHeading" i18n:translate="">Approved Reservations</h2>

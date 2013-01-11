@@ -136,7 +136,7 @@ id selector we need quite the selectors to get a higher weight...*/
 }
 
 #content .reservation-info {
-    margin: -15px auto 50px auto;   
+    margin: -10px auto 10px auto;   
 }
 
 #content .inline-reservations {
@@ -154,7 +154,7 @@ id selector we need quite the selectors to get a higher weight...*/
 }
 
 #content #inline-page h2 {
-     margin-top: 10px;   
+     margin-top: 10px;
 }
 
 a.reservation-delete {
@@ -449,4 +449,11 @@ body .portalMessage {
     text-align: center;
     color: #555;
     padding-top:8px;
+}
+
+/* reservations in progress */
+.uncommitted {
+    margin-top: -28px;
+    margin-bottom: 5px;
+    color: #757575;
 }

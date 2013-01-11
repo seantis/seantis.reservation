@@ -396,22 +396,30 @@ class ReservationListView(ReservationDataView):
     def display_date(self, start, end):
         return utils.display_date(start, end)  # kept here for use in template
 
+    def all_reservations(self):
+        scheduler = self.context.scheduler()
+
+        if self.reservation:
+            return scheduler.reservations_by_token(self.reservation)
+        if self.id:
+            return scheduler.reservations_by_allocation(self.id)
+        if self.group:
+            return scheduler.reservations_by_group(self.group)
+
+        return None
+
     def reservations(self, status):
         """ Returns all reservations relevant to this list in a dictionary
         keyed by reservation token.
 
         """
-        scheduler = self.context.scheduler()
-        if self.reservation:
-            query = scheduler.reservations_by_token(self.reservation)
-        elif self.id:
-            query = scheduler.reservations_by_allocation(self.id)
-        elif self.group:
-            query = scheduler.reservations_by_group(self.group)
-        else:
+        query = self.all_reservations()
+
+        if not query:
             return {}
 
         query = query.filter(Reservation.status == status)
+        query = query.filter(Reservation.session_id == None)
         query.order_by(Reservation.id)
 
         reservations = utils.OrderedDict()
@@ -422,6 +430,30 @@ class ReservationListView(ReservationDataView):
                 reservations[r.token] = [r]
 
         return reservations
+
+    @utils.cached_property
+    def uncommitted_reservations_count(self):
+        query = self.all_reservations()
+        query = query.filter(Reservation.session_id != None)
+
+        return query.count()
+
+    @property
+    def uncommitted_reservations(self):
+        count = self.uncommitted_reservations_count
+
+        if not count:
+            return u''
+
+        if count == 1:
+            return _(
+                u'There is one reservation being entered for this resource.'
+            )            
+
+        return _(
+            u'There are ${nb} reservations being entered for this resource.',
+            mapping={'nb': self.uncommitted_reservations_count}
+        )
 
     @utils.memoize
     def pending_reservations(self):
