@@ -1,15 +1,9 @@
-import pytz
-
-from datetime import datetime
-
 from sqlalchemy import types
 from sqlalchemy.orm import deferred
 from sqlalchemy.schema import Column
 from sqlalchemy.ext.declarative import declared_attr
 
-
-def get_timestamp():
-    return datetime.utcnow().replace(tzinfo=pytz.utc)
+from seantis.reservation import utils
 
 
 class TimestampMixin(object):
@@ -27,7 +21,7 @@ class TimestampMixin(object):
         return deferred(
             Column(
                 types.DateTime(timezone=True),
-                default=get_timestamp
+                default=utils.utcnow
             )
         )
 
@@ -36,6 +30,6 @@ class TimestampMixin(object):
         return deferred(
             Column(
                 types.DateTime(timezone=True),
-                onupdate=get_timestamp
+                onupdate=utils.utcnow
             )
         )

@@ -244,6 +244,18 @@ def remove_reservation_from_session(session_id, token):
 
     slots.delete('fetch')
 
+    # we also update the timestamp of existing reservations within
+    # the same session to ensure that we account for the user's activity
+    # properly during the session expiration cronjob. Otherwise it is possible
+    # that a user removes the latest reservations only to see the rest of them
+    # vanish because his older reservations were already old enough to be
+    # counted as expired
+
+    query = Session.query(Reservation)
+    query = query.filter(Reservation.session_id == session_id)
+
+    query.update({"modified": utils.utcnow()})
+
 
 @serialized
 def remove_expired_reservation_sessions(expiration_date=None):
