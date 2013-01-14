@@ -1,11 +1,11 @@
-New Reservation for %(resource)s
-================================
-We received your reservation for %(resource)s:
+Your Reservations
+=================
+We received the following Reservations:
 
-Dates:
-%(dates)s
+%(reservations)s
 
-Formdata:
-%(data)s
+Reservations marked with an asterisk (*) will be reviewed first, before
+you can consider them confirmed. You will receive an email once each reservation
+has been either approved or denied.
 
-Please let us know if the information above is incorrect while we review your reservation. Once our review is done you will receive another email.
+Reservations without an asterisk were automatically approved and are confirmed.

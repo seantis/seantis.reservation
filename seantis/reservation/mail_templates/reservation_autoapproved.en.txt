@@ -1,9 +1,0 @@
-Reservation Added to %(resource)s
-=================================
-Your reservation for %(resource)s was successfully added.
-
-Dates:
-%(dates)s
-
-Form data:
-%(data)s

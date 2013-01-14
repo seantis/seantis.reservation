@@ -1,3 +1,5 @@
+from itertools import groupby
+
 import logging
 logger = logging.getLogger('seantis.reservation')
 
@@ -7,7 +9,6 @@ from email.MIMEText import MIMEText
 from email.Header import Header
 from email.Utils import parseaddr, formataddr
 
-from zope.app.component.hooks import getSite
 from plone.dexterity.content import Item
 from plone.directives import form, dexterity
 from plone.memoize import view
@@ -15,7 +16,7 @@ from z3c.form import button
 
 from seantis.reservation.form import ReservationDataView
 from seantis.reservation.reserve import ReservationUrls
-from seantis.reservation.interfaces import IReservationMadeEvent
+from seantis.reservation.interfaces import IReservationsConfirmedEvent
 from seantis.reservation.interfaces import IReservationApprovedEvent
 from seantis.reservation.interfaces import IReservationDeniedEvent
 from seantis.reservation.interfaces import OverviewletManager
@@ -26,29 +27,28 @@ from seantis.reservation import settings
 from seantis.reservation import _
 
 
-@grok.subscribe(IReservationMadeEvent)
-def on_reservation_made(event):
-    if event.reservation.autoapprovable:
-        if settings.get('send_email_to_reservees', True):
-            send_reservation_mail(
-                event.reservation, 'reservation_autoapproved', event.language
-            )
-    else:
-        if settings.get('send_email_to_reservees', True):
-            send_reservation_mail(
-                event.reservation, 'reservation_received', event.language
-            )
+@grok.subscribe(IReservationsConfirmedEvent)
+def on_reservations_confirmed(event):
 
-        if settings.get('send_email_to_managers', True):
-            send_reservation_mail(
-                event.reservation, 'reservation_pending', event.language,
-                to_managers=True
+    # send one mail to the reservee
+    if settings.get('send_email_to_reservees', True):
+        send_reservations_confirmed(event.reservations, event.language)
+
+    # send many mails to the admins
+    if settings.get('send_email_to_managers', True):
+        for reservation in event.reservations:
+
+            if reservation.autoapprovable:
+                continue
+
+            send_reservation_mail(reservation,
+                'reservation_pending', event.language, to_managers=True
             )
 
 
 @grok.subscribe(IReservationApprovedEvent)
 def on_reservation_approved(event):
-    if not settings.get('send_email_to_reservees', False):
+    if not settings.get('send_email_to_reservees', True):
         return
     if not event.reservation.autoapprovable:
         send_reservation_mail(
@@ -58,7 +58,7 @@ def on_reservation_approved(event):
 
 @grok.subscribe(IReservationDeniedEvent)
 def on_reservation_denied(event):
-    if not settings.get('send_email_to_reservees', False):
+    if not settings.get('send_email_to_reservees', True):
         return
     if not event.reservation.autoapprovable:
         send_reservation_mail(
@@ -136,10 +136,69 @@ def get_email_content(context, email_type, language):
     return templates[email_type].get(language)
 
 
+def send_reservations_confirmed(reservations, language):
+
+    sender = utils.get_site_email_sender()
+
+    if not sender:
+        logging.warn('Cannot send email as no sender is configured')
+        return
+
+    # load resources
+    resources = dict()
+    for reservation in reservations:
+
+        if not reservation.resource in resources:
+            resources[reservation.resource] = utils.get_resource_by_uuid(
+                reservation.resource
+            ).getObject()
+
+            if not resources[reservation.resource]:
+                logging.warn(
+                    'Cannot send email as the resource does not exist'
+                )
+                return
+
+    # send reservations grouped by reservee email
+    groupkey = lambda r: r.email
+    by_recipient = groupby(sorted(reservations, key=groupkey), key=groupkey)
+
+    for recipient, grouped_reservations in by_recipient:
+
+        lines = []
+
+        for reservation in grouped_reservations:
+
+            resource = resources[reservation.resource]
+
+            prefix = reservation.autoapprovable and '* ' or ''
+            lines.append(prefix + utils.get_resource_title(resource))
+
+            for start, end in reservation.timespans():
+                lines.append(utils.display_date(start, end))
+
+            lines.append('')
+
+        # differs between resources
+        subject, body = get_email_content(resource,
+            'reservation_received', language
+        )
+
+        mail = ReservationMail(
+            resource, reservation,
+            sender=sender,
+            recipient=recipient,
+            subject=subject,
+            body=body,
+            reservations=lines[:-1]
+        )
+
+        send_mail(resource, mail)
+
+
 def send_reservation_mail(reservation, email_type, language,
                           to_managers=False):
 
-    context = getSite()
     resource = utils.get_resource_by_uuid(reservation.resource)
 
     # the resource doesn't currently exist in testing so we quietly
@@ -188,6 +247,7 @@ class ReservationMail(ReservationDataView, ReservationUrls):
     recipient = u''
     subject = u''
     body = u''
+    reservations = u''
 
     def __init__(self, resource, reservation, **kwargs):
         for k, v in kwargs.items():
@@ -206,6 +266,10 @@ class ReservationMail(ReservationDataView, ReservationUrls):
         # reservation email
         if is_needed('reservation_mail'):
             p['reservation_mail'] = reservation.email
+
+        # a list of reservations
+        if is_needed('reservations'):
+            p['reservations'] = '\n'.join(self.reservations)
 
         # a list of dates
         if is_needed('dates'):

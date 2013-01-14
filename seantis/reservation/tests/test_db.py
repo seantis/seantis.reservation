@@ -156,7 +156,7 @@ class TestScheduler(IntegrationTestCase):
         db.Session.query(db.Reservation).filter(
             db.Reservation.session_id == session_id
         ).update({
-            'created': created, 
+            'created': created,
             'modified': created + timedelta(microseconds=1)
         })
 
@@ -898,15 +898,20 @@ class TestScheduler(IntegrationTestCase):
         dates = (start, end)
 
         # one email is sent if there's no approval
+        session_id = new_uuid()
+
         allocation = sc.allocate(dates, approve=False)[0]
-        token = sc.reserve(reservation_email, dates, data=data)
+        token = sc.reserve(reservation_email,
+            dates, data=data, session_id=session_id
+        )
+        sc.confirm_reservations_for_session(session_id)
 
         self.assertEqual(len(mail.messages), 1)
-        self.assertTrue('Reservation Added' in mail.messages[0])
+        self.assertTrue('Your Reservations' in mail.messages[0])
+        self.assertTrue('* ' + resource.title in mail.messages[0])
         self.assertTrue(reservation_email in mail.messages[0])
-        assert_data_in_mail(mail.messages[0])
 
-        # the mail sending happens after before the (automatic) approval,
+        # the mail sending happens before the (automatic) approval,
         # so there should be no change after
         sc.approve_reservation(token)
 
@@ -919,15 +924,43 @@ class TestScheduler(IntegrationTestCase):
 
         sc.remove_allocation(allocation.id)
 
+        # make multiple reservations in one session to different email
+        # recipients. this should yield multiple mails
+        allocation = sc.allocate(dates, approve=False, quota=3)[0]
+
+        tokens = (sc.reserve(u'one@example.com',
+            dates, data=data, session_id=session_id
+        ),
+        sc.reserve(u'one@example.com',
+            dates, data=data, session_id=session_id
+        ),
+        sc.reserve(u'two@example.com',
+            dates, data=data, session_id=session_id
+        ))
+        sc.confirm_reservations_for_session(session_id)
+        map(sc.deny_reservation, tokens)
+
+        self.assertEqual(len(mail.messages), 2)
+        self.assertTrue('one@example.com' in mail.messages[0])
+        self.assertFalse('two@example.com' in mail.messages[0])
+        self.assertFalse('one@example.com' in mail.messages[1])
+        self.assertTrue('two@example.com' in mail.messages[1])
+
+        sc.remove_allocation(allocation.id)
+        mail.messages = []
+
         # now let's try with an approved reservation
         allocation = sc.allocate(dates, approve=True)[0]
-        token = sc.reserve(reservation_email, dates, data=data)
+        token = sc.reserve(reservation_email,
+            dates, data=data, session_id=session_id
+        )
+        sc.confirm_reservations_for_session(session_id)
 
         # no manager is defined, so we expect to have one email to the reservee
         self.assertEqual(len(mail.messages), 1)
-        self.assertTrue('New Reservation' in mail.messages[0])
+        self.assertTrue('Your Reservations' in mail.messages[0])
         self.assertTrue(reservation_email in mail.messages[0])
-        assert_data_in_mail(mail.messages[0])
+        self.assertFalse('* ' + resource.title in mail.messages[0])
 
         # let's decline that one
         sc.deny_reservation(token)
@@ -940,13 +973,15 @@ class TestScheduler(IntegrationTestCase):
         self.assign_reservation_manager('manager@example.com', resource)
         mail.messages = []
 
-        token = sc.reserve(reservation_email, dates, data=data)
+        token = sc.reserve(reservation_email,
+            dates, data=data, session_id=session_id
+        )
+        sc.confirm_reservations_for_session(session_id)
         self.assertEqual(len(mail.messages), 2)
 
         # the first email is the one sent to the reservee
-        self.assertTrue('New Reservation' in mail.messages[0])
+        self.assertTrue('Your Reservations' in mail.messages[0])
         self.assertTrue(reservation_email in mail.messages[0])
-        assert_data_in_mail(mail.messages[0])
 
         # the second is the on sent to the manager
         self.assertTrue('New Reservation' in mail.messages[1])

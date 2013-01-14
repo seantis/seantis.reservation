@@ -389,6 +389,11 @@ template_variables = _(
     u'%(denial_link)s - link to the denial view'
 )
 
+reservations_template_variables = _(
+    u'May contain the following template variable:<br>'
+    u'%(reservations)s - list of reservations'
+)
+
 
 class IEmailTemplate(form.Schema):
     """ An email template used for custom email messages """
@@ -424,23 +429,8 @@ class IEmailTemplate(form.Schema):
 
     reservation_received_content = schema.Text(
         title=_(u'Email Text for Received Reservations'),
-        description=template_variables,
+        description=reservations_template_variables,
         default=templates['reservation_received'].get_body('en')
-    )
-
-    reservation_autoapproved_subject = schema.TextLine(
-        title=_(u'Email Subject for Automatically Approved Reservations'),
-        description=_(
-            u'Sent to <b>users</b> when a new reservation is made. '
-            u'May contain the template variables listed below.'
-        ),
-        default=templates['reservation_autoapproved'].get_subject('en')
-    )
-
-    reservation_autoapproved_content = schema.Text(
-        title=_(u'Email Text for Automatically Approved Reservations'),
-        description=template_variables,
-        default=templates['reservation_autoapproved'].get_body('en')
     )
 
     reservation_approved_subject = schema.TextLine(

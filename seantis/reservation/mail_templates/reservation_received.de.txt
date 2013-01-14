@@ -1,11 +1,10 @@
-Neue Reservation für %(resource)s
-=================================
-Wir haben Ihre Reservation für %(resource)s erhalten:
+Ihre Reservationen
+==================
+Wir haben folgende Reservationen erhalten:
 
-Daten:
-%(dates)s
+%(reservations)s
 
-Formulardaten:
-%(data)s
+Die Reservationen die mit einem Stern (*) gekennzeichnet sind werden überprüft
+und entweder angenommmen oder abgelehnt. Sie werden dazu per Email informiert.
 
-Bitte teilen Sie uns mit, wenn Ihre Informationen inkorrekt sind. Wir werden in der Zwischenzeit Ihre Reservation prüfen und Ihnen anschliessend eine weitere Email senden.
+Reservationen ohne Stern wurden automatisch angenommen und sind somit definitiv.

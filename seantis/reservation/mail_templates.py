@@ -71,7 +71,6 @@ class MailTemplate(object):
 keys = [
     'reservation_approved',
     'reservation_pending',
-    'reservation_autoapproved',
     'reservation_received',
     'reservation_denied'
 ]

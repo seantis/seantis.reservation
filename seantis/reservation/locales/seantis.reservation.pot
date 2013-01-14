@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-01-11 14:06+0000\n"
+"POT-Creation-Date: 2013-01-14 14:25+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -53,7 +53,7 @@ msgstr ""
 msgid "A pending reservation would be affected by the requested change"
 msgstr ""
 
-#: ./mail.py:385
+#: ./mail.py:449
 msgid "Add email template"
 msgstr ""
 
@@ -157,7 +157,7 @@ msgid "Defines the minimum length of any given reservation as well as the alignm
 msgstr ""
 
 #: ./allocate.py:246
-#: ./mail.py:394
+#: ./mail.py:458
 #: ./report.py:234
 msgid "Delete"
 msgstr ""
@@ -205,7 +205,7 @@ msgid "Do you want to reserve the following allocations?"
 msgstr ""
 
 #: ./allocate.py:199
-#: ./mail.py:393
+#: ./mail.py:457
 #: ./resource.py:238
 msgid "Edit"
 msgstr ""
@@ -227,23 +227,19 @@ msgstr ""
 msgid "Email Notifications for Reservees"
 msgstr ""
 
-#: ./interfaces.py:447
+#: ./interfaces.py:437
 msgid "Email Subject for Approved Reservations"
 msgstr ""
 
-#: ./interfaces.py:432
-msgid "Email Subject for Automatically Approved Reservations"
-msgstr ""
-
-#: ./interfaces.py:460
+#: ./interfaces.py:450
 msgid "Email Subject for Denied Reservations"
 msgstr ""
 
-#: ./interfaces.py:417
+#: ./interfaces.py:422
 msgid "Email Subject for Received Reservations"
 msgstr ""
 
-#: ./interfaces.py:402
+#: ./interfaces.py:407
 msgid "Email Subject for Reservation Pending"
 msgstr ""
 
@@ -256,23 +252,19 @@ msgstr ""
 msgid "Email Templates"
 msgstr ""
 
-#: ./interfaces.py:454
+#: ./interfaces.py:444
 msgid "Email Text for Approved Reservations"
 msgstr ""
 
-#: ./interfaces.py:441
-msgid "Email Text for Automatically Approved Reservations"
-msgstr ""
-
-#: ./interfaces.py:467
+#: ./interfaces.py:457
 msgid "Email Text for Denied Reservations"
 msgstr ""
 
-#: ./interfaces.py:426
+#: ./interfaces.py:431
 msgid "Email Text for Received Reservations"
 msgstr ""
 
-#: ./interfaces.py:411
+#: ./interfaces.py:416
 msgid "Email Text for Reservation Pending"
 msgstr ""
 
@@ -393,7 +385,7 @@ msgstr ""
 msgid "Invalid reservation request"
 msgstr ""
 
-#: ./interfaces.py:397
+#: ./interfaces.py:402
 msgid "Language"
 msgstr ""
 
@@ -413,11 +405,15 @@ msgstr ""
 msgid "Manage"
 msgstr ""
 
+#: ./interfaces.py:392
+msgid "May contain the following template variable:<br>%(reservations)s - list of reservations"
+msgstr ""
+
 #: ./interfaces.py:382
 msgid "May contain the following template variables:<br>%(resource)s - title of the resource<br>%(dates)s - list of dates reserved<br>%(reservation_mail)s - email of reservee<br>%(data)s - formdata associated with the reservation<br>%(approval_link)s - link to the approval view<br>%(denial_link)s - link to the denial view"
 msgstr ""
 
-#: ./interfaces.py:491
+#: ./interfaces.py:481
 msgid "Metadata"
 msgstr ""
 
@@ -547,7 +543,7 @@ msgstr ""
 msgid "Remove reservation"
 msgstr ""
 
-#: ./interfaces.py:535
+#: ./interfaces.py:525
 msgid "Reservation"
 msgstr ""
 
@@ -613,7 +609,7 @@ msgstr ""
 msgid "Sa"
 msgstr ""
 
-#: ./mail.py:337
+#: ./mail.py:401
 #: ./timeframe.py:83
 msgid "Save"
 msgstr ""
@@ -634,23 +630,19 @@ msgstr ""
 msgid "Send emails about new pending reservations to the first reservation managers found in the path."
 msgstr ""
 
-#: ./interfaces.py:403
+#: ./interfaces.py:408
 msgid "Sent to <b>managers</b> when a new pending reservation is made. May contain the template variables listed below."
 msgstr ""
 
-#: ./interfaces.py:418
+#: ./interfaces.py:423
 msgid "Sent to <b>users</b> when a new pending reservation is made. May contain the template variables listed below."
 msgstr ""
 
-#: ./interfaces.py:433
-msgid "Sent to <b>users</b> when a new reservation is made. May contain the template variables listed below."
-msgstr ""
-
-#: ./interfaces.py:448
+#: ./interfaces.py:438
 msgid "Sent to <b>users</b> when a reservation is approved. May contain the template variables listed below."
 msgstr ""
 
-#: ./interfaces.py:461
+#: ./interfaces.py:451
 msgid "Sent to <b>users</b> when a reservation is denied. May contain the template variables listed below."
 msgstr ""
 
@@ -744,7 +736,7 @@ msgstr ""
 msgid "There is one reservation being entered for this resource."
 msgstr ""
 
-#: ./mail.py:322
+#: ./mail.py:386
 msgid "There's already an Email template in the same folder for the same language"
 msgstr ""
 

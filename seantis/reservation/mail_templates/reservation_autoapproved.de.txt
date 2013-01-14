@@ -1,9 +1,0 @@
-Reservation für %(resource)s hinzugefügt
-========================================
-Ihre Reservation für %(resource)s wurde erfolgreich hinzugefügt.
-
-Daten:
-%(dates)s
-
-Formulardaten:
-%(data)s
