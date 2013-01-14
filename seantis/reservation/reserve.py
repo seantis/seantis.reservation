@@ -142,13 +142,13 @@ class YourReservationsData(object):
 
     def confirm_reservations(self, token=None):
         # Remove session_id from all reservations in the current session.
-        db.confirm_reservations_for_session(
+        self.scheduler.confirm_reservations_for_session(
             plone_session.get_session_id(self.context), token
         )
 
     def remove_reservation(self, token):
         session_id = plone_session.get_session_id(self.context)
-        db.remove_reservation_from_session(session_id, token)
+        self.scheduler.remove_reservation_from_session(session_id, token)
 
     def reservation_data(self):
         """ Prepares data to be shown in the my reservation's table """

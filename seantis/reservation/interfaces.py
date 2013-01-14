@@ -576,3 +576,15 @@ class IReservationApprovedEvent(IReservationBaseEvent):
 
 class IReservationDeniedEvent(IReservationBaseEvent):
     """ Event triggered when a reservation is denied. """
+
+
+class IReservationsConfirmedEvent(Interface):
+    """ Event triggered when the user confirms a list of reservations
+    (i.e. submits them).
+
+    Note how this is not a IReservationBaseEvent because it contains
+    _multiple_ reservations, not just one.
+
+    """
+    reservations = Attribute("The list of reservations the user confirmed")
+    language = Attribute("language of the site or current request")
