@@ -852,14 +852,18 @@ class Scheduler(object):
         # write out the slots
         slots_to_reserve = []
 
-        # we must expect multiple reservation entries per token in the near
-        # future
+        # we must expect multiple reservation entries per token in the future
         for reservation in query:
 
             if reservation.target_type == u'group':
                 dates = self.dates_by_group(reservation.target)
             else:
                 dates = ((reservation.start, reservation.end),)
+
+            # the reservation quota is simply implemented by multiplying the
+            # dates which are approved
+
+            dates = dates * reservation.quota
 
             for start, end in dates:
 

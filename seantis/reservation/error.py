@@ -97,8 +97,7 @@ errormap = {
     _(u'The item does no longer exist.'),
 
     AlreadyReservedError:
-    _(u'The requested period is no longer available and there is no waiting '
-      u'list.'),
+    _(u'The requested period is no longer available.'),
 
     IntegrityError:
     _(u'Invalid change. Your request may have already been processed '
@@ -118,8 +117,7 @@ errormap = {
     _(u'The given reservation paramters are invalid.'),
 
     FullWaitingList:
-    _(u'The requested period is no longer available and the waiting list is '
-      u'full.'),
+    _(u'The waitinglist is full.'),
 
     InvalidReservationToken:
     _(u'The given reservation token is invalid.'),
