@@ -83,8 +83,8 @@
                 </div>
             </div>
 
-            <div class="reservation-quota">
-              <tal:block content="structure python: view.reservation_quota(token)"></tal:block>
+            <div class="reservation-quota" tal:condition="python: view.reservation_quota(token) > 1" tal:attributes="data-reservaiton-quota python: view.reservation_quota(token)">
+              <tal:block content="structure python: view.reservation_quota_text(token)"></tal:block>
             </div>
           </tal:block>
 
@@ -132,8 +132,8 @@
                   <div style="clear: both;"></div>
                 </div>
             </div>
-            <div class="reservation-quota">
-              <tal:block content="structure python: view.reservation_quota(token)"></tal:block>
+            <div class="reservation-quota" tal:condition="python: view.reservation_quota(token) > 1" tal:attributes="data-reservaiton-quota python: view.reservation_quota(token)">
+              <tal:block content="structure python: view.reservation_quota_text(token)"></tal:block>
             </div>
           </tal:block>
         </tal:block>

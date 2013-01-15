@@ -384,7 +384,7 @@ class ReservationListView(ReservationDataView):
         reservation = self.reservation_by_token(token)
         return reservation and reservation.title or u''
 
-    def reservation_quota(self, token):
+    def reservation_quota_text(self, token):
         """ Returns the reservation quota information to be printed at
         the bottom of the reservation.
 
@@ -393,12 +393,14 @@ class ReservationListView(ReservationDataView):
         reservation = self.reservation_by_token(token)
         quota = reservation and reservation.quota or 0
 
-        if quota == 1:
-            return _(u'one reservation')
-        else:
-            return _(u'<b>${quota}</b> reservations at once', mapping={
-                'quota': quota
-            })
+        if quota > 1:
+            return _(u'<b>${quota}</b> reservations at once',
+                mapping={'quota': quota}
+            )
+
+    def reservation_quota(self, token):
+        reservation = self.reservation_by_token(token)
+        return reservation and reservation.quota or 0
 
     def extended_info(self, token):
         """ Returns the extended info dictionary to be printed in the detail
