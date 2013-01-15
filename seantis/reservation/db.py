@@ -765,7 +765,7 @@ class Scheduler(object):
                     if allocation.reservation_quota_limit < quota:
                         raise QuotaOverLimit
 
-                if allocation.quota < allocation.reservation_quota_limit:
+                if allocation.quota < quota:
                     raise QuotaImpossible
 
                 if quota < 1:
