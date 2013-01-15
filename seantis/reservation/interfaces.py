@@ -172,6 +172,15 @@ class IResourceAllocationDefaults(form.Schema):
         default=100
     )
 
+    reservation_quota_limit = schema.Int(
+        title=_(u'Reservation Quota Limit'),
+        description=_(
+            u'The maximum quota a single reservation may occupy at once. '
+            u'There is no limit if set to zero.'
+        ),
+        default=0
+    )
+
     @invariant
     def isValidQuota(Allocation):
         if not (1 <= Allocation.quota and Allocation.quota <= 100):

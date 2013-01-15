@@ -73,7 +73,7 @@ class Reservation(TimestampMixin, ORMBase, OtherModels):
         customtypes.GUID()
     )
 
-    count = Column(
+    quota = Column(
         types.Integer(),
         nullable=False
     )

@@ -36,6 +36,10 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
     partly_available = Column(types.Boolean(), default=False)
     approve = Column(types.Boolean(), default=True)
 
+    reservation_quota_limit = Column(
+        types.Integer(), default=0, nullable=False
+    )
+
     # waiting list spots are interpreted like this:
     # <1 = no spots on the waiting list
     # >0 = n spots on the waiting list

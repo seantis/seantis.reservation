@@ -59,9 +59,21 @@ def upgrade_to_1001(operations, metadata):
 def upgrade_1001_to_1002(operations, metadata):
 
     reservations_table = Table('reservations', metadata, autoload=True)
-    if 'count' not in reservations_table.columns:
+    if 'quota' not in reservations_table.columns:
         operations.add_column('reservations',
-            Column('count',
+            Column('quota',
                 types.Integer(), nullable=False, server_default='1'
+            )
+        )
+
+
+@db_upgrade
+def upgrade_1002_to_1003(operations, metadata):
+
+    allocations_table = Table('allocations', metadata, autoload=True)
+    if 'reservation_quota_limit' not in allocations_table.columns:
+        operations.add_column('allocations',
+            Column('reservation_quota_limit',
+                types.Integer(), nullable=False, server_default='0'
             )
         )

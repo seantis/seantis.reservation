@@ -72,11 +72,20 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
 </genericsetup:upgradeStep>
 
 <genericsetup:upgradeStep
-    title="Adds 'count' column to 'reservations' SQL DB table"
+    title="Adds 'quota' column to 'reservations' SQL DB table"
     description=""
     source="1001"
     destination="1002"
     handler=".upgrades.upgrade_1001_to_1002"
+    profile="seantis.reservation:default">
+</genericsetup:upgradeStep>
+
+<genericsetup:upgradeStep
+    title="Adds 'reservation_quota_limit' column to 'allocations' SQL DB table"
+    description=""
+    source="1002"
+    destination="1003"
+    handler=".upgrades.upgrade_1002_to_1003"
     profile="seantis.reservation:default">
 </genericsetup:upgradeStep>
 
