@@ -35,7 +35,8 @@ from seantis.reservation.error import (
     InvalidReservationToken,
     InvalidReservationError,
     QuotaOverLimit,
-    InvalidQuota
+    InvalidQuota,
+    QuotaImpossible
 )
 
 from seantis.reservation.session import serialized
@@ -667,9 +668,14 @@ class Scheduler(object):
             change.start = new.start
             change.end = new.end
             change.group = group or master.group
-            change.waitinglist_spots = waitinglist_spots
-            change.approve = approve
-            change.reservation_quota_limit = reservation_quota_limit
+
+        # the following attributes must be equal over all group members
+        # (this still allows to use move_allocation to remove an allocation
+        #  from an existing group by specifiying the new group)
+        for allocation in self.allocations_by_group(group or master.group):
+            allocation.waitinglist_spots = waitinglist_spots
+            allocation.approve = approve
+            allocation.reservation_quota_limit = reservation_quota_limit
 
     @serialized
     def remove_allocation(self, id=None, group=None):
@@ -758,6 +764,9 @@ class Scheduler(object):
                 if allocation.reservation_quota_limit > 0:
                     if allocation.reservation_quota_limit < quota:
                         raise QuotaOverLimit
+
+                if allocation.quota < allocation.reservation_quota_limit:
+                    raise QuotaImpossible
 
                 if quota < 1:
                     raise InvalidQuota

@@ -75,6 +75,10 @@ class InvalidQuota(ReservationError):
     pass
 
 
+class QuotaImpossible(ReservationError):
+    pass
+
+
 errormap = {
 
     OverlappingAllocationError:
@@ -127,5 +131,9 @@ errormap = {
     _(u'The requested reservation quota is higher than allowed.'),
 
     InvalidQuota:
-    _(u'The requested quota is invalid (must be at least one).')
+    _(u'The requested quota is invalid (must be at least one).'),
+
+    QuotaImpossible:
+    _(u'The allocation does not have enough spots to possibly satisfy the '
+      u'requested reservation quota.')
 }
