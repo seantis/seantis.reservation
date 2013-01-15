@@ -178,7 +178,7 @@ class IResourceAllocationDefaults(form.Schema):
             u'The maximum quota a single reservation may occupy at once. '
             u'There is no limit if set to zero.'
         ),
-        default=0
+        default=1
     )
 
     @invariant
@@ -514,6 +514,12 @@ class IReservation(Interface):
         required=False
     )
 
+    quota = schema.Int(
+        title=_(u'Reservation Quota'),
+        required=False,
+        default=1
+    )
+
     email = EmailField(
         title=_(u'Email'),
         required=True
@@ -526,6 +532,12 @@ class IGroupReservation(Interface):
     group = schema.Text(
         title=_(u'Recurrence'),
         required=False
+    )
+
+    quota = schema.Int(
+        title=_(u'Reservation Quota'),
+        required=False,
+        default=1
     )
 
     email = EmailField(

@@ -66,6 +66,15 @@ class InvalidReservationToken(ReservationError):
 class InvalidReservationError(ReservationError):
     pass
 
+
+class QuotaOverLimit(ReservationError):
+    pass
+
+
+class InvalidQuota(ReservationError):
+    pass
+
+
 errormap = {
 
     OverlappingAllocationError:
@@ -112,5 +121,11 @@ errormap = {
     _(u'The given reservation token is invalid.'),
 
     InvalidReservationError:
-    _(u'The given reservation paramters are invalid.')
+    _(u'The given reservation paramters are invalid.'),
+
+    QuotaOverLimit:
+    _(u'The requested reservation quota is higher than allowed.'),
+
+    InvalidQuota:
+    _(u'The requested quota is invalid (must be at least one).')
 }

@@ -20,19 +20,24 @@ from seantis.reservation.events import (
     ReservationsConfirmedEvent
 )
 
-from seantis.reservation.models import Allocation
-from seantis.reservation.models import ReservedSlot
-from seantis.reservation.models import Reservation
-from seantis.reservation.error import OverlappingAllocationError
-from seantis.reservation.error import AffectedReservationError
-from seantis.reservation.error import AffectedPendingReservationError
-from seantis.reservation.error import AlreadyReservedError
-from seantis.reservation.error import NotReservableError
-from seantis.reservation.error import ReservationTooLong
-from seantis.reservation.error import FullWaitingList
-from seantis.reservation.error import ReservationParametersInvalid
-from seantis.reservation.error import InvalidReservationToken
-from seantis.reservation.error import InvalidReservationError
+from seantis.reservation.models import (
+    Allocation, ReservedSlot, Reservation
+)
+from seantis.reservation.error import (
+    OverlappingAllocationError,
+    AffectedReservationError,
+    AffectedPendingReservationError,
+    AlreadyReservedError,
+    NotReservableError,
+    ReservationTooLong,
+    FullWaitingList,
+    ReservationParametersInvalid,
+    InvalidReservationToken,
+    InvalidReservationError,
+    QuotaOverLimit,
+    InvalidQuota
+)
+
 from seantis.reservation.session import serialized
 from seantis.reservation.raster import rasterize_span, MIN_RASTER_VALUE
 from seantis.reservation.interfaces import validate_email
@@ -695,7 +700,7 @@ class Scheduler(object):
 
     @serialized
     def reserve(self, email, dates=None, group=None, data=None,
-                session_id=None):
+                session_id=None, quota=1):
         """ First step of the reservation.
 
         Seantis.reservation uses a two-step reservation process. The first
@@ -750,6 +755,13 @@ class Scheduler(object):
                     if not self.find_spot(allocation, start, end):
                         raise AlreadyReservedError
 
+                if allocation.reservation_quota_limit > 0:
+                    if allocation.reservation_quota_limit < quota:
+                        raise QuotaOverLimit
+
+                if quota < 1:
+                    raise InvalidQuota
+
         # ok, we're good to go
         token = new_uuid()
         found = 0
@@ -768,6 +780,7 @@ class Scheduler(object):
             reservation.data = data
             reservation.session_id = session_id
             reservation.email = email
+            reservation.quota = quota
             Session.add(reservation)
         else:
             groups = []
@@ -793,6 +806,7 @@ class Scheduler(object):
                     reservation.data = data
                     reservation.session_id = session_id
                     reservation.email = email
+                    reservation.quota = quota
                     Session.add(reservation)
 
                     groups.append(allocation.group)

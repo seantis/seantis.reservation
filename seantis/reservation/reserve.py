@@ -214,7 +214,8 @@ class ReservationBaseForm(ResourceBaseForm):
 
                 field.field.default = fieldvalues[key]
 
-    def run_reserve(self, data, autoapprove, start=None, end=None, group=None):
+    def run_reserve(self,
+        data, autoapprove, start=None, end=None, group=None, quota=1):
 
         assert (start and end) or group
         assert not (start and end and group)
@@ -231,12 +232,12 @@ class ReservationBaseForm(ResourceBaseForm):
         )
 
         if start and end:
-            token = self.scheduler.reserve(email,
-                (start, end), data=additional_data, session_id=session_id
+            token = self.scheduler.reserve(email, (start, end),
+                data=additional_data, session_id=session_id, quota=quota
             )
         else:
-            token = self.scheduler.reserve(email,
-                group=group, data=additional_data, session_id=session_id,
+            token = self.scheduler.reserve(email, group=group,
+                data=additional_data, session_id=session_id, quota=quota
             )
 
         if autoapprove:
@@ -269,6 +270,19 @@ class ReservationForm(
     default_fieldset_label = _(u'General Information')
 
     @property
+    def hidden_fields(self):
+        hidden = ['id', 'metadata']
+
+        try:
+            allocation = self.id and self.allocation(self.id)
+            if allocation.reservation_quota_limit == 1:
+                hidden.append('quota')
+        except DirtyReadOnlySession:
+            pass
+
+        return hidden
+
+    @property
     def disabled_fields(self):
         disabled = ['day']
         try:
@@ -280,7 +294,7 @@ class ReservationForm(
         return disabled
 
     def defaults(self, **kwargs):
-        return dict(id=self.id)
+        return dict(id=self.id, quota=1)
 
     def allocation(self, id):
         return self.scheduler.allocation_by_id(id)
@@ -319,10 +333,11 @@ class ReservationForm(
 
         start, end = self.validate(data)
         autoapprove = not self.allocation(data['id']).approve
+        quota = int(data['quota'])
 
         def reserve():
-            self.run_reserve(
-                data=data, autoapprove=autoapprove, start=start, end=end
+            self.run_reserve(data=data, autoapprove=autoapprove,
+                start=start, end=end, quota=quota
             )
 
         action = throttled(reserve, self.context, 'reserve')
@@ -357,7 +372,7 @@ class ReservationForm(
 class GroupReservationForm(
         ReservationBaseForm,
         AllocationGroupView,
-        ReservationSchemata,
+        SessionFormdataMixin,
         YourReservationsData
     ):
     permission = 'seantis.reservation.SubmitReservation'
@@ -372,15 +387,31 @@ class GroupReservationForm(
 
     template = ViewPageTemplateFile('templates/reserve_group.pt')
 
-    hidden_fields = ['group']
     ignore_requirements = True
 
     autoGroups = True
     enable_form_tabbing = True
     default_fieldset_label = _(u'General Information')
 
+    @property
+    def hidden_fields(self):
+        hidden = ['group', 'metadata']
+
+        try:
+            allocation = self.group and self.scheduler.allocations_by_group(
+                self.group
+            ).first()
+
+            if allocation.reservation_quota_limit == 1:
+                hidden.append('quota')
+
+        except DirtyReadOnlySession:
+            pass
+
+        return hidden
+
     def defaults(self, **kwargs):
-        return dict(group=self.group)
+        return dict(group=self.group, quota=1)
 
     @button.buttonAndHandler(_(u'Reserve'))
     @extract_action_data
@@ -390,8 +421,8 @@ class GroupReservationForm(
             .first().approve
 
         def reserve():
-            self.run_reserve(
-                data=data, autoapprove=autoapprove, group=data['group']
+            self.run_reserve(data=data, autoapprove=autoapprove,
+                group=data['group'], quota=data['quota']
             )
 
         action = throttled(reserve, self.context, 'reserve')
