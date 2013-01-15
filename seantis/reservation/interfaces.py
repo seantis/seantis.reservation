@@ -194,6 +194,13 @@ class IResourceAllocationDefaults(form.Schema):
                 _(u'Waitinglist length must be between the quota and 100')
             )
 
+    @invariant
+    def isValidQuotaLimit(Allocation):
+        if Allocation.reservation_quota_limit < 0:
+            raise Invalid(
+                _(u'Reservation quota limit must zero or a positive number')
+            )
+
 
 class IResourceBase(IResourceAllocationDefaults):
     """ A resource displaying a calendar. """
@@ -234,7 +241,7 @@ class IResourceBase(IResourceAllocationDefaults):
         label=_(u'Default Allocation Values'),
         fields=(
             'quota', 'partly_available', 'raster', 'approve',
-            'waitinglist_spots'
+            'waitinglist_spots', 'reservation_quota_limit'
         )
     )
 

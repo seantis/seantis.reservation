@@ -312,7 +312,9 @@ class Scheduler(object):
 
     @serialized
     def allocate(self, dates, raster=15, quota=None, partly_available=False,
-                 grouped=False, waitinglist_spots=None, approve=True):
+                 grouped=False, waitinglist_spots=None, approve=True,
+                 reservation_quota_limit=0
+                 ):
         """Allocates a spot in the calendar.
 
         An allocation defines a timerange which can be reserved. No
@@ -376,6 +378,7 @@ class Scheduler(object):
             allocation.partly_available = partly_available
             allocation.waitinglist_spots = waitinglist_spots
             allocation.approve = approve
+            allocation.reservation_quota_limit = reservation_quota_limit
 
             if grouped:
                 allocation.group = group
@@ -597,7 +600,7 @@ class Scheduler(object):
     @serialized
     def move_allocation(self, master_id, new_start=None, new_end=None,
                         group=None, new_quota=None, waitinglist_spots=None,
-                        approve=None):
+                        approve=None, reservation_quota_limit=0):
 
         assert master_id
         assert any([new_start and new_end, group, new_quota])
@@ -661,6 +664,7 @@ class Scheduler(object):
             change.group = group or master.group
             change.waitinglist_spots = waitinglist_spots
             change.approve = approve
+            change.reservation_quota_limit = reservation_quota_limit
 
     @serialized
     def remove_allocation(self, id=None, group=None):

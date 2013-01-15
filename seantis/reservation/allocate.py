@@ -36,7 +36,7 @@ class AllocationAddForm(AllocationForm):
         'id', 'group', 'timeframes', 'start_time', 'end_time',
         'recurring', 'day', 'recurrence_start', 'recurrence_end',
         'days', 'separately', 'quota', 'partly_available', 'raster',
-        'approve', 'waitinglist_spots'
+        'approve', 'waitinglist_spots', 'reservation_quota_limit'
     )
     fields['days'].widgetFactory = CheckBoxFieldWidget
     fields['recurring'].widgetFactory = RadioFieldWidget
@@ -64,6 +64,7 @@ class AllocationAddForm(AllocationForm):
             'waitinglist_spots': self.context.waitinglist_spots,
             'raster': self.context.raster,
             'partly_available': self.context.partly_available,
+            'reservation_quota_limit': self.context.reservation_quota_limit
         }
 
     def timeframes(self):
@@ -131,7 +132,9 @@ class AllocationAddForm(AllocationForm):
                 partly_available=data['partly_available'],
                 grouped=not data['separately'],
                 waitinglist_spots=data['waitinglist_spots'],
-                approve=data['approve']
+                approve=data['approve'],
+                reservation_quota_limit=data['reservation_quota_limit']
+
             )
             self.flash(_(u'Allocation added'))
 
@@ -159,6 +162,7 @@ class AllocationEditForm(AllocationForm):
         'quota',
         'approve',
         'waitinglist_spots',
+        'reservation_quota_limit'
     )
     label = _(u'Edit allocation')
 
@@ -193,6 +197,8 @@ class AllocationEditForm(AllocationForm):
                 = allocation.approve
             self.fields['waitinglist_spots'].field.default \
                 = allocation.waitinglist_spots
+            self.fields['reservation_quota_limit'].field.default \
+                = allocation.reservation_quota_limit
 
         super(AllocationEditForm, self).update(**kwargs)
 
@@ -213,7 +219,8 @@ class AllocationEditForm(AllocationForm):
             unicode(data['group'] or u''),
             data['quota'],
             data['waitinglist_spots'],
-            data['approve']
+            data['approve'],
+            data['reservation_quota_limit']
         )
 
         def edit():
