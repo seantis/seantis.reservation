@@ -23,13 +23,13 @@
     <div class="reservation-info reservation-approved" metal:define-macro="approved_reservations">
         
         <tal:block tal:repeat="group python: view.approved_reservations().items()">
-          
-            <div class="reservation"
-                tal:define="
-                    token python: group[0];
-                    reservations python: group[1];
-                    data python: view.extended_info(token);
-                ">
+          <tal:block define="
+              token python: group[0];
+              reservations python: group[1];
+              data python: view.extended_info(token);
+            ">
+
+            <div class="reservation">
 
                 <div class="reservation-title">
                     
@@ -83,6 +83,11 @@
                 </div>
             </div>
 
+            <div class="reservation-quota">
+              <tal:block content="structure python: view.reservation_quota(token)"></tal:block>
+            </div>
+          </tal:block>
+
         </tal:block>
     </div>
   </div>
@@ -93,13 +98,12 @@
     <div class="reservation-info reservation-pending" metal:define-macro="pending_reservations">
         
         <tal:block tal:repeat="group python: view.pending_reservations().items()">
-            
-            <div class="reservation"
-                tal:define="
-                    token python: group[0];
-                    reservations python: group[1];
-                    data python: view.extended_info(token);
-                ">
+          <tal:block define="
+              token python: group[0];
+              reservations python: group[1];
+              data python: view.extended_info(token);
+            ">
+            <div class="reservation">
 
                 <div class="reservation-title">
                     <h3>
@@ -128,7 +132,10 @@
                   <div style="clear: both;"></div>
                 </div>
             </div>
-
+            <div class="reservation-quota">
+              <tal:block content="structure python: view.reservation_quota(token)"></tal:block>
+            </div>
+          </tal:block>
         </tal:block>
     </div>
   </div>

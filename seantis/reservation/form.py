@@ -366,32 +366,47 @@ class ReservationListView(ReservationDataView):
         """
         return hasattr(self, 'group') and utils.string_uuid(self.group) or u''
 
+    def reservation_by_token(self, token):
+        if token in self.pending_reservations():
+            return self.pending_reservations()[token][0]
+
+        if token in self.approved_reservations():
+            return self.approved_reservations()[token][0]
+
+        return None
+
     def reservation_info(self, token):
         """ Returns the registration information to be printed
         on the header of the reservation.
 
         """
 
-        if token in self.pending_reservations():
-            return self.pending_reservations()[token][0].title
+        reservation = self.reservation_by_token(token)
+        return reservation and reservation.title or u''
 
-        if token in self.approved_reservations():
-            return self.approved_reservations()[token][0].title
+    def reservation_quota(self, token):
+        """ Returns the reservation quota information to be printed at
+        the bottom of the reservation.
 
-        return u''
+        """
+
+        reservation = self.reservation_by_token(token)
+        quota = reservation and reservation.quota or 0
+
+        if quota == 1:
+            return _(u'one reservation')
+        else:
+            return _(u'<b>${quota}</b> reservations at once', mapping={
+                'quota': quota
+            })
 
     def extended_info(self, token):
         """ Returns the extended info dictionary to be printed in the detail
         view.
         """
 
-        if token in self.pending_reservations():
-            return self.pending_reservations()[token][0].data
-
-        if token in self.approved_reservations():
-            return self.approved_reservations()[token][0].data
-
-        return dict()
+        reservation = self.reservation_by_token(token)
+        return reservation and reservation.data or {}
 
     def display_date(self, start, end):
         return utils.display_date(start, end)  # kept here for use in template
@@ -448,7 +463,7 @@ class ReservationListView(ReservationDataView):
         if count == 1:
             return _(
                 u'There is one reservation being entered for this resource.'
-            )            
+            )
 
         return _(
             u'There are ${nb} reservations being entered for this resource.',
