@@ -62,23 +62,21 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
 
 <!-- Upgrades -->
 
-<!-- 
-No longer in use, left as an example
 <genericsetup:upgradeStep
-    title="Upgrade seantis.reservation to 1.0b1"
-    description="Adds timestamps for all records"
-    source="1"
-    destination="1000"
-    handler=".upgrades.upgrade_1_to_1000"
-    profile="seantis.reservation:default">
-</genericsetup:upgradeStep> -->
-
-<genericsetup:upgradeStep
-    title="Adds 'session_id column' to 'reservations' SQL DB table"
+    title="Adds 'session_id' column to 'reservations' SQL DB table"
     description=""
     source="*"
     destination="1001"
     handler=".upgrades.upgrade_to_1001"
+    profile="seantis.reservation:default">
+</genericsetup:upgradeStep>
+
+<genericsetup:upgradeStep
+    title="Adds 'count' column to 'reservations' SQL DB table"
+    description=""
+    source="1001"
+    destination="1002"
+    handler=".upgrades.upgrade_1001_to_1002"
     profile="seantis.reservation:default">
 </genericsetup:upgradeStep>
 

@@ -73,6 +73,11 @@ class Reservation(TimestampMixin, ORMBase, OtherModels):
         customtypes.GUID()
     )
 
+    count = Column(
+        types.Integer(),
+        nullable=False
+    )
+
     __table_args__ = (
         Index('target_status_ix', 'status', 'target', 'id'),
     )
