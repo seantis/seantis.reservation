@@ -250,8 +250,10 @@ def monthly_report(year, month, resources):
         else:
             raise NotImplementedError
 
-        report[day][utils.string_uuid(reservation.resource)]
-        [reservation.status].append(
+        reservation_lists = report[day][utils.string_uuid(
+            reservation.resource
+        )]
+        reservation_lists[reservation.status].append(
             dict(
                 start=start,
                 end=end,
