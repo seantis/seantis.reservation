@@ -416,6 +416,31 @@ class TestScheduler(IntegrationTestCase):
             OverlappingAllocationError, sc1.allocate, (start, end), raster=15
         )
 
+        # there's another way this could happen, which is illegal usage
+        # of scheduler.allocate - we stop this befor it hits the database
+        sc = Scheduler(new_uuid())
+
+        dates = [
+            (datetime(2013, 1, 1, 12, 0), datetime(2013, 1, 1, 13, 0)),
+            (datetime(2013, 1, 1, 12, 0), datetime(2013, 1, 1, 13, 0))
+        ]
+
+        self.assertRaises(InvalidAllocationError, sc.allocate, dates)
+
+        dates = [
+            (datetime(2013, 1, 1, 12, 0), datetime(2013, 1, 1, 13, 0)),
+            (datetime(2013, 1, 1, 13, 0), datetime(2013, 1, 1, 14, 0))
+        ]
+
+        self.assertRaises(InvalidAllocationError, sc.allocate, dates)
+
+        dates = [
+            (datetime(2013, 1, 1, 12, 0), datetime(2013, 1, 1, 13, 0)),
+            (datetime(2013, 1, 1, 13, 15), datetime(2013, 1, 1, 14, 0))
+        ]
+
+        sc.allocate(dates)
+
     def test_allocation_partition(self):
         sc = Scheduler(new_uuid())
 
@@ -625,31 +650,6 @@ class TestScheduler(IntegrationTestCase):
         imaginary = len([m for m in mirrors if m.is_transient])
         self.assertEqual(imaginary, 0)
         self.assertEqual(len(mirrors) + 1, len(allocation.siblings()))
-
-    @serialized
-    def test_group_overlap(self):
-        sc = Scheduler(new_uuid())
-
-        dates = [
-            (datetime(2013, 1, 1, 12, 0), datetime(2013, 1, 1, 13, 0)),
-            (datetime(2013, 1, 1, 12, 0), datetime(2013, 1, 1, 13, 0))
-        ]
-
-        self.assertRaises(InvalidAllocationError, sc.allocate, dates)
-
-        dates = [
-            (datetime(2013, 1, 1, 12, 0), datetime(2013, 1, 1, 13, 0)),
-            (datetime(2013, 1, 1, 13, 0), datetime(2013, 1, 1, 14, 0))
-        ]
-
-        self.assertRaises(InvalidAllocationError, sc.allocate, dates)
-
-        dates = [
-            (datetime(2013, 1, 1, 12, 0), datetime(2013, 1, 1, 13, 0)),
-            (datetime(2013, 1, 1, 13, 15), datetime(2013, 1, 1, 14, 0))
-        ]
-
-        sc.allocate(dates)
 
     @serialized
     def test_quota_changes(self):
