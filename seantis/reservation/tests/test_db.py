@@ -319,6 +319,78 @@ class TestScheduler(IntegrationTestCase):
         sc.approve_reservation(token)
 
     @serialized
+    def test_group_move(self):
+        sc = Scheduler(new_uuid())
+
+        dates = [
+            (datetime(2013, 1, 1, 12, 0), datetime(2013, 1, 1, 13, 0)),
+            (datetime(2013, 1, 2, 12, 0), datetime(2013, 1, 2, 13, 0))
+        ]
+
+        allocations = sc.allocate(dates, grouped=True, quota=3,
+            waitinglist_spots=3, approve=True, reservation_quota_limit=3
+        )
+
+        for allocation in allocations:
+            self.assertEqual(len(allocation.siblings()), 3)
+
+        self.assertEqual(allocations[0].group, allocations[1].group)
+
+        # it is possible to move one allocation of a group, but all properties
+        # but the date should remain the same
+
+        newstart, newend = (
+            datetime(2014, 1, 1, 12, 0), datetime(2014, 1, 1, 13, 0)
+        )
+        sc.move_allocation(allocations[0].id, newstart, newend,
+            new_quota=2, waitinglist_spots=2, reservation_quota_limit=2
+        )
+
+        group_allocations = sc.allocations_by_group(allocations[0].group).all()
+        self.assertEqual(len(group_allocations), 2)
+
+        for a in group_allocations:
+            self.assertTrue(a.is_master)
+            self.assertEqual(a.quota, 2)
+            self.assertEqual(a.waitinglist_spots, 2)
+            self.assertEqual(a.reservation_quota_limit, 2)
+
+            for allocation in a.siblings():
+                self.assertEqual(len(allocation.siblings()), 2)
+
+        token = sc.reserve(u'test@example.com', group=allocations[0].group)
+        sc.approve_reservation(token)
+
+        group_allocations = sc.allocations_by_group(allocations[0].group).all()
+        self.assertEqual(len(group_allocations), 2)
+        all = utils.flatten([a.siblings() for a in group_allocations])
+        self.assertEqual(db.availability_by_allocations(all), 50.0)
+
+        sc.move_allocation(allocations[0].id, newstart, newend, new_quota=1)
+
+        group_allocations = sc.allocations_by_group(allocations[0].group).all()
+        all = list(utils.flatten([a.siblings() for a in group_allocations]))
+        self.assertEqual(db.availability_by_allocations(all), 0.0)
+
+        sc.move_allocation(allocations[0].id, newstart, newend, new_quota=2)
+
+        token = sc.reserve(u'test@example.com', group=allocations[0].group)
+        sc.approve_reservation(token)
+
+        group_allocations = sc.allocations_by_group(allocations[0].group).all()
+        all = list(utils.flatten([a.siblings() for a in group_allocations]))
+        self.assertEqual(db.availability_by_allocations(all), 0.0)
+
+        for a in all:
+            self.assertFalse(a.is_available())
+
+        self.assertEqual(len(all), 4)
+
+        self.assertRaises(AffectedReservationError, sc.move_allocation,
+            allocations[0].id, newstart, newend, None, 1
+        )
+
+    @serialized
     def test_no_waitlist(self):
         sc = Scheduler(new_uuid())
 

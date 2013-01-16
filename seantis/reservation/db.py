@@ -471,7 +471,7 @@ class Scheduler(object):
         mirrors = self.allocation_mirrors_by_master(master)
         allocations = [master] + mirrors
 
-        free_allocations = [a for a in allocations if a.is_available]
+        free_allocations = [a for a in allocations if a.is_available()]
 
         required = master.quota - new_quota
         if len(free_allocations) < required:
@@ -629,6 +629,8 @@ class Scheduler(object):
         assert(group or master.group)
 
         # Simulate the new allocation
+        new_start = new_start or master.start
+        new_end = new_end or master.end
         new = Allocation(start=new_start, end=new_end, raster=master.raster)
 
         # Ensure that the new span does not overlap an existing one
@@ -667,21 +669,26 @@ class Scheduler(object):
                             change.pending_reservations[0]
                         )
 
-        if new_quota is not None:
-            self.change_quota(master, new_quota)
+        # the following attributes must be equal over all group members
+        # (this still allows to use move_allocation to remove an allocation
+        #  from an existing group by specifiying the new group)
+        for allocation in self.allocations_by_group(group or master.group):
+            if waitinglist_spots is not None:
+                allocation.waitinglist_spots = waitinglist_spots
+
+            if approve is not None:
+                allocation.approve = approve
+
+            if reservation_quota_limit is not None:
+                allocation.reservation_quota_limit = reservation_quota_limit
+
+            if new_quota is not None and allocation.is_master:
+                self.change_quota(allocation, new_quota)
 
         for change in changing:
             change.start = new.start
             change.end = new.end
             change.group = group or master.group
-
-        # the following attributes must be equal over all group members
-        # (this still allows to use move_allocation to remove an allocation
-        #  from an existing group by specifiying the new group)
-        for allocation in self.allocations_by_group(group or master.group):
-            allocation.waitinglist_spots = waitinglist_spots
-            allocation.approve = approve
-            allocation.reservation_quota_limit = reservation_quota_limit
 
     @serialized
     def remove_allocation(self, id=None, group=None):
