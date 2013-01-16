@@ -261,7 +261,8 @@ def monthly_report(year, month, resources):
                 data=reservation.data,
                 timespans=json_timespans(start, end),
                 urls=urls,
-                token=reservation.token
+                token=reservation.token,
+                quota=utils.get_reservation_quota_statement(reservation.quota)
             )
         )
 

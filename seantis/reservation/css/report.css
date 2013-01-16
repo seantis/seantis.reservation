@@ -131,6 +131,10 @@
     line-height: 25px;
 }
 
+.monthly-report .reservation-type .reservation-summary .leftcolumn div {
+    margin-left: 10px;
+}
+
 /* reservation detail */
 
 .monthly-report .reservation .reservation-detail {

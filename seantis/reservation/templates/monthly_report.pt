@@ -80,6 +80,7 @@
                                     <div class="reservation-summary">
                                         <div class="leftcolumn">
                                             <a tal:attributes="href python: 'mailto:' + reservation['email']" tal:content="reservation/email"></a>
+                                            <div tal:content="structure reservation/quota"></div>
                                         </div>
                                         <div class="rightcolumn">
                                             <div class="timetable-wrapper" tal:attributes="
