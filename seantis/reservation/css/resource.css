@@ -212,8 +212,9 @@ div.error {
     width: 49%;
     float: left;
 }
-.splitscreen:first-child {
-    padding-right: 15px;
+
+.splitright {
+    padding-left: 15px;
 }
 
 

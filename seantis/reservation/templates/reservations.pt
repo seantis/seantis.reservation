@@ -16,7 +16,7 @@
     <tal:block content="view/uncommitted_reservations"></tal:block>
   </div>
 
-  <div class="splitscreen" >
+  <div class="splitscreen splitleft" >
 
     <h2 class="documentFirstHeading" i18n:translate="">Approved Reservations</h2>
     
@@ -91,7 +91,7 @@
         </tal:block>
     </div>
   </div>
-  <div class="splitscreen">
+  <div class="splitscreen splitright">
    
     <h2 class="documentFirstHeading" i18n:translate="">Pending Reservations</h2>
     
