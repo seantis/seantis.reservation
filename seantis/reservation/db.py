@@ -36,7 +36,8 @@ from seantis.reservation.error import (
     InvalidReservationError,
     QuotaOverLimit,
     InvalidQuota,
-    QuotaImpossible
+    QuotaImpossible,
+    InvalidAllocationError
 )
 
 from seantis.reservation.session import serialized
@@ -357,6 +358,11 @@ class Scheduler(object):
         # if the allocation is not partly available the raster is set to lowest
         # possible raster value
         raster = partly_available and raster or MIN_RASTER_VALUE
+
+        # Ensure that the list of dates contains no overlaps inside
+        for start, end in dates:
+            if utils.count_overlaps(dates, start, end) > 1:
+                raise InvalidAllocationError
 
         # Make sure that this span does not overlap another master
         for start, end in dates:

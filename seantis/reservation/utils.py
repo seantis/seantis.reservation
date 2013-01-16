@@ -168,6 +168,15 @@ def mock_data_dictionary(data, formset_key='mock', formset_desc='Mocktest'):
     return {formset_key: formset}
 
 
+def count_overlaps(dates, start, end):
+    count = 0
+
+    for otherstart, otherend in dates:
+        count += overlaps(start, end, otherstart, otherend) and 1 or 0
+
+    return count
+
+
 def overlaps(start, end, otherstart, otherend):
     if otherstart <= start and start <= otherend:
         return True

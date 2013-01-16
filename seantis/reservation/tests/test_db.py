@@ -3,12 +3,16 @@ from datetime import datetime, timedelta
 from uuid import uuid1 as new_uuid
 
 from seantis.reservation.tests import IntegrationTestCase
-from seantis.reservation.error import OverlappingAllocationError
-from seantis.reservation.error import AffectedReservationError
-from seantis.reservation.error import AlreadyReservedError
-from seantis.reservation.error import ReservationTooLong
-from seantis.reservation.error import FullWaitingList
-from seantis.reservation.error import InvalidReservationError
+from seantis.reservation.error import (
+    OverlappingAllocationError,
+    AffectedReservationError,
+    AlreadyReservedError,
+    ReservationTooLong,
+    FullWaitingList,
+    InvalidReservationError,
+    InvalidAllocationError
+)
+
 from seantis.reservation import utils
 from seantis.reservation.session import serialized
 from seantis.reservation import events
@@ -621,6 +625,31 @@ class TestScheduler(IntegrationTestCase):
         imaginary = len([m for m in mirrors if m.is_transient])
         self.assertEqual(imaginary, 0)
         self.assertEqual(len(mirrors) + 1, len(allocation.siblings()))
+
+    @serialized
+    def test_group_overlap(self):
+        sc = Scheduler(new_uuid())
+
+        dates = [
+            (datetime(2013, 1, 1, 12, 0), datetime(2013, 1, 1, 13, 0)),
+            (datetime(2013, 1, 1, 12, 0), datetime(2013, 1, 1, 13, 0))
+        ]
+
+        self.assertRaises(InvalidAllocationError, sc.allocate, dates)
+
+        dates = [
+            (datetime(2013, 1, 1, 12, 0), datetime(2013, 1, 1, 13, 0)),
+            (datetime(2013, 1, 1, 13, 0), datetime(2013, 1, 1, 14, 0))
+        ]
+
+        self.assertRaises(InvalidAllocationError, sc.allocate, dates)
+
+        dates = [
+            (datetime(2013, 1, 1, 12, 0), datetime(2013, 1, 1, 13, 0)),
+            (datetime(2013, 1, 1, 13, 15), datetime(2013, 1, 1, 14, 0))
+        ]
+
+        sc.allocate(dates)
 
     @serialized
     def test_quota_changes(self):
