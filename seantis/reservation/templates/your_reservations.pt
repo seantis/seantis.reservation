@@ -17,7 +17,7 @@
     	<li tal:repeat="reservation view/reservation_data">
     		<span tal:content="structure reservation/title"></span><br/>
     		<span tal:content="structure reservation/time"></span>
-        <span class="your-reservation-quota" tal:content="structure reservation/quota"></span>
+        <span class="your-reservation-quota" tal:condition="reservation/quota" tal:content="structure reservation/quota"></span>
     	</li>
     </ul>
 
