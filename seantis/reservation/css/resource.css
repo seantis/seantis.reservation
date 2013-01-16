@@ -457,3 +457,10 @@ body .portalMessage {
     margin-bottom: 5px;
     color: #757575;
 }
+
+/* 
+ensures that the plone menu is displayed above the calendar
+*/
+.fc-view > div {
+    z-index: 0 !important;
+}
