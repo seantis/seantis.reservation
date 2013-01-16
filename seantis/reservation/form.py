@@ -394,9 +394,9 @@ class ReservationListView(ReservationDataView):
         quota = reservation and reservation.quota or 0
 
         if quota > 1:
-            return _(u'<b>${quota}</b> reservations at once',
-                mapping={'quota': quota}
-            )
+            return utils.get_reservation_quota_statement(quota)
+        else:
+            u''
 
     def reservation_quota(self, token):
         reservation = self.reservation_by_token(token)

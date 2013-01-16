@@ -11,9 +11,10 @@
 
 <ul>
 	<li tal:repeat="reservation viewlet/reservation_data">
-		<a tal:attributes="href reservation/url" tal:content="reservation/title"></a>
-        <a class="remove-url" tal:attributes="href reservation/remove-url"><span i18n:translate="">Remove</span></a>
+		<a tal:attributes="href reservation/url" tal:content="structure reservation/title"></a>
+    <a class="remove-url" tal:attributes="href reservation/remove-url"><span i18n:translate="">Remove</span></a>
 		<span tal:content="structure reservation/time"></span>
+    <span class="your-reservation-quota" tal:condition="reservation/quota" tal:content="structure reservation/quota"></span>
 	</li>
 </ul>
 

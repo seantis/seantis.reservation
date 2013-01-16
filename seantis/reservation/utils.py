@@ -452,6 +452,13 @@ def get_resource_title(resource):
     return ' - '.join((parent, resource.title))
 
 
+def get_reservation_quota_statement(quota):
+    if quota > 1:
+        return _(u'<b>${quota}</b> reservations', mapping={'quota': quota})
+    else:
+        return _(u'<b>1</b> reservation')
+
+
 class UUIDEncoder(json.JSONEncoder):
     """Encodes UUID objects as string in JSON."""
     def default(self, obj):

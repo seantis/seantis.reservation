@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from logging import getLogger
 log = getLogger('seantis.reservation')
 
@@ -153,6 +155,7 @@ class YourReservationsData(object):
     def reservation_data(self):
         """ Prepares data to be shown in the my reservation's table """
         reservations = []
+
         for reservation in self.reservations():
             resource = utils.get_resource_by_uuid(reservation.resource)
 
@@ -161,13 +164,19 @@ class YourReservationsData(object):
                 continue
 
             resource = resource.getObject()
-            data = dict(title=utils.get_resource_title(resource))
+
+            data = {}
+
+            data['title'] = utils.get_resource_title(resource)
 
             timespans = []
             for start, end in reservation.timespans():
-                timespans.append(utils.display_date(start, end))
+                timespans.append(u'◆ ' + utils.display_date(start, end))
 
             data['time'] = '<br />'.join(timespans)
+            data['quota'] = utils.get_reservation_quota_statement(
+                reservation.quota
+            ) if reservation.quota > 1 else u''
 
             data['url'] = resource.absolute_url()
             data['remove-url'] = ''.join((
