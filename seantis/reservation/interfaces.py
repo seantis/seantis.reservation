@@ -188,6 +188,9 @@ class IResourceAllocationDefaults(form.Schema):
 
     @invariant
     def isValidWaitinglist(Allocation):
+        if not Allocation.approve:
+            return
+
         if not (Allocation.quota <= Allocation.waitinglist_spots and
                 Allocation.waitinglist_spots <= 100):
             raise Invalid(
