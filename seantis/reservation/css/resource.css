@@ -178,6 +178,11 @@ a.reservation-delete {
     position: relative;
 }
 
+.your-reservations .limitedList,
+.your-reservations-view .limitedList {
+    max-width: 100%;   
+}
+
 .groupListDay {
     float: left;
     width: 75px;
