@@ -40,6 +40,9 @@ def db_upgrade(fn):
             transaction.rollback()
             raise
 
+        finally:
+            connection.close()
+
     return wrapper
 
 
