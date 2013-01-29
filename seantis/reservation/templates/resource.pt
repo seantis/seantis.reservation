@@ -30,7 +30,7 @@
                 <div tal:define="
                     title       python: view.title(resource);
                     description resource/description;
-                    calendar_id resource/calendar_id;
+                    calendar_id python: resource._v_calendar_id;
                     ">
 
                     <div tal:replace="structure provider:plone.abovecontenttitle" />
@@ -91,7 +91,7 @@
                 
                 <div class="multiCalendarContainer" tal:define="
                     title       python: view.title(resource);
-                    calendar_id resource/calendar_id;
+                    calendar_id python: resource._v_calendar_id;
                     ">
 
                     <h1 tal:content="title" class="documentFirstHeading"></h1>

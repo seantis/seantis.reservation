@@ -58,7 +58,7 @@ class View(grok.View):
 
         template = 'seantis-reservation-calendar-%i'
         for ix, resource in enumerate(resources):
-            setattr(resource, 'calendar_id', template % ix)
+            setattr(resource, '_v_calendar_id', template % ix)
 
         return resources
 
@@ -106,7 +106,9 @@ class View(grok.View):
         options['selectable'] = is_exposed('selectable')
         options['editable'] = is_exposed('editable')
 
-        return template % (resource.calendar_id, json.dumps(options), addurl)
+        return template % (
+            resource._v_calendar_id, json.dumps(options), addurl
+        )
 
     @property
     def calendar_count(self):
