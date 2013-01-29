@@ -312,11 +312,11 @@ msgstr "Reservationen-Export (Json)"
 
 #: ./interfaces.py:278
 msgid "First hour must be smaller than last hour"
-msgstr "Die erste Stunde muss kleiner als die letzte Stunde sein"
+msgstr "Die erste volle Stunde muss kleiner als die letzte volle Stunde sein"
 
 #: ./interfaces.py:221
 msgid "First hour of the day"
-msgstr "Erste Stunde des Tages"
+msgstr "Erste volle Stunde"
 
 #: ./interfaces.py:252
 msgid "Formsets"
@@ -384,11 +384,11 @@ msgstr "Ungültige Email Adresse"
 
 #: ./interfaces.py:271
 msgid "Invalid first hour"
-msgstr "Ungültige erste Stunde"
+msgstr "Ungültige erste volle Stunde"
 
 #: ./interfaces.py:274
 msgid "Invalid last hour"
-msgstr "Ungültige letzte Stunde"
+msgstr "Ungültige letzte volle Stunde"
 
 #: ./reserve.py:337
 msgid "Invalid reservation request"
@@ -400,7 +400,7 @@ msgstr "Sprache"
 
 #: ./interfaces.py:232
 msgid "Last hour of the day"
-msgstr "Letzte Stunde des Tages"
+msgstr "Letzte volle Stunde"
 
 #: ./resource.py:254
 msgid "List"
