@@ -21,7 +21,7 @@
 </ul>
 
 <div>
-	<a tal:attributes="href viewlet/finish_url" i18n:translate="" class="your_reservations_link">Submit Reservations</a>
+	<a tal:attributes="href viewlet/finish_url" i18n:translate="" class="your_reservations_link">Confirm Reservations</a>
 </div>
 
 </div>
