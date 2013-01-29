@@ -126,7 +126,9 @@ class IResourceAllocationDefaults(form.Schema):
     quota = schema.Int(
         title=_(u'Quota'),
         description=_(
-            u'Number of times an allocation may be reserved at the same time.'
+            u'Number of times an allocation may be reserved at the same time. '
+            u'e.g. 3 spots in a daycare center, 2 available cars, '
+            u'1 meeting room. '
         ),
         default=1
     )
