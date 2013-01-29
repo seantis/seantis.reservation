@@ -208,6 +208,7 @@ def reservations_by_session(session_id):
 
     query = Session.query(Reservation)
     query = query.filter(Reservation.session_id == session_id)
+    query = query.order_by(Reservation.created)
 
     return query
 
