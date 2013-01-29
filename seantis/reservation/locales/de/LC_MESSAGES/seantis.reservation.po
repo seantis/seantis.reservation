@@ -480,7 +480,7 @@ msgstr "Legt fest ob die Ressource mehr als einmal verfügbar ist."
 
 #: ./interfaces.py:41
 msgid "Once"
-msgstr "Einmalig"
+msgstr "Ohne"
 
 #: ./templates/controlpanel.pt:31
 msgid "Orphan Records are records in the database for which no corresponding plone resource object can be found. Those records exist because there is no reliable way to detect that a plone resource object is being deleted, hence no cleanup is ever done in this case."
