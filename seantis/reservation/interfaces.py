@@ -133,26 +133,13 @@ class IResourceAllocationDefaults(form.Schema):
         default=1
     )
 
-    partly_available = schema.Bool(
-        title=_(u'Partly available'),
+    reservation_quota_limit = schema.Int(
+        title=_(u'Reservation Quota Limit'),
         description=_(
-            u'If the allocation is partly available users may reserve '
-            u'only a part of it (e.g. half of it). If not the allocation '
-            u'Must be reserved as a whole or not at all'
+            u'The maximum quota a single reservation may occupy at once. '
+            u'There is no limit if set to zero.'
         ),
-        default=False
-    )
-
-    raster = schema.Choice(
-        title=_(u'Raster'),
-        description=_(
-            u'Defines the minimum length of any given reservation as well '
-            u'as the alignment of the start / end of the allocation. E.g. a '
-            u'raster of 30 minutes means that the allocation can only start '
-            u'at xx:00 and xx:30 respectively'
-        ),
-        values=VALID_RASTER_VALUES,
-        default=30
+        default=1
     )
 
     approve = schema.Bool(
@@ -174,13 +161,26 @@ class IResourceAllocationDefaults(form.Schema):
         default=100
     )
 
-    reservation_quota_limit = schema.Int(
-        title=_(u'Reservation Quota Limit'),
+    partly_available = schema.Bool(
+        title=_(u'Partly available'),
         description=_(
-            u'The maximum quota a single reservation may occupy at once. '
-            u'There is no limit if set to zero.'
+            u'If the allocation is partly available users may reserve '
+            u'only a part of it (e.g. half of it). If not the allocation '
+            u'Must be reserved as a whole or not at all'
         ),
-        default=1
+        default=False
+    )
+
+    raster = schema.Choice(
+        title=_(u'Raster'),
+        description=_(
+            u'Defines the minimum length of any given reservation as well '
+            u'as the alignment of the start / end of the allocation. E.g. a '
+            u'raster of 30 minutes means that the allocation can only start '
+            u'at xx:00 and xx:30 respectively'
+        ),
+        values=VALID_RASTER_VALUES,
+        default=30
     )
 
     @invariant

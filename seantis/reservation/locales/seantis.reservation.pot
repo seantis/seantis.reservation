@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-01-29 09:48+0000\n"
+"POT-Creation-Date: 2013-01-29 13:09+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -73,23 +73,23 @@ msgstr ""
 msgid "Added to waitinglist"
 msgstr ""
 
-#: ./allocate.py:122
+#: ./allocate.py:144
 msgid "Allocate"
 msgstr ""
 
-#: ./allocate.py:44
+#: ./allocate.py:47
 msgid "Allocation"
 msgstr ""
 
-#: ./allocate.py:139
+#: ./allocate.py:161
 msgid "Allocation added"
 msgstr ""
 
-#: ./allocate.py:267
+#: ./allocate.py:306
 msgid "Allocation removed"
 msgstr ""
 
-#: ./allocate.py:228
+#: ./allocate.py:267
 msgid "Allocation saved"
 msgstr ""
 
@@ -115,7 +115,7 @@ msgstr ""
 msgid "Approve reservation"
 msgstr ""
 
-#: ./interfaces.py:159
+#: ./interfaces.py:146
 msgid "Approve reservation requests"
 msgstr ""
 
@@ -127,7 +127,7 @@ msgstr ""
 msgid "Approved Reservations"
 msgstr ""
 
-#: ./allocate.py:143
+#: ./allocate.py:165
 #: ./reserve.py:357
 msgid "Cancel"
 msgstr ""
@@ -152,6 +152,10 @@ msgstr ""
 msgid "Daily"
 msgstr ""
 
+#: ./allocate.py:50
+msgid "Date"
+msgstr ""
+
 #: ./interfaces.py:336
 msgid "Day"
 msgstr ""
@@ -164,11 +168,11 @@ msgstr ""
 msgid "Default Allocation Values"
 msgstr ""
 
-#: ./interfaces.py:148
+#: ./interfaces.py:176
 msgid "Defines the minimum length of any given reservation as well as the alignment of the start / end of the allocation. E.g. a raster of 30 minutes means that the allocation can only start at xx:00 and xx:30 respectively"
 msgstr ""
 
-#: ./allocate.py:253
+#: ./allocate.py:292
 #: ./mail.py:458
 #: ./report.py:234
 msgid "Delete"
@@ -216,13 +220,13 @@ msgstr ""
 msgid "Do you want to reserve the following allocations?"
 msgstr ""
 
-#: ./allocate.py:205
+#: ./allocate.py:244
 #: ./mail.py:457
 #: ./resource.py:238
 msgid "Edit"
 msgstr ""
 
-#: ./allocate.py:167
+#: ./allocate.py:186
 msgid "Edit allocation"
 msgstr ""
 
@@ -357,7 +361,7 @@ msgstr ""
 msgid "Id"
 msgstr ""
 
-#: ./interfaces.py:160
+#: ./interfaces.py:147
 msgid "If checked a reservation manager must decide if a reservation can be approved. Until then users are added to the waitinglist. Reservations are automatically approved if this is not checked. "
 msgstr ""
 
@@ -365,7 +369,7 @@ msgstr ""
 msgid "If checked parts of the recurrance may be reserved. If not checkd the recurrance must be reserved as a whole."
 msgstr ""
 
-#: ./interfaces.py:138
+#: ./interfaces.py:166
 msgid "If the allocation is partly available users may reserve only a part of it (e.g. half of it). If not the allocation Must be reserved as a whole or not at all"
 msgstr ""
 
@@ -373,7 +377,7 @@ msgstr ""
 msgid "If you do want to get rid of those records be adviced to do a backup of your current SQL database first, before cleaning up."
 msgstr ""
 
-#: ./allocate.py:181
+#: ./allocate.py:239
 msgid "Invalid arguments"
 msgstr ""
 
@@ -453,7 +457,7 @@ msgstr ""
 msgid "Next Month &gt;&gt;"
 msgstr ""
 
-#: ./form.py:299
+#: ./form.py:315
 msgid "No"
 msgstr ""
 
@@ -473,7 +477,7 @@ msgstr ""
 msgid "Number of Records in Database:"
 msgstr ""
 
-#: ./interfaces.py:170
+#: ./interfaces.py:157
 msgid "Number of spots in the waitinglist (must be at least as high as the quota)"
 msgstr ""
 
@@ -493,7 +497,7 @@ msgstr ""
 msgid "Parent"
 msgstr ""
 
-#: ./interfaces.py:137
+#: ./interfaces.py:165
 #: ./templates/resource.pt:60
 msgid "Partly available"
 msgstr ""
@@ -518,7 +522,7 @@ msgstr ""
 msgid "Quota must be between 1 and 100"
 msgstr ""
 
-#: ./interfaces.py:147
+#: ./interfaces.py:175
 msgid "Raster"
 msgstr ""
 
@@ -547,7 +551,7 @@ msgstr ""
 msgid "Remove Orphan Records"
 msgstr ""
 
-#: ./allocate.py:248
+#: ./allocate.py:287
 msgid "Remove allocations"
 msgstr ""
 
@@ -563,7 +567,7 @@ msgstr ""
 msgid "Reservation Quota"
 msgstr ""
 
-#: ./interfaces.py:178
+#: ./interfaces.py:137
 msgid "Reservation Quota Limit"
 msgstr ""
 
@@ -674,6 +678,7 @@ msgstr ""
 msgid "Separately reservable"
 msgstr ""
 
+#: ./allocate.py:55
 #: ./settings.py:68
 msgid "Settings"
 msgstr ""
@@ -731,7 +736,7 @@ msgstr ""
 msgid "The item does no longer exist."
 msgstr ""
 
-#: ./interfaces.py:179
+#: ./interfaces.py:138
 msgid "The maximum quota a single reservation may occupy at once. There is no limit if set to zero."
 msgstr ""
 
@@ -771,11 +776,11 @@ msgstr ""
 msgid "The waitinglist is full."
 msgstr ""
 
-#: ./form.py:470
+#: ./form.py:486
 msgid "There are ${nb} reservations being entered for this resource."
 msgstr ""
 
-#: ./form.py:466
+#: ./form.py:482
 msgid "There is one reservation being entered for this resource."
 msgstr ""
 
@@ -824,7 +829,7 @@ msgstr ""
 msgid "Utils"
 msgstr ""
 
-#: ./interfaces.py:169
+#: ./interfaces.py:156
 msgid "Waiting List Spots"
 msgstr ""
 
@@ -836,7 +841,7 @@ msgstr ""
 msgid "We"
 msgstr ""
 
-#: ./form.py:296
+#: ./form.py:312
 msgid "Yes"
 msgstr ""
 

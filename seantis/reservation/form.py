@@ -123,6 +123,18 @@ class ResourceBaseForm(GroupForm, form.Form):
 
         return data.get(key)
 
+    def get_field(self, key):
+        """ Returns a field either from self.fields or from any group. """
+
+        if key in self.fields:
+            return self.fields[key].field
+
+        for group in self.groups:
+            if key in group.fields:
+                return group.fields[key].field
+
+        return None
+
     def defaults(self):
         return {}
 
@@ -227,7 +239,11 @@ class ResourceBaseForm(GroupForm, form.Form):
 
         other_defaults = self.defaults()
         for k, v in other_defaults.items():
-            self.fields[k].field.default = v
+
+            field = self.get_field(k)
+            assert field, "invalid default field %s" % k
+
+            field.default = v
 
         super(ResourceBaseForm, self).update(**kwargs)
 

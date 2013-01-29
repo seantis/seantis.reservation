@@ -11,7 +11,11 @@ from z3c.form.browser.radio import RadioFieldWidget
 
 from seantis.reservation import _
 from seantis.reservation import utils
-from seantis.reservation.interfaces import IAllocation, days
+from seantis.reservation.interfaces import (
+    IAllocation,
+    IResourceAllocationDefaults,
+    days
+)
 from seantis.reservation.form import (
     ResourceBaseForm,
     AllocationGroupView,
@@ -35,13 +39,30 @@ class AllocationAddForm(AllocationForm):
     fields = field.Fields(IAllocation).select(
         'id', 'group', 'timeframes', 'start_time', 'end_time',
         'recurring', 'day', 'recurrence_start', 'recurrence_end',
-        'days', 'separately', 'quota', 'partly_available', 'raster',
-        'approve', 'waitinglist_spots', 'reservation_quota_limit'
+        'days', 'separately'
     )
     fields['days'].widgetFactory = CheckBoxFieldWidget
     fields['recurring'].widgetFactory = RadioFieldWidget
 
     label = _(u'Allocation')
+
+    enable_form_tabbing = True
+    default_fieldset_label = _(u'Date')
+
+    @property
+    def additionalSchemata(self):
+        return [
+            ('default', _(u'Settings'),
+                field.Fields(IResourceAllocationDefaults).select(
+                    'quota',
+                    'reservation_quota_limit',
+                    'approve',
+                    'waitinglist_spots',
+                    'partly_available',
+                    'raster'
+                )
+            )
+        ]
 
     def defaults(self):
         if self.start:
@@ -53,18 +74,19 @@ class AllocationAddForm(AllocationForm):
 
         recurrence_start, recurrence_end = self.default_recurrence()
 
+        ctx = self.context
         return {
             'group': u'',
             'recurrence_start': recurrence_start,
             'recurrence_end': recurrence_end,
             'timeframes': self.json_timeframes(),
             'days': default_days,
-            'quota': self.context.quota,
-            'approve': self.context.approve,
-            'waitinglist_spots': self.context.waitinglist_spots,
-            'raster': self.context.raster,
-            'partly_available': self.context.partly_available,
-            'reservation_quota_limit': self.context.reservation_quota_limit
+            'quota': ctx.quota,
+            'approve': ctx.approve,
+            'waitinglist_spots': ctx.waitinglist_spots,
+            'raster': ctx.raster,
+            'partly_available': ctx.partly_available,
+            'reservation_quota_limit': ctx.reservation_quota_limit
         }
 
     def timeframes(self):
@@ -159,12 +181,25 @@ class AllocationEditForm(AllocationForm):
         'start_time',
         'end_time',
         'day',
-        'quota',
-        'approve',
-        'waitinglist_spots',
-        'reservation_quota_limit'
     )
+
     label = _(u'Edit allocation')
+
+    enable_form_tabbing = True
+    default_fieldset_label = _(u'Date')
+
+    @property
+    def additionalSchemata(self):
+        return [
+            ('default', _(u'Settings'),
+                field.Fields(IResourceAllocationDefaults).select(
+                    'quota',
+                    'reservation_quota_limit',
+                    'approve',
+                    'waitinglist_spots'
+                )
+            )
+        ]
 
     @property
     def allocation(self):
@@ -173,6 +208,29 @@ class AllocationEditForm(AllocationForm):
         else:
             return self.context.scheduler().allocation_by_id(self.id)
 
+    def defaults(self):
+
+        if not self.id:
+            return dict()
+
+        allocation = self.allocation
+
+        start, end = self.start, self.end
+        if not all((start, end)):
+            start = allocation.display_start
+            end = allocation.display_end
+
+        return {
+            'id': self.id,
+            'start_time': start.time(),
+            'end_time': end.time(),
+            'day': start.date(),
+            'quota': allocation.quota,
+            'approve': allocation.approve,
+            'waitinglist_spots': allocation.waitinglist_spots,
+            'reservation_quota_limit': allocation.reservation_quota_limit
+        }
+
     def update(self, **kwargs):
         """ Fills the defaults depending on the POST arguments given. """
 
@@ -180,25 +238,6 @@ class AllocationEditForm(AllocationForm):
             self.status = utils.translate(
                 self.context, self.request, _(u'Invalid arguments')
             )
-        else:
-            allocation = self.allocation
-
-            start, end = self.start, self.end
-            if not all((start, end)):
-                start = allocation.display_start
-                end = allocation.display_end
-
-            self.fields['id'].field.default = self.id
-            self.fields['start_time'].field.default = start.time()
-            self.fields['end_time'].field.default = end.time()
-            self.fields['day'].field.default = start.date()
-            self.fields['quota'].field.default = allocation.quota
-            self.fields['approve'].field.default \
-                = allocation.approve
-            self.fields['waitinglist_spots'].field.default \
-                = allocation.waitinglist_spots
-            self.fields['reservation_quota_limit'].field.default \
-                = allocation.reservation_quota_limit
 
         super(AllocationEditForm, self).update(**kwargs)
 

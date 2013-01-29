@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-01-29 09:48+0000\n"
+"POT-Creation-Date: 2013-01-29 13:09+0000\n"
 "PO-Revision-Date: 2012-09-06 11:33+0100\n"
 "Last-Translator: Fabian Reinhard <fabian.reinhard@seantis.ch>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -70,23 +70,23 @@ msgstr "Belegungsperiode hinzufügen"
 msgid "Added to waitinglist"
 msgstr "In Warteliste eingetragen"
 
-#: ./allocate.py:122
+#: ./allocate.py:144
 msgid "Allocate"
 msgstr "Einteilen"
 
-#: ./allocate.py:44
+#: ./allocate.py:47
 msgid "Allocation"
 msgstr "Einteilung"
 
-#: ./allocate.py:139
+#: ./allocate.py:161
 msgid "Allocation added"
 msgstr "Einteilung hinzugefügt"
 
-#: ./allocate.py:267
+#: ./allocate.py:306
 msgid "Allocation removed"
 msgstr "Einteilung entfernt"
 
-#: ./allocate.py:228
+#: ./allocate.py:267
 msgid "Allocation saved"
 msgstr "Einteilung gespeichert"
 
@@ -112,7 +112,7 @@ msgstr "Zulassen"
 msgid "Approve reservation"
 msgstr "Reservation zulassen"
 
-#: ./interfaces.py:159
+#: ./interfaces.py:146
 msgid "Approve reservation requests"
 msgstr "Reservations-Anfragen manuell bestätigen"
 
@@ -124,7 +124,7 @@ msgstr "Zugelassen"
 msgid "Approved Reservations"
 msgstr "Zugelassene Reservationen"
 
-#: ./allocate.py:143
+#: ./allocate.py:165
 #: ./reserve.py:357
 msgid "Cancel"
 msgstr "Abbrechen"
@@ -149,6 +149,10 @@ msgstr "Reservationen abschliessen"
 msgid "Daily"
 msgstr "Täglich"
 
+#: ./allocate.py:50
+msgid "Date"
+msgstr "Datum"
+
 #: ./interfaces.py:336
 msgid "Day"
 msgstr "Tag"
@@ -161,11 +165,11 @@ msgstr "Tage"
 msgid "Default Allocation Values"
 msgstr "Standard Einteilungswerte"
 
-#: ./interfaces.py:148
+#: ./interfaces.py:176
 msgid "Defines the minimum length of any given reservation as well as the alignment of the start / end of the allocation. E.g. a raster of 30 minutes means that the allocation can only start at xx:00 and xx:30 respectively"
 msgstr "Definiert die Mindestlänge der Reservationen für diese Einteilung, sowie die automatische Anpassung der Start- bzw. Endzeit. Ein Raster von 30 Minuten bedeuted beispielsweise, dass die Einteilung nur um xx:00 Uhr und xx:30 Uhr beginnen kann."
 
-#: ./allocate.py:253
+#: ./allocate.py:292
 #: ./mail.py:458
 #: ./report.py:234
 msgid "Delete"
@@ -213,13 +217,13 @@ msgstr "Möchten Sie die folgenden Zeiträume wirklich von der Reservation entfe
 msgid "Do you want to reserve the following allocations?"
 msgstr "Möchten Sie die folgenden Einteilungen reservieren?"
 
-#: ./allocate.py:205
+#: ./allocate.py:244
 #: ./mail.py:457
 #: ./resource.py:238
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: ./allocate.py:167
+#: ./allocate.py:186
 msgid "Edit allocation"
 msgstr "Einteilung bearbeiten"
 
@@ -354,7 +358,7 @@ msgstr "Verstecken"
 msgid "Id"
 msgstr "Id"
 
-#: ./interfaces.py:160
+#: ./interfaces.py:147
 msgid "If checked a reservation manager must decide if a reservation can be approved. Until then users are added to the waitinglist. Reservations are automatically approved if this is not checked. "
 msgstr "Ausgewählt bedeutet, dass ein Reservations-Manager entscheiden muss, ob eine Reservation zugelassen wird. Bis zu dieser Bestätigung werden Reservationen zur Warteliste hinzugefügt. Ist diese Option nicht ausgewählt, so werden Reservationen automatisch zugelassen."
 
@@ -362,7 +366,7 @@ msgstr "Ausgewählt bedeutet, dass ein Reservations-Manager entscheiden muss, ob
 msgid "If checked parts of the recurrance may be reserved. If not checkd the recurrance must be reserved as a whole."
 msgstr "Falls gewählt, ist eine teilweise separate Reservation der Wiederholung möglich. Ist die Einstellung nicht gewählt, so müssen alle Wiederholungen als Ganzes reserviert werden."
 
-#: ./interfaces.py:138
+#: ./interfaces.py:166
 msgid "If the allocation is partly available users may reserve only a part of it (e.g. half of it). If not the allocation Must be reserved as a whole or not at all"
 msgstr "Falls die Einteilung teilweise verfügbar ist, kann ein Benutzer einen einzelnen Zeitabschnitt der Einteilung reservieren. Falls nicht, muss die Einteilung über die gesamte Zeitdauer reserviert werden."
 
@@ -370,7 +374,7 @@ msgstr "Falls die Einteilung teilweise verfügbar ist, kann ein Benutzer einen e
 msgid "If you do want to get rid of those records be adviced to do a backup of your current SQL database first, before cleaning up."
 msgstr "Wenn Sie diese Datensätze entfernen möchten, sollten Sie zuerst ein Backup Ihrer SQL Datenbank machen."
 
-#: ./allocate.py:181
+#: ./allocate.py:239
 msgid "Invalid arguments"
 msgstr "Ungültige Argumente"
 
@@ -450,7 +454,7 @@ msgstr "Navigation"
 msgid "Next Month &gt;&gt;"
 msgstr "Nächster Monat &gt;&gt;"
 
-#: ./form.py:299
+#: ./form.py:315
 msgid "No"
 msgstr "Nein"
 
@@ -470,7 +474,7 @@ msgstr "Anzahl verwaister Datensätze in der Datenbank:"
 msgid "Number of Records in Database:"
 msgstr "Anzahl Datensätze in der Datenbank"
 
-#: ./interfaces.py:170
+#: ./interfaces.py:157
 msgid "Number of spots in the waitinglist (must be at least as high as the quota)"
 msgstr "Anzahl von Plätzen in der Warteliste (muss mindestens so gross wie das Kontingent sein)"
 
@@ -490,7 +494,7 @@ msgstr "Verwaiste Datensätze sind Datensätze in der Datenbank für welche es k
 msgid "Parent"
 msgstr "Übergeordnetes Element"
 
-#: ./interfaces.py:137
+#: ./interfaces.py:165
 #: ./templates/resource.pt:60
 msgid "Partly available"
 msgstr "Teilweise verfügbar"
@@ -515,7 +519,7 @@ msgstr "Kontingent"
 msgid "Quota must be between 1 and 100"
 msgstr "Kontingent muss zwischen 1 und 100 liegen"
 
-#: ./interfaces.py:147
+#: ./interfaces.py:175
 msgid "Raster"
 msgstr "Raster"
 
@@ -544,7 +548,7 @@ msgstr "Entfernen"
 msgid "Remove Orphan Records"
 msgstr "Verwaiste Datensätze entfernen"
 
-#: ./allocate.py:248
+#: ./allocate.py:287
 msgid "Remove allocations"
 msgstr "Einteilungen entfernen"
 
@@ -560,7 +564,7 @@ msgstr "Reservation"
 msgid "Reservation Quota"
 msgstr "Anzahl Reservationen"
 
-#: ./interfaces.py:178
+#: ./interfaces.py:137
 msgid "Reservation Quota Limit"
 msgstr "Limite der Anzahl Reservationen"
 
@@ -671,6 +675,7 @@ msgstr "Wird <b>Benutzern</b> gesendet, wenn eine Reservation abgelehnt wird. Ka
 msgid "Separately reservable"
 msgstr "Separat reservierbar"
 
+#: ./allocate.py:55
 #: ./settings.py:68
 msgid "Settings"
 msgstr "Einstellungen"
@@ -728,7 +733,7 @@ msgstr "Das Reservations-Token ist ungültig."
 msgid "The item does no longer exist."
 msgstr "Der Eintrag existiert nicht mehr"
 
-#: ./interfaces.py:179
+#: ./interfaces.py:138
 msgid "The maximum quota a single reservation may occupy at once. There is no limit if set to zero."
 msgstr "Die maximale Anzahl die eine einzelne Reservation auf einmal bsetzen kann. Null wenn kein Limit."
 
@@ -768,11 +773,11 @@ msgstr "Die resultierende Einteilung wäre Ungültig"
 msgid "The waitinglist is full."
 msgstr "Die Warteliste ist voll."
 
-#: ./form.py:470
+#: ./form.py:486
 msgid "There are ${nb} reservations being entered for this resource."
 msgstr "${nb} Reservationen werden gerade eingegeben."
 
-#: ./form.py:466
+#: ./form.py:482
 msgid "There is one reservation being entered for this resource."
 msgstr "Eine Reservation wird gerade eingegeben."
 
@@ -821,7 +826,7 @@ msgstr "Normalerweise gibt es keinen Grund diese Datensätze zu entfernen, ausse
 msgid "Utils"
 msgstr "Hilfsmittel"
 
-#: ./interfaces.py:169
+#: ./interfaces.py:156
 msgid "Waiting List Spots"
 msgstr "Wartelistenplätze"
 
@@ -833,7 +838,7 @@ msgstr "Die Warteliste muss mindestens so gross wie das Kontingent und kleiner a
 msgid "We"
 msgstr "Mi"
 
-#: ./form.py:296
+#: ./form.py:312
 msgid "Yes"
 msgstr "Ja"
 
