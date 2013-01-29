@@ -11,6 +11,7 @@ from sqlalchemy.schema import Column
 
 from zope.component import getUtility
 
+from seantis.reservation import utils
 from seantis.reservation.models import customtypes
 from seantis.reservation.session import ISessionUtility
 
@@ -20,7 +21,7 @@ def db_upgrade(fn):
     @wraps(fn)
     def wrapper(context):
         util = getUtility(ISessionUtility)
-        dsn = util.get_dsn(context)
+        dsn = util.get_dsn(utils.getSite())
 
         engine = create_engine(dsn, isolation_level='SERIALIZABLE')
         connection = engine.connect()
