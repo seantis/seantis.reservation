@@ -149,7 +149,7 @@ class IResourceAllocationDefaults(form.Schema):
             u'can be approved. Until then users are added to the waitinglist. '
             u'Reservations are automatically approved if this is not checked. '
         ),
-        default=False
+        default=True
     )
 
     waitinglist_spots = schema.Int(
@@ -158,7 +158,7 @@ class IResourceAllocationDefaults(form.Schema):
             u'Number of spots in the waitinglist (must be at least as high as '
             u'the quota)'
         ),
-        default=100
+        default=1
     )
 
     partly_available = schema.Bool(
