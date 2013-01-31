@@ -55,7 +55,7 @@ def generate_session_id(context):
 
     user = membership.getAuthenticatedMember().getId()
 
-    return uuid.uuid5(user_namespace, user)
+    return uuid.uuid5(user_namespace, str(user))
 
 
 def get_session_id(context):
