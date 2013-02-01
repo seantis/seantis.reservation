@@ -40,7 +40,7 @@ def get_additional_data(context):
     return get_session(context, sid) or None
 
 
-user_namespace = uuid.UUID('3b4e603a-1d41-4281-b162-4c2ecd767de0')
+root_namespace = uuid.UUID('3b4e603a-1d41-4281-b162-4c2ecd767de0')
 
 
 def generate_session_id(context):
@@ -53,9 +53,10 @@ def generate_session_id(context):
     # from different places to access their reservations and keep their
     # reservations between server restarts
 
-    user = membership.getAuthenticatedMember().getId()
+    site_namespace = uuid.uuid5(root_namespace, str(getSite().id))
 
-    return uuid.uuid5(user_namespace, str(user))
+    user = membership.getAuthenticatedMember().getId()
+    return uuid.uuid5(site_namespace, str(user))
 
 
 def get_session_id(context):
