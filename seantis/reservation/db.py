@@ -883,10 +883,6 @@ class Scheduler(object):
 
                 for allocation in self.reservation_targets(start, end):
 
-                    # is the user trying to reserve something invisible?
-                    if not self.is_exposed(allocation):
-                        raise NotReservableError
-
                     for slot_start, slot_end in \
                             allocation.all_slots(start, end):
                         slot = ReservedSlot()
