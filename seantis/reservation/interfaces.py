@@ -579,6 +579,16 @@ class IApproveReservation(Interface):
     )
 
 
+class IResourceViewedEvent(Interface):
+    """ Event triggered when a seantis.reservation resource is viewed. Pretty
+    useful if you need a hook which is guaranteed to be triggered on a plone
+    site where seantis.reservation is active.
+
+    """
+
+    context = Attribute("The IResourceBase context object")
+
+
 class IReservationBaseEvent(Interface):
     """ Base Interface for reservation events (not actually fired). """
 
@@ -587,7 +597,7 @@ class IReservationBaseEvent(Interface):
 
 
 class IReservationMadeEvent(IReservationBaseEvent):
-    """ Event triggered when a reservation is made (directly written or
+    """ Event triggered when a reservation is made (autoapproved or
         added to the pending reservation list).
 
     """

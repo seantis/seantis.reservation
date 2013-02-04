@@ -231,6 +231,7 @@ class SessionUtility(grok.GlobalUtility):
         # it seems sane to be independent here
         self._threadstore = threading.local()
         self._dsn_cache = {}
+        self._dsn_cache_lock = threading.Lock()
 
         try:
             self._default_dsn = utils.get_config('dsn')
@@ -249,7 +250,12 @@ class SessionUtility(grok.GlobalUtility):
             specific = utils.get_config('dsn-%s' % site_id)
 
             dsn = (specific or self._default_dsn).replace('{*}', site_id)
-            self._dsn_cache[site_id] = assert_dsn(dsn)
+
+            self._dsn_cache_lock.acquire()
+            try:
+                self._dsn_cache[site_id] = assert_dsn(dsn)
+            finally:
+                self._dsn_cache_lock.release()
 
         return self._dsn_cache[site_id]
 

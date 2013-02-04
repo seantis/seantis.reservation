@@ -6,11 +6,13 @@ from five import grok
 from plone.dexterity.content import Container
 from plone.uuid.interfaces import IUUID
 from plone.memoize import view
+from zope.event import notify
 
 from seantis.reservation import exposure
 from seantis.reservation import utils
 from seantis.reservation.db import Scheduler
 from seantis.reservation import _
+from seantis.reservation.events import ResourceViewedEvent
 from seantis.reservation.timeframe import timeframes_by_context
 from seantis.reservation.form import AllocationGroupView
 from seantis.reservation.interfaces import IResourceBase
@@ -44,6 +46,15 @@ class View(grok.View):
     grok.require(permission)
 
     template = grok.PageTemplateFile('templates/resource.pt')
+
+    fired_event = False
+
+    def update(self, *args, **kwargs):
+        super(View, self).update(*args, **kwargs)
+
+        if not self.fired_event:
+            notify(ResourceViewedEvent(self.context))
+            self.fired_event = True
 
     @view.memoize
     def resources(self):

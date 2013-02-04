@@ -669,21 +669,3 @@ class ReservationList(grok.View, ReservationListView, ReservationUrls):
             return unicode(self.request['group'].decode('utf-8'))
         else:
             return u''
-
-
-class RemoveExpiredSessions(grok.View):
-
-    permission = "zope2.View"
-
-    grok.name('remove-expired-sessions')
-    grok.require(permission)
-
-    grok.context(Interface)
-
-    def render(self):
-        removed = db.remove_expired_reservation_sessions()
-
-        # don't give out the session ids to the public
-        log.info('removed the following reservation sessions: %s' % removed)
-
-        return "removed %i reservation sessions" % len(removed)
