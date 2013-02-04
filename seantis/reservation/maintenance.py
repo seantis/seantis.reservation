@@ -73,7 +73,15 @@ def register_once_per_connection(method, site, period):
 
 
 def register_server(method, period):
-    """ Registers the given method with a clockserver. """
+    """ Registers the given method with a clockserver.
+
+    Note that due to it's implementation there's no guarantee that the method
+    will be called on time every time. The clockserver checks if a call is due
+    every time a request comes in, or every 30 seconds when the asyncore.pollss
+    method reaches it's timeout (see Lifetime/__init__.py and
+    Python Stdlib/asyncore.py).
+
+    """
 
     assert method not in _clockservers, "%s is already being used" % method
 
