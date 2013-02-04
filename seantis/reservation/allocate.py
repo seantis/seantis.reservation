@@ -188,6 +188,8 @@ class AllocationEditForm(AllocationForm):
     enable_form_tabbing = True
     default_fieldset_label = _(u'Date')
 
+    allocation_stale = False
+
     @property
     def additionalSchemata(self):
         return [
@@ -210,7 +212,7 @@ class AllocationEditForm(AllocationForm):
 
     def defaults(self):
 
-        if not self.id:
+        if not self.id or self.allocation_stale:
             return dict()
 
         allocation = self.allocation
@@ -230,16 +232,6 @@ class AllocationEditForm(AllocationForm):
             'waitinglist_spots': allocation.waitinglist_spots,
             'reservation_quota_limit': allocation.reservation_quota_limit
         }
-
-    def update(self, **kwargs):
-        """ Fills the defaults depending on the POST arguments given. """
-
-        if not self.id:
-            self.status = utils.translate(
-                self.context, self.request, _(u'Invalid arguments')
-            )
-
-        super(AllocationEditForm, self).update(**kwargs)
 
     @button.buttonAndHandler(_(u'Edit'))
     @extract_action_data
@@ -264,6 +256,11 @@ class AllocationEditForm(AllocationForm):
 
         def edit():
             scheduler.move_allocation(*args)
+
+            # ensure that the allocation is not accessed again by the defaults,
+            # this prevents a DirtyReadOnlySession error
+            self.allocation_stale = True
+
             self.flash(_(u'Allocation saved'))
 
         utils.handle_action(action=edit, success=self.redirect_to_context)
@@ -311,8 +308,5 @@ class AllocationRemoveForm(AllocationForm, AllocationGroupView):
     def cancel(self, action):
         self.redirect_to_context()
 
-    def update(self, **kwargs):
-        if self.id or self.group:
-            self.fields['id'].field.default = self.id
-            self.fields['group'].field.default = self.group
-        super(AllocationRemoveForm, self).update(**kwargs)
+    def defaults(self):
+        return dict(id=self.id, group=self.group)

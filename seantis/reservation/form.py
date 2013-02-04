@@ -5,6 +5,7 @@ from functools import wraps
 
 from five import grok
 from plone.directives import form
+from zope.component import getMultiAdapter
 from z3c.form import interfaces
 from z3c.form import field
 from z3c.form.group import GroupForm
@@ -90,9 +91,7 @@ class ResourceBaseForm(GroupForm, form.Form):
         if self.ignore_requirements:
             self.widgets.hasRequiredFields = False
 
-        self.disableFields()
-
-    def disableFields(self):
+    def disable_fields(self):
 
         # Disable fields
         for f in self.disabled_fields:
@@ -110,7 +109,15 @@ class ResourceBaseForm(GroupForm, form.Form):
                 if f in self.widgets:
                     metadata[f] = self.widgets[f].value
 
-            self.widgets['metadata'].value = json.dumps(metadata)
+            self.widgets['metadata'].value = json.dumps(
+                metadata, cls=utils.UserFormDataEncoder
+            )
+
+    def metadata(self, data):
+        metadata = data.get('metadata')
+        if metadata:
+            return json.loads(metadata, cls=utils.UserFormDataDecoder)
+        return dict()
 
     def get_data(self, data, key):
         """ Return the key of the given data dictionary,
@@ -135,8 +142,49 @@ class ResourceBaseForm(GroupForm, form.Form):
 
         return None
 
+    def get_widget(self, key):
+        """ Returns a widget either from self.widgets or from any group. """
+
+        if key in self.widgets:
+            return self.widgets[key]
+
+        for group in self.groups:
+            if key in group.widgets:
+                return group.widgets[key]
+
     def defaults(self):
         return {}
+
+    def set_widget(self, key, value):
+        f = self.get_field(key)
+        if not f:
+            return
+
+        w = self.get_widget(key)
+        if not w:
+            return
+
+        converter = getMultiAdapter((f, w))
+        w.value = converter.toWidgetValue(value)
+
+        return True
+
+    def apply_defaults(self):
+
+        start, end = self.start, self.end
+        if start and end:
+            values = {
+                'day': start.date(),
+                'start_time': start.time(),
+                'end_time': end.time()
+            }
+
+            for key, value in values.items():
+                self.set_widget(key, value)
+
+        other_defaults = self.defaults()
+        for k, v in other_defaults.items():
+            assert self.set_widget(k, v), "invalid default field %s" % k
 
     def redirect_to_context(self):
         """ Redirect to the url of the resource. """
@@ -148,12 +196,6 @@ class ResourceBaseForm(GroupForm, form.Form):
         """ Returns the scheduler of the resource. """
         language = utils.get_current_language(self.context, self.request)
         return self.context.scheduler(language=language)
-
-    def metadata(self, data):
-        metadata = data.get('metadata')
-        if metadata:
-            return json.loads(metadata)
-        return dict()
 
     @property
     @from_timestamp
@@ -228,26 +270,10 @@ class ResourceBaseForm(GroupForm, form.Form):
     def update(self, **kwargs):
         self.updateFields()
 
-        start, end = self.start, self.end
-        if start and end:
-            if 'day' in self.fields:
-                self.fields['day'].field.default = start.date()
-            if 'start_time' in self.fields:
-                self.fields['start_time'].field.default = start.time()
-            if 'end_time' in self.fields:
-                self.fields['end_time'].field.default = end.time()
-
-        other_defaults = self.defaults()
-        for k, v in other_defaults.items():
-
-            field = self.get_field(k)
-            assert field, "invalid default field %s" % k
-
-            field.default = v
-
         super(ResourceBaseForm, self).update(**kwargs)
 
-        self.disableFields()
+        self.apply_defaults()
+        self.disable_fields()
 
 
 class AllocationGroupView(object):

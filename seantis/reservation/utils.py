@@ -6,7 +6,7 @@ import functools
 import isodate
 import base64
 
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta, date, time as datetime_time
 from urlparse import urljoin
 from urllib import quote
 from itertools import tee, izip
@@ -495,6 +495,9 @@ class UserFormDataEncoder(json.JSONEncoder):
         if isinstance(obj, date):
             return u'__date__@%s' % isodate.date_isoformat(obj)
 
+        if isinstance(obj, datetime_time):
+            return u'__time__@%s' % isodate.time_isoformat(obj)
+
         if isinstance(obj, RichTextValue):
             return u'__richtext__@%s' % base64.b64encode(json.dumps(dict(
                 raw=obj.raw,
@@ -520,6 +523,9 @@ def userformdata_decode(s):
 
     if s.startswith(u'__datetime__@'):
         return isodate.parse_datetime(s[13:32])
+
+    if s.startswith(u'__time__@'):
+        return isodate.parse_time(s[9:18])
 
     if s.startswith(u'__richtext__@'):
         data = json.loads(base64.b64decode(s[13:]))

@@ -196,32 +196,23 @@ class YourReservationsData(object):
 
 class ReservationBaseForm(ResourceBaseForm):
 
-    def updateFields(self):
-        self.form.groups = []
+    def your_reservation_defaults(self, defaults):
+        """ Extends the given dictionary containing field defaults with
+        the defaults found in your-reservations.
 
-        ResourceBaseForm.updateFields(self)
+        """
 
-        self.form.fields['email'].field.default = self.email() or u''
-
+        defaults['email'] = self.email()
         data = self.additional_data()
 
         if not data:
-            return
-
-        fieldvalues = dict()
+            return defaults
 
         for form in data:
             for field in data[form]['values']:
-                fieldvalues["%s.%s" % (form, field['key'])] = field['value']
+                defaults["%s.%s" % (form, field['key'])] = field['value']
 
-        for group in self.form.groups:
-
-            for key, field in group.fields.items():
-
-                if not key in fieldvalues:
-                    continue
-
-                field.field.default = fieldvalues[key]
+        return defaults
 
     def run_reserve(self,
         data, autoapprove, start=None, end=None, group=None, quota=1):
@@ -303,7 +294,7 @@ class ReservationForm(
         return disabled
 
     def defaults(self, **kwargs):
-        return dict(id=self.id, quota=1)
+        return self.your_reservation_defaults(dict(id=self.id, quota=1))
 
     def allocation(self, id):
         return self.scheduler.allocation_by_id(id)
@@ -420,7 +411,7 @@ class GroupReservationForm(
         return hidden
 
     def defaults(self, **kwargs):
-        return dict(group=self.group, quota=1)
+        return self.your_reservations_defaults(dict(group=self.group, quota=1))
 
     @button.buttonAndHandler(_(u'Reserve'))
     @extract_action_data
