@@ -16,50 +16,83 @@ from seantis.reservation import db
 from seantis.reservation.interfaces import IResourceViewedEvent
 from seantis.reservation.session import ISessionUtility
 
+_connections = set()  # seantis.reservation database connections
+_clockservers = dict()  # list of registered Zope Clockservers
 
-connections = set()
-clockservers = dict()
-lock = threading.Lock()
+# probably not needed as most operations are atomic and therefore protected
+# by the GIL, but it's better to be safe than sorry.
+locks = {
+    '_clockservers': threading.Lock(),
+    '_connections': threading.Lock()
+}
 
 
+# The primary hook to setup maintenance clockservers is the reservation view
+# event. It's invoked way too often, but the invocation is fast and it is
+# guaranteed to be run on a plone site with seantis.reservation installed,
+# setup and in use. Other events like zope startup and traversal events are
+# not safe enough to use if one has to rely on a site being setup.
 @grok.subscribe(IResourceViewedEvent)
 def on_resource_viewed(event):
-    register_site(getSite())
+    period = 15 * 60  # 15 minutes
+    register_once_per_connection('/remove-expired-sessions', getSite(), period)
 
 
-def register_site(site):
+def register_once_per_connection(method, site, period):
+    """ Registers the given method with a clockserver while making sure
+    that the method is only registered once for each seantis.reservaiton db
+    connection defined via the ISessionUtility.
 
-    session_util = getUtility(ISessionUtility)
-    connection = session_util.get_dsn(site)
+        method => relative to the site root, starts with '/'
+                  e.g /remove-expired-sessions
 
-    if connection in connections:
-        return
+        site   => site with seantis.reservation setup in it
 
-    method = '/'.join(site.getPhysicalPath()) + '/remove-expired-sessions'
+        period => interval by which the method is called by the clockserver
 
-    lock.acquire()
-    try:
-        connections.add(connection)
-        _register_server(method, 10)
-    finally:
-        lock.release()
+    Returns True if a new server was registered, False if the connection
+    was already present.
+
+    """
+
+    assert method.startswith('/')
+
+    connection = getUtility(ISessionUtility).get_dsn(site)
+
+    if connection in _connections:
+        return False
+
+    method = '/'.join(site.getPhysicalPath()) + method
+
+    with locks['_connections']:
+        _connections.add(connection)
+
+    register_server(method, period)
+
+    return True
 
 
-def _register_server(method, period):
+def register_server(method, period):
+    """ Registers the given method with a clockserver. """
 
-    assert method not in clockservers, "%s is already being used" % method
+    assert method not in _clockservers, "%s is already being used" % method
 
-    clockservers[method] = ClockServer(
-        method, period, host='localhost', logger=ClockLogger(method)
-    )
+    with locks['_clockservers']:
+        _clockservers[method] = ClockServer(
+            method, period, host='localhost', logger=ClockLogger(method)
+        )
 
-    return clockservers[method]
+    return _clockservers[method]
 
 
 logexpr = re.compile(r'GET [^\s]+ HTTP/[^\s]+ ([0-9]+)')
 
 
 class ClockLogger(object):
+    """ Logs the clock runs by evaluating the log strings. Looks for http
+    return codes to do so.
+
+    """
 
     def __init__(self, method):
         self.method = method
@@ -81,6 +114,9 @@ class ClockLogger(object):
 
 
 class RemoveExpiredSessions(grok.View):
+    """ Removes all expired sessions when called. Does not require permission.
+
+    """
 
     permission = "zope2.View"
 
