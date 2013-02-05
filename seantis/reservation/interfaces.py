@@ -498,12 +498,6 @@ class IReservation(Interface):
         required=False
     )
 
-    metadata = schema.TextLine(
-        title=_(u'Metadata'),
-        default=u'',
-        required=False
-    )
-
     day = schema.Date(
         title=_(u'Day'),
         required=False

@@ -3,7 +3,7 @@
 from logging import getLogger
 log = getLogger('seantis.reservation')
 
-from datetime import date, time
+from datetime import time
 from DateTime import DateTime
 from five import grok
 
@@ -271,7 +271,7 @@ class ReservationForm(
 
     @property
     def hidden_fields(self):
-        hidden = ['id', 'metadata']
+        hidden = ['id']
 
         try:
             allocation = self.id and self.allocation(self.id)
@@ -311,15 +311,9 @@ class ReservationForm(
 
     def validate(self, data):
         try:
-
-            day = self.get_data(data, 'day')
-            if hasattr(day, '__iter__'):
-                day = date(*self.get_data(data, 'day'))
-
-            start_time = self.strptime(self.get_data(data, 'start_time'))
-            end_time = self.strptime(self.get_data(data, 'end_time'))
-
-            start, end = utils.get_date_range(day, start_time, end_time)
+            start, end = utils.get_date_range(
+                data['day'], data['start_time'], data['end_time']
+            )
             if not self.allocation(data['id']).contains(start, end):
                 utils.form_error(_(u'Reservation out of bounds'))
 
@@ -395,7 +389,7 @@ class GroupReservationForm(
 
     @property
     def hidden_fields(self):
-        hidden = ['group', 'metadata']
+        hidden = ['group']
 
         try:
             allocation = self.group and self.scheduler.allocations_by_group(

@@ -352,6 +352,13 @@ body .field:last-child input {
     margin-bottom: 0;
 }
 
+input[readonly] {
+   background-color: #efefef;
+   color: #454545;
+   border-color: #bbb;
+   padding-left: 2px;
+}
+
 body .enableFormTabbing fieldset {
     border: none;
     padding: 0 0 10px 2px;

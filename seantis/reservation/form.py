@@ -1,5 +1,3 @@
-import json
-
 from datetime import datetime
 from functools import wraps
 
@@ -71,7 +69,7 @@ class ResourceBaseForm(GroupForm, form.Form):
     ignore_requirements = False
 
     disabled_fields = []
-    hidden_fields = ['id', 'metadata']
+    hidden_fields = ['id']
 
     context_buttons = tuple()
 
@@ -96,39 +94,7 @@ class ResourceBaseForm(GroupForm, form.Form):
         # Disable fields
         for f in self.disabled_fields:
             if f in self.widgets:
-                self.widgets[f].disabled = 'disabled'
-
-        # Disabled fields are not submitted later, so we store the values
-        # of the widgets in a hidden field, using the metadata field
-        # which must exist for this to work
-        if self.disabled_fields:
-            assert 'metadata' in self.widgets
-
-            metadata = dict()
-            for f in self.disabled_fields:
-                if f in self.widgets:
-                    metadata[f] = self.widgets[f].value
-
-            self.widgets['metadata'].value = json.dumps(
-                metadata, cls=utils.UserFormDataEncoder
-            )
-
-    def metadata(self, data):
-        metadata = data.get('metadata')
-        if metadata:
-            return json.loads(metadata, cls=utils.UserFormDataDecoder)
-        return dict()
-
-    def get_data(self, data, key):
-        """ Return the key of the given data dictionary,
-        consulting the metadata dictionary.
-
-        """
-        metadata = self.metadata(data)
-        if metadata and key in metadata:
-            return metadata.get(key)
-
-        return data.get(key)
+                self.widgets[f].readonly = 'readonly'
 
     def get_field(self, key):
         """ Returns a field either from self.fields or from any group. """
