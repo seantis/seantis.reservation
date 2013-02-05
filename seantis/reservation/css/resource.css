@@ -456,6 +456,10 @@ body .portalMessage {
     margin-bottom: 10px;   
 }
 
+.seantis-reservation-form .suppressVisualEditor {
+    display: none;
+}
+
 #inline-page .hint {
     font-size: 12px;
     width: 100%;

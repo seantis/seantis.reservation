@@ -21,7 +21,7 @@ var reservation_overlay_init = null;
         }
 
         messages = $(messages);
-        
+
         var show = function() {
             messages.hide();
             target.after(messages);
@@ -45,12 +45,33 @@ var reservation_overlay_init = null;
         setTimeout(get_result.hide, 4000);
     };
 
+    var disable_readonly_calendars = function() {
+        _.defer(function() {
+            $('input[readonly]').siblings('.caltrigger').hide();
+        });
+    };
+
+    var init_tinymce = function() {
+        $('.richtext-field textarea').each(function(index, el) {
+            // force tinymce to init again
+            var id = $(el).attr('id');
+            delete InitializedTinyMCEInstances[id];
+            
+            var cfg = new TinyMCEConfig(id);
+            cfg.init();
+
+        });
+    };
+
     var on_formload_success = function(e, parent, form) {
         if ($.fn.ploneTabInit) {
             parent.ploneTabInit();
         }
         seantis.formgroups.init();
         seantis.wizard.init();
+
+        disable_readonly_calendars();
+        init_tinymce();
     };
 
     var on_formload_failure = function(e, parent, form) {
@@ -73,6 +94,8 @@ var reservation_overlay_init = null;
         var before_load = function() {
             seantis.formgroups.init();
             seantis.wizard.init();
+            disable_readonly_calendars();
+            init_tinymce();
             jQuery = $;
         };
 
@@ -138,19 +161,20 @@ var reservation_overlay_init = null;
 
         // I must confess though that it was way more fun to write than it should
         // have been...
-        
-        // only do it on whitelisted forms
-        var whitelisted = false;
-        if (/kssattr-formname-allocate/gi.test(responseText)) {
-            whitelisted = true;
-        }
-        if (/kssattr-formname-@@edit/gi.test(responseText)) {
-            whitelisted = true;
-        }
 
-        if (!whitelisted) {
-            return;
-        }
+        // only do it on whitelisted forms
+
+        var whitelist = [
+            /kssattr-formname-allocate/gi,
+            /kssattr-formname-@@edit/gi,
+            /kssattr-formname-reserve/gi
+        ];
+
+        var whitelisted = _.find(whitelist, function(expr) {
+            return expr.test(responseText);
+        });
+
+        if (!whitelisted) return;
 
         var re = /<script type="text\/javascript">([\s\S]*?)<\/script>/gi;
         var matches = null;
