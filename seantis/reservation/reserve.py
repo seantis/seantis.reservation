@@ -411,7 +411,7 @@ class GroupReservationForm(
         return hidden
 
     def defaults(self, **kwargs):
-        return self.your_reservations_defaults(dict(group=self.group, quota=1))
+        return self.your_reservation_defaults(dict(group=self.group, quota=1))
 
     @button.buttonAndHandler(_(u'Reserve'))
     @extract_action_data
