@@ -55,11 +55,15 @@ var reservation_overlay_init = null;
         $('.richtext-field textarea').each(function(index, el) {
             // force tinymce to init again
             var id = $(el).attr('id');
-            delete InitializedTinyMCEInstances[id];
-            
-            var cfg = new TinyMCEConfig(id);
-            cfg.init();
 
+            if (typeof(InitializedTinyMCEInstances) != "undefined") {
+                delete InitializedTinyMCEInstances[id];
+            }
+
+            if (typeof(TinyMCEConfig) != "undefined") {
+                var cfg = new TinyMCEConfig(id);
+                cfg.init();
+            }
         });
     };
 
