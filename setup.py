@@ -1,13 +1,20 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.0b3'
+version = '1.0b4'
+
+zug_require = [
+    'izug.basetheme',
+    'ftw.contentmenu'
+]
 
 setup(name='seantis.reservation',
       version=version,
       description="Reservation system for plone portal types",
-      long_description=open("README.md").read() + "\n" +
-                       open(os.path.join("docs", "HISTORY.txt")).read(),
+      long_description=('\n'.join((
+          open("README.md").read(),
+          open(os.path.join("docs", "HISTORY.txt")).read()
+      ))),
       # Get more strings from
       # http://pypi.python.org/pypi?:action=list_classifiers
       classifiers=[
@@ -49,6 +56,8 @@ setup(name='seantis.reservation',
           'mock',
           'isodate'
       ],
+      zug_require=zug_require,
+      extras_require=dict(zug=zug_require),
       entry_points="""
       # -*- Entry points: -*-
 
