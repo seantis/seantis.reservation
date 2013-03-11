@@ -1,0 +1,75 @@
+/* fullcalendar style changes for izug.basetheme */
+
+.groupSelection {
+    -webkit-box-shadow: 0 0 4px 2px #0e6700 !important;
+    -moz-box-shadow: 0 0 4px 2px #0e6700 !important;
+    box-shadow: 0 0 4px 2px #0e6700 !important;
+    background-color: white !important;
+}
+
+.event-unavailable.groupSelection {
+    -webkit-box-shadow: 0 0 4px 2px #ae1e00 !important;
+    -moz-box-shadow: 0 0 4px 2px #ae1e00 !important;
+    box-shadow: 0 0 4px 2px #ae1e00 !important;
+}
+
+.event-partly-available.groupSelection {
+    -webkit-box-shadow: 0 0 4px 2px #dd7c07 !important;
+    -moz-box-shadow: 0 0 4px 2px #dd7c07 !important;
+    box-shadow: 0 0 4px 2px #dd7c07 !important;
+}
+
+a.fc-event:hover {
+    text-decoration: none;
+}
+
+#content .fc-event-head .fc-event-time {
+    line-height: 18px;
+}
+
+#content .fc-event-title {
+    font-size: 10px;   
+}
+
+.limitedList .event-unavailable,
+#content .event-unavailable, 
+#content .event-unavailable .fc-event-skin, 
+#content .event-unavailable .fc-event-head {
+    background-color: #ae1e00 !important;
+    border-color: #ae1e00 !important;
+}
+
+.limitedList .event-available,
+#content .event-available, 
+#content .event-available .fc-event-skin, 
+#content .event-available .fc-event-head {
+    background-color: #0e6700 !important;
+    border-color: #0e6700 !important;
+}
+
+.limitedList .event-partly-available,
+#content .event-partly-available, 
+#content .event-partly-available .fc-event-skin, 
+#content .event-partly-available .fc-event-head {
+    background-color: #dd7c07 !important;
+    border-color: #dd7c07 !important;
+}
+
+#content .fc-select-helper, 
+#content .fc-select-helper .fc-event-skin, 
+#content .fc-select-helper .fc-event-head {
+    background-color: #0053bc !important;
+    border-color: #0053bc !important;   
+}
+
+#content .fc-content table * {
+    border-color: #bbb; 
+}
+
+#content .fc-content .fc-sun, #content .fc-content .fc-sat {
+    background-color: #efefef;   
+}
+
+#content .fc-content .fc-today {
+    background-color: #fff0b2;   
+}

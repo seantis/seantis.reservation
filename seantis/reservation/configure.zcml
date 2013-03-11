@@ -7,6 +7,7 @@
     xmlns:plone="http://namespaces.plone.org/plone"
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:inflator="http://namespaces.zope.org/inflator"
     i18n_domain="seantis.reservation"
     >
 
@@ -57,6 +58,14 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
     title="seantis.reservation"
     directory="profiles/default"
     description="Installs the seantis.reservation package"
+    provides="Products.GenericSetup.interfaces.EXTENSION"
+/>
+
+<genericsetup:registerProfile
+    name="izug_basetheme"
+    title="seantis.reservation"
+    directory="profiles/izug_basetheme"
+    description="Installs the izug basetheme profiles for seantis.reservation"
     provides="Products.GenericSetup.interfaces.EXTENSION"
 />
 
@@ -123,5 +132,22 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
 <browser:resourceDirectory name="seantis.reservation.images" directory="images"/>
 <browser:resourceDirectory name="seantis.reservation.js" directory="js"/>
 <browser:resourceDirectory name="seantis.reservation.css" directory="css"/>
+
+<!-- Bundles -->
+<include package="ftw.inflator" file="meta.zcml" />
+
+<inflator:bundle
+    title="seantis.reservation for plonetheme.sunburst"
+    profiles="plonetheme.sunburst:default
+              seantis.reservation:default"
+    />
+
+<inflator:bundle
+    title="seantis.reservation for izug.basetheme"
+    profiles="izug.basetheme:default
+              izug.basetheme:zug_directories
+              seantis.reservation:default
+              seantis.reservation:izug_basetheme"
+    />
 
 </configure>

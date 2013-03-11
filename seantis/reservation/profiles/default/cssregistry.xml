@@ -3,11 +3,13 @@
 
     <stylesheet 
         id="++resource++seantis.reservation.css/miniTip.css"
+        insert-before="++resource++collective.js.fullcalendar/fullcalendar.css"
         expression="python:object.portal_type == 'seantis.reservation.resource'"  
         media="all" rendering="link"
     />
 
     <stylesheet id="++resource++seantis.reservation.css/resource.css" 
+        insert-after="++resource++collective.js.fullcalendar/fullcalendar.css"
         media="all" rendering="link"
     />
 

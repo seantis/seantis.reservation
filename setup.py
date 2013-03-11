@@ -54,7 +54,8 @@ setup(name='seantis.reservation',
           'xlwt',
           'tablib',
           'mock',
-          'isodate'
+          'isodate',
+          'ftw.inflator'
       ],
       zug_require=zug_require,
       extras_require=dict(zug=zug_require),

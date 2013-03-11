@@ -1,0 +1,337 @@
+/* resource style changes for izug.basetheme */
+
+.singlecalendar .legend,
+.multicalendar .legend {
+    padding: 4px;
+    background-color: #ebf4fa;
+    border-color: #dedede;
+}
+
+.singlecalendar .legend div {
+    margin-right: 10px;
+}
+
+.singlecalendar .legend div.color {
+    padding-right: 0;
+}
+
+.multicalendar .multiCalendarContainer {
+    float: none;
+    width: 100%;
+}
+
+.singlecalendar .fc, .multicalendar .fc {
+    margin-top: 10px;
+}
+
+/* wizard form tabs */
+
+.seantis-reservation-form ul.wizardSteps li.formTab a {
+    margin-left: -10px;
+    padding-top: 0px;
+    background-color: transparent;
+    border: none;
+    -webkit-border-radius: 0;
+       -moz-border-radius: 0;
+            border-radius: 0;
+    height: 16px;
+}
+
+.seantis-reservation-form ul.wizardSteps li.formTab a {
+    border: 1px solid #ccc;
+    border-width: 1px 0;
+    color: #bbb;
+}
+
+.seantis-reservation-form ul.wizardSteps li.formTab a.selected {
+    font-weight: bold;
+}
+
+.seantis-reservation-form ul.wizardSteps li.formTab a.selected,
+.seantis-reservation-form ul.wizardSteps li.formTab.visited a{
+    border: 1px solid black;
+    border-width: 1px 0;
+    color: black;
+}
+
+.seantis-reservation-form ul.formTabs li.formTab:after {
+     content: "" !important;
+}
+
+.seantis-reservation-form input {
+     max-width: 250px;
+}
+
+.seantis-reservation-form fieldset {
+     padding: 5px 10px !important;
+}
+
+div.overlay dl.portalMessage {
+     margin-top: 10px;
+}
+
+.seantis-reservation-form .formTab a.required:after {
+    content: none;
+}
+
+/* the overlay's left offset is calculated by jquery tools and it
+allows no overriding of that calculation (except for preload values),
+which is a pity, because if that was possible we could center the
+variable width overlay within iZug's limited #content width instead
+of the window width */
+div.overlay {
+    width: auto;
+    max-width: 880px;
+    min-width: 880px;
+    left: 70px !important;
+}
+
+/* Minitip style */
+
+#miniTip {
+    background-color: white;
+    border-color: #bbb;
+    border-width: 1px;
+    font-size: 10px;
+    border-radius: 0;
+}
+
+#miniTip a {
+    color: #00538c;
+    font-size: 10px;
+    padding: 5px 5px 5px 10px;
+}
+
+#miniTip a:hover:before {
+    content: none;
+}
+
+#miniTip a:hover, #miniTip a:visited {
+    background-color: white;
+    margin-left: 10px;
+    padding-left: 0;
+    color: #ae1e00;
+    text-decoration: underline;
+}
+
+#miniTip_c div:first-child {
+    border-top: none;
+}
+
+#miniTip_c div {
+    border-radius: 0;
+    border: 1px solid #dedede;
+    border-width: 1px 0 1px 0;
+    background-color: #efefef;
+    color: black;
+}
+
+#miniTip .n {
+    border-bottom-color: #00538c;
+}
+
+#miniTip .s {
+    border-bottom-color: #00538c;
+}
+
+#miniTip .e {
+    border-right-color: #00538c;
+}
+
+#miniTip .w {
+    border-left-color: #00538c;
+}
+
+/* Reservation List Style */
+
+#content #inline-page {
+    background-color: #efefef;
+    border-color: #bbb;
+}
+
+#content .inline-reservations {
+    border-color: #bbb;
+    min-height: 50px;
+}
+
+.reservation-approved .reservation-title,
+.reservation-pending .reservation-title {
+    font-size: 12px;
+    height: 23px;
+}
+
+.reservation-pending .reservation-title {
+    background-color: #00538C;
+}
+
+.reservation-approved .reservation-title {
+    background-color: #454545;
+}
+
+.reservation-data {
+    width: 60%;
+    font-size: 11px;
+}
+
+.reservation-data span.label {
+    color: #454545;
+}
+
+.reservation {
+    margin-bottom: 20px;
+}
+
+.reservation-list {
+    padding-bottom: 20px;
+}
+
+.reservation-approved .reservation-list:hover {
+    background-color: white;
+    border-color: #00538c;
+}
+
+.reservation-pending .reservation-list:hover {
+    background-color: white;
+    border-color: #454545;
+}
+
+#ftw-edit-bar {
+    position: relative !important;
+    z-index: 1000 !important;
+}
+
+label .required {
+    background-image: url("../required.gif");
+    background-position: right center;
+    background-repeat: no-repeat;
+    padding-right: 3px;
+}
+
+/* Your reservations */
+.your-reservations {
+    padding: 0 10px 10px 10px;
+    border: 1px solid #ddd;
+    margin-top: 10px;
+    background-color: #ebf4fb;
+}
+
+.your-reservations h2 {
+    border-bottom: 2px solid #006fba;
+    padding-bottom: 10px;
+    margin-top: 10px;
+}
+
+.your-reservations-view ul li,
+.your-reservations ul li {
+    border-bottom: 1px solid #99C5E3;
+    padding-bottom: 8px;
+}
+
+.your-reservations-view ul {
+    margin-top: -10px;
+    background-color: #ebf4fb;   
+}
+.your-reservations-view ul li {
+    margin: 0;
+    padding: 2px 0 4px 15px;
+}
+
+.your-reservations-view ul,
+.your-reservations ul {
+    list-style: none;
+    margin-left: 0;
+}
+
+.your-reservations-view .formControls,
+.your-reservations .formControls {
+    margin-left: -2px;
+}
+
+.your-reservations ul span {
+    display: block;
+}
+
+.your-reservations ul a {
+    color: black !important;
+}
+
+.your-reservations ul a.remove-url {
+    float: right;
+    color: #ad1d0a !important;
+}
+
+.your-reservations ul a:hover {
+    text-decoration: underline !important;
+}
+
+.facilityOverview .your-reservations {
+    margin-top: -2px;
+    margin-bottom: 10px;
+}
+
+.portaltype-seantis-dir-facility-item .facilityOverview .your-reservations {
+    margin-top: 5px;
+}
+
+/* reservations in progress */
+.uncommitted {
+    color: #555;
+    font-size: 12px;
+    margin-top: -26px;
+    margin-bottom: 11px;
+}
+
+/* form fixes */
+.seantis-reservation-form #formfield-form-widgets-id,
+.seantis-reservation-form #formfield-form-widgets-group,
+.seantis-reservation-form #formfield-form-widgets-timeframes {
+   display: none;   
+}
+
+#form-widgets-description {
+   width: 932px;   
+}
+#form-widgets-first_hour,
+#form-widgets-last_hour {
+   width: 936px;   
+}
+
+/* form help */
+.field {
+    padding-top: 5px;
+}
+.wizard .field {
+    padding: 0;
+}
+.formHelp {
+   font-weight: normal;
+   display: block;
+   margin: 0 0 4px 0 !important;
+   line-height: 12px;
+   font-size: 10px;
+   
+   color: #454545;
+}
+.seantis-reservation-form .formHelp {
+    width: 253px;
+    text-align: justify;
+}
+
+/* reservations quota */
+.reservation-quota {
+    border: 1px solid #ccc;
+    border-width: 0 1px 1px 1px;
+    margin-top: -20px;
+    height: 20px;
+    background-color: #efefef;
+    line-height: 20px;
+    padding: 0 0 0 20px;
+}
+
+.your-reservation-quota {
+    display: block !important;
+}
+
+.your-reservation-quota b {
+    font-weight: normal;
+}
