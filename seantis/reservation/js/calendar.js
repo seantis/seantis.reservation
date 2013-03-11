@@ -57,15 +57,15 @@ var CalendarGroups = function() {
         // initializes all calendars on the site
         var init = function() {
             _.each(seantis.calendars, function(calendar, index) {
-                
+
                 calendar.element = $(calendar.id);
                 calendar.index = index;
                 calendar.groups = new CalendarGroups();
-                
+
                 // indicate that the calendar an event is being resized or moved
                 calendar.is_resizing = false;
                 calendar.is_moving = false;
-                
+
                 // refetch the calendar events
                 calendar.refetch = function() {
                     calendar.element.fullCalendar('refetchEvents');
@@ -108,7 +108,7 @@ var CalendarGroups = function() {
 
                     //fetches the requested url
                     var fetch = function() {
-                        
+
                         // show loading gif and hide help text
                         target.find('.hint').hide();
                         target.toggleClass('loading', true);
@@ -137,7 +137,7 @@ var CalendarGroups = function() {
                             // if there are data-group elements hook them up
                             // with the highlighting
                             var groups = target.find('div[data-group]');
-                            
+
                             groups.mouseenter(function() {
                                 var group = $(this).attr('data-group');
                                 if (!_.isEmpty(group)) {
@@ -163,7 +163,7 @@ var CalendarGroups = function() {
                         };
                         $(document).bind("reservations-changed", function() {
                             if (window.seantis_inline) {
-                                window.seantis_inline.fetch();    
+                                window.seantis_inline.fetch();
                             }
                         });
                         fetch();
@@ -190,7 +190,7 @@ var CalendarGroups = function() {
 
         // renders the occupied partitions on an event
         var render_partitions = function(event, element, calendar) {
-            
+
             // if the event is being moved, don't render the partitions
             if (event.is_moving) {
                 return;
@@ -253,7 +253,7 @@ var CalendarGroups = function() {
             var url = event.moveurl;
             url += '&start=' + get_timestamp(event.start);
             url += '&end=' + get_timestamp(event.end);
-            
+
             calendar.overlay_show(url);
         };
 
@@ -370,7 +370,7 @@ var CalendarGroups = function() {
                 _.each(_.keys(synced_buttons), function(button, ix) {
                     var fn = synced_buttons[button][0];
                     var arg = synced_buttons[button][1];
-                    
+
                     $(button, element).click(function() {
                         all_calendars(id, fn, arg);
                     });
@@ -381,7 +381,7 @@ var CalendarGroups = function() {
                 //the actual block with the overflow has no identity or class
                 //so there's no other way but to rely on the hierarchy
                 var block = $('div > div > div > div', calendar.element);
-                
+
                 block.scroll(function() {
                     scroll_calendars(id, block.scrollTop(), block.scrollLeft());
                 });

@@ -87,16 +87,30 @@ class View(grok.View):
         """
 
         resources = self.resources()
-        min_h = min([r.first_hour for r in resources])
-        max_h = max([r.last_hour for r in resources])
+        min_h = min(r.first_hour for r in resources)
+        max_h = max(r.last_hour for r in resources)
+
+        # the view options are always the ones from the context
+        available_views = self.context.available_views
+        selected_view = self.context.selected_view
+        selected_date = self.context.selected_date
+        specific_date = self.context.specific_date
 
         calendars = []
         for ix, resource in enumerate(self.resources()):
-            calendars.append(self.calendar_options(ix, resource, min_h, max_h))
+            calendars.append(self.calendar_options(
+                ix, resource, min_h, max_h,
+                available_views, selected_view, selected_date, specific_date
+            ))
 
         return template % '\n'.join(calendars)
 
-    def calendar_options(self, ix, resource, first_hour=None, last_hour=None):
+    def calendar_options(
+            self, ix, resource,
+            first_hour=None, last_hour=None,
+            available_views=None, selected_view=None,
+            selected_date=None, specific_date=None):
+
         template = """
         this.seantis.calendars.push({
             id:'#%s',
@@ -113,9 +127,20 @@ class View(grok.View):
         options['minTime'] = first_hour or resource.first_hour
         options['maxTime'] = last_hour or resource.last_hour
 
+        options['defaultView'] = selected_view or resource.selected_view
+
         is_exposed = exposure.for_calendar(resource)
         options['selectable'] = is_exposed('selectable')
         options['editable'] = is_exposed('editable')
+
+        options['header'] = {
+            'right': ', '.join(available_views or resource.available_views)
+        }
+
+        if selected_date == 'specific' and specific_date:
+            options['year'] = specific_date.year
+            options['month'] = specific_date.month
+            options['day'] = specific_date.day
 
         return template % (
             resource._v_calendar_id, json.dumps(options), addurl

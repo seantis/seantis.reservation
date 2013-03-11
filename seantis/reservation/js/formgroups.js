@@ -16,7 +16,7 @@ seantis.formgroups.add = function(options) {
         if (!no_notify && options.on_show) options.on_show(show);
 
         _.each(options.fields, function(field) {
-            field.toggle(show); 
+            field.toggle(show);
         });
     };
 
@@ -24,17 +24,23 @@ seantis.formgroups.add = function(options) {
         options.show_fields(options.is_enabled());
     };
 
+    var on_trigger = function() {
+        o.show_fields(o.is_enabled());
+    };
+
     var o = options;
     o.show_fields(o.is_enabled());
-    o.trigger.change(function() {
-        o.show_fields(o.is_enabled()); 
-    });
+    o.trigger.change(on_trigger);
+
+    if (! _.isUndefined(o.other_triggers)) {
+        o.other_triggers.change(on_trigger);
+    }
 
     seantis.formgroups.groups[options.name] = options;
 };
 
 seantis.formgroups.clear = function() {
-    seantis.formgroups.groups = {};  
+    seantis.formgroups.groups = {};
 };
 
 seantis.formgroups.add_utility_links = function(findfn) {
@@ -48,7 +54,7 @@ seantis.formgroups.add_utility_links = function(findfn) {
     timeframes = _.sortBy(timeframes, function(frame) {
         return frame.start;
     });
-    
+
     var target = find('#formfield-form-widgets-recurrence_start');
     var link = _.template('<div id="<%= id %>"><a href="#">&gt;&gt; <%= title %></a></div>');
 
@@ -63,10 +69,10 @@ seantis.formgroups.add_utility_links = function(findfn) {
     end.day = find('#form-widgets-recurrence_end-day');
 
     var set_date = function(recurrence, date) {
-        var date = seantis.utils.parse_date(date);
-        recurrence.year.val(date.year);
-        recurrence.month.val(date.month);
-        recurrence.day.val(date.day);
+        var dt = seantis.utils.parse_date(date);
+        recurrence.year.val(dt.year);
+        recurrence.month.val(dt.month);
+        recurrence.day.val(dt.day);
     };
 
     start.set = function(date) { set_date(start, date); };
@@ -75,9 +81,9 @@ seantis.formgroups.add_utility_links = function(findfn) {
     _.each(timeframes, function(frame) {
         var id = _.uniqueId('timeframe');
         var el = $(link({id: id, title: frame.title}));
-        
+
         target.before(el);
-        
+
         var tool = find('#' + id);
         tool.click(function(e) {
             start.set(frame.start);
@@ -150,6 +156,15 @@ seantis.formgroups.init = function(el) {
         fields: [
             find('#formfield-form-widgets-waitinglist_spots')
         ]
+    });
+
+    add({
+        name: "selected_date",
+        trigger: find('#form-widgets-selected_date-1'),
+        fields: [
+            find('#formfield-form-widgets-specific_date')
+        ],
+        other_triggers: find('#form-widgets-selected_date-0')
     });
 
     seantis.formgroups.add_utility_links(find);

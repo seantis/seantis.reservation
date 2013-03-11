@@ -16,6 +16,7 @@ from plone.dexterity.interfaces import IDexterityFTI
 from plone.dexterity.utils import schemaNameToPortalType as getname
 
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
+from z3c.form.browser.radio import RadioFieldWidget
 from z3c.form import widget
 from seantis.reservation import _, utils
 from seantis.reservation.raster import VALID_RASTER_VALUES
@@ -42,6 +43,32 @@ recurrence = SimpleVocabulary(
         SimpleTerm(value=True, title=_(u'Daily')),
     ]
 )
+
+calendar_views = SimpleVocabulary(
+    [
+        SimpleTerm(value='month', title=_(u'Monthly View')),
+        SimpleTerm(value='agendaWeek', title=_(u'Weekly View')),
+        SimpleTerm(value='agendaDay', title=_(u'Daily View'))
+    ]
+)
+
+default_views = ['month', 'agendaWeek', 'agendaDay']
+default_selected_view = 'agendaWeek'
+
+calendar_dates = SimpleVocabulary(
+    [
+        SimpleTerm(value='current', title=_(u'Always show the current date')),
+        SimpleTerm(value='specific', title=_(u'Always show a specific date'))
+    ]
+)
+
+
+def select_at_least_one(values):
+    if not values:
+        raise Invalid(
+            _(u'Select at least one value')
+        )
+    return True
 
 
 @grok.provider(IContextSourceBinder)
@@ -241,6 +268,41 @@ class IResourceBase(IResourceAllocationDefaults):
         default=23
     )
 
+    available_views = schema.List(
+        title=_(u'Available Views'),
+        description=_(u'Views available to the user on the calendar.'),
+        value_type=schema.Choice(
+            source=calendar_views
+        ),
+        default=default_views,
+        constraint=select_at_least_one
+    )
+
+    form.widget(available_views=CheckBoxFieldWidget)
+
+    selected_view = schema.Choice(
+        title=_(u'Selected View'),
+        description=_(u'Selected view when opening the calendar.'),
+        source=calendar_views,
+        default=default_selected_view
+    )
+
+    form.widget(selected_view=RadioFieldWidget)
+
+    selected_date = schema.Choice(
+        title=_(u'Selected Date'),
+        description=_(u'Calendar date shown when opening the calendar.'),
+        source=calendar_dates,
+        default='current'
+    )
+
+    form.widget(selected_date=RadioFieldWidget)
+
+    specific_date = schema.Date(
+        title=_(u'Specific Date'),
+        required=False
+    )
+
     form.fieldset(
         'defaults',
         label=_(u'Default Allocation Values'),
@@ -278,6 +340,21 @@ class IResourceBase(IResourceAllocationDefaults):
         if last_hour <= first_hour:
             raise Invalid(
                 _(u'First hour must be smaller than last hour')
+            )
+
+    @invariant
+    def isValidCalendarDate(Resource):
+        if Resource.selected_date == 'specific' and not Resource.specific_date:
+            raise Invalid(
+                _(u'You chose to "Always show a specific date" but you did '
+                  u'not specify a specific date')
+            )
+
+    @invariant
+    def isValidSelectedView(Resource):
+        if Resource.selected_view not in Resource.available_views:
+            raise Invalid(
+                _(u'The selected view must be one of the available views.')
             )
 
 
