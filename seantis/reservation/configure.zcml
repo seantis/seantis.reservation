@@ -63,7 +63,7 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
 
 <genericsetup:registerProfile
     name="izug_basetheme"
-    title="seantis.reservation"
+    title="seantis.reservation izug_basetheme"
     directory="profiles/izug_basetheme"
     description="Installs the izug basetheme profiles for seantis.reservation"
     provides="Products.GenericSetup.interfaces.EXTENSION"
@@ -105,6 +105,15 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
     class="seantis.reservation.settings.SeantisReservationControlPanelView"
     permission="cmf.ManagePortal"
     />
+
+<!-- Dynamic Views -->
+<browser:menuItem
+        for="Products.ATContentTypes.interface.IATFolder"
+        menu="plone_displayviews"
+        title="Resource listing"
+        action="@@resource_listing"
+        description="List seantis.reservation resources"
+        />
 
 <!-- Reservation form marker -->
 <plone:behavior

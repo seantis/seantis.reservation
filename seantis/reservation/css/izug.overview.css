@@ -1,0 +1,13 @@
+/* overview styles for izug basetheme */
+.resource-listing-entry {
+    margin: 0 0 15px 0;
+}
+
+.resource-listing-entry * {
+    margin: 0;   
+}
+
+.resource-listing-entry p {
+   color: #333;
+   max-width: 500px;
+}

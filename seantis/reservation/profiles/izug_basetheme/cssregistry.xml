@@ -13,8 +13,12 @@
 
     <stylesheet id="++resource++seantis.reservation.css/izug.fullcalendar.css" 
         insert-after="++resource++seantis.reservation.css/izug.resource.css"
-        media="all" rendering="import"
+        media="all" rendering="link"
     />
 
+    <stylesheet id="++resource++seantis.reservation.css/izug.overview.css" 
+        insert-after="++seantis++seantis.reservation.css/overview.css"
+        media="all" rendering="link"
+    />
 
 </object>

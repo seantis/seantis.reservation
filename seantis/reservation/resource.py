@@ -1,12 +1,15 @@
 import json
 from datetime import datetime
 
+from Products.ATContentTypes.interface import IATFolder
+
 from Acquisition import aq_inner
 from five import grok
 from plone.dexterity.content import Container
 from plone.uuid.interfaces import IUUID
 from plone.memoize import view
 from zope.event import notify
+from zope.interface import implements
 
 from seantis.reservation import exposure
 from seantis.reservation import utils
@@ -16,6 +19,7 @@ from seantis.reservation.events import ResourceViewedEvent
 from seantis.reservation.timeframe import timeframes_by_context
 from seantis.reservation.form import AllocationGroupView
 from seantis.reservation.interfaces import IResourceBase
+from seantis.reservation.interfaces import IOverview
 
 
 class Resource(Container):
@@ -182,6 +186,20 @@ class GroupView(grok.View, AllocationGroupView):
 
     def title(self):
         return self.group
+
+
+class Listing(grok.View):
+    permission = 'zope2.View'
+    implements(IOverview)
+
+    grok.context(IATFolder)
+    grok.require(permission)
+    grok.name('resource_listing')
+
+    template = grok.PageTemplateFile('templates/listing.pt')
+
+    def list_item(self, item):
+        return item.portal_type == 'seantis.reservation.resource'
 
 
 class CalendarRequest(object):
