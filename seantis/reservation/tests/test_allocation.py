@@ -51,3 +51,31 @@ class TestAllocation(IntegrationTestCase):
 
         self.assertTrue(allocation.overlaps(start, end))
         self.assertFalse(allocation.contains(start, end))
+
+    def test_whole_day(self):
+        allocation = Allocation(raster=15, resource=uuid())
+
+        allocation.start = datetime(2013, 1, 1, 0, 0)
+        allocation.end = datetime(2013, 1, 2, 0, 0)
+
+        self.assertTrue(allocation.is_whole_day)
+
+        allocation.start = datetime(2013, 1, 1, 0, 0)
+        allocation.end = datetime(2013, 1, 1, 23, 59, 59, 999999)
+
+        self.assertTrue(allocation.is_whole_day)
+
+        allocation.start = datetime(2013, 1, 1, 0, 0)
+        allocation.end = datetime(2013, 1, 2, 23, 59, 59, 999999)
+
+        self.assertTrue(allocation.is_whole_day)
+
+        allocation.start = datetime(2013, 1, 1, 0, 0)
+        allocation.end = datetime(2013, 1, 2, 0, 0)
+
+        self.assertTrue(allocation.is_whole_day)
+
+        allocation.start = datetime(2013, 1, 1, 15, 0)
+        allocation.end = datetime(2013, 1, 1, 0, 0)
+
+        self.assertFalse(allocation.is_whole_day)

@@ -114,6 +114,24 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
         """Returns the end plus one microsecond (nicer display)."""
         return self.end + timedelta(microseconds=1)
 
+    @property
+    def is_whole_day(self):
+        """Returns true if the allocation is a whole-day allocation.
+
+        A whole-day allocation is not really special. It's just an allocation
+        which starts at 0:00 and ends at 24:00 (or 23:59:59'999).
+
+        As such it can actually also span multiple days, only hours and minutes
+        count.
+
+        The use of this is to display allocations spanning days differently.
+        """
+
+        s, e = self.display_start, self.display_end
+        assert s != e  # this can never be, except when caused by cosmic rays
+
+        return (s.hour, s.minute, e.hour, e.minute) == (0, 0, 0, 0)
+
     def overlaps(self, start, end):
         """ Returns true if the current timespan overlaps with the given
         start and end date.
