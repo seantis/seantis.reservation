@@ -138,6 +138,8 @@ class View(grok.View):
         options['editable'] = is_exposed('editable')
 
         options['header'] = {
+            'left': 'prev, next today',
+            'center': 'title',
             'right': ', '.join(available_views or resource.available_views)
         }
 
