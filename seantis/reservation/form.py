@@ -8,6 +8,8 @@ from z3c.form import interfaces
 from z3c.form import field
 from z3c.form.group import GroupForm
 
+from sqlalchemy import null
+
 from seantis.reservation import _
 from seantis.reservation import utils
 from seantis.reservation.models import Allocation, Reservation
@@ -130,8 +132,21 @@ class ResourceBaseForm(GroupForm, form.Form):
         if not w:
             return
 
-        converter = getMultiAdapter((f, w))
-        w.value = converter.toWidgetValue(value)
+        if type(w).__name__ == 'SingleCheckBoxWidget':
+            # z3c forms will work with all the widgets except this one
+            # the docs hint at it being somewhat different, but I can for the
+            # life of me not figure out what it is.
+            #
+            # friends don't let friends use z3c.forms
+            #
+            # this atrocity forces the right rendering
+            if value:
+                w.items[0]['checked'] = 'checked'
+            else:
+                w.items[0]['checked'] = False
+        else:
+            converter = getMultiAdapter((f, w))
+            w.value = converter.toWidgetValue(value)
 
         return True
 
@@ -444,7 +459,7 @@ class ReservationListView(ReservationDataView):
             return {}
 
         query = query.filter(Reservation.status == status)
-        query = query.filter(Reservation.session_id == None)
+        query = query.filter(Reservation.session_id == null())
         query.order_by(Reservation.id)
 
         reservations = utils.OrderedDict()
@@ -459,7 +474,7 @@ class ReservationListView(ReservationDataView):
     @utils.cached_property
     def uncommitted_reservations_count(self):
         query = self.all_reservations()
-        query = query.filter(Reservation.session_id != None)
+        query = query.filter(Reservation.session_id != null())
 
         return query.count()
 
