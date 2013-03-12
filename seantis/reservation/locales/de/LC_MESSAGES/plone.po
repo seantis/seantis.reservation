@@ -28,3 +28,12 @@ msgstr "seantis.reservation: Reservationen anzeigen"
 
 msgid "seantis.reservation: View Hidden Allocations"
 msgstr "seantis.reservation: Versteckte Einteilungen anzeigen"
+
+msgid "Resource listing"
+msgstr "Ressourcen Liste"
+
+msgid "List seantis.reservation.resource types only"
+msgstr "Nur seantis.reservation.resource Typen anzeigen"
+
+msgid "view"
+msgstr "Standard-Ansicht"

@@ -300,12 +300,6 @@ var CalendarGroups = function() {
             };
 
             var options = {
-                header: {
-                    left: 'prev, next today',
-                    center: 'title',
-                    right: 'month, agendaWeek, agendaDay'
-                },
-                defaultView: 'agendaWeek',
                 allDaySlot: false,
                 selectHelper: true,
                 select: add,

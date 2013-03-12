@@ -8,7 +8,7 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:i18n="http://namespaces.zope.org/i18n"
     xmlns:inflator="http://namespaces.zope.org/inflator"
-    i18n_domain="seantis.reservation"
+    i18n_domain="plone"
     >
 
 <!-- ZCML of this package fails in Zope 2.13 for strange reason 
@@ -107,12 +107,12 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
     />
 
 <!-- Dynamic Views -->
-<browser:menuItem
+<browser:menuItem i18n:attributes="title description"
         for="Products.ATContentTypes.interface.IATFolder"
         menu="plone_displayviews"
         title="Resource listing"
         action="@@resource_listing"
-        description="List seantis.reservation resources"
+        description="List seantis.reservation.resource types only"
         />
 
 <!-- Reservation form marker -->
