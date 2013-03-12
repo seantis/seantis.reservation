@@ -11,3 +11,8 @@
    color: #333;
    max-width: 500px;
 }
+
+.template-resource_listing .documentDescription {
+   margin-top: 18px;
+   font-weight: normal   
+}

@@ -346,8 +346,8 @@ class IResourceBase(IResourceAllocationDefaults):
     def isValidCalendarDate(Resource):
         if Resource.selected_date == 'specific' and not Resource.specific_date:
             raise Invalid(
-                _(u'You chose to "Always show a specific date" but you did '
-                  u'not specify a specific date')
+                _(u"You chose to 'Always show a specific date' but you did "
+                  u"not specify a specific date")
             )
 
     @invariant
