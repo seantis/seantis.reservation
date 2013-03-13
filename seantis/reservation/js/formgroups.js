@@ -43,8 +43,33 @@ seantis.formgroups.clear = function() {
     seantis.formgroups.groups = {};
 };
 
-seantis.formgroups.add_utility_links = function(findfn) {
-    var find = findfn;
+seantis.formgroups.get_date = function(field) {
+    var find = seantis.formgroups.find;
+
+    var valid_fields = ['recurrence_start', 'recurrence_end'];
+    _.assert(_.contains(valid_fields, field), 'invalid field: ' + field);
+
+    var date = {};
+    date.year = find('#form-widgets-' + field + '-year').val();
+    date.month = find('#form-widgets-' + field + '-month').val();
+    date.day = find('#form-widgets-' + field + '-day').val();
+
+    return date;
+};
+
+seantis.formgroups.set_date = function(field, date) {
+    var find = seantis.formgroups.find;
+
+    var valid_fields = ['recurrence_start', 'recurrence_end'];
+    _.assert(_.contains(valid_fields, field), 'invalid field: ' + field);
+
+    find('#form-widgets-' + field + '-year').val(date.year);
+    find('#form-widgets-' + field + '-month').val(date.month);
+    find('#form-widgets-' + field + '-day').val(date.day);
+};
+
+seantis.formgroups.add_utility_links = function() {
+    var find = seantis.formgroups.find;
 
     var timeframes_field = find('#formfield-form-widgets-timeframes input');
     if (!timeframes_field.length)
@@ -58,25 +83,8 @@ seantis.formgroups.add_utility_links = function(findfn) {
     var target = find('#formfield-form-widgets-recurrence_start');
     var link = _.template('<div id="<%= id %>"><a href="#">&gt;&gt; <%= title %></a></div>');
 
-    var start = {};
-    start.year = find('#form-widgets-recurrence_start-year');
-    start.month = find('#form-widgets-recurrence_start-month');
-    start.day = find('#form-widgets-recurrence_start-day');
-
-    var end = {};
-    end.year = find('#form-widgets-recurrence_end-year');
-    end.month = find('#form-widgets-recurrence_end-month');
-    end.day = find('#form-widgets-recurrence_end-day');
-
-    var set_date = function(recurrence, date) {
-        var dt = seantis.utils.parse_date(date);
-        recurrence.year.val(dt.year);
-        recurrence.month.val(dt.month);
-        recurrence.day.val(dt.day);
-    };
-
-    start.set = function(date) { set_date(start, date); };
-    end.set = function(date) { set_date(end, date); };
+    var start = seantis.formgroups.get_date('recurrence_start');
+    var end = seantis.formgroups.get_date('recurrence_end');
 
     _.each(timeframes, function(frame) {
         var id = _.uniqueId('timeframe');
@@ -86,8 +94,13 @@ seantis.formgroups.add_utility_links = function(findfn) {
 
         var tool = find('#' + id);
         tool.click(function(e) {
-            start.set(frame.start);
-            end.set(frame.end);
+
+            seantis.formgroups.set_date(
+                'recurrence_start', _.parse_date(frame.start)
+            );
+            seantis.formgroups.set_date(
+                'recurrence_end', _.parse_date(frame.end)
+            );
 
             e.preventDefault();
         });
@@ -101,11 +114,22 @@ seantis.formgroups.add_utility_links = function(findfn) {
     seantis.formgroups.groups.recurrent.refresh();
 };
 
+seantis.formgroups.add_recurrency_helper = function() {
+    "use strict";
+
+    var get_from = function() {
+
+    };
+};
+
 seantis.formgroups.init = function(el) {
     seantis.formgroups.clear();
 
     var root = _.isUndefined(el) ? null : $(el);
     var find = function(selector) { return $(selector, root); };
+
+    seantis.formgroups.find = find;
+
     var groups = seantis.formgroups.groups;
     var add = seantis.formgroups.add;
 
@@ -179,7 +203,7 @@ seantis.formgroups.init = function(el) {
         }
     });
 
-    seantis.formgroups.add_utility_links(find);
+    seantis.formgroups.add_utility_links();
 };
 
 (function($) {
