@@ -115,8 +115,8 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
         return self.end + timedelta(microseconds=1)
 
     @property
-    def is_whole_day(self):
-        """Returns true if the allocation is a whole-day allocation.
+    def whole_day(self):
+        """True if the allocation is a whole-day allocation.
 
         A whole-day allocation is not really special. It's just an allocation
         which starts at 0:00 and ends at 24:00 (or 23:59:59'999).

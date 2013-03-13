@@ -58,24 +58,24 @@ class TestAllocation(IntegrationTestCase):
         allocation.start = datetime(2013, 1, 1, 0, 0)
         allocation.end = datetime(2013, 1, 2, 0, 0)
 
-        self.assertTrue(allocation.is_whole_day)
+        self.assertTrue(allocation.whole_day)
 
         allocation.start = datetime(2013, 1, 1, 0, 0)
         allocation.end = datetime(2013, 1, 1, 23, 59, 59, 999999)
 
-        self.assertTrue(allocation.is_whole_day)
+        self.assertTrue(allocation.whole_day)
 
         allocation.start = datetime(2013, 1, 1, 0, 0)
         allocation.end = datetime(2013, 1, 2, 23, 59, 59, 999999)
 
-        self.assertTrue(allocation.is_whole_day)
+        self.assertTrue(allocation.whole_day)
 
         allocation.start = datetime(2013, 1, 1, 0, 0)
         allocation.end = datetime(2013, 1, 2, 0, 0)
 
-        self.assertTrue(allocation.is_whole_day)
+        self.assertTrue(allocation.whole_day)
 
         allocation.start = datetime(2013, 1, 1, 15, 0)
         allocation.end = datetime(2013, 1, 1, 0, 0)
 
-        self.assertFalse(allocation.is_whole_day)
+        self.assertFalse(allocation.whole_day)

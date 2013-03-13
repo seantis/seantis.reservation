@@ -37,7 +37,7 @@ class AllocationAddForm(AllocationForm):
     context_buttons = ('allocate', )
 
     fields = field.Fields(IAllocation).select(
-        'id', 'group', 'timeframes', 'start_time', 'end_time',
+        'id', 'group', 'timeframes', 'whole_day', 'start_time', 'end_time',
         'recurring', 'day', 'recurrence_start', 'recurrence_end',
         'days', 'separately'
     )
@@ -52,7 +52,8 @@ class AllocationAddForm(AllocationForm):
     @property
     def additionalSchemata(self):
         return [
-            ('default', _(u'Settings'),
+            (
+                'default', _(u'Settings'),
                 field.Fields(IResourceAllocationDefaults).select(
                     'quota',
                     'reservation_quota_limit',
@@ -155,7 +156,8 @@ class AllocationAddForm(AllocationForm):
                 grouped=not data['separately'],
                 waitinglist_spots=data['waitinglist_spots'],
                 approve=data['approve'],
-                reservation_quota_limit=data['reservation_quota_limit']
+                reservation_quota_limit=data['reservation_quota_limit'],
+                whole_day=data['whole_day']
 
             )
             self.flash(_(u'Allocation added'))
@@ -178,6 +180,7 @@ class AllocationEditForm(AllocationForm):
     fields = field.Fields(IAllocation).select(
         'id',
         'group',
+        'whole_day',
         'start_time',
         'end_time',
         'day',
@@ -193,7 +196,8 @@ class AllocationEditForm(AllocationForm):
     @property
     def additionalSchemata(self):
         return [
-            ('default', _(u'Settings'),
+            (
+                'default', _(u'Settings'),
                 field.Fields(IResourceAllocationDefaults).select(
                     'quota',
                     'reservation_quota_limit',
@@ -229,6 +233,7 @@ class AllocationEditForm(AllocationForm):
             'day': start.date(),
             'quota': allocation.quota,
             'approve': allocation.approve,
+            'whole_day': allocation.whole_day,
             'waitinglist_spots': allocation.waitinglist_spots,
             'reservation_quota_limit': allocation.reservation_quota_limit
         }
@@ -251,7 +256,8 @@ class AllocationEditForm(AllocationForm):
             data['quota'],
             data['waitinglist_spots'],
             data['approve'],
-            data['reservation_quota_limit']
+            data['reservation_quota_limit'],
+            data['whole_day']
         )
 
         def edit():

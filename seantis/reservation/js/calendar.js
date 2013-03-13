@@ -281,6 +281,14 @@ var CalendarGroups = function() {
 
             var prerender = function(event, element) {
                 calendar.groups.clear();
+
+                if (!_.isUndefined(event.header)) {
+                    if (!_.isEmpty(event.header)) {
+                        $(element).find('.fc-event-time').html(
+                            event.header
+                        );
+                    }
+                }
             };
 
             var render = function(event, element) {

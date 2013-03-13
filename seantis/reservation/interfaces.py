@@ -403,6 +403,15 @@ class IAllocation(IResourceAllocationDefaults):
         )
     )
 
+    whole_day = schema.Bool(
+        title=_(u'Whole Day'),
+        description=_(
+            u'The allocation spans the whole day.'
+        ),
+        required=False,
+        default=False
+    )
+
     recurring = schema.Choice(
         title=_(u'Recurrence'),
         vocabulary=recurrence,
@@ -444,7 +453,7 @@ class IAllocation(IResourceAllocationDefaults):
             Allocation.start_time, Allocation.end_time
         )
 
-        if abs((end - start).seconds // 60) < 5:
+        if not Allocation.whole_day and abs((end - start).seconds // 60) < 5:
             raise Invalid(_(u'The allocation must be at least 5 minutes long'))
 
     @invariant

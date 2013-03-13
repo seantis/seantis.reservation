@@ -167,6 +167,18 @@ seantis.formgroups.init = function(el) {
         other_triggers: find('#form-widgets-selected_date-0')
     });
 
+    add({
+        name: "whole_day",
+        trigger: find('#form-widgets-whole_day-0'),
+        fields: [
+            find('#formfield-form-widgets-start_time'),
+            find('#formfield-form-widgets-end_time')
+        ],
+        on_is_enabled: function(trigger) {
+            return ! trigger.is(':checked');
+        }
+    });
+
     seantis.formgroups.add_utility_links(find);
 };
 

@@ -322,6 +322,7 @@ class Slots(grok.View, CalendarRequest):
     def events(self):
         resource = self.context
         scheduler = resource.scheduler()
+        translate = utils.translator(self.context, self.request)
 
         is_exposed = exposure.for_allocations(resource, [resource])
 
@@ -351,6 +352,8 @@ class Slots(grok.View, CalendarRequest):
             else:
                 partitions = alloc.availability_partitions()
 
+            event_header = alloc.whole_day and translate(_(u'Whole Day'))
+
             events.append(dict(
                 title=title,
                 start=start.isoformat(),
@@ -363,7 +366,8 @@ class Slots(grok.View, CalendarRequest):
                 partitions=partitions,
                 group=alloc.group,
                 allDay=False,
-                moveurl=urls.move
+                moveurl=urls.move,
+                header=event_header
             ))
 
         return events

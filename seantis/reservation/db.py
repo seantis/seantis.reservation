@@ -11,7 +11,7 @@ from zope.event import notify
 
 from sqlalchemy.sql import and_, or_
 from sqlalchemy.orm import joinedload
-from sqlalchemy import func
+from sqlalchemy import func, null
 
 from seantis.reservation.events import (
     ReservationMadeEvent,
@@ -213,6 +213,31 @@ def reservations_by_session(session_id):
     return query
 
 
+def align_date_to_day(date, direction):
+    assert direction in ('up', 'down')
+
+    if (date.hour, date.minute, date.second, date.microsecond) == (0, 0, 0, 0):
+        return date
+
+    if direction == 'down':
+        return date.replace(hour=0, minute=0, second=0, microsecond=0)
+    else:
+        date = date.replace(hour=0, minute=0, second=0, microsecond=0)
+        return date + timedelta(days=1, microseconds=-1)
+
+
+def align_range_to_day(start, end):
+
+    s = align_date_to_day(start, 'down')
+
+    if start == end:
+        e = align_date_to_day(end + timedelta(days=1), 'up')
+    else:
+        e = align_date_to_day(end, 'up')
+
+    return s, e
+
+
 def find_expired_reservation_sessions(expiration_date):
     """ Goes through all reservations and returns the session ids of the
     unconfirmed ones which are older than the given expiration date.
@@ -236,7 +261,9 @@ def find_expired_reservation_sessions(expiration_date):
     )
 
     query = query.group_by(Reservation.session_id)
-    query = query.filter(Reservation.session_id != None)
+
+    # != null() because != None is not allowed by PEP8
+    query = query.filter(Reservation.session_id != null())
 
     # the idea is to remove all reservations belonging to sessions whose
     # latest update is expired - either delete the whole session or let
@@ -321,7 +348,7 @@ class Scheduler(object):
     @serialized
     def allocate(self, dates, raster=15, quota=None, partly_available=False,
                  grouped=False, waitinglist_spots=None, approve=True,
-                 reservation_quota_limit=0
+                 reservation_quota_limit=0, whole_day=False
                  ):
         """Allocates a spot in the calendar.
 
@@ -359,6 +386,12 @@ class Scheduler(object):
         # if the allocation is not partly available the raster is set to lowest
         # possible raster value
         raster = partly_available and raster or MIN_RASTER_VALUE
+
+        # the whole day option results in the dates being aligned to
+        # the beginning of the day / end of it -> not timezone aware!
+        if whole_day:
+            for ix, (start, end) in enumerate(dates):
+                dates[ix] = align_range_to_day(start, end)
 
         # Ensure that the list of dates contains no overlaps inside
         for start, end in dates:
@@ -611,9 +644,10 @@ class Scheduler(object):
         return availability_by_range(start, end, [self.uuid], self.is_exposed)
 
     @serialized
-    def move_allocation(self, master_id, new_start=None, new_end=None,
-                        group=None, new_quota=None, waitinglist_spots=None,
-                        approve=None, reservation_quota_limit=0):
+    def move_allocation(
+            self, master_id, new_start=None, new_end=None,
+            group=None, new_quota=None, waitinglist_spots=None,
+            approve=None, reservation_quota_limit=0, whole_day=None):
 
         assert master_id
         assert any([new_start and new_end, group, new_quota])
@@ -632,6 +666,10 @@ class Scheduler(object):
         # Simulate the new allocation
         new_start = new_start or master.start
         new_end = new_end or master.end
+
+        if whole_day:
+            new_start, new_end = align_range_to_day(new_start, new_end)
+
         new = Allocation(start=new_start, end=new_end, raster=master.raster)
 
         # Ensure that the new span does not overlap an existing one
