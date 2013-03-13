@@ -103,8 +103,8 @@ class TestScheduler(IntegrationTestCase):
             (datetime(2013, 4, 7, 12, 0), datetime(2013, 4, 7, 16, 0))
         ]
 
-        allocations = sc.allocate(dates,
-            grouped=True, approve=True, quota=3, waitinglist_spots=3
+        allocations = sc.allocate(
+            dates, grouped=True, approve=True, quota=3, waitinglist_spots=3
         )
 
         self.assertEqual(len(allocations), 2)
@@ -327,7 +327,8 @@ class TestScheduler(IntegrationTestCase):
             (datetime(2013, 1, 2, 12, 0), datetime(2013, 1, 2, 13, 0))
         ]
 
-        allocations = sc.allocate(dates, grouped=True, quota=3,
+        allocations = sc.allocate(
+            dates, grouped=True, quota=3,
             waitinglist_spots=3, approve=True, reservation_quota_limit=3
         )
 
@@ -342,7 +343,8 @@ class TestScheduler(IntegrationTestCase):
         newstart, newend = (
             datetime(2014, 1, 1, 12, 0), datetime(2014, 1, 1, 13, 0)
         )
-        sc.move_allocation(allocations[0].id, newstart, newend,
+        sc.move_allocation(
+            allocations[0].id, newstart, newend,
             new_quota=2, waitinglist_spots=2, reservation_quota_limit=2
         )
 
@@ -386,7 +388,9 @@ class TestScheduler(IntegrationTestCase):
 
         self.assertEqual(len(all), 4)
 
-        self.assertRaises(AffectedReservationError, sc.move_allocation,
+        self.assertRaises(
+            AffectedReservationError,
+            sc.move_allocation,
             allocations[0].id, newstart, newend, None, 1
         )
 
@@ -1002,7 +1006,8 @@ class TestScheduler(IntegrationTestCase):
         session_id = new_uuid()
 
         allocation = sc.allocate(dates, approve=False)[0]
-        token = sc.reserve(reservation_email,
+        token = sc.reserve(
+            reservation_email,
             dates, data=data, session_id=session_id
         )
         sc.confirm_reservations_for_session(session_id)
@@ -1029,15 +1034,18 @@ class TestScheduler(IntegrationTestCase):
         # recipients. this should yield multiple mails
         allocation = sc.allocate(dates, approve=False, quota=3)[0]
 
-        tokens = (sc.reserve(u'one@example.com',
-            dates, data=data, session_id=session_id
-        ),
-        sc.reserve(u'one@example.com',
-            dates, data=data, session_id=session_id
-        ),
-        sc.reserve(u'two@example.com',
-            dates, data=data, session_id=session_id
-        ))
+        tokens = (
+            sc.reserve(
+                u'one@example.com', dates, data=data, session_id=session_id
+            ),
+            sc.reserve(
+                u'one@example.com', dates, data=data, session_id=session_id
+            ),
+            sc.reserve(
+                u'two@example.com',
+                dates, data=data, session_id=session_id
+            )
+        )
         sc.confirm_reservations_for_session(session_id)
         map(sc.deny_reservation, tokens)
 
@@ -1052,7 +1060,8 @@ class TestScheduler(IntegrationTestCase):
 
         # now let's try with an approved reservation
         allocation = sc.allocate(dates, approve=True)[0]
-        token = sc.reserve(reservation_email,
+        token = sc.reserve(
+            reservation_email,
             dates, data=data, session_id=session_id
         )
         sc.confirm_reservations_for_session(session_id)
@@ -1074,7 +1083,8 @@ class TestScheduler(IntegrationTestCase):
         self.assign_reservation_manager('manager@example.com', resource)
         mail.messages = []
 
-        token = sc.reserve(reservation_email,
+        token = sc.reserve(
+            reservation_email,
             dates, data=data, session_id=session_id
         )
         sc.confirm_reservations_for_session(session_id)
