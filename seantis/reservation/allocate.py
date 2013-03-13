@@ -315,4 +315,9 @@ class AllocationRemoveForm(AllocationForm, AllocationGroupView):
         self.redirect_to_context()
 
     def defaults(self):
-        return dict(id=self.id, group=self.group)
+        id, group = self.id, self.group
+
+        if group:
+            return dict(group=self.group, id=None)
+        else:
+            return dict(id=self.id, group=None)
