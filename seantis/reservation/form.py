@@ -150,15 +150,6 @@ class ResourceBaseForm(GroupForm, form.Form):
                     item['checked'] = 'checked'
                 else:
                     item['checked'] = False
-        # if type(w).__name__ == 'SingleCheckBoxWidget':
-        #     import pdb; pdb.set_trace()
-        #     if value:
-        #         w.items[0]['checked'] = 'checked'
-        #     else:
-        #         w.items[0]['checked'] = False
-        # elif type(w).__name__ == 'CheckBoxWidget':
-        #     for item in w.items:
-        #         item['checked'] = item['value'] in value
         else:
             w.value = converter.toWidgetValue(value)
 
