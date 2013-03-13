@@ -54,7 +54,15 @@ seantis.formgroups.get_date = function(field) {
     date.month = find('#form-widgets-' + field + '-month').val();
     date.day = find('#form-widgets-' + field + '-day').val();
 
-    return date;
+    if (_.contains([date.year, date.month, date.day], undefined)) {
+        return null;
+    }
+
+    date.year = parseInt(date.year, 10);
+    date.month = parseInt(date.month, 10);
+    date.day = parseInt(date.day, 10);
+
+    return new Date(date.year, date.month - 1, date.day);
 };
 
 seantis.formgroups.set_date = function(field, date) {
@@ -102,6 +110,8 @@ seantis.formgroups.add_utility_links = function() {
                 'recurrence_end', _.parse_date(frame.end)
             );
 
+            seantis.formgroups.autoselect_days();
+
             e.preventDefault();
         });
         seantis.formgroups.groups.recurrent.fields.push(tool);
@@ -114,12 +124,73 @@ seantis.formgroups.add_utility_links = function() {
     seantis.formgroups.groups.recurrent.refresh();
 };
 
+seantis.formgroups.autoselect_days = function() {
+    "use strict";
+
+    var find = seantis.formgroups.find;
+    var start = seantis.formgroups.get_date('recurrence_start');
+    var end = seantis.formgroups.get_date('recurrence_end');
+
+    if (_.contains([start, end], null)) {
+        return;
+    }
+
+    if (start > end) {
+        return;
+    }
+
+    var ids = _.map([6, 0, 1, 2, 3, 4, 5],
+        function(ix) {
+            return '#form-widgets-days-' + ix;
+        }
+    );
+
+    var days = _.map(ids, find);
+
+    var span = ((end - start) / 1000 / 60 / 60 / 24) + 1;
+    var first = start.getDay();
+    var last = end.getDay();
+
+    var checked = [];
+    var i = 0;
+
+    if (span >= 7) {
+        checked = [0, 1, 2, 3, 4, 5, 6];
+    } else if (first == last) {
+        checked = [first];
+    } else if (first < last) {
+        for (i=first; i<=last; i++) {
+            checked.push(i);
+        }
+    } else {
+        for (i=0; i<= last; i++) {
+            checked.push(i);
+        }
+        for (i=6; i>= first; i--) {
+            checked.push(i);
+        }
+    }
+
+    _.each(days, function(day) {
+        day.removeAttr('checked');
+    });
+
+    _.each(checked, function(ix) {
+        days[ix].attr('checked', 'checked');
+    });
+};
+
 seantis.formgroups.add_recurrency_helper = function() {
     "use strict";
 
-    var get_from = function() {
+    var ids = [
+        '#formfield-form-widgets-recurrence_start',
+        '#formfield-form-widgets-recurrence_end'
+    ];
 
-    };
+    $(ids.join(', ')).change(function() {
+        _.defer(seantis.formgroups.autoselect_days);
+    });
 };
 
 seantis.formgroups.init = function(el) {
@@ -204,6 +275,7 @@ seantis.formgroups.init = function(el) {
     });
 
     seantis.formgroups.add_utility_links();
+    seantis.formgroups.add_recurrency_helper();
 };
 
 (function($) {

@@ -132,20 +132,34 @@ class ResourceBaseForm(GroupForm, form.Form):
         if not w:
             return
 
-        if type(w).__name__ == 'SingleCheckBoxWidget':
-            # z3c forms will work with all the widgets except this one
-            # the docs hint at it being somewhat different, but I can for the
-            # life of me not figure out what it is.
-            #
-            # friends don't let friends use z3c.forms
-            #
-            # this atrocity forces the right rendering
-            if value:
-                w.items[0]['checked'] = 'checked'
-            else:
-                w.items[0]['checked'] = False
+        converter = getMultiAdapter((f, w))
+
+        # z3c forms will work with all the widgets except Checkboxes
+        # the docs hint at differences, but I can for the
+        # life of me not figure out what I should actually be doing.
+        #
+        # friends don't let friends use z3c.forms
+        #
+        # this atrocity forces the right rendering
+        #
+        # => TODO change to normal code
+        if type(w).__name__.endswith('CheckBoxWidget'):
+            values = converter.toWidgetValue(value)
+            for item in w.items:
+                if item['value'] in values:
+                    item['checked'] = 'checked'
+                else:
+                    item['checked'] = False
+        # if type(w).__name__ == 'SingleCheckBoxWidget':
+        #     import pdb; pdb.set_trace()
+        #     if value:
+        #         w.items[0]['checked'] = 'checked'
+        #     else:
+        #         w.items[0]['checked'] = False
+        # elif type(w).__name__ == 'CheckBoxWidget':
+        #     for item in w.items:
+        #         item['checked'] = item['value'] in value
         else:
-            converter = getMultiAdapter((f, w))
             w.value = converter.toWidgetValue(value)
 
         return True
