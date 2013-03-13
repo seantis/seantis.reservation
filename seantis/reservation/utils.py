@@ -942,6 +942,16 @@ def align_range_to_day(start, end):
 
 def display_date(start, end):
     """ Formates the date range given for display. """
+
+    if end.microsecond != 999999:
+        end -= timedelta(microseconds=1)
+
+    if (start, end) == align_range_to_day(start, end):
+        if start.date() == end.date():
+            return '{:%d.%m.%Y}'.format(start)
+        else:
+            return '{:%d.%m.%Y} - {:%d.%m.%Y}'.format(start, end)
+
     end += timedelta(microseconds=1)
     if start.date() == end.date():
         return start.strftime('%d.%m.%Y %H:%M - ') + end.strftime('%H:%M')

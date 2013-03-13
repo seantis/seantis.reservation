@@ -36,7 +36,8 @@
                     
                     <div tal:attributes="class eventclass">    
                         
-                        <span class="fc-event-time" tal:content="time"></span>
+                        <span class="fc-event-time" tal:condition="not: alloc/whole_day" tal:content="time"></span>
+                        <span class="fc-event-time" tal:condition="alloc/whole_day" i18n:translate="">Whole Day</span>
                         <span class="fc-event-title" tal:content="title"></span>
                         
                     </div>
