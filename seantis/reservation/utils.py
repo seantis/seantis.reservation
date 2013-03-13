@@ -911,6 +911,35 @@ def portal_type_by_context(context, portal_type):
     return traverse(context, portal_type)
 
 
+def align_date_to_day(date, direction):
+    """ Aligns the given date to the beginning or end of the day, depending on
+    the direction.
+
+    E.g.
+    2012-1-24 10:00 down -> 2012-1-24 00:00
+    2012-1-24 10:00 up   -> 2012-1-24 23:59:59'999999
+
+    """
+    assert direction in ('up', 'down')
+
+    aligned = (0, 0, 0, 0) if direction == 'down' else (23, 59, 59, 999999)
+
+    if (date.hour, date.minute, date.second, date.microsecond) == aligned:
+        return date
+
+    if direction == 'down':
+        return date.replace(hour=0, minute=0, second=0, microsecond=0)
+    else:
+        date = date.replace(hour=0, minute=0, second=0, microsecond=0)
+        return date + timedelta(days=1, microseconds=-1)
+
+
+def align_range_to_day(start, end):
+    assert start <= end, "{} - {} is an invalid range".format(start, end)
+
+    return align_date_to_day(start, 'down'), align_date_to_day(end, 'up')
+
+
 def display_date(start, end):
     """ Formates the date range given for display. """
     end += timedelta(microseconds=1)

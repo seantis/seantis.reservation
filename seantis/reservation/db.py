@@ -213,31 +213,6 @@ def reservations_by_session(session_id):
     return query
 
 
-def align_date_to_day(date, direction):
-    assert direction in ('up', 'down')
-
-    if (date.hour, date.minute, date.second, date.microsecond) == (0, 0, 0, 0):
-        return date
-
-    if direction == 'down':
-        return date.replace(hour=0, minute=0, second=0, microsecond=0)
-    else:
-        date = date.replace(hour=0, minute=0, second=0, microsecond=0)
-        return date + timedelta(days=1, microseconds=-1)
-
-
-def align_range_to_day(start, end):
-
-    s = align_date_to_day(start, 'down')
-
-    if start == end:
-        e = align_date_to_day(end + timedelta(days=1), 'up')
-    else:
-        e = align_date_to_day(end, 'up')
-
-    return s, e
-
-
 def find_expired_reservation_sessions(expiration_date):
     """ Goes through all reservations and returns the session ids of the
     unconfirmed ones which are older than the given expiration date.
@@ -391,7 +366,7 @@ class Scheduler(object):
         # the beginning of the day / end of it -> not timezone aware!
         if whole_day:
             for ix, (start, end) in enumerate(dates):
-                dates[ix] = align_range_to_day(start, end)
+                dates[ix] = utils.align_range_to_day(start, end)
 
         # Ensure that the list of dates contains no overlaps inside
         for start, end in dates:
@@ -668,7 +643,7 @@ class Scheduler(object):
         new_end = new_end or master.end
 
         if whole_day:
-            new_start, new_end = align_range_to_day(new_start, new_end)
+            new_start, new_end = utils.align_range_to_day(new_start, new_end)
 
         new = Allocation(start=new_start, end=new_end, raster=master.raster)
 
