@@ -50,7 +50,6 @@ class TestBrowser(FunctionalTestCase):
         browser = self.new_browser()
         browser.login_admin()
 
-        browser.open(self.folder_url)
         browser.open(url('/selectViewTemplate?templateId=resource_listing'))
 
         self.add_resource('Resource 1', 'Description 1')
@@ -65,3 +64,44 @@ class TestBrowser(FunctionalTestCase):
         browser.open(self.folder_url)
         self.assertEqual(browser.contents.count('Click to reserve'), 2)
         self.assertTrue('Resource 2' in browser.contents)
+
+    def test_singlecalendar(self):
+
+        url = self.build_folder_url
+
+        browser = self.new_browser()
+        browser.login_admin()
+
+        self.add_resource('Test')
+
+        browser.open(url('/test'))
+
+        self.assertTrue('singlecalendar' in browser.contents)
+        self.assertFalse('multicalendar' in browser.contents)
+
+        self.assertTrue('test' in browser.contents)
+
+        # the title of the parent is not used as a prefix in this case
+        self.assertFalse('testfolder - test' in browser.contents)
+
+    def test_multicalendar(self):
+
+        url = self.build_folder_url
+
+        browser = self.new_browser()
+        browser.login_admin()
+
+        self.add_resource('one')
+        self.add_resource('two')
+
+        browser.open(url('/one/@@uuid'))
+        uuid = browser.contents
+
+        browser.open(url('/two?compare_to=%s' % uuid))
+
+        self.assertFalse('singlecalendar' in browser.contents)
+        self.assertTrue('multicalendar' in browser.contents)
+
+        # the title of the parent is used as a prefix
+        self.assertTrue('testfolder - one' in browser.contents)
+        self.assertTrue('testfolder - two' in browser.contents)
