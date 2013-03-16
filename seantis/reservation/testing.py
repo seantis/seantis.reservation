@@ -21,6 +21,7 @@ except ImportError:
 
 
 class SqlLayer(PloneSandboxLayer):
+
     default_bases = (PLONE_FIXTURE,)
 
     class Session(dict):
@@ -57,6 +58,7 @@ class SqlLayer(PloneSandboxLayer):
             seantis.reservation,
             context=configurationContext
         )
+        self.loadZCML(package=seantis.reservation)
 
     def setUpPloneSite(self, portal):
 

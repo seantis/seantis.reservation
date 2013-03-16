@@ -38,6 +38,18 @@ def on_resource_viewed(event):
     register_once_per_connection('/remove-expired-sessions', getSite(), period)
 
 
+def clear_clockservers():
+    """ Clears the clockservers and connections for testing. """
+
+    with locks['_connections']:
+        _connections.clear()
+
+    with locks['_clockservers']:
+        for cs in _clockservers.values():
+            cs.close()
+        _clockservers.clear()
+
+
 def register_once_per_connection(method, site, period):
     """ Registers the given method with a clockserver while making sure
     that the method is only registered once for each seantis.reservaiton db

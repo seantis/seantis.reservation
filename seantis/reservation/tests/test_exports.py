@@ -11,7 +11,7 @@ class TestExports(IntegrationTestCase):
 
     @serialized
     def test_reservations_export(self):
-        self.login_as_manager()
+        self.login_manager()
 
         resource = self.create_resource()
         sc = resource.scheduler()

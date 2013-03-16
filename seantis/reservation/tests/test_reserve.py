@@ -10,7 +10,7 @@ class TestYourReservations(IntegrationTestCase):
 
     @serialized
     def test_reservation_data(self):
-        self.login_as_manager()
+        self.login_manager()
 
         resource = self.create_resource()
         scheduler = resource.scheduler()
