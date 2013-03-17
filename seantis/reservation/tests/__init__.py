@@ -165,6 +165,13 @@ class BetterBrowser(z2.Browser):
 
     portal = None
 
+    def print_state(self):
+        print
+        print '@url ------>\n{}'.format(self.url)
+        print '@headers -->\n{}'.format(self.headers.items())
+        print '@contents ->\n{}'.format(self.contents)
+        print
+
     def login(self, user, password):
         self.open(self.portal.absolute_url() + "/login_form")
         self.getControl(name='__ac_name').value = user

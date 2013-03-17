@@ -12,6 +12,8 @@ class TestBrowser(FunctionalTestCase):
 
         # create a testfolder for each test
         browser.open(self.baseurl + '/createObject?type_name=Folder')
+        browser.print_state()  # to get more info for Travis
+
         self.assertTrue('Add Folder' in browser.contents)
 
         browser.getControl('Title').value = 'testfolder'
