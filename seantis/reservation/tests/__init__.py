@@ -4,6 +4,8 @@ import unittest2 as unittest
 import thread
 import time
 import webbrowser
+import cgi
+import urllib
 
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
@@ -246,17 +248,57 @@ class BetterBrowser(z2.Browser):
             instance.browser = browser
             return instance
 
-        class GetHandler(BaseHTTPRequestHandler, object):
+        class RequestHandler(BaseHTTPRequestHandler, object):
 
             __metaclass__ = handler_factory
 
+            @property
+            def internal_url(self):
+                return self.internal_base_url + self.path
+
+            def reencode_post_data(self):
+                """ Parse the post data and urlencode them again. This ensures
+                that the browser knows what to do with the data. It doesn't
+                seem to be too flexible there.
+
+                """
+                ctype, pdict = cgi.parse_header(
+                    self.headers.getheader('content-type')
+                )
+
+                if ctype == 'multipart/form-data':
+                    parsed = cgi.parse_multipart(self.rfile, pdict)
+
+                elif ctype == 'application/x-www-form-urlencoded':
+                    length = int(self.headers.getheader('content-length'))
+                    parsed = cgi.parse_qs(
+                        self.rfile.read(length), keep_blank_values=1
+                    )
+
+                else:
+                    parsed = {}
+
+                return urllib.urlencode(parsed, True)
+
+            def externalize(self, body):
+                return body.replace(
+                    self.internal_base_url, self.external_base_url
+                )
+
             def do_GET(self):
+                self.browser.open(self.internal_url)
+                self.respond()
 
-                external = self.external_base_url
-                internal = self.internal_base_url
+            def do_POST(self):
 
-                # open the internal url
-                self.browser.open(internal + self.path)
+                data = self.reencode_post_data()
+
+                self.browser.open(self.internal_url, data)
+                self.respond()
+
+            def respond(self):
+                """ Write the current browser's content into the response. """
+
                 self.send_response(int(self.browser.headers['status'][:3]))
 
                 # adjust the headers except for the content-length which might
@@ -265,7 +307,7 @@ class BetterBrowser(z2.Browser):
                     if key != 'content-length':
                         self.send_header(key, header)
 
-                body = self.browser.contents.replace(internal, external)
+                body = self.externalize(self.browser.contents)
 
                 # calculate the length and send
                 self.send_header('Content-Length', len(body))
@@ -287,7 +329,7 @@ class BetterBrowser(z2.Browser):
 
         # continue until the user presses ctril+c in the console
         try:
-            HTTPServer(('localhost', port), GetHandler).serve_forever()
+            HTTPServer(('localhost', port), RequestHandler).serve_forever()
         except KeyboardInterrupt:
             pass
 
