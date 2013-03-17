@@ -226,7 +226,7 @@ class BetterBrowser(z2.Browser):
         os.rename(tempfile.name, tempfile.name + '.html')
         os.system("open " + tempfile.name + '.html')
 
-    def serve(self, port=8888, open_in_browser=True):
+    def serve(self, port=8888, open_in_browser=True, threaded=False):
         """ Serves the currently open site on localhost:<port> handling all
         requests for full browser support.
 
@@ -327,13 +327,26 @@ class BetterBrowser(z2.Browser):
             url = browser.url.replace(internal_base_url, external_base_url)
             thread.start_new_thread(open_browser, (url, ))
 
-        # continue until the user presses ctril+c in the console
-        try:
-            HTTPServer(('localhost', port), RequestHandler).serve_forever()
-        except KeyboardInterrupt:
-            pass
+        server = HTTPServer(('localhost', port), RequestHandler)
 
-        browser.open(open_url)
+        if not threaded:
+            try:
+                # continue until the user presses ctril+c in the console
+                server.serve_forever()
+            except KeyboardInterrupt:
+                pass
+
+            # reopen the last used url
+            browser.open(open_url)
+        else:
+            # start the server and return a close function
+            thread.start_new_thread(server.serve_forever, ())
+
+            def close():
+                server.shutdown()
+                browser.open(open_url)
+
+            return close
 
     def set_date(self, widget, date):
         self.getControl(name='%s-year' % widget).value = str(date.year)
