@@ -1,6 +1,12 @@
 import os
 import unittest2 as unittest
 
+import thread
+import time
+import webbrowser
+
+from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+
 from tempfile import NamedTemporaryFile
 
 from zope import event
@@ -210,6 +216,69 @@ class BetterBrowser(z2.Browser):
 
         os.rename(tempfile.name, tempfile.name + '.html')
         os.system("open " + tempfile.name + '.html')
+
+    def serve(self, port=8888, open_in_browser=True):
+        """ Serves the open site on localhost:<port> handling all requests
+        for full browser support.
+
+        """
+
+        external_base_url = 'http://localhost:{}/'.format(port)
+        internal_base_url = 'http://nohost/'
+        root_path = 'plone/'
+
+        browser = self
+
+        # stitch the local variables to the GetHandler class when it is created
+        def handler_factory(*args, **kwargs):
+            instance = type(*args, **kwargs)
+            instance.internal_base_url = internal_base_url
+            instance.external_base_url = external_base_url
+            instance.browser = browser
+            return instance
+
+        class GetHandler(BaseHTTPRequestHandler, object):
+
+            __metaclass__ = handler_factory
+
+            def do_GET(self):
+
+                external = self.external_base_url
+                internal = self.internal_base_url
+
+                # open the internal url
+                self.browser.open(internal + self.path)
+                self.send_response(int(self.browser.headers['status'][:3]))
+
+                # adjust the headers except for the content-length which might
+                # later differ because the body may change
+                for key, header in self.browser.headers.items():
+                    if key != 'content-length':
+                        self.send_header(key, header)
+
+                body = self.browser.contents.replace(internal, external)
+
+                # calculate the length and send
+                self.send_header('Content-Length', len(body))
+                self.end_headers()
+
+                self.wfile.write(body)
+
+        # open the external bseurl in an external browser with a short delay
+        # to get the TCPServer time to start listening
+        if open_in_browser:
+            def open_browser(url):
+                time.sleep(0.5)
+                webbrowser.open(url)
+
+            browser_url = external_base_url + root_path
+            thread.start_new_thread(open_browser, (browser_url, ))
+
+        # continue until the user presses ctril+c in the console
+        try:
+            HTTPServer(('localhost', port), GetHandler).serve_forever()
+        except KeyboardInterrupt:
+            pass
 
     def set_date(self, widget, date):
         self.getControl(name='%s-year' % widget).value = str(date.year)
