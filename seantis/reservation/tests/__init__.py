@@ -218,16 +218,18 @@ class BetterBrowser(z2.Browser):
         os.system("open " + tempfile.name + '.html')
 
     def serve(self, port=8888, open_in_browser=True):
-        """ Serves the open site on localhost:<port> handling all requests
-        for full browser support.
+        """ Serves the currently open site on localhost:<port> handling all
+        requests for full browser support.
+
+        During the session the browser will open other sites. The old one is
+        reset after the server is killed using ctrl+c
 
         """
 
+        browser = self
+
         external_base_url = 'http://localhost:{}/'.format(port)
         internal_base_url = 'http://nohost/'
-        root_path = 'plone/'
-
-        browser = self
 
         # stitch the local variables to the GetHandler class when it is created
         def handler_factory(*args, **kwargs):
@@ -264,6 +266,8 @@ class BetterBrowser(z2.Browser):
 
                 self.wfile.write(body)
 
+        open_url = browser.url
+
         # open the external bseurl in an external browser with a short delay
         # to get the TCPServer time to start listening
         if open_in_browser:
@@ -271,14 +275,16 @@ class BetterBrowser(z2.Browser):
                 time.sleep(0.5)
                 webbrowser.open(url)
 
-            browser_url = external_base_url + root_path
-            thread.start_new_thread(open_browser, (browser_url, ))
+            url = browser.url.replace(internal_base_url, external_base_url)
+            thread.start_new_thread(open_browser, (url, ))
 
         # continue until the user presses ctril+c in the console
         try:
             HTTPServer(('localhost', port), GetHandler).serve_forever()
         except KeyboardInterrupt:
             pass
+
+        browser.open(open_url)
 
     def set_date(self, widget, date):
         self.getControl(name='%s-year' % widget).value = str(date.year)
