@@ -145,8 +145,8 @@ class View(grok.View):
 
         if selected_date == 'specific' and specific_date:
             options['year'] = specific_date.year
-            options['month'] = specific_date.month
-            options['day'] = specific_date.day
+            options['month'] = specific_date.month - 1  # js is off by one
+            options['date'] = specific_date.day
 
         return template % (
             resource._v_calendar_id, json.dumps(options), addurl
