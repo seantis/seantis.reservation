@@ -277,11 +277,7 @@ class ReservationMail(ReservationDataView, ReservationUrls):
             lines = []
             dates = sorted(reservation.timespans(), key=lambda i: i[0])
             for start, end in dates:
-                line = start.strftime('%d.%m.%Y %H:%M')
-                line += ' - '
-                line += end.strftime('%H:%M')
-
-                lines.append(line)
+                lines.append(utils.display_date(start, end))
 
             p['dates'] = '\n'.join(lines)
 
