@@ -214,8 +214,9 @@ class ReservationBaseForm(ResourceBaseForm):
 
         return defaults
 
-    def run_reserve(self,
-        data, autoapprove, start=None, end=None, group=None, quota=1):
+    def run_reserve(
+        self, data, autoapprove, start=None, end=None, group=None, quota=1
+    ):
 
         assert (start and end) or group
         assert not (start and end and group)
@@ -232,11 +233,13 @@ class ReservationBaseForm(ResourceBaseForm):
         )
 
         if start and end:
-            token = self.scheduler.reserve(email, (start, end),
+            token = self.scheduler.reserve(
+                email, (start, end),
                 data=additional_data, session_id=session_id, quota=quota
             )
         else:
-            token = self.scheduler.reserve(email, group=group,
+            token = self.scheduler.reserve(
+                email, group=group,
                 data=additional_data, session_id=session_id, quota=quota
             )
 
@@ -251,7 +254,7 @@ class ReservationForm(
         ReservationBaseForm,
         SessionFormdataMixin,
         YourReservationsData
-    ):
+):
 
     permission = 'seantis.reservation.SubmitReservation'
 
@@ -274,9 +277,17 @@ class ReservationForm(
         hidden = ['id']
 
         try:
-            allocation = self.id and self.allocation(self.id)
-            if allocation.reservation_quota_limit == 1:
-                hidden.append('quota')
+            allocation = self.allocation(self.id)
+
+            if allocation:
+
+                if allocation.reservation_quota_limit == 1:
+                    hidden.append('quota')
+
+                if allocation.whole_day:
+                    hidden.append('start_time')
+                    hidden.append('end_time')
+
         except DirtyReadOnlySession:
             pass
 
@@ -286,8 +297,14 @@ class ReservationForm(
     def disabled_fields(self):
         disabled = ['day']
         try:
-            if self.id and not self.allocation(self.id).partly_available:
-                disabled = ['day', 'start_time', 'end_time']
+            allocation = self.allocation(self.id)
+
+            if allocation:
+
+                if allocation.partly_available:
+                    disabled.append('start_time')
+                    disabled.append('end_time')
+
         except DirtyReadOnlySession:
             pass
 
@@ -297,6 +314,9 @@ class ReservationForm(
         return self.your_reservation_defaults(dict(id=self.id, quota=1))
 
     def allocation(self, id):
+        if not id:
+            return None
+
         return self.scheduler.allocation_by_id(id)
 
     def strptime(self, value):
@@ -325,12 +345,21 @@ class ReservationForm(
     @extract_action_data
     def reserve(self, data):
 
+        allocation = self.allocation(data['id'])
+
         start, end = self.validate(data)
-        autoapprove = not self.allocation(data['id']).approve
+        autoapprove = not allocation.approve
         quota = int(data['quota'])
 
+        # whole day allocations don't show the start / end time which is to
+        # say the data arrives with 00:00 - 00:00. we align that to the day
+        if allocation.whole_day:
+            assert start == end
+            start, end = utils.align_range_to_day(start, end)
+
         def reserve():
-            self.run_reserve(data=data, autoapprove=autoapprove,
+            self.run_reserve(
+                data=data, autoapprove=autoapprove,
                 start=start, end=end, quota=quota
             )
 
@@ -368,7 +397,7 @@ class GroupReservationForm(
         AllocationGroupView,
         SessionFormdataMixin,
         YourReservationsData
-    ):
+):
     permission = 'seantis.reservation.SubmitReservation'
 
     grok.name('reserve-group')
@@ -415,7 +444,8 @@ class GroupReservationForm(
             .first().approve
 
         def reserve():
-            self.run_reserve(data=data, autoapprove=autoapprove,
+            self.run_reserve(
+                data=data, autoapprove=autoapprove,
                 group=data['group'], quota=data['quota']
             )
 
