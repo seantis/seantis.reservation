@@ -41,7 +41,8 @@ def on_reservations_confirmed(event):
             if reservation.autoapprovable:
                 continue
 
-            send_reservation_mail(reservation,
+            send_reservation_mail(
+                reservation,
                 'reservation_pending', event.language, to_managers=True
             )
 
@@ -171,7 +172,7 @@ def send_reservations_confirmed(reservations, language):
 
             resource = resources[reservation.resource]
 
-            prefix = reservation.autoapprovable and '* ' or ''
+            prefix = '' if reservation.autoapprovable else '* '
             lines.append(prefix + utils.get_resource_title(resource))
 
             for start, end in reservation.timespans():
@@ -180,8 +181,8 @@ def send_reservations_confirmed(reservations, language):
             lines.append('')
 
         # differs between resources
-        subject, body = get_email_content(resource,
-            'reservation_received', language
+        subject, body = get_email_content(
+            resource, 'reservation_received', language
         )
 
         mail = ReservationMail(
