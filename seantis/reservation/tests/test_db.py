@@ -1014,8 +1014,11 @@ class TestScheduler(IntegrationTestCase):
 
         self.assertEqual(len(mail.messages), 1)
         self.assertTrue('Your Reservations' in mail.messages[0])
-        self.assertTrue('* ' + resource.title in mail.messages[0])
+        self.assertTrue(resource.title in mail.messages[0])
         self.assertTrue(reservation_email in mail.messages[0])
+
+        # autoapproved reservations do not have a star
+        self.assertFalse('* {}'.format(resource.title) in mail.messages[0])
 
         # the mail sending happens before the (automatic) approval,
         # so there should be no change after
@@ -1070,7 +1073,9 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(len(mail.messages), 1)
         self.assertTrue('Your Reservations' in mail.messages[0])
         self.assertTrue(reservation_email in mail.messages[0])
-        self.assertFalse('* ' + resource.title in mail.messages[0])
+
+        # reservations which require approval have a star
+        self.assertTrue('* {}'.format(resource.title) in mail.messages[0])
 
         # let's decline that one
         sc.deny_reservation(token)
