@@ -51,6 +51,10 @@ class ConfigurationError(Exception):
     pass
 
 
+def maybe_call(value):
+    return value() if callable(value) else value
+
+
 def profile(fn):
     """ Naive profiling of a function.. on unix systems only. """
 

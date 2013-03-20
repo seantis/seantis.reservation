@@ -63,9 +63,9 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
 
 <genericsetup:registerProfile
     name="izug_basetheme"
-    title="seantis.reservation izug_basetheme"
+    title="seantis.reservation with izug.basetheme"
     directory="profiles/izug_basetheme"
-    description="Installs the izug basetheme profiles for seantis.reservation"
+    description="Installs the izug.basetheme profiles and seantis.reservation"
     provides="Products.GenericSetup.interfaces.EXTENSION"
 />
 
@@ -141,22 +141,5 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
 <browser:resourceDirectory name="seantis.reservation.images" directory="images"/>
 <browser:resourceDirectory name="seantis.reservation.js" directory="js"/>
 <browser:resourceDirectory name="seantis.reservation.css" directory="css"/>
-
-<!-- Bundles -->
-<include package="ftw.inflator" file="meta.zcml" />
-
-<inflator:bundle
-    title="seantis.reservation for plonetheme.sunburst"
-    profiles="plonetheme.sunburst:default
-              seantis.reservation:default"
-    />
-
-<inflator:bundle
-    title="seantis.reservation for izug.basetheme"
-    profiles="izug.basetheme:default
-              izug.basetheme:zug_directories
-              seantis.reservation:default
-              seantis.reservation:izug_basetheme"
-    />
 
 </configure>

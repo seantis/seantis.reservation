@@ -16,3 +16,87 @@
    margin-top: 18px;
    font-weight: normal   
 }
+
+body.icons-on #content *[class*="contenttype-"],
+body.icons-on #content *[class*="actionicon-"] {
+    background-image:none;
+    padding: 0.090909091em 0 0.090909091em 0 !important;
+}
+
+#directorySearch {
+    border: none;
+    margin: 0;   
+}
+
+.overview-utils ul {
+    font-size: 1em;
+    margin-top: 10px;   
+}
+
+.overview-utils ul li {
+    background: none;
+    list-style-type: none;
+    background-repeat: no-repeat;
+    padding-left: 0;
+    margin: 0;
+    font-size: 12px;
+}
+
+#email_templates div.resourceTitle,
+#email_templates a, 
+#timeframes div.resourceTitle,
+#timeframes a {
+    font-size: 1em;   
+}
+
+.templates-control,
+.templates-global-control,
+.timeframes-control,
+.timeframes-global-control {
+    margin: 0;
+    padding: 0;
+}
+
+.templates-global-control:before,
+.timeframes-global-control:before {
+    margin-left: 0;   
+}
+
+#email_templates .resourceTitle,
+#timeframes .resourceTitle {
+    margin: 0 10px 0 0;
+    font-size: 12px !important;
+}
+
+#timeframes .visibleTimeframe {
+    color: black !important;
+}
+
+#timeframes .hiddenTimeframe {
+    color: #76797C !important;
+}
+
+#email_templates .resourceItem, 
+#timeframes .resourceItem {
+   margin: 0 0 10px 0;
+   padding: 0;   
+   border: none;
+}
+
+#seantis-overview-calendar .event-unavailable, 
+#seantis-overview-calendar .event-unavailable .fc-event-skin, 
+#seantis-overview-calendar .event-unavailable .fc-event-head {
+    background-color: #ae1e00 !important;
+}
+
+#seantis-overview-calendar .event-available, 
+#seantis-overview-calendar .event-available .fc-event-skin, 
+#seantis-overview-calendar .event-available .fc-event-head {
+    background-color: #0e6700 !important;
+}
+
+#seantis-overview-calendar .event-partly-available, 
+#seantis-overview-calendar .event-partly-available .fc-event-skin, 
+#seantis-overview-calendar .event-partly-available .fc-event-head {
+    background-color: #dd7c07 !important;
+}

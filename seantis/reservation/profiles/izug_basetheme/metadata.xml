@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<metadata>
+    <version>1</version>
+    <dependencies>
+        <dependency>profile-ftw.contentmenu:default</dependency>
+        <dependency>profile-izug.basetheme:default</dependency>
+        <dependency>profile-izug.basetheme:zug_directories</dependency>
+        <dependency>profile-seantis.reservation:default</dependency>
+    </dependencies>
+</metadata>

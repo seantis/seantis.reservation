@@ -37,7 +37,7 @@ class Overviewlet(grok.Viewlet):
     def uuidmap(self):
         uuids = {}
 
-        for item in self.view.items:
+        for item in utils.maybe_call(self.view.items):
             for resource in item.resources():
                 uuids[utils.string_uuid(IUUID(resource))] = item.id
 
@@ -145,7 +145,7 @@ class Utilsviewlet(grok.Viewlet):
         if not IOverview.providedBy(self.view):
             return resources
 
-        for item in self.view.items:
+        for item in utils.maybe_call(self.view.items):
             resources.extend(item.resources())
 
         return resources
