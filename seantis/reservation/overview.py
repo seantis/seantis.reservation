@@ -3,7 +3,6 @@ from datetime import timedelta, datetime
 
 from five import grok
 from zope.interface import Interface
-from plone.uuid.interfaces import IUUID
 from plone.memoize import view
 
 from seantis.reservation.resource import CalendarRequest
@@ -35,11 +34,12 @@ class Overviewlet(grok.Viewlet):
 
     @view.memoize
     def uuidmap(self):
+        """ Returns a dictionary mapping resource uuids to item ids. """
         uuids = {}
 
         for item in utils.maybe_call(self.view.items):
             for resource in item.resources():
-                uuids[utils.string_uuid(IUUID(resource))] = item.id
+                uuids[utils.string_uuid(resource)] = item.id
 
         return uuids
 
@@ -138,7 +138,6 @@ class Utilsviewlet(grok.Viewlet):
     template = grok.PageTemplateFile('templates/utils.pt')
 
     @property
-    @view.memoize
     def resources(self):
         resources = []
 

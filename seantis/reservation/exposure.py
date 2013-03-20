@@ -4,10 +4,8 @@ from zope.security import checkPermission
 from zope.component import getMultiAdapter
 
 from seantis.reservation.utils import is_uuid, get_resource_by_uuid
-from seantis.reservation.utils import string_uuid
+from seantis.reservation.utils import string_uuid, real_uuid
 from seantis.reservation.timeframe import timeframes_by_context
-
-from plone.uuid.interfaces import IUUID
 
 
 def for_allocations(context, resources):
@@ -110,13 +108,10 @@ def for_resources(resources):
 
     for r in resources:
         if checkPermission('zope2.View', r):
-            visible_resources.append(string_uuid((IUUID(r))))
+            visible_resources.append(string_uuid(r))
 
     def is_exposed(resource):
-        if is_uuid(resource) or isinstance(resource, basestring):
-            return string_uuid(resource) in visible_resources
-        else:
-            return string_uuid(IUUID(resource)) in visible_resources
+        return string_uuid(resource) in visible_resources
 
     return is_exposed
 
@@ -133,7 +128,7 @@ def limit_resources(resources):
     assert is_dict or is_list
 
     if is_list:
-        resdict = dict(((IUUID(r), r) for r in resources))
+        resdict = dict(((real_uuid(r), r) for r in resources))
     else:
         resdict = resources
 

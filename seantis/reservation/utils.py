@@ -12,6 +12,7 @@ from urllib import quote
 from itertools import tee, izip
 from uuid import UUID
 from uuid import uuid5 as new_uuid_mirror
+from plone.uuid.interfaces import IUUID, IUUIDAware
 
 import pytz
 
@@ -253,7 +254,7 @@ def compare_link(resources):
         return ''
 
     link = resources[0:1][0].absolute_url_path() + '?'
-    compare_to = [r.uuid() for r in resources[1:]]
+    compare_to = [string_uuid(r) for r in resources[1:]]
 
     for uuid in compare_to:
         link += 'compare_to=' + string_uuid(uuid) + '&'
@@ -272,7 +273,7 @@ def export_link(source, extension, context, request, resources):
     if not _exposure().for_views(context, request)(viewname):
         return ''
 
-    uuids = map(string_uuid, (r.uuid() for r in resources))
+    uuids = map(string_uuid, resources)
 
     url = context.absolute_url()
     url += '/resource_export.' + extension + '?source=' + source
@@ -302,8 +303,8 @@ def monthly_report_link(context, request, resources):
     url += '?year=' + str(today.year)
     url += '&month=' + str(today.month)
 
-    for uuid in (r.uuid() for r in resources):
-        url += '&uuid=' + string_uuid(uuid)
+    for resource in resources:
+        url += '&uuid=' + string_uuid(resource)
 
     return url
 
@@ -422,8 +423,24 @@ def is_uuid(obj):
     return isinstance(obj, UUID)
 
 
-def string_uuid(uuid):
-    return UUID(str(uuid)).hex
+def string_uuid(obj):
+    """ Returns the uuid as string without hyphens. Takes either UUIDs, strings
+    with hyphens, objects which are IUUIDAware or objects which have a UID
+    attribute. (The latter works for catalog brains). """
+
+    if isinstance(obj, basestring):
+        obj = str(obj)
+    elif hasattr(obj, 'UID'):
+        obj = obj.UID
+    elif IUUIDAware.providedBy(obj):
+        obj = IUUID(obj)
+
+    return UUID(str(obj)).hex
+
+
+def real_uuid(obj):
+    """ Same as string_uuid but casted to uuid.UUID. """
+    return UUID(string_uuid(obj))
 
 
 # TODO cache this incrementally
