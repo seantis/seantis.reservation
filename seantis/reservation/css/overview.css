@@ -63,14 +63,6 @@
     font-size: 14px;
 }
 
-.facilityOverview h2 {
-   font-size: 18px;
-}
-
-.facilityOverview .resourceItem {
-   margin: 5px 10px;
-}
-
 .overview-utils ul {
     margin-top: 10px;
     margin-left: 15px !important;
