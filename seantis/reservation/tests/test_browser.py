@@ -104,3 +104,31 @@ class TestBrowser(FunctionalTestCase):
         # the title of the parent is used as a prefix
         self.assertTrue('testfolder - one' in browser.contents)
         self.assertTrue('testfolder - two' in browser.contents)
+
+    def test_resource_properties(self):
+
+        url = self.build_folder_url
+
+        browser = self.new_browser()
+        browser.login_admin()
+
+        self.add_resource('test-resource')
+
+        browser.open(url('/test-resource/@@edit'))
+        browser.getControl('First hour of the day').value = "10"
+        browser.getControl('Last hour of the day').value = "12"
+
+        browser.getControl(name='form.widgets.available_views:list').value = [
+            'month', 'agendaWeek'
+        ]
+
+        browser.getControl(name='form.widgets.selected_view:list').value = [
+            'month'
+        ]
+
+        browser.getControl('Save').click()
+
+        self.assertTrue('"minTime": 10' in browser.contents)
+        self.assertTrue('"maxTime": 12' in browser.contents)
+        self.assertTrue('"right": "month, agendaWeek"' in browser.contents)
+        self.assertTrue('"defaultView": "month"' in browser.contents)
