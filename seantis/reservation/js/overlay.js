@@ -41,6 +41,14 @@ var reservation_overlay_init = null;
             return;
         }
 
+        if (_.isUndefined(get_result.show)) {
+            return;
+        }
+
+        if (_.isUndefined(get_result.hide)) {
+            return;
+        }
+
         setTimeout(get_result.show, 0);
         setTimeout(get_result.hide, 4000);
     };
