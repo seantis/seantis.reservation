@@ -30,10 +30,6 @@ Build Status
 
 [![Build Status](https://secure.travis-ci.org/seantis/seantis.reservation.png)](http://travis-ci.org/seantis/seantis.reservation)
 
-Screenshots
------------
-
-
 Requirements
 ------------
 
@@ -230,6 +226,19 @@ FAQ
 
  Other databases, like Oracle, also support this feature and it would be 
  possible to support those databases as well. Patches welcome.
+
+ * Why did you choose SQL anyway? Why not use the ZODB? Why not *insert your favorite NoSQL DB here*?
+ 
+     - If a reservation is granted to you, noone else must get the same grant. 
+      Primary keys and transactions are a natural fit to ensure that.
+
+     - Our data model is heavily structured and needs to be validated against a schema.
+
+     - All clients must have the same data at all time. Not just eventually.
+
+     - Complicated queries must be easy to develop as reporting matters.
+
+     - The core of seantis.reservation should eventually be independent of Zope/Plone.
 
 Credits
 -------
