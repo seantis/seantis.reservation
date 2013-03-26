@@ -249,6 +249,9 @@ class SessionUtility(grok.GlobalUtility):
         if site_id not in self._dsn_cache:
             specific = utils.get_config('dsn-%s' % site_id)
 
+            assert (specific or self._default_dsn), \
+                "no dsn config found, did you define a dsn in database.cfg?"
+
             dsn = (specific or self._default_dsn).replace('{*}', site_id)
 
             self._dsn_cache_lock.acquire()
