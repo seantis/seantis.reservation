@@ -76,21 +76,6 @@
     opacity: 0.15 !important;   
 }
 
-.event-unavailable, .event-unavailable .fc-event-skin, .event-unavailable .fc-event-head {
-    background-color: #cb3926 !important;
-    border-color: #cb3926 !important;
-}
-
-.event-available, .event-available .fc-event-skin, .event-available .fc-event-head {
-    background-color: #729e2d !important;
-    border-color: #729e2d !important;
-}
-
-.event-partly-available, .event-partly-available .fc-event-skin, .event-partly-available .fc-event-head {
-    background-color: #e99623 !important;
-    border-color: #e99623 !important;
-}
-
 #formfield-form-widgets-days span.option {
     display: inline;
 }

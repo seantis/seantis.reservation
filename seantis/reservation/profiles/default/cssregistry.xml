@@ -1,32 +1,26 @@
 <?xml version="1.0"?>
 <object name="portal_css" meta_type="Stylesheets Registry">
 
-    <stylesheet 
-        id="++resource++seantis.reservation.css/miniTip.css"
-        insert-before="++resource++collective.js.fullcalendar/fullcalendar.css"
+    <!-- should eventually move to a separate module -->
+    <stylesheet id="++resource++seantis.reservation.css/miniTip.css"
         expression="python:object.portal_type == 'seantis.reservation.resource'"  
         media="all" rendering="link"
     />
 
-    <stylesheet id="++resource++seantis.reservation.css/resource.css" 
-        insert-after="++resource++collective.js.fullcalendar/fullcalendar.css"
-        media="all" rendering="link"
-    />
-
+    <!-- dito -->
     <stylesheet
         id="++resource++seantis.reservation.css/jquery.timetable.css" 
         media="all" rendering="link"
     />
 
-    <stylesheet id="++resource++seantis.reservation.css/report.css" 
+    <!-- the fullcalendar is slightly changed in the default profile because
+    mostly because certain visual clues are really port of the functionality -->
+    <stylesheet id="++resource++seantis.reservation.css/fullcalendar.css"
+        insert-after="++resource++collective.js.fullcalendar/fullcalendar.css"
         media="all" rendering="link"
     />
 
-    <stylesheet 
-        id="++resource++seantis.reservation.css/overview.css" 
-        insert-after="++resource++seantis.reservation.css/resource.css"
-        media="all" rendering="link"  />
-
+    <!-- print styles are not really theme dependent and unimportant anyway -->
     <stylesheet id="++resource++seantis.reservation.css/print.css" 
         media="print" rendering="link"
     />

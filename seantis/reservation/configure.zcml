@@ -55,24 +55,24 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
 
 <genericsetup:registerProfile 
     name="default"
-    title="Seantis Reservation (base, unstyled)"
-    description="Seantis Reservation without theme specific styles"
+    title="Seantis Reservation - unstyled"
+    description="You want this if you are developing your own theme"
     directory="profiles/default"
     provides="Products.GenericSetup.interfaces.EXTENSION"
 />
 
 <genericsetup:registerProfile
     name="sunburst"
-    title="Seantis Reservation (made to look nice on Sunburst, Plone 4's default theme)"
-    description="Seantis Reservation with Sunburst specific styles"
+    title="Seantis Reservation - for default plone theme"
+    description="You usually want to install this"
     directory="profiles/sunburst"
     provides="Products.GenericSetup.interfaces.EXTENSION"
 />
 
 <genericsetup:registerProfile
     name="izug_basetheme"
-    title="Seantis Reservation (made to look nice on izug.basetheme)"
-    description="Seantis Reservation with izug.basetheme specific styles"
+    title="Seantis Reservation - for izug.basetheme"
+    description="For izug.basetheme"
     directory="profiles/izug_basetheme"
     provides="Products.GenericSetup.interfaces.EXTENSION"
 />

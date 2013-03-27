@@ -1,23 +1,15 @@
 <?xml version="1.0"?>
 <object name="portal_css" meta_type="Stylesheets Registry">
 
-    <stylesheet id="++resource++seantis.reservation.css/izug.report.css" 
-        insert-after="++resource++seantis.reservation.css/report.css"
+    <stylesheet id="++resource++seantis.reservation.css/izug/report.css" 
         media="all" rendering="link"
     />    
 
-    <stylesheet id="++resource++seantis.reservation.css/izug.resource.css" 
-        insert-after="++resource++seantis.reservation.css/resource.css"
+    <stylesheet id="++resource++seantis.reservation.css/izug/resource.css" 
         media="all" rendering="link"
     />    
 
-    <stylesheet id="++resource++seantis.reservation.css/izug.fullcalendar.css" 
-        insert-after="++resource++seantis.reservation.css/izug.resource.css"
-        media="all" rendering="link"
-    />
-
-    <stylesheet id="++resource++seantis.reservation.css/izug.overview.css" 
-        insert-after="++seantis++seantis.reservation.css/overview.css"
+    <stylesheet id="++resource++seantis.reservation.css/izug/overview.css" 
         media="all" rendering="link"
     />
 
