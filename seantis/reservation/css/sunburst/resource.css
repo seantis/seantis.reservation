@@ -1,3 +1,43 @@
+/*
+    Styles for plonetheme.sunburst
+*/
+
+/* context menu style */
+#miniTip_c {
+    padding: 0;
+    font-size: 13px;
+}
+
+#miniTip_c div {
+    padding: 3px 0 0 5px;
+}
+
+#miniTip_c a { 
+    padding: 4px 0 2px 6px;
+    display: block;
+    color: black;
+}
+
+#miniTip_c a:before {
+    content: '▶ ';
+    font-size: 10px;
+    color: #eae4b4;
+}
+
+#miniTip_c a:hover {
+    font-weight: bold;
+}
+
+#miniTip_c a:hover:before {
+    color: #927847;
+}
+
+#miniTip_c {
+    min-width: 120px;
+}
+
+
+
 .calendar-occupied {
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAOVBMVEXY2Nj////d7h7d7h7d7h7d7h7///////////////////////////////////////////////////+4yo5sAAAAQklEQVQoke3LqQ3AMADAQKP8b/cftjjAUgaI6cmEmHKprY+59seRSkAlopJQyagUVCoqDZWOykBlorJQ2aj48+Rafr0hD9knm0tJAAAAAElFTkSuQmCC);
     background-repeat: repeat;
@@ -31,45 +71,6 @@
 
 #content table {
     margin-bottom: 0;
-}
-
-#miniTip_c {
-    padding: 0;
-}
-
-#miniTip_c div {
-    background-color: #1d4f90;
-    padding: 4px 0;
-    padding-left: 10px;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    border-radius: 3px;
-}
-
-#miniTip_c a { 
-    padding-bottom: 4px;
-    padding-top: 4px;
-    display: block;
-    padding-left: 24px;
-}
-
-#miniTip_c a:hover {
-    background-color: #0d7dcd;
-    text-decoration: none;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    border-radius: 3px;
-}
-#miniTip_c a:hover:before {
-    content: '▶ ';
-    margin-left: -14px;
-    margin-right: 0;
-    padding-left: 0;
-    padding-right: 0;
-}
-
-#miniTip_c {
-    width: 120px;
 }
 
 .fc-event-bg {
