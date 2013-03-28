@@ -75,6 +75,12 @@
     background-color: #ddd;   
 }
 
+.seantis-reservation-form .formTab a.selected:hover {
+    font-weight: bold;
+    border-color: #57a9cd;
+    background-color: #c1e0ee;   
+}
+
 
 
 .calendar-occupied {
