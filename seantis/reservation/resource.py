@@ -1,4 +1,6 @@
 import json
+import pytz
+
 from datetime import datetime
 
 from Products.ATContentTypes.interface import IATFolder
@@ -214,10 +216,13 @@ class CalendarRequest(object):
         if not all((start, end)):
             return None, None
 
-        start = datetime.fromtimestamp(float(start))
-        end = datetime.fromtimestamp(float(end))
+        # use utc to get the correct range (as reported by fullcalendar)
+        start = datetime.fromtimestamp(float(start), pytz.utc)
+        end = datetime.fromtimestamp(float(end), pytz.utc)
 
-        return start, end
+        # but remove it again because times in seantis.reservation are still
+        # timezone naive, unfortunately.
+        return start.replace(tzinfo=None), end.replace(tzinfo=None)
 
     def render(self, **kwargs):
         start, end = self.range

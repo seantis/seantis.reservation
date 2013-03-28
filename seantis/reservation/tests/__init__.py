@@ -7,6 +7,7 @@ import webbrowser
 import cgi
 import urllib
 
+from sqlalchemy import create_engine
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
 from tempfile import NamedTemporaryFile
@@ -76,6 +77,14 @@ class TestCase(unittest.TestCase):
         util.sessionstore.serial.rollback()
 
         maintenance.clear_clockservers()
+
+        # since the testbrowser may create different records we need
+        # to clear the database by hand each time
+        outlaw = create_engine(util._dsn_cache['plone'])
+        outlaw.execute('DELETE FROM reservations')
+        outlaw.execute('DELETE FROM reserved_slots')
+        outlaw.execute('DELETE FROM allocations')
+        outlaw.dispose()
 
         self.logout()
 
