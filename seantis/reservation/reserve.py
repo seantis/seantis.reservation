@@ -202,7 +202,10 @@ class ReservationBaseForm(ResourceBaseForm):
 
         """
 
-        defaults['email'] = self.email()
+        default_email = self.email()
+        if default_email:
+            defaults['email'] = self.email()
+
         data = self.additional_data()
 
         if not data:
