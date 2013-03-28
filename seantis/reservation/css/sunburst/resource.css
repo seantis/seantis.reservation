@@ -81,35 +81,74 @@
     background-color: #c1e0ee;   
 }
 
-.calendar-occupied {
-    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAOVBMVEXY2Nj////d7h7d7h7d7h7d7h7///////////////////////////////////////////////////+4yo5sAAAAQklEQVQoke3LqQ3AMADAQKP8b/cftjjAUgaI6cmEmHKprY+59seRSkAlopJQyagUVCoqDZWOykBlorJQ2aj48+Rafr0hD9knm0tJAAAAAElFTkSuQmCC);
-    background-repeat: repeat;
-    border: solid #ccc 1px;
+/* form buttons */
+.seantis-reservation-form .formControls {
+    margin-left: 0;   
 }
 
-.loading {
-    background-image: url(/++resource++seantis.reservation.images/loading.gif);
-    background-repeat: no-repeat;
-    background-position: center 12px;
-    min-height: 30px;
+/* your reservations */
+.your-reservations, .your-reservations-view ul {
+    background-color: #f0fcff;
+    border: 1px solid #8ac3db;
+    margin: 15px 0 20px 0;
+    padding: 5px 10px 10px 10px;
 }
 
-.event-unavailable.groupSelection {
-    -webkit-box-shadow: 0 0 4px 1px #a1291e;
-    -moz-box-shadow: 0 0 4px 1px #a1291e;
-    box-shadow: 0 0 4px 1px #a1291e; 
+.your-reservations h2 {
+    font-size: 20px;
+    margin: 0 0 5px 0;
+    color: #205c90;
 }
 
-.event-available.groupSelection {
-    -webkit-box-shadow: 0 0 4px 1px #379a00;
-    -moz-box-shadow: 0 0 4px 1px #379a00;
-    box-shadow: 0 0 4px 1px #379a00; 
+.your-reservations ul {
+    margin-left: 0 !important;
 }
 
-.event-partly-available.groupSelection {
-    -webkit-box-shadow: 0 0 4px 1px #e99623;
-    -moz-box-shadow: 0 0 4px 1px #e99623;
-    box-shadow: 0 0 4px 1px #e99623; 
+.your-reservations ul a {
+    float: left;
+    border-bottom-style: dotted !important;
+    font-size: 12px;
+    margin-bottom: 5px;
+    color: #205c90 !important;
+}
+
+.your-reservations .remove-url {
+    margin-left: 10px;
+    border: none !important;
+    color: #666 !important;
+}
+
+.your-reservations .remove-url span:before {
+    content: "< ";
+    padding-right: 5px;
+}
+
+.your-reservations ul span {
+    display: block;
+    clear: both;
+    font-size: 12px;
+}
+
+.your-reservations-view ul {
+    padding-top: 10px;
+    margin-top: 10px;
+}
+
+.your-reservations-view ul span:first-child {
+    font-weight: bold;   
+}
+
+#content .your-reservations .your_reservations_link {
+    margin-top: 5px !important;
+    padding: 5px 8px 3px 8px;
+    display: inline-block;
+    color: white !important;
+    background-color: #205c90;
+    font-size: 12px;
+}
+
+#content .your-reservations .your_reservations_link:hover {
+    text-decoration: underline;
 }
 
 #content table {
@@ -157,7 +196,7 @@ id selector we need quite the selectors to get a higher weight...*/
 
 #content .reservation-info .reservation-title a:hover,
 #content .reservation-title a:hover {
-    color: #75AD0A !important;
+    border-bottom-style: solid !important;
 }
 
 #content .reservation-info {
@@ -192,10 +231,6 @@ a.reservation-delete {
     padding: 5px 10px 5px 20px;
 }
 
-.reservation-list:hover {
-    background-color: #ddd;
-}
-
 .limitedList {
     overflow: auto;
     max-height: 150px;
@@ -220,31 +255,11 @@ a.reservation-delete {
     text-align: center;
 }
 
-#inlineClose {
-    background: url(../pb_close.png) no-repeat;
-    cursor: pointer;
-    position: relative;
-    height: 36px;
-    width: 30px;
-    float: right;
-    top: 3px;
-    right: 3px;
-}
-
 div.error {
     background-color: #FDC;
     border: 1px solid red;
     padding: 4px 4px;
     font-size: 10px;
-}
-
-.splitscreen {
-    width: 49%;
-    float: left;
-}
-
-.splitright {
-    padding-left: 15px;
 }
 
 .reservations-by-month .reservation-data {
