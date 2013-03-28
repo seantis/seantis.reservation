@@ -77,17 +77,22 @@ div.overlay dl.portalMessage {
 /* inline page style */
 
 #content #inline-page {
-    border: solid 1px #dedede;
-    background-color: #eee; 
+    border: solid 1px #bbb;
+    background-color: #efefef;
     margin-top: 20px;  
     min-height: 32px;
 }
+
 #inline-page .hint {
     font-size: 12px;
     width: 100%;
     text-align: center;
     color: #555;
     padding-top:8px;
+}
+
+#content #inline-page h2 {
+     margin-top: 10px;
 }
 
 /* the overlay's left offset is calculated by jquery tools and it
@@ -162,71 +167,6 @@ div.overlay {
     border-left-color: #00538c;
 }
 
-/* Reservation List Style */
-
-#content #inline-page {
-    background-color: #efefef;
-    border-color: #bbb;
-}
-
-#content .inline-reservations {
-    border-color: #bbb;
-    min-height: 50px;
-}
-
-.reservation-approved .reservation-title,
-.reservation-pending .reservation-title {
-    font-size: 12px;
-    height: 23px;
-}
-
-.reservation-pending .reservation-title {
-    background-color: #00538C;
-}
-
-.reservation-approved .reservation-title {
-    background-color: #454545;
-}
-
-.reservation-data {
-    width: 60%;
-    font-size: 11px;
-}
-
-.reservation-data span.label {
-    color: #454545;
-}
-
-.reservation {
-    margin-bottom: 20px;
-}
-
-.reservation-list {
-    padding-bottom: 20px;
-}
-
-.reservation-approved .reservation-list:hover {
-    background-color: white;
-    border-color: #00538c;
-}
-
-.reservation-pending .reservation-list:hover {
-    background-color: white;
-    border-color: #454545;
-}
-
-#ftw-edit-bar {
-    position: relative !important;
-    z-index: 1000 !important;
-}
-
-label .required {
-    background-image: url("../required.gif");
-    background-position: right center;
-    background-repeat: no-repeat;
-    padding-right: 3px;
-}
-
 /* Your reservations */
 .your-reservations {
     padding: 0 10px 10px 10px;
@@ -293,6 +233,11 @@ label .required {
     margin-top: 5px;
 }
 
+.your-reservations .limitedList,
+.your-reservations-view .limitedList {
+    max-width: 100%;   
+}
+
 /* reservations in progress */
 .uncommitted {
     color: #555;
@@ -316,6 +261,10 @@ label .required {
    width: 936px;   
 }
 
+#formfield-form-widgets-days span.option {
+    display: inline;
+}
+
 /* form help */
 .field {
     padding-top: 5px;
@@ -337,6 +286,126 @@ label .required {
     text-align: justify;
 }
 
+/* reservations management */
+.reservation {
+    margin-bottom: 20px;
+}
+
+.reservation-list {
+    padding-bottom: 20px;
+}
+
+.reservation-title {
+    width: 100%; 
+    height: 25px;
+    margin-top: 20px;
+    padding-top: 5px;
+}
+
+.reservation-pending .reservation-title {
+    background-color: #00538C;
+}
+
+.reservation-approved .reservation-title {
+    background-color: #454545;
+}
+
+.reservation-title h3,
+#content .reservation-title a,
+#content .reservation-title a:visited,
+#content .reservation-info .reservation-title a,
+#content .reservation-info .reservation-title a:visited {
+    font-size: 1em !important;
+    font-weight: normal !important;
+    display: inline;
+    margin-left: 10px;
+    margin-right: 11px;
+    color: white !important;
+    border-color: white !important;
+}
+
+#content .reservation-info .reservation-title a:hover,
+#content .reservation-title a:hover {
+    border-bottom-style: solid !important;
+}
+
+#content .reservation-info {
+    margin: -10px auto 10px auto;   
+}
+
+#content .inline-reservations {
+    border-top: solid 1px #dedede;
+    margin: 0;
+    padding: 0 10px;
+    background-color: white;     
+}
+
+a.reservation-delete {
+   float: right;
+}
+
+.reservation-list {
+    border: 1px solid #ccc;
+    border-top: none;
+    padding: 5px 10px 5px 20px;
+}
+
+#content .inline-reservations {
+    border-color: #bbb;
+    min-height: 50px;
+}
+
+.reservation-approved .reservation-title,
+.reservation-pending .reservation-title {
+    font-size: 12px;
+    height: 23px;
+}
+
+#ftw-edit-bar {
+    position: relative !important;
+    z-index: 1000 !important;
+}
+
+label .required {
+    background-image: url("../required.gif");
+    background-position: right center;
+    background-repeat: no-repeat;
+    padding-right: 3px;
+}
+
+/* reservation data */
+.reservations-by-month .reservation-data {
+     float:none;   
+     width: 100%;
+}
+
+.reservation-data, .reservation-timespans {
+     float:left;
+     width: 50%;
+}
+
+.reservation-data {
+    line-height: 1.35em;
+    font-size: 11px;
+    padding-bottom: 5px;
+}
+
+.reservation-data span.label {
+    font-weight: normal;
+    color: #454545;
+    display: inline-block;
+    min-width: 75px;
+    margin-top: 3px;
+}
+
+.reservation-list .block-title {
+    font-size: 1em;
+    font-weight: bold;   
+    color: #222;
+    padding-top: 15px;
+    padding-bottom: 1px;
+}
+
 /* reservations quota */
 .reservation-quota {
     border: 1px solid #ccc;
@@ -354,4 +423,17 @@ label .required {
 
 .your-reservation-quota b {
     font-weight: normal;
+}
+
+/* group reservation list */
+.groupListDay {
+    float: left;
+    width: 75px;
+    margin-bottom: 10px;
+}
+
+.groupListTime {
+    width:300px !important; 
+    float:left;
+    text-align: center;
 }
