@@ -55,8 +55,8 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
 
 <genericsetup:registerProfile 
     name="default"
-    title="Seantis Reservation - unstyled"
-    description="You want this if you are developing your own theme"
+    title="Seantis Reservation"
+    description="Base Profile for Seantis Reservation, Minimal Styles"
     directory="profiles/default"
     provides="Products.GenericSetup.interfaces.EXTENSION"
 />
@@ -64,7 +64,7 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
 <genericsetup:registerProfile
     name="sunburst"
     title="Seantis Reservation - for default plone theme"
-    description="You usually want to install this"
+    description="Sunburst Profile for Seantis Reservation, Usually You Want This"
     directory="profiles/sunburst"
     provides="Products.GenericSetup.interfaces.EXTENSION"
 />
@@ -72,7 +72,7 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
 <genericsetup:registerProfile
     name="izug_basetheme"
     title="Seantis Reservation - for izug.basetheme"
-    description="For izug.basetheme"
+    description="IZug Basetheme Profile for Seantis Reservation"
     directory="profiles/izug_basetheme"
     provides="Products.GenericSetup.interfaces.EXTENSION"
 />
@@ -103,6 +103,15 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
     source="1002"
     destination="1003"
     handler=".upgrades.upgrade_1002_to_1003"
+    profile="seantis.reservation:default">
+</genericsetup:upgradeStep>
+
+<genericsetup:upgradeStep
+    title="Moves to separate profiles for sunburst and izug.basetheme"
+    description=""
+    source="1003"
+    destination="1004"
+    handler=".upgrades.upgrade_1003_to_1004"
     profile="seantis.reservation:default">
 </genericsetup:upgradeStep>
 
