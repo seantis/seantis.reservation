@@ -1,3 +1,27 @@
+/*
+    seantis.reservation overview and resource listing styles for sunburst
+*/
+
+/* resource listing */
+.resource-listing-entry {
+    margin: 0 0 20px 0;
+}
+
+.resource-listing-entry * {
+    margin: 0;   
+}
+
+.resource-listing-entry p {
+   color: #333;
+   max-width: 500px;
+   margin-bottom: 0 !important;
+}
+
+.template-resource_listing .documentDescription {
+   margin: 5px 0 15px 0;
+   font-weight: normal   
+}
+
 .groupSelection {
     border-color: #0087be !important;
     box-shadow: 3px 3px 2px #efefef;
