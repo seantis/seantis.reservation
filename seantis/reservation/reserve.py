@@ -341,7 +341,7 @@ class ReservationForm(
                 utils.form_error(_(u'Reservation out of bounds'))
 
             return start, end
-        except NoResultFound:
+        except (NoResultFound, TypeError):
             utils.form_error(_(u'Invalid reservation request'))
 
     @button.buttonAndHandler(_(u'Reserve'))
