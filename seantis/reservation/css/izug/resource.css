@@ -74,6 +74,22 @@ div.overlay dl.portalMessage {
     content: none;
 }
 
+/* inline page style */
+
+#content #inline-page {
+    border: solid 1px #dedede;
+    background-color: #eee; 
+    margin-top: 20px;  
+    min-height: 32px;
+}
+#inline-page .hint {
+    font-size: 12px;
+    width: 100%;
+    text-align: center;
+    color: #555;
+    padding-top:8px;
+}
+
 /* the overlay's left offset is calculated by jquery tools and it
 allows no overriding of that calculation (except for preload values),
 which is a pity, because if that was possible we could center the
@@ -86,7 +102,7 @@ div.overlay {
     left: 70px !important;
 }
 
-/* Minitip style */
+/* Contextmenu */
 
 #miniTip {
     background-color: white;
@@ -100,10 +116,7 @@ div.overlay {
     color: #00538c;
     font-size: 10px;
     padding: 5px 5px 5px 10px;
-}
-
-#miniTip a:hover:before {
-    content: none;
+    display: block;
 }
 
 #miniTip a:hover, #miniTip a:visited {
@@ -114,8 +127,9 @@ div.overlay {
     text-decoration: underline;
 }
 
-#miniTip_c div:first-child {
-    border-top: none;
+#miniTip_c {
+    padding: 0;
+    min-width: 100px;
 }
 
 #miniTip_c div {
@@ -124,6 +138,12 @@ div.overlay {
     border-width: 1px 0 1px 0;
     background-color: #efefef;
     color: black;
+    line-height: 20px;
+    padding: 0 10px 0 10px;
+}
+
+#miniTip_c div:first-child {
+    border-top: none;   
 }
 
 #miniTip .n {
