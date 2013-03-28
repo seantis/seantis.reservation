@@ -265,6 +265,13 @@ div.overlay {
     display: inline;
 }
 
+/* izug basetheme applies div.error to nested divs for some reason, this
+change fixes that */
+div.field.error {
+    background-color: white;
+    border: none;
+}
+
 /* form help */
 .field {
     padding-top: 5px;
@@ -367,7 +374,7 @@ a.reservation-delete {
 }
 
 label .required {
-    background-image: url("../required.gif");
+    background-image: url("/++resource++seantis.reservation.images/required.gif");
     background-position: right center;
     background-repeat: no-repeat;
     padding-right: 3px;
