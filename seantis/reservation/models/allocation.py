@@ -258,7 +258,7 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
 
     @property
     def in_group(self):
-        """Returns true if the event is in any group."""
+        """True if the event is in any group."""
 
         query = Session.query(Allocation.id)
         query = query.filter(Allocation.resource == self.resource)
@@ -269,6 +269,8 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
 
     @property
     def is_separate(self):
+        """True if available separately (as opposed to available only as
+        part of a group)."""
         if self.partly_available:
             return True
 
