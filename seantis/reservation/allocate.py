@@ -282,7 +282,7 @@ class AllocationRemoveForm(AllocationForm, AllocationGroupView):
     grok.name('remove-allocation')
     grok.require(permission)
 
-    context_buttons = ('delete', )
+    destructive_buttons = ('delete', )
 
     fields = field.Fields(IAllocation).select('id', 'group')
     template = ViewPageTemplateFile('templates/remove_allocation.pt')

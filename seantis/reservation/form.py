@@ -74,6 +74,7 @@ class ResourceBaseForm(GroupForm, form.Form):
     hidden_fields = ['id']
 
     context_buttons = tuple()
+    destructive_buttons = tuple()
 
     css_class = 'seantis-reservation-form wizard'
 
@@ -252,6 +253,9 @@ class ResourceBaseForm(GroupForm, form.Form):
 
         for button in self.context_buttons:
             self.actions[button].addClass("context")
+
+        for button in self.destructive_buttons:
+            self.actions[button].addClass("destructive")
 
     def update(self, **kwargs):
         self.updateFields()

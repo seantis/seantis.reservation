@@ -585,7 +585,7 @@ class ReservationDenialForm(ReservationDecisionForm):
     grok.name('deny-reservation')
     grok.require(permission)
 
-    context_buttons = ('deny', )
+    destructive_buttons = ('deny', )
 
     label = _(u'Deny reservation')
 
@@ -621,7 +621,7 @@ class ReservationRemoveForm(ResourceBaseForm, ReservationListView,
     grok.name('remove-reservation')
     grok.require(permission)
 
-    context_buttons = ('delete', )
+    destructive_buttons = ('delete', )
 
     fields = field.Fields(IRemoveReservation)
     template = ViewPageTemplateFile('templates/remove_reservation.pt')
