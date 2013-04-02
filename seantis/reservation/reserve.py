@@ -304,7 +304,7 @@ class ReservationForm(
 
             if allocation:
 
-                if allocation.partly_available:
+                if not allocation.partly_available:
                     disabled.append('start_time')
                     disabled.append('end_time')
 
