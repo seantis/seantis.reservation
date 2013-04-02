@@ -3,7 +3,7 @@
 seantis.reservation
 ===================
 
-A Plone addon to manage resources through reservations.
+Plone addon to reserve stuff in a calendar.
 
 Introduction
 ------------
@@ -23,7 +23,7 @@ It does so by providing a way to deal with the following usecases:
  * Manage community facilities. Citizens see the availability of facilities
    online and call the municipality to reserve a facility. The management
    is done internally (maybe through an already existing software). The addon
-   is used in a read only fashion.
+   is only used for display.
 
 Build Status
 ------------
@@ -210,6 +210,63 @@ Enter the following:
 Save the resource.
 
 
+Data Structure
+--------------
+
+To really understand seantis.reservation it is important to understand a few core concepts:
+
+## Resource
+
+Resources are Dxterity content types who display a calendar and interact with the core of seantis.reservation. They are heavy on the UI side of things, while being nothing more than a foreign key in the database. 
+
+## Allocations
+
+Everyone familiar with Outlook or Google Calendar knows that one can just click on an empty spot and add a new reservation.
+
+In seantis.reservation this is not the case. In this module, a spot that may be reserved must be marked as such first. This is called an allocation.
+
+The idea is to allocate time which may be reserved. It is like declaring time that should be managed by reservations. Outlook and Google Calendar implicitly see all time as allocated and under their management.
+
+One reason for this is the fact that only through limiting the available time we can calculate meaningful utilization numbers. Another reason is that some periods of time may be overbooked, other times may not, or generally speaking: some timeperiods are different than others.
+
+Allocations therefore define how periods of time may be reserved. They may not overlap for any given resource and they are independent of Plone and part of the SQL database model.
+
+## Reserved Slots
+
+When reserving an allocation or a part of an allocation, reserved slots are generated. They ensure that no reservation is ever granted twice by accident.
+
+Reserved slots may start every 5 minutes. At 5.35 or 5.40 for example, but not at 5.36 or 5.39. When reserving 45 minutes of an allocation, many reserved slots are spawned and aligned. Their primary keys then ensure on a low level basis that no overlaps occur.
+
+For a much needed example:
+
+    Resource: 1234
+    Allocation: 09:00 - 10:00
+
+    => reserve 1234, 09:30 - 10:00
+
+    Reserved Slots:
+        1234 09:30
+        1234 09:35
+        1234 09:40
+        1234 09:45
+        1234 09:50
+        1234 09:55
+
+    => try to reserve 1234, 09:30 - 10:00 again
+
+    Reserved Slot 1234, 09:30 already exists
+
+Of course there are a number of optimizations to ensure that we don't generated millions of reserved slots. But this is basically it.
+
+## Reservations
+
+Reservations exist in two states: Pending and Approved.
+
+Pending reservations are reservations on a waitinglist. Users have submitted them, but nobody has confirmed them. They have therefore no reserved slot associated with them.
+
+Apporved reservations are reservations who are associated with reserved slots and are therefore confirmed and binding.
+
+Note that it is possible in the UI side of seantis.reservation to go from pending to confirmed automatically. This is called auto-approval.
 
 FAQ
 ---
