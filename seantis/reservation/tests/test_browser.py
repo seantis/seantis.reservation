@@ -47,7 +47,7 @@ class TestBrowser(FunctionalTestCase):
         browser.getControl('Description').value = description
         browser.getControl('Save').click()
 
-    def add_allocation(self, resource, start, end):
+    def add_allocation(self, resource, start, end, partly_available=False):
         url = self.build_folder_url
 
         browser = self.admin_browser
@@ -66,6 +66,7 @@ class TestBrowser(FunctionalTestCase):
         self.assertTrue(ds in browser.contents)
         self.assertTrue(de in browser.contents)
 
+        browser.getControl('Partly available').selected = partly_available
         browser.getControl('Allocate').click()
 
     def load_slot_data(self, resource, start, end):
@@ -184,7 +185,7 @@ class TestBrowser(FunctionalTestCase):
         end = datetime(2013, 3, 4, 16, 0)
 
         self.add_resource('regression')
-        self.add_allocation('regression', start, end)
+        self.add_allocation('regression', start, end, partly_available=True)
 
         slots = self.load_slot_data('regression', start, end)
         self.assertEqual(len(slots), 1)
