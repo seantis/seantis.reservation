@@ -1,9 +1,9 @@
 /* fullcalendar adjustments for seantis.reservation */
 
 .groupSelection {
-    -webkit-box-shadow: 0 0 4px 2px #0e6700 !important;
-    -moz-box-shadow: 0 0 4px 2px #0e6700 !important;
-    box-shadow: 0 0 0 3px #0e6700 !important;
+    -webkit-box-shadow: 0 0 0 2px #0e6700 !important;
+    -moz-box-shadow: 0 0 0 2px #0e6700 !important;
+    box-shadow: 0 0 0 2px #0e6700 !important;
     background-color: white !important;
 
     -webkit-transition: all 0.1 linear;
@@ -12,12 +12,18 @@
     -ms-transition: all 0.1 linear;
     -kthtml-transition: all 0.1 linear;
     transition: all 0.1 linear;
+    
+    position: relative;
+}
+
+.groupclickable:hover {
+    cursor: pointer;
 }
 
 .event-unavailable.groupSelection {
-    -webkit-box-shadow: 0 0 4px 2px #ae1e00 !important;
-    -moz-box-shadow: 0 0 4px 2px #ae1e00 !important;
-    box-shadow: 0 0 0 3px #ae1e00 !important;
+    -webkit-box-shadow: 0 0 0 2px #ae1e00 !important;
+    -moz-box-shadow: 0 0 0 2px #ae1e00 !important;
+    box-shadow: 0 0 0 2px #ae1e00 !important;
 
     -webkit-transition: all 0.1 linear;
     -o-transition: all 0.1 linear;
@@ -28,9 +34,9 @@
 }
 
 .event-partly-available.groupSelection {
-    -webkit-box-shadow: 0 0 4px 2px #dd7c07 !important;
-    -moz-box-shadow: 0 0 4px 2px #dd7c07 !important;
-    box-shadow: 0 0 0 3px #dd7c07 !important;
+    -webkit-box-shadow: 0 0 0 2px #dd7c07 !important;
+    -moz-box-shadow: 0 0 0 2px #dd7c07 !important;
+    box-shadow: 0 0 0 2px #dd7c07 !important;
 
     -webkit-transition: all 0.1 linear;
     -o-transition: all 0.1 linear;

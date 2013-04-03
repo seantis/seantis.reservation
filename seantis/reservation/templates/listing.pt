@@ -15,7 +15,7 @@
           
           <div metal:use-macro="context/batch_macros/macros/navigation" />
 
-          <div class="resource-listing">
+          <div class="resource-listing groupclickable">
             <metal:block use-macro="context/folder_listing/macros/entries">
               <metal:entry fill-slot="entry" tal:condition="python: view.list_item(item)">
               
@@ -29,11 +29,17 @@
             </metal:block>
           </div>
 
+          <div class="resource-listing-overview">
+            <div tal:replace="structure provider:seantis.reservation.overviewletmanager"/>
+        </div>
+
         </metal:entries>
       </metal:block>
 
       <metal:subtopics use-macro="context/atct_topic_view/macros/folderlisting_macro" />
 
     </metal:content-core>
+
+
   </body>
 </html>

@@ -35,22 +35,22 @@ var CalendarDays = function (options) {
             }
 
             cell.unbind('mouseenter.days');
-            cell.unbind('mouseleave.days');    
+            cell.unbind('mouseleave.days');
         });
-        
+
         return true;
     };
 
     // Add a cell to the store. Clearing is done once first, if needed
     var add = function(date, cell) {
-        if (!cleared) 
+        if (!cleared)
             cleared = clear();
-            
+
         store[key(date)] = cell;
     };
 
-    var get = function(date) { 
-        return store[key(date)]; 
+    var get = function(date) {
+        return store[key(date)];
     };
 
     //Make these functions public
@@ -61,7 +61,7 @@ var CalendarDays = function (options) {
     this.addClass = function(date, classes) {
         var cell = get(date);
         cell.addClass(classes);
-        cell.data('old_classes', classes); 
+        cell.data('old_classes', classes);
     };
 
     this.mouseenter = function(date, callback) {
@@ -74,12 +74,12 @@ var CalendarDays = function (options) {
         cell.bind('mouseleave.days', callback);
     };
 
-    options.loading = function() { 
+    options.loading = function() {
         cleared=false; //indicate that the next add call has to clear the store
     };
 
-    options.dayRender = function(date, element) { 
-        add(date, element); 
+    options.dayRender = function(date, element) {
+        add(date, element);
     };
 };
 
@@ -100,7 +100,7 @@ var CalendarDays = function (options) {
                 return [];
 
             return _.unique(_.map(uuids, function(uuid) {
-               return uuidmap[uuid]; 
+               return uuidmap[uuid];
             }));
         };
 
@@ -117,24 +117,24 @@ var CalendarDays = function (options) {
                     _.defer(function() {
                         highlight_group($(itemids), true);
                         highlight_group($(itemuuids), true);
-                        highlight_group($(cell), true);    
+                        highlight_group($(cell), true);
                     });
                 });
-                
+
                 days.mouseleave(event.start, function() {
                     _.defer(function() {
                         highlight_group($(itemids), false);
                         highlight_group($(itemuuids), false);
                         highlight_group($(cell), false);
                     });
-                });   
+                });
             }
 
             return false;
         };
 
         var highlight_group = function(elements, highlight) {
-            elements.toggleClass('groupSelection', highlight);    
+            elements.toggleClass('groupSelection', highlight);
         };
 
         var item_mouseover = function() {
@@ -147,7 +147,7 @@ var CalendarDays = function (options) {
             highlight_group(element, false);
         };
 
-        var directoryResult = $('.directoryResult, .resourceItem');
+        var directoryResult = $('.resource-listing-entry, .directoryResult, .resourceItem');
         directoryResult.mouseenter(function() {
             var element = $('.' + $(this).attr('id'));
             highlight_group(element, true);
@@ -157,7 +157,12 @@ var CalendarDays = function (options) {
             var element = $('.' + $(this).attr('id'));
             highlight_group(element, false);
         });
-        
+
+        $('.groupclickable').click(function(e) {
+            window.location = $(this).find('a').attr('href');
+            e.preventDefault();
+        });
+
         var options = {};
         var days = new CalendarDays(options);
 

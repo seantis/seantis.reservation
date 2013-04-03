@@ -2,9 +2,57 @@
     seantis.reservation overview and resource listing styles for sunburst
 */
 
+/* resource listing overview*/
+.resource-listing {
+    float: left;
+    margin-bottom: 90px;
+    min-width: 300px;
+}
+
+.resource-listing-overview {
+    float: right;
+    max-width: 450px;
+    margin-top: -90px; 
+}
+
+.resource-listing-overview .fc-widget-header.fc-mon,
+.resource-listing-overview .fc-widget-header.fc-tue,
+.resource-listing-overview .fc-widget-header.fc-wed,
+.resource-listing-overview .fc-widget-header.fc-thu,
+.resource-listing-overview .fc-widget-header.fc-fri {
+    background-color: #efefef;
+    border: none;
+}
+
+.resource-listing-overview .fc-widget-header.fc-sat,
+.resource-listing-overview .fc-widget-header.fc-sun {
+    background-color: #ddd !important;   
+    border: none;
+}
+
+
+@media all and (max-width: 800px) {
+     .resource-listing, .resource-listing-overview {
+          float: none;
+          margin-top: auto;
+          margin-bottom: auto;
+     }   
+}
+
 /* resource listing */
 .resource-listing-entry {
-    margin: 0 0 20px 0;
+    padding: 10px;
+    margin-left: -10px;
+}
+
+.resource-listing-entry.groupSelection,
+.resource-listing-entry:hover {
+    -webkit-box-shadow: none !important;
+       -moz-box-shadow: none !important;
+            box-shadow: none !important;
+    
+    background-color: #fff6d2 !important; 
+       
 }
 
 .resource-listing-entry * {
@@ -22,15 +70,7 @@
    font-weight: normal   
 }
 
-.groupSelection {
-    border-color: #0087be !important;
-    box-shadow: 3px 3px 2px #efefef;
-}
-
-.fc .groupSelection {
-    border-color: transparent !important;
-}
-
+/* group selection */
 #seantis-overview-calendar td.groupSelection {
     -webkit-box-shadow: none;
     box-shadow: none;
@@ -43,6 +83,9 @@
     -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
     filter: alpha(opacity=100);
     zoom: 1;
+    
+    position: relative;
+    z-index: 1000;
 }
 
 #seantis-overview-calendar .fc-widget-content, 

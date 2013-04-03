@@ -1,6 +1,26 @@
 /* overview styles for izug basetheme */
+.resource-listing {
+    float: left;
+}
+
+.resource-listing-entry.groupSelection,
+.resource-listing-entry:hover {
+    -webkit-box-shadow: none !important;
+       -moz-box-shadow: none !important;
+            box-shadow: none !important;
+            
+    background-color: #ffeeb3 !important;  
+}
+
+.resource-listing-overview {
+    float: right;
+    max-width: 400px;
+    margin-top: -30px;
+}
+
 .resource-listing-entry {
-    margin: 0 0 15px 0;
+    padding: 10px;
+    width: 525px;
 }
 
 .resource-listing-entry * {
