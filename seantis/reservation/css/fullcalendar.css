@@ -1,5 +1,23 @@
 /* fullcalendar adjustments for seantis.reservation */
 
+/* overview calendar */
+
+#seantis-overview-calendar .fc-widget-header.fc-mon,
+#seantis-overview-calendar .fc-widget-header.fc-tue,
+#seantis-overview-calendar .fc-widget-header.fc-wed,
+#seantis-overview-calendar .fc-widget-header.fc-thu,
+#seantis-overview-calendar .fc-widget-header.fc-fri {
+    background-color: #efefef;
+    border: none;
+}
+
+#seantis-overview-calendar .fc-widget-header.fc-sat,
+#seantis-overview-calendar .fc-widget-header.fc-sun {
+    background-color: #ddd !important;   
+    border: none;
+}
+
+
 .groupSelection {
     -webkit-box-shadow: 0 0 0 1px #0e6700 !important;
     -moz-box-shadow: 0 0 0 1px #0e6700 !important;

@@ -15,22 +15,6 @@
     width: 60%;
 }
 
-.resource-listing-overview .fc-widget-header.fc-mon,
-.resource-listing-overview .fc-widget-header.fc-tue,
-.resource-listing-overview .fc-widget-header.fc-wed,
-.resource-listing-overview .fc-widget-header.fc-thu,
-.resource-listing-overview .fc-widget-header.fc-fri {
-    background-color: #efefef;
-    border: none;
-}
-
-.resource-listing-overview .fc-widget-header.fc-sat,
-.resource-listing-overview .fc-widget-header.fc-sun {
-    background-color: #ddd !important;   
-    border: none;
-}
-
-
 @media all and (max-width: 750px) {
      .resource-listing, .resource-listing-overview {
           float: none;
