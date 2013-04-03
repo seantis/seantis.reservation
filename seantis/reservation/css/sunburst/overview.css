@@ -6,13 +6,13 @@
 .resource-listing {
     float: left;
     margin-bottom: 90px;
-    min-width: 300px;
+    width: 40%;
 }
 
 .resource-listing-overview {
     float: right;
-    max-width: 450px;
     margin-top: -90px; 
+    width: 60%;
 }
 
 .resource-listing-overview .fc-widget-header.fc-mon,
@@ -31,18 +31,21 @@
 }
 
 
-@media all and (max-width: 800px) {
+@media all and (max-width: 750px) {
      .resource-listing, .resource-listing-overview {
           float: none;
           margin-top: auto;
-          margin-bottom: auto;
-     }   
+          margin-bottom: 20px;
+          width: 100%;
+     }
 }
 
 /* resource listing */
 .resource-listing-entry {
     padding: 10px;
-    margin-left: -10px;
+    margin: auto 10px auto -10px;
+    border: 1px solid transparent;
+    
 }
 
 .resource-listing-entry.groupSelection,
@@ -52,7 +55,8 @@
             box-shadow: none !important;
     
     background-color: #fff6d2 !important; 
-       
+    border-color: #ffeea9;
+    
 }
 
 .resource-listing-entry * {
