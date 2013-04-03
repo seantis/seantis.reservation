@@ -203,8 +203,6 @@ class Listing(grok.View):
     template = grok.PageTemplateFile('templates/listing.pt')
     context_type = 'seantis.reservation.resource'
 
-    show_map = False
-
     def list_item(self, item):
         return item.portal_type == self.context_type
 
