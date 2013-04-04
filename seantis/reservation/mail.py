@@ -1,7 +1,7 @@
 from itertools import groupby
 
 import logging
-logger = logging.getLogger('seantis.reservation')
+log = logging.getLogger('seantis.reservation')
 
 from five import grok
 
@@ -103,19 +103,24 @@ def get_manager_emails_by_context(context):
     groups = acl.source_groups.getGroupIds()
 
     # remove the groups and replace them with users
-    users = []
+    userids = []
     for man in managers:
         if man in groups:
-            users.extend(acl.source_groups.getGroupById(man).getMemberIds())
+            userids.extend(acl.source_groups.getGroupById(man).getMemberIds())
         else:
-            users.append(man)
+            userids.append(man)
 
-    users = set(users)
+    userids = set(userids)
 
     # go through the users and get their emails
     emails = []
-    for user in users:
-        emails.append(acl.getUserById(user).getProperty('email'))
+    for uid in userids:
+        user = acl.getUserById(uid)
+
+        if user:
+            emails.append(user.getProperty('email'))
+        else:
+            log.warn('The manager with the id %s does not exist' % uid)
 
     return emails
 
@@ -142,7 +147,7 @@ def send_reservations_confirmed(reservations, language):
     sender = utils.get_site_email_sender()
 
     if not sender:
-        logging.warn('Cannot send email as no sender is configured')
+        log.warn('Cannot send email as no sender is configured')
         return
 
     # load resources
@@ -155,9 +160,7 @@ def send_reservations_confirmed(reservations, language):
             ).getObject()
 
             if not resources[reservation.resource]:
-                logging.warn(
-                    'Cannot send email as the resource does not exist'
-                )
+                log.warn('Cannot send email as the resource does not exist')
                 return
 
     # send reservations grouped by reservee email
@@ -205,13 +208,13 @@ def send_reservation_mail(reservation, email_type, language,
     # the resource doesn't currently exist in testing so we quietly
     # exit. This should be changed => #TODO
     if not resource:
-        logging.warn('Cannot send email as the resource does not exist')
+        log.warn('Cannot send email as the resource does not exist')
         return
 
     sender = utils.get_site_email_sender()
 
     if not sender:
-        logging.warn('Cannot send email as no sender is configured')
+        log.warn('Cannot send email as no sender is configured')
         return
 
     resource = resource.getObject()
@@ -219,7 +222,7 @@ def send_reservation_mail(reservation, email_type, language,
     if to_managers:
         recipients = get_manager_emails_by_context(resource)
         if not recipients:
-            logger.warn("Couldn't find a manager to send an email to")
+            log.warn("Couldn't find a manager to send an email to")
             return
     else:
         recipients = [reservation.email]
