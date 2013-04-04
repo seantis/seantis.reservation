@@ -345,21 +345,22 @@ Still easy. Let's introduce a waitinglist. Doing so gives us a completely new av
 
 This waitinglist availability puts us between a rock and a hard place:
 
- - If a reservation is fully booked (0% available), but the waitinglist is 100% open, do we show the reservation as available or unavailable? 
+ - If a reservation is fully booked (0% available), but the waitinglist is 100% open, do we show the allocation as unavailable? 
 
  - What about a free resource whose waitinglist is full? Do we really show an event as available if nobody can submit a reservation because the waitinglist is full?
 
-Depending on the use case one of those two options make more sense, but we support many usecases and have things complicated even further by allowing different usecases on a single resource / calendar. On a single day we might have an allocation with a waitinglist and an allocation without one.
+We decided to do something in the middle. We will show the average of allocation and waitinglist. 
 
-To accomodate everyone we therefore use the average of waitinglist and allocation:
+UNLESS the the waitinglist is full. If the waitinglist is full the user cannot possibly submit a reservation and we really want to be sure that we show unavailable when the allocation is exactly that.
+
+We could accomodate everyone (and make nobody happy), by doing the following:
 
     Allocation  08:00 - 10:00
-    Reservation 08:00 - 10:00
 
-    => 0% free
+    => 100% free
 
     Waitinglist Spots: 3
-    Reservations in the Waitinglist: 0
+    Reservations in the Waitinglist: 3
 
     => 100% free
 
@@ -367,9 +368,9 @@ To accomodate everyone we therefore use the average of waitinglist and allocatio
 
     => 50% free
 
-See `seantis.reservation.utils.event_avilablity`
+But we want to let the user know that as long as an event is not unavailable he might have a chance to reserve it (somebody might of course always be faster).
 
-In the monthly overview we are trying to compromise between accuracy and speed in `seantis.reservation.db.availability_by_day`. There is even a check there to see if a resource consists only of one kind of allocation. In which case no average is used.
+See `seantis.reservation.utils.event_avilablity`
 
 **tl;dr**
 Your event is unavailable if you cannot submit a reservation to it. It is shown as partly available if availability is or waitinglist spots are dwindling. It is shown as available if all is good.

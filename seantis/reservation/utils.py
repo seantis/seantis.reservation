@@ -643,6 +643,9 @@ def event_availability(context, request, scheduler, allocation):
     waitinglist_availability = (
         open_spots / float(a.waitinglist_spots) * 100.0
     )
+
+    # math.ceil leads to multiplication by 0 if the waitinglist_availability is
+    # 0.0. I don't remember the reason for it being like this, but it works.
     shown_availability = math.ceil(waitinglist_availability / 100.0) * \
         ((availability + waitinglist_availability) / 2)
 
