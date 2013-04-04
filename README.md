@@ -271,31 +271,108 @@ Note that it is possible in the UI side of seantis.reservation to go from pendin
 FAQ
 ---
 
- * Why is *Database X* not an option? / Why does Postgresql < 9.1 not work?
+### Why is *Database X* not an option? / Why does Postgresql < 9.1 not work?
 
- seantis.reservation relies on a Postgresql feature introduced in 9.1 called
- "Serialized Transactions". Serialized transactions are transactions that, run on
- multiuser systems, are guaranteed to behave like they are run on a singleuser
- system.
+seantis.reservation relies on a Postgresql feature introduced in 9.1 called
+"Serialized Transactions". Serialized transactions are transactions that, run on
+multiuser systems, are guaranteed to behave like they are run on a singleuser
+system.
 
- In other words, serialized transactions make it much easier to ensure that
- the data stays sane even when multiple write transactions are run concurrently.
+In other words, serialized transactions make it much easier to ensure that
+the data stays sane even when multiple write transactions are run concurrently.
 
- Other databases, like Oracle, also support this feature and it would be 
- possible to support those databases as well. Patches welcome.
+Other databases, like Oracle, also support this feature and it would be 
+possible to support those databases as well. Patches welcome.
 
- * Why did you choose SQL anyway? Why not use the ZODB? Why not *insert your favorite NoSQL DB here*?
+Note that MySQL has serialized transactions with InnoDB, but the documentation does not make any clear guarantees and there is a debate going on:
+
+http://stackoverflow.com/questions/6269471/does-mysql-innodb-implement-true-serializable-isolation
+
+### Why did you choose SQL anyway? Why not use the ZODB? Why not *insert your favorite NoSQL DB here*?
  
-     - If a reservation is granted to you, noone else must get the same grant. 
-      Primary keys and transactions are a natural fit to ensure that.
+ * If a reservation is granted to you, noone else must get the same grant. 
+  Primary keys and transactions are a natural fit to ensure that.
 
-     - Our data model is heavily structured and needs to be validated against a schema.
+ * Our data model is heavily structured and needs to be validated against a schema.
 
-     - All clients must have the same data at all time. Not just eventually.
+ * All clients must have the same data at all time. Not just eventually.
 
-     - Complicated queries must be easy to develop as reporting matters.
+ * Complicated queries must be easy to develop as reporting matters.
 
-     - The core of seantis.reservation should eventually be independent of Zope/Plone.
+ * The core of seantis.reservation should eventually be independent of Zope/Plone.
+
+### Why / How is my event colored? My event is green, but it should be orange/red!
+
+Basically colors are assigned to events based on their availability:
+
+75-100%
+: Green / Available
+
+1-74%
+: Orange / Partly Available
+
+0%
+: Unavailable
+
+Now what is meant by *availability*? You would think it's just the free hours divided by the total hours. In the simplest case that is actually true. Observe a partly available allocation without a quota:
+
+    Allocation  08:00 - 10:00
+    Reservation 08:00 - 09:00
+
+    => 50% available
+
+See `seantis.reservation.models.allocation.availability`
+
+If we introduce allocation quotas, the picture gets more complicated. Observe a partly available allocation with a quota of 2:
+
+    Allocation  08:00 - 10:00, Quota 2
+    Reservation 08:00 - 09:00
+
+    => 75% available
+
+The allocation timespan may be reserved twice or 200%. 50% of one timespan is used. So 150% is free. 
+
+Technically there are two allocations, one for each quota. We only show one and are interested in a number between 0 and 100, so we divide by two: 150% / 2 => 75%.
+
+See `seantis.reseravtion.db.availability_by_allocations`
+
+Still easy. Let's introduce a waitinglist. Doing so gives us a completely new availability. The waitinglist availability. Observe:
+
+    Waitinglist Spots: 100
+    Reservations in the Waitinglist: 10
+
+    => waitinglist 90% available
+
+This waitinglist availability puts us between a rock and a hard place:
+
+ - If a reservation is fully booked (0% available), but the waitinglist is 100% open, do we show the reservation as available or unavailable? 
+
+ - What about a free resource whose waitinglist is full? Do we really show an event as available if nobody can submit a reservation because the waitinglist is full?
+
+Depending on the use case one of those two options make more sense, but we support many usecases and have things complicated even further by allowing different usecases on a single resource / calendar. On a single day we might have an allocation with a waitinglist and an allocation without one.
+
+To accomodate everyone we therefore use the average of waitinglist and allocation:
+
+    Allocation  08:00 - 10:00
+    Reservation 08:00 - 10:00
+
+    => 0% free
+
+    Waitinglist Spots: 3
+    Reservations in the Waitinglist: 0
+
+    => 100% free
+
+    (0% + 100%) / 2
+
+    => 50% free
+
+See `seantis.reservation.utils.event_avilablity`
+
+In the monthly overview we are trying to compromise between accuracy and speed in `seantis.reservation.db.availability_by_day`. There is even a check there to see if a resource consists only of one kind of allocation. In which case no average is used.
+
+**tl;dr**
+Your event is unavailable if you cannot submit a reservation to it. It is shown as partly available if availability is or waitinglist spots are dwindling. It is shown as available if all is good.
 
 Credits
 -------
