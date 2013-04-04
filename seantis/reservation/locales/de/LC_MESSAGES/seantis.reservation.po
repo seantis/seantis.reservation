@@ -48,7 +48,7 @@ msgstr "<b>${quota}</b> Reservationen"
 
 #: ./utils.py:468
 msgid "<b>1</b> reservation"
-msgstr "<b>1</b< Reservation"
+msgstr "<b>1</b> Reservation"
 
 #: ./error.py:89
 msgid "A conflicting allocation exists for the requested time period."
