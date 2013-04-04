@@ -203,6 +203,7 @@
 .monthly-report .day .reservation-summary table.timetable td {
     border-left: 1px solid #ccc;
     border-right: none !important;
+    border-bottom: 1px solid #ccc;
 }
 
 .monthly-report .day .reservation.show-details table.timetable td {
@@ -210,7 +211,8 @@
 }
 
 .monthly-report .day .timetable .empty_row td {
-    height: 0; /* display none is no good as we need the td widths */
+    visibility: hidden !important;
+    height: 0 !important; /* display none is no good as we need the td widths */
     border-width: 0 1px !important;
 }
 
