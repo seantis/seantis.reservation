@@ -1,6 +1,7 @@
 import re
 import time
 import json
+import math
 import collections
 import functools
 import isodate
@@ -639,7 +640,6 @@ def event_availability(context, request, scheduler, allocation):
 
     # partly available alloctions get the average between waitinglist
     # availability and the allocation avilability
-    import math
     waitinglist_availability = (
         open_spots / float(a.waitinglist_spots) * 100.0
     )
