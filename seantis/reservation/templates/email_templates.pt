@@ -1,6 +1,6 @@
-<div xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="seantis.reservation" tal:condition="viewlet/templates">
+<div xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="seantis.reservation">
     
-    <div id="email_templates">
+    <div id="email_templates" class="overviewlet">
         <h2 i18n:translate="">Email Templates</h2>
         
         <div>

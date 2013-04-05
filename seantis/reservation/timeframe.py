@@ -1,8 +1,9 @@
 from five import grok
-from plone.directives import form, dexterity
+from plone.directives import dexterity
 from plone.dexterity.content import Item
 from plone.memoize import view
 from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.interfaces import IFolderish
 from z3c.form import button
 
 from seantis.reservation import _
@@ -105,7 +106,7 @@ class TimeframeViewlet(grok.Viewlet):
 
     permission = 'cmf.ModifyPortalContent'
 
-    grok.context(form.Schema)
+    grok.context(IFolderish)
     grok.require(permission)
 
     grok.name('seantis.reservation.timeframeviewlet')

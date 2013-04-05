@@ -6,13 +6,20 @@
 .resource-listing {
     float: left;
     margin-bottom: 90px;
-    width: 40%;
+    display: block;
+    width: 55%;
 }
 
 .resource-listing-overview {
     float: right;
     margin-top: -39px; 
-    width: 60%;
+    width: 45%;
+    max-width: 500px;
+}
+
+.resource-listing-overview h2 {
+    font-size: 1.4em;
+
 }
 
 @media all and (max-width: 750px) {
@@ -22,6 +29,51 @@
           margin-bottom: 20px;
           width: 100%;
      }
+}
+
+/* overview blocks */
+.overviewlet {
+    background-color: #f9f9f9;
+    padding: 10px;
+    margin: 12px 0;
+    border: 1px solid #f3f3f3;
+}
+
+.overviewlet h2 {
+    font-weight: normal;
+    font-size: 1em;
+    margin-bottom: 8px;
+}
+
+.overviewlet .resourceTitle {
+    display: inline;
+    font-size: 13px !important;
+}
+
+/* overview control */
+.timeframes-control, .templates-control {
+    font-size: 12px;
+    margin-bottom: 10px;   
+}
+
+.templates-control a,
+.timeframes-control a {
+    margin-right: 3px;
+}
+
+.templates-global-control:before,
+.timeframes-global-control:before{
+    content: '+';
+    margin-right: 5px;
+}
+
+/* overview utils */
+.overview-utils ul {
+    margin-left: 0 !important;   
+}
+.overview-utils ul li {
+    list-style-type: none;
+    font-size: 12px;
 }
 
 /* resource listing */
@@ -102,58 +154,6 @@
 #seantis-overview-calendar .event-partly-available .fc-event-skin, 
 #seantis-overview-calendar .event-partly-available .fc-event-head {
     background-color: #fd671f !important;
-}
-
-#timeframes .visibleTimeframe {
-    color: #5b8146 !important;
-}
-
-#timeframes .hiddenTimeframe {
-    color: #aaa !important;
-}
-
-#email_templates .resourceTitle,
-#timeframes .resourceTitle {
-    margin: 0 5px 0 0;
-    font-size: 14px;
-}
-
-.overview-utils ul {
-    margin-top: 10px;
-    margin-left: 15px !important;
-}
-
-.overview-utils ul li {
-    list-style-type: none;
-    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAANkE3LLaAgAAAf1JREFUeJx1kr1O40AUhb8ZX5ugkIQ/CaWyIugiyki7D5AWhLQNFRUr8QA8DuU+wTZbUaNFqVfQQrEISzEhYNke39mCxQIcRhqNNHPup3vOHQNwfn6eq2rJgmWtDe7u7iaHh4ffgL8NwcrKyoFzzn+2syzz19fX/uzs7DfQ/VgvgAe4uroiiiIeHh5ot9uoKqrKzs4OT09PHB0djYqi+HVycrIHJG8BAKyvryMirK6uYozBe09VVYgIzjmSJOH4+PjrfD7/eXp6evBqx74CptMpaZpyf39PkiSkacpsNsMYQ1mW3N7eMplM2N/f/9Lv9/caHQwGg1ochiHe+7qT0WiEcw7nHMvLyxhjggbg4uICYwyqirUWVWV7e5swDJnNZlhrybKM4XDYCBGAOI4JgoCiKAjDEFWl1WrR6/XY2NhYNOH3gM3NTUSELMtotVoAOOdI05THx0fm8zkAu7u7iwGXl5cNC3EcE0URNzc3iAjWvmSuqk1Av99HRMjzvB5dGIa0222Gw2EN/dRCt9slCAI6nQ4A3nustXjvCYKgPhuAqqqAl5+oqogIVVXx/PzM2toaRVFgjEFEGAwG9Ho9XmvedZDnOdZayrKk0+kgIkRRhDEG5xxLS0t1RgstjMfj+vGt6GPBRxsGiLe2tr7rG+WisP7fG4DpdPoD+APwD5EpCiknvVzYAAAAAElFTkSuQmCC) no-repeat 0 3px;   
-    background-repeat: no-repeat;
-    font-size: 14px;
-    padding: 1px 0 0 25px;
-}
-
-.templates-control a,
-.timeframes-control a {
-    margin-right: 3px;
-}
-
-.templates-global-control a,
-.timeframes-global-control a {
-    font-size: 14px;    
-}
-
-.templates-global-control:before,
-.timeframes-global-control:before{
-    content: '>>';
-    margin-right: 5px;
-}
-
-.facilityOverview > div {
-    margin-bottom: 15px;
-}
-
-.facilityOverview #directoryResultMap {
-    float: none;
-    width: 100%;
 }
 
 #default-cgmap {

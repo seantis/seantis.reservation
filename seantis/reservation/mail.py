@@ -10,8 +10,9 @@ from email.Header import Header
 from email.Utils import parseaddr, formataddr
 
 from plone.dexterity.content import Item
-from plone.directives import form, dexterity
+from plone.directives import dexterity
 from plone.memoize import view
+from Products.CMFCore.interfaces import IFolderish
 from z3c.form import button
 
 from seantis.reservation.form import ReservationDataView
@@ -423,7 +424,7 @@ class TemplatesViewlet(grok.Viewlet):
 
     permission = 'cmf.ModifyPortalContent'
 
-    grok.context(form.Schema)
+    grok.context(IFolderish)
     grok.require(permission)
 
     grok.name('seantis.reservation.mailviewlet')
@@ -460,7 +461,4 @@ class TemplatesViewlet(grok.Viewlet):
         return links
 
     def render(self, **kwargs):
-        if self.context is None:
-            return u''
-
         return self._template.render(self)
