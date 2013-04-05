@@ -1,4 +1,22 @@
-/* fullcalendar adjustments for seantis.reservation */
+/* 
+
+    fullcalendar and other basic adjustments for seantis.reservation 
+    -> should probably be named base.css in the future => TODO
+
+*/
+
+/* limited list */
+.limitedList {
+    overflow: auto;
+    max-height: 150px;
+    max-width: 400px;
+    position: relative;
+}
+
+.your-reservations .limitedList,
+.your-reservations-view .limitedList {
+    max-width: 100%;   
+}
 
 /* overview calendar */
 

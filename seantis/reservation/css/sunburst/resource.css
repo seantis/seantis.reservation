@@ -231,18 +231,6 @@ a.reservation-delete {
     padding: 5px 10px 5px 20px;
 }
 
-.limitedList {
-    overflow: auto;
-    max-height: 150px;
-    max-width: 400px;
-    position: relative;
-}
-
-.your-reservations .limitedList,
-.your-reservations-view .limitedList {
-    max-width: 100%;   
-}
-
 .groupListDay {
     float: left;
     width: 75px;

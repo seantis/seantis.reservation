@@ -1,4 +1,8 @@
-/* resource style changes for izug.basetheme */
+/* 
+
+    izug.basetheme for seantis.reservation resources
+
+*/
 
 .singlecalendar .legend,
 .multicalendar .legend {
@@ -232,11 +236,6 @@ div.overlay {
 
 .portaltype-seantis-dir-facility-item .facilityOverview .your-reservations {
     margin-top: 5px;
-}
-
-.your-reservations .limitedList,
-.your-reservations-view .limitedList {
-    max-width: 100%;   
 }
 
 /* reservations in progress */
