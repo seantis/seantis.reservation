@@ -15,11 +15,11 @@
           
           <div metal:use-macro="context/batch_macros/macros/navigation" />
 
-          <div class="resource-listing groupclickable">
+          <div class="resource-listing">
             <metal:block use-macro="context/folder_listing/macros/entries">
               <metal:entry fill-slot="entry" tal:condition="python: view.list_item(item)">
               
-                  <div class="resource-listing-entry" tal:attributes="id item/UID">
+                  <div class="resource-listing-entry groupclickable" tal:attributes="id item/UID">
                     <h3 tal:content="item_title_or_id"></h3>
                     <p tal:content="item_description" tal:condition="item_description"></p>
                     <a tal:attributes="href item/getURL" i18n:translate="">Click to reserve / register</a>
