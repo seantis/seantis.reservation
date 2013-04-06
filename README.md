@@ -3,12 +3,7 @@
 seantis.reservation
 ===================
 
-Plone addon to reserve stuff in a calendar.
-
-![overview example](https://github.com/seantis/seantis.reservation/raw/master/screenshots/milliways-overview.png)
-![calendar example](https://github.com/seantis/seantis.reservation/raw/master/screenshots/milliways-calendar.png)
-![reserve example](https://github.com/seantis/seantis.reservation/raw/master/screenshots/milliways-reserve.png)
-![confirm example](https://github.com/seantis/seantis.reservation/raw/master/screenshots/milliways-confirm.png)
+Plone addon to reserve stuff in a calendar. Not a replacement for Outlook or Google Calendar, but a system to manage reservations on the backend and to provide them on the frontend.
 
 Introduction
 ------------
@@ -29,6 +24,14 @@ It does so by providing a way to deal with the following usecases:
    online and call the municipality to reserve a facility. The management
    is done internally (maybe through an already existing software). The addon
    is only used for display.
+
+Screenshots
+-----------
+
+![overview example](https://github.com/seantis/seantis.reservation/raw/master/screenshots/milliways-overview.png)
+![calendar example](https://github.com/seantis/seantis.reservation/raw/master/screenshots/milliways-calendar.png)
+![reserve example](https://github.com/seantis/seantis.reservation/raw/master/screenshots/milliways-reserve.png)
+![confirm example](https://github.com/seantis/seantis.reservation/raw/master/screenshots/milliways-confirm.png)
 
 Build Status
 ------------
