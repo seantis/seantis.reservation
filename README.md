@@ -8,6 +8,7 @@ Plone addon to reserve stuff in a calendar.
 ![overview example](https://github.com/seantis/seantis.reservation/raw/master/screenshots/milliways-overview.png)
 ![calendar example](https://github.com/seantis/seantis.reservation/raw/master/screenshots/milliways-calendar.png)
 ![reserve example](https://github.com/seantis/seantis.reservation/raw/master/screenshots/milliways-reserve.png)
+![confirm example](https://github.com/seantis/seantis.reservation/raw/master/screenshots/milliways-confirm.png)
 
 Introduction
 ------------
