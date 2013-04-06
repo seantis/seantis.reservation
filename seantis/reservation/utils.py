@@ -888,9 +888,19 @@ def shift_day(stdday):
     return abs(0 - (stdday + 1) % 7)
 
 
+def context_path(context):
+    """Returns the physical path for brains and objects alike."""
+
+    if hasattr(context, 'getPath'):
+        return context.getPath().split('/')  # same as getPhysicalPath
+    else:
+        return context.getPhysicalPath()
+
+
 def portal_type_in_context(context, portal_type):
     """Returns the given portal types _within_ the current context."""
-    path = '/'.join(context.getPhysicalPath())
+
+    path = '/'.join(context_path(context))
 
     catalog = getToolByName(context, 'portal_catalog')
     results = catalog(
@@ -912,11 +922,7 @@ def portal_type_by_context(context, portal_type):
     # Calling unrestrictedTraverse first seems to work with the supposedly
     # restricted catalog.
 
-    if hasattr(context, 'getPath'):
-        path = context.getPath()
-    else:
-        path = context.getPhysicalPath()
-
+    path = context_path(context)
     context = context.aq_inner.unrestrictedTraverse(path)
 
     def traverse(context, portal_type):

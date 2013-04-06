@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from dateutil import rrule
 
 from five import grok
@@ -128,20 +129,112 @@ EmailFieldHandler = BaseHandler(EmailField)
 
 class IOverview(Interface):
     """ Views implementing this interface may use the OverviewletManager to
-    display an overview of a list of resources. """
+    display an overview of a list of resources.
 
-    def items(self):
-        """ Returns a list of items to use for the overview. Each item must
-        have a method 'resources' which returns a list of
-        seantis.reservation.resource objects.
+    The OverviewletManager displays viewlets which work with a list of
+    resources in a folderish view. Those resources are not required to actually
+    be stored in that folder. They just need to be defined using this
+    interface.
+
+    The result may be something like this, with the part on the right side
+    being the work of the overview:
+
+    Resources Overivew
+
+                                ╔═══════════════╗
+        » Resource One          ║ ░ ░ ░ ░ ░ ░ ░ ║
+        » Resource Two          ║   calendar    ║
+                                ║ ░ ░ ░ ░ ░ ░ ░ ║
+                                ╚═══════════════╝
+
+                                » Monthly Report
+                                » Compare Resources
+    """
+
+    def resource_map(self):
+        """ Returns a dictionary mapping items to resources. Or in the case
+        of a simple resource list, the list of uuids of those resources.
+
+        Simple
+        ------
+        If you deal with a folderish view which only displays a list of
+        resources you can simply return a list of uuids (or any other
+        iterable except strings):
+
+        [uuid1, uuid2, uuid3]
+
+        The uuids may be UUID objects or strings.
+
+        -> See Listing view in seantis.reservation.resource
+
+        Grouped
+        -------
+        If you deal with a folderish view which shows parents of groups of
+        resources you should return something like this:
+
+        group1 -> [uuid1, uuid2]
+        group2 -> [uuid3]
+
+        This will highlight group1 if a day containing uuid1 or uuid2 is
+        hovered over in the calendar. It will also highlight the days for which
+        there's an allocation in any of the resources when a group is hovered
+        over.
+
+        -> See Directory View in seantis.dir.facility.directory
+
+        Note
+        ----
+        For the highlighting to work the id of the element in the browser
+        must be the uuid in the simple and the group key in the grouped
+        example.
 
         """
 
 
+# not really where I want this code to be, but the code needs some reorganizing
+# because of circular imports and the like
 class OverviewletManager(grok.ViewletManager):
     """ Manages the viewlets shown in the overview. """
     grok.context(Interface)
     grok.name('seantis.reservation.overviewletmanager')
+
+    @utils.cached_property
+    def uuidmap(self):
+        """ Returns a dictionary mapping resource uuids to item ids. """
+
+        if not IOverview.providedBy(self.view):
+            return {}
+
+        rmap = self.view.resource_map()
+        assert not isinstance(rmap, basestring)
+
+        def transform_uuid(target):
+            if utils.is_uuid(target):
+                return utils.string_uuid(target)
+            else:
+                return target
+
+        if not isinstance(rmap, dict):
+            return dict(([transform_uuid(uuid)] * 2) for uuid in rmap)
+
+        # overlay.js needs the map the other way around, which is mostly a
+        # historical artifact, but it also makes more sense for the developer
+        # using IOverview to define a group -> resources relationship
+        uuidmap = {}
+        for key, resources in rmap.items():
+            assert isinstance(resources, (list, tuple, set))
+
+            for resource in resources:
+                uuidmap.setdefault(transform_uuid(resource), []).append(key)
+
+        return uuidmap
+
+    @property
+    def resource_uuids(self):
+        if not self.uuidmap:
+            return []
+
+        return self.uuidmap.keys()
 
 
 class IReservationFormSet(Interface):

@@ -124,7 +124,8 @@ def limit_resources(resources):
     """
 
     is_dict = isinstance(resources, dict)
-    is_list = isinstance(resources, list)
+    is_list = isinstance(resources, (list, tuple, set))
+
     assert is_dict or is_list
 
     if is_list:

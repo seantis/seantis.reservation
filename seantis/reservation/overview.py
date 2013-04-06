@@ -3,13 +3,12 @@ from datetime import timedelta, datetime
 
 from five import grok
 from zope.interface import Interface
-from plone.memoize import view
 
 from seantis.reservation.resource import CalendarRequest
 from seantis.reservation import utils
 from seantis.reservation import db
 from seantis.reservation import exposure
-from seantis.reservation.interfaces import OverviewletManager, IOverview
+from seantis.reservation.interfaces import IOverview, OverviewletManager
 
 
 class Overviewlet(grok.Viewlet):
@@ -32,24 +31,13 @@ class Overviewlet(grok.Viewlet):
         <div id="%(id)s"></div>
     """
 
-    @view.memoize
-    def uuidmap(self):
-        """ Returns a dictionary mapping resource uuids to item ids. """
-        uuids = {}
-
-        for item in utils.maybe_call(self.view.items):
-            for resource in item.resources():
-                uuids[utils.string_uuid(resource)] = item.id
-
-        return uuids
-
     def overview_url(self):
         return self.context.absolute_url_path() + '/overview'
 
     def calendar_options(self):
 
         # Put the uuidmap in the json so it can be used by overview.js
-        uuidmap = self.uuidmap()
+        uuidmap = self.manager.uuidmap
 
         options = {}
         options['events'] = {
@@ -68,7 +56,7 @@ class Overviewlet(grok.Viewlet):
         if not IOverview.providedBy(self.view):
             return ''
 
-        if not self.uuidmap():
+        if not self.manager.uuidmap:
             return ''
 
         return self._template % {
@@ -138,29 +126,17 @@ class Utilsviewlet(grok.Viewlet):
     template = grok.PageTemplateFile('templates/utils.pt')
 
     @property
-    def resources(self):
-        resources = []
-
-        if not IOverview.providedBy(self.view):
-            return resources
-
-        for item in utils.maybe_call(self.view.items):
-            resources.extend(item.resources())
-
-        return resources
-
-    @property
     def compare_link(self):
-        return utils.compare_link(self.resources)
+        return utils.compare_link(self.manager.resource_uuids)
 
     @property
     def monthly_report_link(self):
         return utils.monthly_report_link(
-            self.context, self.request, self.resources
+            self.context, self.request, self.manager.resource_uuids
         )
 
     def reservations_export_link(self, extension):
         return utils.export_link(
             'reservations', extension, self.context, self.request,
-            self.resources
+            self.manager.resource_uuids
         )

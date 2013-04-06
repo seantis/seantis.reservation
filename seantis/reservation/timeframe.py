@@ -7,8 +7,7 @@ from Products.CMFCore.interfaces import IFolderish
 from z3c.form import button
 
 from seantis.reservation import _
-from seantis.reservation.interfaces import OverviewletManager
-from seantis.reservation.interfaces import ITimeframe
+from seantis.reservation.interfaces import ITimeframe, OverviewletManager
 from seantis.reservation import utils
 
 # TODO cache all timeframe stuff for an hour or so.. no frequent updates needed

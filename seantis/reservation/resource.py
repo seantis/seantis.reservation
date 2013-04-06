@@ -201,24 +201,14 @@ class Listing(grok.View):
     grok.name('resource_listing')
 
     template = grok.PageTemplateFile('templates/listing.pt')
-    context_type = 'seantis.reservation.resource'
 
     def list_item(self, item):
-        return item.portal_type == self.context_type
+        return item.portal_type == 'seantis.reservation.resource'
 
-    def items(self):
-
-        # to be done differently
-        class MockItem(object):
-            def __init__(self, id, uuid):
-                self.id = id
-                self.resources = lambda *args: [uuid]
-
-        result = []
-        for r in utils.portal_type_in_context(self.context, self.context_type):
-            result.append(MockItem(r.id, r.UID))
-
-        return result
+    def resource_map(self):
+        return (r.UID for r in utils.portal_type_in_context(
+            self.context, 'seantis.reservation.resource'
+        ))
 
 
 class CalendarRequest(object):
