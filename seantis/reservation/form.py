@@ -333,6 +333,9 @@ class ReservationDataView(object):
         if isinstance(value, basestring):
             return utils.decode_for_display(value)
 
+        if isinstance(value, list):
+            return ', '.join(utils.decode_for_display(v) for v in value)
+
         return value
 
 
