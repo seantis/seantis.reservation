@@ -13,6 +13,7 @@ from plone.dexterity.content import Item
 from plone.directives import dexterity
 from plone.memoize import view
 from Products.CMFCore.interfaces import IFolderish
+from Products.CMFCore.utils import getToolByName
 from z3c.form import button
 
 from seantis.reservation.form import ReservationDataView
@@ -88,8 +89,14 @@ def get_managers_by_context(context):
     if not hasattr(context, 'portal_type'):
         return []
 
+    # if we arrive at the top level we just notify whoever got the reservation
+    # manager role on the site
     if context.portal_type == 'Plone Site':
-        return []
+        return [
+            m.id for m in
+            getToolByName(context, 'portal_membership').listMembers()
+            if m.has_role('Reservation-Manager')
+        ]
 
     return get_managers_by_context(context.aq_inner.aq_parent)
 

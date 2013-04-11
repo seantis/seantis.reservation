@@ -93,7 +93,13 @@ class TestCase(unittest.TestCase):
 
     def login_manager(self):
         login(self.portal, TEST_USER_NAME)
-        setRoles(self.portal, TEST_USER_ID, ['Manager'])
+        self.reset_test_user_roles()
+
+    def set_test_user_roles(self, roles):
+        setRoles(self.portal, TEST_USER_ID, roles)
+
+    def reset_test_user_roles(self):
+        self.set_test_user_roles(['Manager'])
 
     def login_admin(self):
         z2.login(self.app['acl_users'], 'admin')
