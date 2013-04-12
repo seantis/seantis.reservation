@@ -165,6 +165,10 @@
 
 /* reservation summary */
 
+.monthly-report .reservation-type .reservation-summary {
+    padding-bottom: 5px;   
+}
+
 .monthly-report .reservation-type .reservation-summary .leftcolumn a {
     margin-left: 10px;
     line-height: 25px;
@@ -175,6 +179,10 @@
 }
 
 /* reservation detail */
+
+.monthly-report .reservation .reservation-detail {
+     display:none;   
+}
 
 .monthly-report .reservation.show-details .reservation-detail {
     display: block;
