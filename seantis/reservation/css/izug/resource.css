@@ -30,41 +30,27 @@
 
 /* wizard form tabs */
 
-.seantis-reservation-form .formTabs {
-   height: 22px   
+.seantis-reservation-form .wizardSteps {
+    height: 22px;   
+    border-color: black;
+    background: none;
+    border: 1px solid black;
 }
 
+.seantis-reservation-form .formTabs,
 .seantis-reservation-form ul.wizardSteps li.formTab {
-   height: 22px;
+    height: 22px;
 }
 
 .seantis-reservation-form ul.wizardSteps li.formTab a {
-    margin-left: -10px;
-    padding-top: 0px;
+    margin: 0;
+    padding: 1px 15px 0 5px;
     background-color: transparent;
+    height: 20px;
     border: none;
-    -webkit-border-radius: 0;
-       -moz-border-radius: 0;
-            border-radius: 0;
-    height: 17px;
-    line-height: 20px;
 }
-
-.seantis-reservation-form ul.wizardSteps li.formTab a {
-    border: 1px solid #ccc;
-    border-width: 1px 0;
-    color: #bbb;
-}
-
 .seantis-reservation-form ul.wizardSteps li.formTab a.selected {
     font-weight: bold;
-}
-
-.seantis-reservation-form ul.wizardSteps li.formTab a.selected,
-.seantis-reservation-form ul.wizardSteps li.formTab.visited a{
-    border: 1px solid black;
-    border-width: 1px 0;
-    color: black;
 }
 
 .seantis-reservation-form input {
