@@ -32,11 +32,11 @@ class MonthlyReportView(grok.View, form.ReservationDataView,
 
     @property
     def year(self):
-        return int(self.request.get('year', 0))
+        return int(self.request.get('year', date.today().year))
 
     @property
     def month(self):
-        return int(self.request.get('month', 0))
+        return int(self.request.get('month', date.today().month))
 
     @property
     def sorted_resources(self):

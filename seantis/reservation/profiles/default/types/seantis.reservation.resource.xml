@@ -52,4 +52,12 @@
     url_expr="string:${object_url}/edit" visible="True">
   <permission value="Modify portal content"/>
  </action>
+ <action i18n:domain="plone" title="Excel Export" action_id="resource_export" category="object" condition_expr=""
+    url_expr="string:${object_url}/resource_export.xls?source=reservations" visible="True" i18n:attributes="title">
+  <permission value="Modify portal content"/>
+ </action>
+ <action i18n:domain="plone" title="Monthly Report" action_id="monthly_report" category="object" condition_expr=""
+    url_expr="string:${object_url}/monthly_report" visible="True" i18n:attributes="title">
+  <permission value="Modify portal content"/>
+ </action>
 </object>

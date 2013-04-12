@@ -37,3 +37,9 @@ msgstr "Nur seantis.reservation.resource Typen anzeigen"
 
 msgid "view"
 msgstr "Standard-Ansicht"
+
+msgid "Excel Export"
+msgstr "Excel Export"
+
+msgid "Monthly Report"
+msgstr "Monatsreport"

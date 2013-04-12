@@ -29,6 +29,7 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
     title="seantis.reservation: Approve Reservations"
 />
 
+<!-- View Private Reservation Data, not just the Calendar -->
 <permission
     id="seantis.reservation.ViewReservations"
     title="seantis.reservation: View Reservations"
@@ -112,6 +113,15 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
     source="1003"
     destination="1004"
     handler=".upgrades.upgrade_1003_to_1004"
+    profile="seantis.reservation:default">
+</genericsetup:upgradeStep>
+
+<genericsetup:upgradeStep
+    title="Add new resource actions"
+    description=""
+    source="1004"
+    destination="1005"
+    handler=".upgrades.upgrade_1004_to_1005"
     profile="seantis.reservation:default">
 </genericsetup:upgradeStep>
 

@@ -340,7 +340,10 @@ class ReservationDataView(object):
 
 
 class ResourceParameterView(object):
-    """Mixin for views that accept a list of uuids for resources."""
+    """Mixin for views that accept a list of uuids for resources. If called
+    on a IResource context, said resource is also added.
+
+    """
 
     @property
     @view.memoize
@@ -349,6 +352,9 @@ class ResourceParameterView(object):
 
         if not hasattr(uuids, '__iter__'):
             uuids = [uuids]
+
+        if IResourceBase.providedBy(self.context):
+            uuids.append(self.context.uuid())
 
         return uuids
 

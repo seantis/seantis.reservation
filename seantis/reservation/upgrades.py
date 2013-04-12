@@ -126,3 +126,11 @@ def upgrade_1003_to_1004(context):
     setup.runAllImportStepsFromProfile(
         'profile-seantis.reservation:%s' % profile
     )
+
+
+def upgrade_1004_to_1005(context):
+
+    setup = getToolByName(context, 'portal_setup')
+    setup.runImportStepFromProfile(
+        'profile-seantis.reservation:default', 'typeinfo'
+    )
