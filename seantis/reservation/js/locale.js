@@ -8,7 +8,7 @@ seantis.locale = function(text) {
         console.log(text + ' is untranslated');
         return text;
     }
-        
+
     var ix = locale.ix(lang);
     if (ix < 0) {
         console.log('language ' + lang + ' is not supported');
@@ -31,8 +31,8 @@ seantis.locale.language = function() {
         locale._languge = 'en';
     } else {
         locale._language = lang.split('-')[0];
-    }    
-    
+    }
+
     return locale._language;
 };
 
@@ -50,20 +50,20 @@ seantis.locale.ix = function(language) {
 seantis.locale.fullcalendar = function() {
     if (seantis.locale.language() == 'de') {
         return {
-            buttonText: {  
-                today: 'Heute',  
-                month: 'Monat',  
-                day: 'Tag',  
+            buttonText: {
+                today: 'Heute',
+                month: 'Monat',
+                day: 'Tag',
                 week: 'Woche'
-            },  
-            monthNames: ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'],  
-            monthNamesShort: ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sept','Okt','Nov','Dez'],  
-            dayNames: ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'],  
+            },
+            monthNames: ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'],
+            monthNamesShort: ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sept','Okt','Nov','Dez'],
+            dayNames: ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'],
             dayNamesShort: ['So','Mo','Di','Mi','Do','Fr','Sa']
         };
     }
 
-    return {}
+    return {};
 };
 
 seantis.locale.translate = function(html) {
@@ -76,5 +76,13 @@ seantis.locale.dictionary = {
     'free' : [
         'Free',
         'Frei'
+    ],
+    'continue' : [
+        'Continue',
+        'Weiter'
+    ],
+    'reserve' : [
+        'Reserve',
+        'Reservieren'
     ]
 };
