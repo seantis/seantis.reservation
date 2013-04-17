@@ -276,6 +276,10 @@ class ReservationForm(
     default_fieldset_label = _(u'General Information')
 
     @property
+    def css_class(self):
+        return super(ReservationForm, self).css_class + ' next-next-wizard'
+
+    @property
     def hidden_fields(self):
         hidden = ['id']
 
