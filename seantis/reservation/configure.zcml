@@ -125,6 +125,15 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
     profile="seantis.reservation:default">
 </genericsetup:upgradeStep>
 
+<genericsetup:upgradeStep
+    title="Upgrade to fullcalendar 1.6.1"
+    description=""
+    source="1005"
+    destination="1006"
+    handler=".upgrades.upgrade_1005_to_1006"
+    profile="seantis.reservation:default">
+</genericsetup:upgradeStep>
+
 <!-- Controlpanel View -->
 <browser:page
     for="plone.app.layout.navigation.interfaces.INavigationRoot"

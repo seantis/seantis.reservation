@@ -50,6 +50,14 @@ def db_upgrade(fn):
     return wrapper
 
 
+def recook_js_resources(context):
+    getToolByName(context, 'portal_javascripts').cookResources()
+
+
+def recook_css_resources(context):
+    getToolByName(context, 'portal_css').cookResources()
+
+
 @db_upgrade
 def upgrade_to_1001(operations, metadata):
 
@@ -134,3 +142,26 @@ def upgrade_1004_to_1005(context):
     setup.runImportStepFromProfile(
         'profile-seantis.reservation:default', 'typeinfo'
     )
+
+
+def upgrade_1005_to_1006(context):
+
+    # remove the old custom fullcalendar settings
+    css_registry = getToolByName(context, 'portal_css')
+
+    old_definitions = [
+        '++resource++seantis.reservation.js/fullcalendar.js'
+        '++resource++collective.js.fullcalendar/fullcalendar.min.js'
+        '++resource++collective.js.fullcalendar/fullcalendar.gcal.js'
+    ]
+    map(css_registry.unregisterResource, old_definitions)
+
+    # reapply the fullcalendar profile
+    setup = getToolByName(context, 'portal_setup')
+
+    setup.runAllImportStepsFromProfile(
+        'profile-collective.js.fullcalendar:default'
+    )
+
+    recook_css_resources(context)
+    recook_js_resources(context)

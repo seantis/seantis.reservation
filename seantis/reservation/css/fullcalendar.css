@@ -61,8 +61,10 @@
     box-shadow: 0 0 0 1px #dd7c07 !important;
 }
 
+a.fc-event,
 a.fc-event:hover {
     text-decoration: none;
+    color: white !important;
 }
 
 #content .fc-event-head .fc-event-time {
@@ -71,6 +73,12 @@ a.fc-event:hover {
 
 #content .fc-event-title {
     font-size: 10px;
+}
+
+/* availability colors */
+.fc-event-head {
+    z-index: 10 !important;
+    position: relative !important;
 }
 
 .limitedList .event-unavailable,
