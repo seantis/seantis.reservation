@@ -147,14 +147,16 @@ def upgrade_1004_to_1005(context):
 def upgrade_1005_to_1006(context):
 
     # remove the old custom fullcalendar settings
-    css_registry = getToolByName(context, 'portal_css')
+    js_registry = getToolByName(context, 'portal_javascripts')
 
     old_definitions = [
-        '++resource++seantis.reservation.js/fullcalendar.js'
-        '++resource++collective.js.fullcalendar/fullcalendar.min.js'
+        '++resource++seantis.reservation.js/fullcalendar.js',
+        '++resource++collective.js.fullcalendar/fullcalendar.min.js',
         '++resource++collective.js.fullcalendar/fullcalendar.gcal.js'
     ]
-    map(css_registry.unregisterResource, old_definitions)
+    map(js_registry.unregisterResource, old_definitions)
+
+    js_registry.cookResources()
 
     # reapply the fullcalendar profile
     setup = getToolByName(context, 'portal_setup')
@@ -164,4 +166,3 @@ def upgrade_1005_to_1006(context):
     )
 
     recook_css_resources(context)
-    recook_js_resources(context)

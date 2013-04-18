@@ -61,67 +61,58 @@
     box-shadow: 0 0 0 1px #dd7c07 !important;
 }
 
+#seantis-overview-calendar .groupSelection {
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    box-shadow: none !important;
+}
+
 a.fc-event,
 a.fc-event:hover {
     text-decoration: none;
     color: white !important;
+    border-radius: 0 !important;
 }
 
-#content .fc-event-head .fc-event-time {
+.fc-event-time {
     line-height: 18px;
 }
 
-#content .fc-event-title {
+.fc-event-title {
     font-size: 10px;
 }
 
 /* availability colors */
-.fc-event-head {
-    z-index: 10 !important;
-    position: relative !important;
-}
-
-.limitedList .event-unavailable,
-#content .event-unavailable,
-#content .event-unavailable .fc-event-skin,
-#content .event-unavailable .fc-event-head {
-    background-color: #ae1e00 !important;
-    border-color: #ae1e00 !important;
-}
-
-.limitedList .event-available,
-#content .event-available,
-#content .event-available .fc-event-skin,
-#content .event-available .fc-event-head {
+.event-available {
     background-color: #0e6700 !important;
     border-color: #0e6700 !important;
 }
-
-.limitedList .event-partly-available,
-#content .event-partly-available,
-#content .event-partly-available .fc-event-skin,
-#content .event-partly-available .fc-event-head {
+.event-available .fc-event-time {
+    background-color: #0d670b;
+}
+.event-partly-available {
     background-color: #dd7c07 !important;
     border-color: #dd7c07 !important;
 }
-
-#content .fc-select-helper,
-#content .fc-select-helper .fc-event-skin,
-#content .fc-select-helper .fc-event-head {
-    background-color: #0053bc !important;
-    border-color: #0053bc !important;
+.event-partly-available .fc-event-time {
+    background-color: #dd7c18;
 }
 
-#content .fc-content table * {
-    border-color: #bbb;
+.event-unavailable {
+    background-color: #ae1e00 !important;
+    border-color: #ae1e00 !important;
+}
+.event-unavailable .fc-event-time {
+    background-color: #ae1e09;    
 }
 
-#content .fc-content .fc-sun, #content .fc-content .fc-sat {
-    background-color: #efefef;
-}
-
+/* calendar colors */
 #content .fc-content .fc-today {
     background-color: #fff0b2;
+}
+
+.fc-content td, .fc-content th {
+    border-color: #ccc;   
 }
 
 .fc-event-bg {
@@ -221,7 +212,6 @@ a.event-full-waitinglist.event-fully-booked .fc-event-head {
      padding-left: 8px;
      padding-bottom: 1px;
 }
-
 .legend div {
     display: inline;
     background-position: left;
