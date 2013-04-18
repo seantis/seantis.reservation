@@ -58,6 +58,31 @@ def recook_css_resources(context):
     getToolByName(context, 'portal_css').cookResources()
 
 
+def remove_dead_resources(context):
+    registries = [
+        getToolByName(context, 'portal_javascripts'),
+        getToolByName(context, 'portal_css')
+    ]
+
+    is_managed_resource = lambda r: '++seantis.reservation' in r.getId()
+
+    def is_dead_resource(resource):
+
+        if resource.isExternalResource():
+            return False
+
+        if context.restrictedTraverse(resource.getId(), False):
+            return False
+
+        return True
+
+    for registry in registries:
+        for resource in registry.getResources():
+            if is_managed_resource(resource):
+                if is_dead_resource(resource):
+                    registry.unregisterResource(resource.getId())
+
+
 @db_upgrade
 def upgrade_to_1001(operations, metadata):
 

@@ -134,6 +134,15 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
     profile="seantis.reservation:default">
 </genericsetup:upgradeStep>
 
+<genericsetup:upgradeStep
+    title="Remove dead css and js files"
+    description=""
+    source="1006"
+    destination="1007"
+    handler=".upgrades.remove_dead_resources"
+    profile="seantis.reservation:default">
+</genericsetup:upgradeStep>
+
 <!-- Controlpanel View -->
 <browser:page
     for="plone.app.layout.navigation.interfaces.INavigationRoot"
