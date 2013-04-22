@@ -64,14 +64,7 @@
                             <div class="event-unavailable"></div>
                             <tal:block i18n:translate="">Unavailable</tal:block>
                         </div>
-
-                        <div class="icon icon-fully-booked">
-                            <tal:block i18n:translate="">Fully booked</tal:block>
-                        </div>
                         
-                        <div class="icon icon-full-waitinglist">
-                            <tal:block i18n:translate="">Full waitinglist</tal:block>
-                        </div>
                     </div>
 
                     <div style="clear: both;"></div>

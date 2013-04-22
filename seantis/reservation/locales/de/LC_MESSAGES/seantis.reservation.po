@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-04-12 09:10+0000\n"
+"POT-Creation-Date: 2013-04-22 15:52+0000\n"
 "PO-Revision-Date: 2012-09-06 11:33+0100\n"
 "Last-Translator: Fabian Reinhard <fabian.reinhard@seantis.ch>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,35 +18,31 @@ msgstr ""
 msgid "${count} Orphan Records Removed"
 msgstr "${count} Verwaiste Datensätze entfernt"
 
-#: ./utils.py:603
+#: ./utils.py:621
+msgid "%i people waiting"
+msgstr "%i Personen warten"
+
+#: ./utils.py:602
 msgid "%i%% Free"
 msgstr "%i%% Frei"
 
-#: ./utils.py:610
+#: ./utils.py:609
 msgid "%i/%i Spot Available"
 msgstr "%i/%i Platz Verfügbar"
 
-#: ./utils.py:606
+#: ./utils.py:605
 msgid "%i/%i Spots Available"
 msgstr "%i/%i Plätze Verfügbar"
-
-#: ./utils.py:633
-msgid "%i/%i Waitinglist Spot"
-msgstr "%i/%i Wartelistenplatz"
-
-#: ./utils.py:629
-msgid "%i/%i Waitinglist Spots"
-msgstr "%i/%i Wartelistenplätze"
 
 #: ./templates/monthly_report.pt:23
 msgid "&lt;&lt; Previous Month"
 msgstr "&lt;&lt; Vorheriger Monat"
 
-#: ./utils.py:488
+#: ./utils.py:487
 msgid "<b>${quota}</b> reservations"
 msgstr "<b>${quota}</b> Reservationen"
 
-#: ./utils.py:490
+#: ./utils.py:489
 msgid "<b>1</b> reservation"
 msgstr "<b>1</b> Reservation"
 
@@ -111,12 +107,12 @@ msgid "An existing reservation would be affected by the requested change"
 msgstr "Eine bestehende Reservation wäre durch die Änderung betroffen"
 
 #: ./report.py:240
-#: ./reserve.py:564
+#: ./reserve.py:568
 #: ./templates/reservations.pt:120
 msgid "Approve"
 msgstr "Zulassen"
 
-#: ./reserve.py:555
+#: ./reserve.py:559
 msgid "Approve reservation"
 msgstr "Reservation zulassen"
 
@@ -141,11 +137,11 @@ msgid "Calendar date shown when opening the calendar."
 msgstr "Das Datum das beim Öffnen des Kalenders angezeigt wird."
 
 #: ./allocate.py:167
-#: ./reserve.py:374
+#: ./reserve.py:378
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: ./templates/resource.pt:112
+#: ./templates/resource.pt:105
 msgid "Click on a calendar block to reserve it."
 msgstr "Klicken Sie auf einen Block im Kalender um diesen zu reservieren."
 
@@ -200,12 +196,12 @@ msgid "Delete"
 msgstr "Löschen"
 
 #: ./report.py:246
-#: ./reserve.py:599
+#: ./reserve.py:603
 #: ./templates/reservations.pt:114
 msgid "Deny"
 msgstr "Ablehnen"
 
-#: ./reserve.py:590
+#: ./reserve.py:594
 msgid "Deny reservation"
 msgstr "Reservation ablehnen"
 
@@ -217,11 +213,11 @@ msgstr "Beschreibung"
 msgid "Details"
 msgstr "Details"
 
-#: ./reserve.py:562
+#: ./reserve.py:566
 msgid "Do you really want to approve the following reservations?"
 msgstr "Möchten Sie die folgende Reservation wirklich zulassen?"
 
-#: ./reserve.py:597
+#: ./reserve.py:601
 msgid "Do you really want to deny the following reservations?"
 msgstr "Möchten Sie die folgende Reservation wirklich ablehnen?"
 
@@ -229,11 +225,11 @@ msgstr "Möchten Sie die folgende Reservation wirklich ablehnen?"
 msgid "Do you really want to remove the following allocations?"
 msgstr "Möchten Sie die folgenden Einteilungen wirklich löschen?"
 
-#: ./reserve.py:653
+#: ./reserve.py:657
 msgid "Do you really want to remove the following reservations?"
 msgstr "Möchten Sie die folgenden Reservation wirklich löschen?"
 
-#: ./reserve.py:658
+#: ./reserve.py:662
 msgid "Do you really want to remove the following timespans from the reservation?"
 msgstr "Möchten Sie die folgenden Zeiträume wirklich von der Reservation entfernen?"
 
@@ -326,10 +322,6 @@ msgstr "Alles nach dieser Stunde wird im Kalender nicht angezeigt, was die Anzei
 msgid "Everything before this hour is not shown in the calendar, making the calendar display more compact. Should be set to an hour before which there cannot be any reservations."
 msgstr "Alles vor dieser Stunde wird im Kalender nicht angezeigt, was die Anzeige kompakter macht. Sie sollten eine Stunde wählen vor der es keine Reservationen geben kann."
 
-#: ./profiles/default/types/seantis.reservation.resource.xml
-msgid "Excel Export"
-msgstr "Excel Export"
-
 #: ./templates/utils.pt:25
 msgid "Export Reservations (Csv)"
 msgstr "Reservationen-Export (Csv)"
@@ -362,17 +354,9 @@ msgstr "Fr"
 msgid "From"
 msgstr "Von"
 
-#: ./templates/resource.pt:73
-msgid "Full waitinglist"
-msgstr "Warteliste voll"
-
 #: ./templates/resource.pt:55
 msgid "Fully available"
 msgstr "Verfügbar"
-
-#: ./templates/resource.pt:69
-msgid "Fully booked"
-msgstr "Ausgebucht"
 
 #: ./reserve.py:276
 msgid "General Information"
@@ -418,7 +402,7 @@ msgstr "Ungültige erste volle Stunde"
 msgid "Invalid last hour"
 msgstr "Ungültige letzte volle Stunde"
 
-#: ./reserve.py:345
+#: ./reserve.py:349
 msgid "Invalid reservation request"
 msgstr "Ungültige Reservations-Anfrage"
 
@@ -454,7 +438,6 @@ msgstr "Kann die folgenden Vorlagen-Variabeln enthalten:<br>%(resource)s - Titel
 msgid "Mo"
 msgstr "Mo"
 
-#: ./profiles/default/types/seantis.reservation.resource.xml
 #: ./templates/utils.pt:10
 msgid "Monthly Report"
 msgstr "Monatsreport"
@@ -487,7 +470,7 @@ msgstr "Nein"
 msgid "No reservable slot found."
 msgstr "Der gewünschte Zeitbereich ist bereits besetzt."
 
-#: ./reserve.py:560
+#: ./reserve.py:564
 msgid "No such reservation"
 msgstr "Unbekannte Reservation"
 
@@ -548,7 +531,7 @@ msgstr "Kontingent muss zwischen 1 und 100 liegen"
 msgid "Raster"
 msgstr "Raster"
 
-#: ./reserve.py:412
+#: ./reserve.py:416
 msgid "Recurrance reservation"
 msgstr "Wiederholung reservieren"
 
@@ -577,7 +560,7 @@ msgstr "Verwaiste Datensätze entfernen"
 msgid "Remove allocations"
 msgstr "Einteilungen entfernen"
 
-#: ./reserve.py:629
+#: ./reserve.py:633
 msgid "Remove reservation"
 msgstr "Reservation entfernen"
 
@@ -597,15 +580,15 @@ msgstr "Limite der Anzahl Reservationen"
 msgid "Reservation Throttling"
 msgstr "Reservations-Beschränkung"
 
-#: ./reserve.py:572
+#: ./reserve.py:576
 msgid "Reservation confirmed"
 msgstr "Reservation bestätigt"
 
-#: ./reserve.py:607
+#: ./reserve.py:611
 msgid "Reservation denied"
 msgstr "Reservation abgelehnt"
 
-#: ./reserve.py:341
+#: ./reserve.py:345
 msgid "Reservation out of bounds"
 msgstr "Reservation ausserhalb des gültigen Bereichs"
 
@@ -613,7 +596,7 @@ msgstr "Reservation ausserhalb des gültigen Bereichs"
 msgid "Reservation quota limit must zero or a positive number"
 msgstr "Limit der Anzahl Reservationen muss Null oder grösser sein"
 
-#: ./reserve.py:669
+#: ./reserve.py:673
 msgid "Reservation removed"
 msgstr "Reservation entfernt"
 
@@ -625,7 +608,7 @@ msgstr "Reservation erfolgreich"
 msgid "Reservations"
 msgstr "Reservationen"
 
-#: ./reserve.py:484
+#: ./reserve.py:488
 msgid "Reservations Successfully Submitted"
 msgstr "Reservierung erfolgreich abgeschlossen"
 
@@ -633,12 +616,12 @@ msgstr "Reservierung erfolgreich abgeschlossen"
 msgid "Reservations can't be made for more than 24 hours at a time"
 msgstr "Reservationen können nicht über mehr als 24 Stunden gemacht werden"
 
-#: ./reserve.py:347
+#: ./reserve.py:351
 #: ./resource.py:281
 msgid "Reserve"
 msgstr "Reservieren"
 
-#: ./reserve.py:486
+#: ./reserve.py:490
 msgid "Reserve More"
 msgstr "Weitere Reservationen"
 
@@ -750,7 +733,7 @@ msgstr "So"
 msgid "Subforms that need to be filled out to make a reservation. Forms can currently only be created by a site-administrator."
 msgstr "Unterformulare die ausgefüllt werden müssen um eine Reservation zu machen. Unterformulare können zur Zeit nur durch Administratoren erstellt werden."
 
-#: ./reserve.py:480
+#: ./reserve.py:484
 msgid "Submit Reservations"
 msgstr "Bestätigen und abschliessen"
 
@@ -826,11 +809,11 @@ msgstr "Die ausgewählte Ansicht muss eine verfügbare Ansicht sein."
 msgid "The waitinglist is full."
 msgstr "Die Warteliste ist voll."
 
-#: ./form.py:505
+#: ./form.py:511
 msgid "There are ${nb} reservations being entered for this resource."
 msgstr "${nb} Reservationen werden gerade eingegeben."
 
-#: ./form.py:501
+#: ./form.py:507
 msgid "There is one reservation being entered for this resource."
 msgstr "Eine Reservation wird gerade eingegeben."
 
@@ -917,4 +900,12 @@ msgstr "Sie möchten 'Immer ein bestimmtes Datum anzeigen' haben aber kein Datum
 #: ./templates/your_reservations_viewlet.pt:10
 msgid "Your reservations"
 msgstr "Ihre Reservationen"
+
+#: ./utils.py:619
+msgid "one person waiting"
+msgstr "Eine Person wartet"
+
+#: ./utils.py:617
+msgid "waitinglist is free"
+msgstr "Warteliste frei"
 

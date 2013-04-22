@@ -230,6 +230,9 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
 
         return query
 
+    def waitinglist_length(self):
+        return self.pending_reservations.count()
+
     def open_waitinglist_spots(self):
 
         used = self.pending_reservations.count()

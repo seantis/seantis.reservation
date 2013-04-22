@@ -1,7 +1,6 @@
 from logging import getLogger
 log = getLogger('seantis.reservation')
 
-import math
 from uuid import UUID
 from uuid import uuid1 as new_uuid
 from datetime import datetime, timedelta, MINYEAR, MAXYEAR
@@ -112,23 +111,6 @@ def availability_by_allocations(allocations):
     return total / expected_count
 
 
-def waitinglist_availabilty_by_allocations(allocations):
-    relevant = [a for a in allocations if a.approve and a.is_master]
-    spots = sum((a.waitinglist_spots for a in relevant))
-
-    if not spots:
-        return False
-
-    groups = set(map(lambda a: a.group, relevant))
-
-    query = Session.query(Reservation.id)
-    query = query.filter(Reservation.status == u'pending')
-    query = query.filter(Reservation.target.in_(groups))
-    pending = query.count()
-
-    return 100.0 - (float(pending) / float(spots) * 100.0)
-
-
 def availability_by_range(start, end, resources, is_exposed):
     """Returns the availability for the given resources in the given range.
     The callback *is_exposed* is used to check if the allocation is visible
@@ -166,30 +148,15 @@ def availability_by_day(start, end, resources, is_exposed):
 
         exposed = []
         members = set()
-        unapproved = 0
 
-        # count the allocations with / without waitinglist separately
-        # to be able to only use one metric on days which have no mixed
-        # allocation types (=> more accurate, better performance)
         for a in (a for a in allocations if is_exposed(a)):
             members.add(a.mirror_of)
             exposed.append(a)
-            if not a.approve:
-                unapproved += 1
 
         if not exposed:
             continue
 
         total = availability_by_allocations(exposed)
-        wtotal = waitinglist_availabilty_by_allocations(exposed)
-
-        if wtotal is False:
-            wtotal = total
-
-        if unapproved:
-            total = (total + wtotal) / 2
-        else:
-            total = math.ceil(wtotal / 100.0) * (total + wtotal) / 2
 
         days[day] = (total, members)
 
@@ -610,7 +577,7 @@ class Scheduler(object):
         return self.is_exposed(allocation)
 
     def availability(self, start=None, end=None):
-        """Goes through all allocations and sums up the availabilty."""
+        """Goes through all allocations and sums up the availability."""
 
         if not (start and end):
             start = datetime(MINYEAR, 1, 1)

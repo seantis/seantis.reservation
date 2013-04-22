@@ -1,7 +1,6 @@
 import re
 import time
 import json
-import math
 import collections
 import functools
 import isodate
@@ -611,45 +610,17 @@ def event_availability(context, request, scheduler, allocation):
                 spots, allocation.quota
             )
 
-    # show an icon on the block if it is fully booked
-    if availability == 0:
-        klass = 'event-fully-booked'
-    else:
-        klass = ''
+    # with approval the number of people in the waitinglist have to be shown
+    if allocation.approve:
+        length = allocation.waitinglist_length()
+        if length == 0:
+            text += '\n' + title(_(u'waitinglist is free'))
+        elif length == 1:
+            text += '\n' + title(_(u'one person waiting'))
+        else:
+            text += '\n' + title(_(u'%i people waiting')) % length
 
-    # if no approval is required the availability is used as is
-    if not allocation.approve:
-        return text, (klass + ' ' + event_class(availability)).strip()
-
-    # with approval the process is more involved
-    open_spots = allocation.open_waitinglist_spots()
-
-    # an additional text with the number of open spots is shown
-    if open_spots > 1:
-        text += '\n' + title(_(u'%i/%i Waitinglist Spots')) % (
-            open_spots, a.waitinglist_spots
-        )
-    else:
-        text += '\n' + title(_(u'%i/%i Waitinglist Spot')) % (
-            open_spots, a.waitinglist_spots
-        )
-
-    # shown an icon on the block if the waitinglist is full
-    if not open_spots:
-        klass = ('event-full-waitinglist' + ' ' + klass).strip()
-
-    # partly available alloctions get the average between waitinglist
-    # availability and the allocation avilability
-    waitinglist_availability = (
-        open_spots / float(a.waitinglist_spots) * 100.0
-    )
-
-    # math.ceil leads to multiplication by 0 if the waitinglist_availability is
-    # 0.0. I don't remember the reason for it being like this, but it works.
-    shown_availability = math.ceil(waitinglist_availability / 100.0) * \
-        ((availability + waitinglist_availability) / 2)
-
-    return text, (klass + ' ' + event_class(shown_availability)).strip()
+    return text, event_class(availability)
 
 
 def flatten(l):
