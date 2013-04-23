@@ -144,7 +144,7 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
 </genericsetup:upgradeStep>
 
 <genericsetup:upgradeStep
-    title="Migrate waitinglist spots to boolean"
+    title="Remove waitinglist spots"
     description=""
     source="1007"
     destination="1008"

@@ -288,8 +288,8 @@ class Scheduler(object):
 
     @serialized
     def allocate(self, dates, raster=15, quota=None, partly_available=False,
-                 grouped=False, waitinglist=False, approve=True,
-                 reservation_quota_limit=0, whole_day=False
+                 grouped=False, approve=True, reservation_quota_limit=0,
+                 whole_day=False
                  ):
         """Allocates a spot in the calendar.
 
@@ -322,11 +322,6 @@ class Scheduler(object):
 
         group = new_uuid()
         quota = quota or 1
-
-        if not approve:
-            assert not waitinglist, """
-                autoapproval with waitinglist is not yet supported
-            """
 
         # if the allocation is not partly available the raster is set to lowest
         # possible raster value
@@ -364,7 +359,6 @@ class Scheduler(object):
             allocation.quota = quota
             allocation.mirror_of = self.uuid
             allocation.partly_available = partly_available
-            allocation.waitinglist = waitinglist
             allocation.approve = approve
             allocation.reservation_quota_limit = reservation_quota_limit
 
@@ -584,16 +578,11 @@ class Scheduler(object):
     @serialized
     def move_allocation(
             self, master_id, new_start=None, new_end=None,
-            group=None, new_quota=None, waitinglist=None,
-            approve=None, reservation_quota_limit=0, whole_day=None):
+            group=None, new_quota=None, approve=None,
+            reservation_quota_limit=0, whole_day=None):
 
         assert master_id
         assert any([new_start and new_end, group, new_quota])
-
-        if not approve:
-            assert not waitinglist, """
-                autoapproval with waitinglist is not yet supported
-            """
 
         # Find allocation
         master = self.allocation_by_id(master_id)
@@ -652,8 +641,6 @@ class Scheduler(object):
         # (this still allows to use move_allocation to remove an allocation
         #  from an existing group by specifiying the new group)
         for allocation in self.allocations_by_group(group or master.group):
-            if waitinglist is not None:
-                allocation.waitinglist = waitinglist
 
             if approve is not None:
                 allocation.approve = approve
@@ -745,12 +732,9 @@ class Scheduler(object):
 
                 assert allocation.is_master
 
+                # with manual approval the reservation ends up on the
+                # waitinglist and does not yet need a spot
                 if not allocation.approve:
-                    assert not allocation.waitinglist, """
-                        autoapproval with waitinglist is not yet supported
-                    """
-
-                if not allocation.waitinglist:
                     if not self.find_spot(allocation, start, end):
                         raise AlreadyReservedError
 

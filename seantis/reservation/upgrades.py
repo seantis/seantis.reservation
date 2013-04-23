@@ -198,18 +198,4 @@ def upgrade_1007_to_1008(operations, metadata):
 
     allocations_table = Table('allocations', metadata, autoload=True)
     if 'waitinglist_spots' in allocations_table.columns:
-
-        # way easier than altering the column
         operations.drop_column('allocations', 'waitinglist_spots')
-        operations.add_column('allocations', Column(
-            'waitinglist',
-            types.Boolean(),
-            nullable=False,
-            server_default='TRUE'
-        ))
-
-        # the waitinglist boolean is True if the allocation must be
-        # manually approved, autoapproval with waitinglist does not work yet
-        operations.execute("""
-            UPDATE allocations SET waitinglist = approve
-        """)

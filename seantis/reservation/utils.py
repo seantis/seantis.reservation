@@ -612,7 +612,7 @@ def event_availability(context, request, scheduler, allocation):
 
     # with approval the number of people in the waitinglist have to be shown
     if allocation.approve:
-        length = allocation.waitinglist_length()
+        length = allocation.waitinglist_length
         if length == 0:
             text += '\n' + title(_(u'waitinglist is free'))
         elif length == 1:

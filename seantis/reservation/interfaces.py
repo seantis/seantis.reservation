@@ -266,19 +266,10 @@ class IResourceAllocationDefaults(form.Schema):
         title=_(u'Approve reservation requests'),
         description=_(
             u'If checked a reservation manager must decide if a reservation '
-            u'can be approved. Until then users are added to the waitinglist. '
+            u'can be approved. Until then users are added to a waitinglist. '
             u'Reservations are automatically approved if this is not checked. '
         ),
         default=True
-    )
-
-    waitinglist = schema.Bool(
-        title=_(u'Waiting List'),
-        description=_(
-            u'True if reservations can be put into a waitinglist if the '
-            u'allocation is fully booked.'
-        ),
-        default=1
     )
 
     partly_available = schema.Bool(

@@ -105,7 +105,6 @@ class DataGeneratorView(grok.View):
                         partly_available=bool(random.randrange(0, 2)),
                         grouped=False,
                         quota=quota,
-                        waitinglist=approve,
                         approve=approve
                     )
                 except OverlappingAllocationError:

@@ -40,8 +40,6 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
         types.Integer(), default=0, nullable=False
     )
 
-    waitinglist = Column(types.Boolean(), default=False, nullable=False)
-
     # The dates are stored without any timzone information (unaware).
     # Therefore the times are implicitly stored in the timezone the resource
     # resides in.
@@ -69,7 +67,6 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
         allocation.quota = self.quota
         allocation.partly_available = self.partly_available
         allocation.approve = self.approve
-        allocation.waitinglist = self.waitinglist
         allocation._start = self._start
         allocation._end = self._end
         allocation._raster = self._raster
@@ -212,6 +209,7 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
 
         return query
 
+    @property
     def waitinglist_length(self):
         return self.pending_reservations.count()
 

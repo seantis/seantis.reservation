@@ -152,7 +152,6 @@ class AllocationAddForm(AllocationForm):
                 quota=data['quota'],
                 partly_available=data['partly_available'],
                 grouped=not data['separately'],
-                waitinglist=data['approve'],  # currently the same
                 approve=data['approve'],
                 reservation_quota_limit=data['reservation_quota_limit'],
                 whole_day=data['whole_day']
@@ -250,7 +249,6 @@ class AllocationEditForm(AllocationForm):
             end,
             unicode(data['group'] or u''),
             data['quota'],
-            data['approve'],  # waitinglist currently the same as approve
             data['approve'],
             data['reservation_quota_limit'],
             data['whole_day']
