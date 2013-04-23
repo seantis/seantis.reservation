@@ -309,7 +309,7 @@ http://stackoverflow.com/questions/6269471/does-mysql-innodb-implement-true-seri
 
  * The core of seantis.reservation should eventually be independent of Zope/Plone.
 
-### Why / How is my event colored? My event is green, but it should be orange/red!
+### Why / How is my allocation colored? My allocation is green, but it should be orange/red!
 
 Basically colors are assigned to events based on their availability:
 
@@ -322,66 +322,14 @@ Basically colors are assigned to events based on their availability:
 0%
 : Unavailable
 
-Now what is meant by *availability*? You would think it's just the free hours divided by the total hours. In the simplest case that is actually true. Observe a partly available allocation without a quota:
+The availability is calculated by taking the total time available and dividing it
+by the time reserved. If an allocation is set to be approved automatically (the default)
+a 0% availability also means that no new reservations can be made.
 
-    Allocation  08:00 - 10:00
-    Reservation 08:00 - 09:00
-
-    => 50% available
-
-See `seantis.reservation.models.allocation.availability`
-
-If we introduce allocation quotas, the picture gets more complicated. Observe a partly available allocation with a quota of 2:
-
-    Allocation  08:00 - 10:00, Quota 2
-    Reservation 08:00 - 09:00
-
-    => 75% available
-
-The allocation timespan may be reserved twice or 200%. 50% of one timespan is used. So 150% is free. 
-
-Technically there are two allocations, one for each quota. We only show one and are interested in a number between 0 and 100, so we divide by two: 150% / 2 => 75%.
-
-See `seantis.reseravtion.db.availability_by_allocations`
-
-Still easy. Let's introduce a waitinglist. Doing so gives us a completely new availability. The waitinglist availability. Observe:
-
-    Waitinglist Spots: 100
-    Reservations in the Waitinglist: 10
-
-    => waitinglist 90% available
-
-This waitinglist availability puts us between a rock and a hard place:
-
- - If a reservation is fully booked (0% available), but the waitinglist is 100% open, do we show the allocation as unavailable? 
-
- - What about a free resource whose waitinglist is full? Do we really show an event as available if nobody can submit a reservation because the waitinglist is full?
-
-We decided to do something in the middle. We will show the average of allocation and waitinglist. 
-
-UNLESS the the waitinglist is full. If the waitinglist is full the user cannot possibly submit a reservation and we really want to be sure that we show unavailable when the allocation is exactly that.
-
-We could accomodate everyone (and make nobody happy), by doing the following:
-
-    Allocation  08:00 - 10:00
-
-    => 100% free
-
-    Waitinglist Spots: 3
-    Reservations in the Waitinglist: 3
-
-    => 100% free
-
-    (0% + 100%) / 2
-
-    => 50% free
-
-But we want to let the user know that as long as an event is not unavailable he might have a chance to reserve it (somebody might of course always be faster).
-
-See `seantis.reservation.utils.event_avilablity`
-
-**tl;dr**
-Your event is unavailable if you cannot submit a reservation to it. It is shown as partly available if availability is or waitinglist spots are dwindling. It is shown as available if all is good.
+If an allcation is set to be approved manually, there's automatically an unlimited
+waitinglist. Reservations to that waitinglist can be made at any time - unless the
+allocation setting is changed - and the number of people in the waitinglist is shown
+on the allcation itself. 
 
 Credits
 -------
