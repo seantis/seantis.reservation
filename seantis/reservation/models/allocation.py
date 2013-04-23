@@ -34,7 +34,7 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
     group = Column(customtypes.GUID(), nullable=False)
     quota = Column(types.Integer(), default=1)
     partly_available = Column(types.Boolean(), default=False)
-    approve = Column(types.Boolean(), default=True)
+    approve_manually = Column(types.Boolean(), default=False)
 
     reservation_quota_limit = Column(
         types.Integer(), default=0, nullable=False
@@ -66,7 +66,7 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
         allocation.group = self.group
         allocation.quota = self.quota
         allocation.partly_available = self.partly_available
-        allocation.approve = self.approve
+        allocation.approve_manually = self.approve_manually
         allocation._start = self._start
         allocation._end = self._end
         allocation._raster = self._raster

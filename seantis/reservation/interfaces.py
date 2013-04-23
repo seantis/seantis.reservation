@@ -262,8 +262,8 @@ class IResourceAllocationDefaults(form.Schema):
         default=1
     )
 
-    approve = schema.Bool(
-        title=_(u'Approve reservation requests'),
+    approve_manually = schema.Bool(
+        title=_(u'Manually approve reservation requests'),
         description=_(
             u'If checked a reservation manager must decide if a reservation '
             u'can be approved. Until then users are added to a waitinglist. '
@@ -305,6 +305,13 @@ class IResourceAllocationDefaults(form.Schema):
             raise Invalid(
                 _(u'Reservation quota limit must zero or a positive number')
             )
+
+    ######### deprecated #########
+    approve = schema.Bool(
+        title=_(u'DEPRECATED: Approve reservation requests'), default=True
+    )
+    # approve has been moved to approve_manually and will be removed in
+    # a future release. approve_manually is equivalent.
 
 
 class IResourceBase(IResourceAllocationDefaults):
@@ -380,7 +387,7 @@ class IResourceBase(IResourceAllocationDefaults):
         'defaults',
         label=_(u'Default Allocation Values'),
         fields=(
-            'quota', 'partly_available', 'raster', 'approve',
+            'quota', 'partly_available', 'raster', 'approve_manually',
             'reservation_quota_limit'
         )
     )

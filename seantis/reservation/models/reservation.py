@@ -124,7 +124,7 @@ class Reservation(TimestampMixin, ORMBase, OtherModels):
     @property
     def autoapprovable(self):
         query = self._target_allocations()
-        query = query.filter(self.models.Allocation.approve == True)
+        query = query.filter(self.models.Allocation.approve_manually == True)
 
         # A reservation is deemed autoapprovable if no allocation
         # requires explicit approval

@@ -218,7 +218,7 @@ class ReservationBaseForm(ResourceBaseForm):
         return defaults
 
     def run_reserve(
-        self, data, autoapprove, start=None, end=None, group=None, quota=1
+        self, data, approve_manually, start=None, end=None, group=None, quota=1
     ):
 
         assert (start and end) or group
@@ -246,7 +246,7 @@ class ReservationBaseForm(ResourceBaseForm):
                 data=additional_data, session_id=session_id, quota=quota
             )
 
-        if autoapprove:
+        if approve_manually:
             self.scheduler.approve_reservation(token)
             self.flash(_(u'Reservation successful'))
         else:
@@ -353,9 +353,9 @@ class ReservationForm(
     def reserve(self, data):
 
         allocation = self.allocation(data['id'])
+        approve_manually = allocation.approve_manually
 
         start, end = self.validate(data)
-        autoapprove = not allocation.approve
         quota = int(data['quota'])
 
         # whole day allocations don't show the start / end time which is to
@@ -366,7 +366,7 @@ class ReservationForm(
 
         def reserve():
             self.run_reserve(
-                data=data, autoapprove=autoapprove,
+                data=data, approve_manually=approve_manually,
                 start=start, end=end, quota=quota
             )
 
@@ -447,12 +447,12 @@ class GroupReservationForm(
     @extract_action_data
     def reserve(self, data):
 
-        autoapprove = not self.scheduler.allocations_by_group(data['group']) \
-            .first().approve
+        approve_manually = self.scheduler.allocations_by_group(data['group']) \
+            .first().approve_manually
 
         def reserve():
             self.run_reserve(
-                data=data, autoapprove=autoapprove,
+                data=data, approve_manually=approve_manually,
                 group=data['group'], quota=data['quota']
             )
 

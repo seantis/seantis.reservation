@@ -57,7 +57,7 @@ class AllocationAddForm(AllocationForm):
                 field.Fields(IResourceAllocationDefaults).select(
                     'quota',
                     'reservation_quota_limit',
-                    'approve',
+                    'approve_manually',
                     'partly_available',
                     'raster'
                 )
@@ -82,7 +82,7 @@ class AllocationAddForm(AllocationForm):
             'timeframes': self.json_timeframes(),
             'days': default_days,
             'quota': ctx.quota,
-            'approve': ctx.approve,
+            'approve_manually': ctx.approve_manually,
             'raster': ctx.raster,
             'partly_available': ctx.partly_available,
             'reservation_quota_limit': ctx.reservation_quota_limit
@@ -152,7 +152,7 @@ class AllocationAddForm(AllocationForm):
                 quota=data['quota'],
                 partly_available=data['partly_available'],
                 grouped=not data['separately'],
-                approve=data['approve'],
+                approve_manually=data['approve_manually'],
                 reservation_quota_limit=data['reservation_quota_limit'],
                 whole_day=data['whole_day']
 
@@ -198,7 +198,7 @@ class AllocationEditForm(AllocationForm):
                 field.Fields(IResourceAllocationDefaults).select(
                     'quota',
                     'reservation_quota_limit',
-                    'approve'
+                    'approve_manually'
                 )
             )
         ]
@@ -228,7 +228,7 @@ class AllocationEditForm(AllocationForm):
             'end_time': end.time(),
             'day': start.date(),
             'quota': allocation.quota,
-            'approve': allocation.approve,
+            'approve_manually': allocation.approve_manually,
             'whole_day': allocation.whole_day,
             'reservation_quota_limit': allocation.reservation_quota_limit
         }
@@ -249,7 +249,7 @@ class AllocationEditForm(AllocationForm):
             end,
             unicode(data['group'] or u''),
             data['quota'],
-            data['approve'],
+            data['approve_manually'],
             data['reservation_quota_limit'],
             data['whole_day']
         )

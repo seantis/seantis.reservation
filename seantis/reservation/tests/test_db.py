@@ -103,7 +103,7 @@ class TestScheduler(IntegrationTestCase):
         ]
 
         allocations = sc.allocate(
-            dates, grouped=True, approve=True, quota=3
+            dates, grouped=True, approve_manually=True, quota=3
         )
 
         self.assertEqual(len(allocations), 2)
@@ -139,7 +139,7 @@ class TestScheduler(IntegrationTestCase):
 
         start, end = datetime(2013, 5, 1, 13, 0), datetime(2013, 5, 1, 14)
 
-        sc.allocate(dates=(start, end), approve=True)
+        sc.allocate(dates=(start, end), approve_manually=True)
 
         sc.reserve(u'test@example.com', (start, end), session_id=session_id)
 
@@ -186,7 +186,7 @@ class TestScheduler(IntegrationTestCase):
         rend = datetime(2012, 2, 1, 16, 0)
         rdates = (rstart, rend)
 
-        sc.allocate(dates=adates, approve=True)
+        sc.allocate(dates=adates, approve_manually=True)
 
         self.assertRaises(
             InvalidReservationError, sc.reserve, reservation_email, rdates
@@ -201,7 +201,7 @@ class TestScheduler(IntegrationTestCase):
         dates = (start, end)
 
         # let's create an allocation with a waitinglist
-        allocation = sc.allocate(dates, approve=True)[0]
+        allocation = sc.allocate(dates, approve_manually=True)[0]
         self.assertEqual(allocation.waitinglist_length, 0)
 
         # reservation should work
@@ -278,7 +278,7 @@ class TestScheduler(IntegrationTestCase):
                 )
             )
 
-        allocations = sc.allocate(dates, grouped=True, approve=True)
+        allocations = sc.allocate(dates, grouped=True, approve_manually=True)
         self.assertEqual(len(allocations), 5)
 
         group = allocations[0].group
@@ -321,7 +321,7 @@ class TestScheduler(IntegrationTestCase):
 
         allocations = sc.allocate(
             dates, grouped=True, quota=3,
-            approve=True, reservation_quota_limit=3
+            approve_manually=True, reservation_quota_limit=3
         )
 
         for allocation in allocations:
@@ -337,7 +337,7 @@ class TestScheduler(IntegrationTestCase):
         )
         sc.move_allocation(
             allocations[0].id, newstart, newend,
-            new_quota=2, approve=True, reservation_quota_limit=2
+            new_quota=2, approve_manually=True, reservation_quota_limit=2
         )
 
         group_allocations = sc.allocations_by_group(allocations[0].group).all()
@@ -393,7 +393,7 @@ class TestScheduler(IntegrationTestCase):
         end = datetime(2012, 4, 6, 23, 0)
         dates = (start, end)
 
-        allocation = sc.allocate(dates, approve=False)[0]
+        allocation = sc.allocate(dates, approve_manually=False)[0]
 
         self.assertEqual(allocation.waitinglist_length, 0)
 
@@ -426,7 +426,7 @@ class TestScheduler(IntegrationTestCase):
         # in this example the waiting list will kick in only after
         # the quota has been filled
 
-        allocation = sc.allocate(dates, quota=2, approve=True)[0]
+        allocation = sc.allocate(dates, quota=2, approve_manually=True)[0]
         self.assertEqual(allocation.waitinglist_length, 0)
 
         t1 = sc.reserve(reservation_email, dates)
@@ -543,7 +543,7 @@ class TestScheduler(IntegrationTestCase):
                 datetime(2011, 1, 1, 18, 0)
             ),
             partly_available=False,
-            approve=False
+            approve_manually=False
         )
 
         self.assertEqual(1, len(allocations))
@@ -579,7 +579,7 @@ class TestScheduler(IntegrationTestCase):
 
         # setup an allocation with ten spots
         allocations = sc.allocate(
-            (start, end), raster=15, quota=10, approve=False
+            (start, end), raster=15, quota=10, approve_manually=False
         )
         allocation = allocations[0]
 
@@ -600,7 +600,7 @@ class TestScheduler(IntegrationTestCase):
         # setup an allocation with five spots
         allocations = other.allocate(
             [(start, end)], raster=15, quota=5, partly_available=True,
-            approve=False
+            approve_manually=False
         )
         allocation = allocations[0]
 
@@ -907,7 +907,7 @@ class TestScheduler(IntegrationTestCase):
         end = datetime(2012, 1, 1, 19, 0)
         dates = (start, end)
 
-        sc.allocate(dates, approve=True)
+        sc.allocate(dates, approve_manually=True)
         token = sc.reserve(reservation_email, dates)
 
         self.assertTrue(reservation_made_event.was_fired())
@@ -983,7 +983,7 @@ class TestScheduler(IntegrationTestCase):
         # one email is sent if there's no approval
         session_id = new_uuid()
 
-        allocation = sc.allocate(dates, approve=False)[0]
+        allocation = sc.allocate(dates, approve_manually=False)[0]
         token = sc.reserve(
             reservation_email,
             dates, data=data, session_id=session_id
@@ -1013,7 +1013,7 @@ class TestScheduler(IntegrationTestCase):
 
         # make multiple reservations in one session to different email
         # recipients. this should yield multiple mails
-        allocation = sc.allocate(dates, approve=False, quota=3)[0]
+        allocation = sc.allocate(dates, approve_manually=False, quota=3)[0]
 
         tokens = (
             sc.reserve(
@@ -1040,7 +1040,7 @@ class TestScheduler(IntegrationTestCase):
         mail.messages = []
 
         # now let's try with an approved reservation
-        allocation = sc.allocate(dates, approve=True)[0]
+        allocation = sc.allocate(dates, approve_manually=True)[0]
         token = sc.reserve(
             reservation_email,
             dates, data=data, session_id=session_id

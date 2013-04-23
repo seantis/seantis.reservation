@@ -98,14 +98,13 @@ class DataGeneratorView(grok.View):
                 print 'a @', timespan[0], timespan[1]
 
                 try:
-                    approve = bool(random.randrange(0, 2))
                     scheduler.allocate(
                         (timespan[0], timespan[1]),
                         raster=timespan[2],
                         partly_available=bool(random.randrange(0, 2)),
                         grouped=False,
                         quota=quota,
-                        approve=approve
+                        approve_manually=bool(random.randrange(0, 2))
                     )
                 except OverlappingAllocationError:
                     pass
@@ -156,14 +155,14 @@ class DataGeneratorView(grok.View):
             else:
                 start, end = allocation.start, allocation.display_end
 
-            if not allocation.approve:
+            if not allocation.approve_manually:
                 limit = allocation.quota
 
             for i in xrange(0, random.randrange(0, limit + 1)):
                 try:
                     print 'r @', start, end
                     token = scheduler.reserve(email, dates=(start, end))
-                    if not allocation.approve:
+                    if not allocation.approve_manually:
                         scheduler.approve_reservation(token)
                 except ReservationError:
                     break

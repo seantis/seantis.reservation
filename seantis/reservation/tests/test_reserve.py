@@ -18,7 +18,7 @@ class TestYourReservations(IntegrationTestCase):
         start = datetime(2012, 12, 10, 8, 0)
         end = datetime(2012, 12, 10, 12, 0)
         dates = (start, end)
-        scheduler.allocate(dates, approve=False)
+        scheduler.allocate(dates, approve_manually=False)
 
         request = self.portal.REQUEST
         view = YourReservations(resource, request)

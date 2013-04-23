@@ -611,7 +611,7 @@ def event_availability(context, request, scheduler, allocation):
             )
 
     # with approval the number of people in the waitinglist have to be shown
-    if allocation.approve:
+    if allocation.approve_manually:
         length = allocation.waitinglist_length
         if length == 0:
             text += '\n' + title(_(u'waitinglist is free'))
@@ -868,7 +868,7 @@ def context_path(context):
         return context.getPhysicalPath()
 
 
-def portal_type_in_context(context, portal_type):
+def portal_type_in_context(context, portal_type, depth=1):
     """Returns the given portal types _within_ the current context."""
 
     path = '/'.join(context_path(context))
@@ -876,7 +876,7 @@ def portal_type_in_context(context, portal_type):
     catalog = getToolByName(context, 'portal_catalog')
     results = catalog(
         portal_type=portal_type,
-        path={'query': path, 'depth': 1}
+        path={'query': path, 'depth': depth}
     )
     return results
 

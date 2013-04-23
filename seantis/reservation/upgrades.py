@@ -199,3 +199,28 @@ def upgrade_1007_to_1008(operations, metadata):
     allocations_table = Table('allocations', metadata, autoload=True)
     if 'waitinglist_spots' in allocations_table.columns:
         operations.drop_column('allocations', 'waitinglist_spots')
+
+
+@db_upgrade
+def upgrade_1008_to_1009(operations, metadata):
+
+    allocations_table = Table('allocations', metadata, autoload=True)
+    if 'approve_manually' not in allocations_table.columns:
+        operations.alter_column(
+            table_name='allocations',
+            column_name='approve',
+            new_column_name='approve_manually',
+            server_default='FALSE'
+        )
+
+
+def upgrade_1009_to_1010(context):
+
+    site = utils.getSite()
+    all_resources = utils.portal_type_in_context(
+        site, 'seantis.reservation.resource', depth=100
+    )
+
+    for brain in all_resources:
+        resource = brain.getObject()
+        resource.approve_manually = resource.approve

@@ -288,8 +288,8 @@ class Scheduler(object):
 
     @serialized
     def allocate(self, dates, raster=15, quota=None, partly_available=False,
-                 grouped=False, approve=True, reservation_quota_limit=0,
-                 whole_day=False
+                 grouped=False, approve_manually=True,
+                 reservation_quota_limit=0, whole_day=False
                  ):
         """Allocates a spot in the calendar.
 
@@ -359,7 +359,7 @@ class Scheduler(object):
             allocation.quota = quota
             allocation.mirror_of = self.uuid
             allocation.partly_available = partly_available
-            allocation.approve = approve
+            allocation.approve_manually = approve_manually
             allocation.reservation_quota_limit = reservation_quota_limit
 
             if grouped:
@@ -578,7 +578,7 @@ class Scheduler(object):
     @serialized
     def move_allocation(
             self, master_id, new_start=None, new_end=None,
-            group=None, new_quota=None, approve=None,
+            group=None, new_quota=None, approve_manually=None,
             reservation_quota_limit=0, whole_day=None):
 
         assert master_id
@@ -642,8 +642,8 @@ class Scheduler(object):
         #  from an existing group by specifiying the new group)
         for allocation in self.allocations_by_group(group or master.group):
 
-            if approve is not None:
-                allocation.approve = approve
+            if approve_manually is not None:
+                allocation.approve_manually = approve_manually
 
             if reservation_quota_limit is not None:
                 allocation.reservation_quota_limit = reservation_quota_limit
@@ -734,7 +734,7 @@ class Scheduler(object):
 
                 # with manual approval the reservation ends up on the
                 # waitinglist and does not yet need a spot
-                if not allocation.approve:
+                if not allocation.approve_manually:
                     if not self.find_spot(allocation, start, end):
                         raise AlreadyReservedError
 

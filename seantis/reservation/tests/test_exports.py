@@ -21,7 +21,7 @@ class TestExports(IntegrationTestCase):
         dates = (start, end)
 
         reservation_email = u'test@example.com'
-        sc.allocate(dates, approve=False, quota=2)[0]
+        sc.allocate(dates, approve_manually=False, quota=2)[0]
 
         token1 = sc.reserve(
             reservation_email, dates,
