@@ -29,7 +29,6 @@ from seantis.reservation.error import (
     AlreadyReservedError,
     NotReservableError,
     ReservationTooLong,
-    FullWaitingList,
     ReservationParametersInvalid,
     InvalidReservationToken,
     InvalidReservationError,
@@ -289,7 +288,7 @@ class Scheduler(object):
 
     @serialized
     def allocate(self, dates, raster=15, quota=None, partly_available=False,
-                 grouped=False, waitinglist_spots=None, approve=True,
+                 grouped=False, waitinglist=False, approve=True,
                  reservation_quota_limit=0, whole_day=False
                  ):
         """Allocates a spot in the calendar.
@@ -323,7 +322,11 @@ class Scheduler(object):
 
         group = new_uuid()
         quota = quota or 1
-        waitinglist_spots = approve and waitinglist_spots or quota
+
+        if not approve:
+            assert not waitinglist, """
+                autoapproval with waitinglist is not yet supported
+            """
 
         # if the allocation is not partly available the raster is set to lowest
         # possible raster value
@@ -351,9 +354,6 @@ class Scheduler(object):
             if existing:
                 raise OverlappingAllocationError(start, end, existing)
 
-        # ensure that the waitinglist is at least as big as the quota
-        assert not approve or waitinglist_spots >= quota
-
         # Write the master allocations
         allocations = []
         for start, end in dates:
@@ -364,7 +364,7 @@ class Scheduler(object):
             allocation.quota = quota
             allocation.mirror_of = self.uuid
             allocation.partly_available = partly_available
-            allocation.waitinglist_spots = waitinglist_spots
+            allocation.waitinglist = waitinglist
             allocation.approve = approve
             allocation.reservation_quota_limit = reservation_quota_limit
 
@@ -431,10 +431,6 @@ class Scheduler(object):
         """
 
         assert new_quota > 0, "Quota must be greater than 0"
-
-        if new_quota > master.waitinglist_spots:
-            for s in master.siblings():
-                s.waitinglist_spots = new_quota
 
         if new_quota == master.quota:
             return
@@ -588,14 +584,16 @@ class Scheduler(object):
     @serialized
     def move_allocation(
             self, master_id, new_start=None, new_end=None,
-            group=None, new_quota=None, waitinglist_spots=None,
+            group=None, new_quota=None, waitinglist=None,
             approve=None, reservation_quota_limit=0, whole_day=None):
 
         assert master_id
         assert any([new_start and new_end, group, new_quota])
 
-        waitinglist_spots = approve and waitinglist_spots or new_quota
-        assert not approve or waitinglist_spots >= new_quota
+        if not approve:
+            assert not waitinglist, """
+                autoapproval with waitinglist is not yet supported
+            """
 
         # Find allocation
         master = self.allocation_by_id(master_id)
@@ -654,8 +652,8 @@ class Scheduler(object):
         # (this still allows to use move_allocation to remove an allocation
         #  from an existing group by specifiying the new group)
         for allocation in self.allocations_by_group(group or master.group):
-            if waitinglist_spots is not None:
-                allocation.waitinglist_spots = waitinglist_spots
+            if waitinglist is not None:
+                allocation.waitinglist = waitinglist
 
             if approve is not None:
                 allocation.approve = approve
@@ -747,11 +745,12 @@ class Scheduler(object):
 
                 assert allocation.is_master
 
-                if allocation.approve:
-                    if not allocation.open_waitinglist_spots():
-                        raise FullWaitingList
+                if not allocation.approve:
+                    assert not allocation.waitinglist, """
+                        autoapproval with waitinglist is not yet supported
+                    """
 
-                else:
+                if not allocation.waitinglist:
                     if not self.find_spot(allocation, start, end):
                         raise AlreadyReservedError
 

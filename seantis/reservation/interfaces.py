@@ -272,11 +272,11 @@ class IResourceAllocationDefaults(form.Schema):
         default=True
     )
 
-    waitinglist_spots = schema.Int(
-        title=_(u'Waiting List Spots'),
+    waitinglist = schema.Bool(
+        title=_(u'Waiting List'),
         description=_(
-            u'Number of spots in the waitinglist (must be at least as high as '
-            u'the quota)'
+            u'True if reservations can be put into a waitinglist if the '
+            u'allocation is fully booked.'
         ),
         default=1
     )
@@ -307,17 +307,6 @@ class IResourceAllocationDefaults(form.Schema):
     def isValidQuota(Allocation):
         if not (1 <= Allocation.quota and Allocation.quota <= 100):
             raise Invalid(_(u'Quota must be between 1 and 100'))
-
-    @invariant
-    def isValidWaitinglist(Allocation):
-        if not Allocation.approve:
-            return
-
-        if not (Allocation.quota <= Allocation.waitinglist_spots and
-                Allocation.waitinglist_spots <= 100):
-            raise Invalid(
-                _(u'Waitinglist length must be between the quota and 100')
-            )
 
     @invariant
     def isValidQuotaLimit(Allocation):
@@ -401,7 +390,7 @@ class IResourceBase(IResourceAllocationDefaults):
         label=_(u'Default Allocation Values'),
         fields=(
             'quota', 'partly_available', 'raster', 'approve',
-            'waitinglist_spots', 'reservation_quota_limit'
+            'reservation_quota_limit'
         )
     )
 

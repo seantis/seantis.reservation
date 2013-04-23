@@ -8,7 +8,6 @@ from seantis.reservation.error import (
     AffectedReservationError,
     AlreadyReservedError,
     ReservationTooLong,
-    FullWaitingList,
     InvalidReservationError,
     InvalidAllocationError
 )
@@ -104,7 +103,7 @@ class TestScheduler(IntegrationTestCase):
         ]
 
         allocations = sc.allocate(
-            dates, grouped=True, approve=True, quota=3, waitinglist_spots=3
+            dates, grouped=True, approve=True, quota=3, waitinglist=True
         )
 
         self.assertEqual(len(allocations), 2)
@@ -194,33 +193,29 @@ class TestScheduler(IntegrationTestCase):
         )
 
     @serialized
-    def test_waitlist(self):
+    def test_waitinglist(self):
         sc = Scheduler(new_uuid())
 
         start = datetime(2012, 2, 29, 15, 0)
         end = datetime(2012, 2, 29, 19, 0)
         dates = (start, end)
 
-        # let's create an allocation with three spots in the waiting list
-        allocation = sc.allocate(dates, waitinglist_spots=1)[0]
-        self.assertEqual(allocation.open_waitinglist_spots(), 1)
+        # let's create an allocation with a waitinglist
+        allocation = sc.allocate(dates, approve=True, waitinglist=True)[0]
+        self.assertEqual(allocation.waitinglist_length(), 0)
 
-        # first reservation should work
+        # reservation should work
         approval_token = sc.reserve(reservation_email, dates)
         self.assertFalse(
             sc.reservations_by_token(approval_token).one().autoapprovable
         )
         self.assertTrue(allocation.is_available(start, end))
-
-        # which results in a full waiting list (as the reservation is pending)
-        self.assertEqual(allocation.open_waitinglist_spots(), 0)
+        self.assertEqual(allocation.waitinglist_length(), 1)
 
         # as well as it's approval
         sc.approve_reservation(approval_token)
         self.assertFalse(allocation.is_available(start, end))
-
-        # this leaves one waiting list spot
-        self.assertEqual(allocation.open_waitinglist_spots(), 1)
+        self.assertEqual(allocation.waitinglist_length(), 0)
 
         # at this point we can only reserve, not approve
         waiting_token = sc.reserve(reservation_email, dates)
@@ -228,8 +223,7 @@ class TestScheduler(IntegrationTestCase):
             AlreadyReservedError, sc.approve_reservation, waiting_token
         )
 
-        # the waiting list should be full now
-        self.assertEqual(allocation.open_waitinglist_spots(), 0)
+        self.assertEqual(allocation.waitinglist_length(), 1)
 
         # try to illegally move the allocation now
         self.assertRaises(
@@ -239,11 +233,11 @@ class TestScheduler(IntegrationTestCase):
 
         # we may now get rid of the existing approved reservation
         sc.remove_reservation(approval_token)
-        self.assertEqual(allocation.open_waitinglist_spots(), 0)
+        self.assertEqual(allocation.waitinglist_length(), 1)
 
         # which should allow us to approve the reservation in the waiting list
         sc.approve_reservation(waiting_token)
-        self.assertEqual(allocation.open_waitinglist_spots(), 1)
+        self.assertEqual(allocation.waitinglist_length(), 0)
 
     @serialized
     def test_no_bleed(self):
@@ -268,7 +262,7 @@ class TestScheduler(IntegrationTestCase):
         sc.reserve(reservation_email, d1)
 
     @serialized
-    def test_waitlist_group(self):
+    def test_waitinglist_group(self):
         from dateutil.rrule import rrule, DAILY, MO
 
         sc = Scheduler(new_uuid())
@@ -284,7 +278,9 @@ class TestScheduler(IntegrationTestCase):
                 )
             )
 
-        allocations = sc.allocate(dates, grouped=True, waitinglist_spots=2)
+        allocations = sc.allocate(
+            dates, grouped=True, waitinglist=True, approve=True
+        )
         self.assertEqual(len(allocations), 5)
 
         group = allocations[0].group
@@ -294,6 +290,8 @@ class TestScheduler(IntegrationTestCase):
         self.assertFalse(
             sc.reservations_by_token(maintoken).one().autoapprovable
         )
+        for allocation in allocations:
+            self.assertEqual(allocation.waitinglist_length(), 1)
         sc.approve_reservation(maintoken)
 
         token = sc.reserve(reservation_email, group=group)
@@ -301,10 +299,6 @@ class TestScheduler(IntegrationTestCase):
 
         token = sc.reserve(reservation_email, group=group)
         self.assertRaises(AlreadyReservedError, sc.approve_reservation, token)
-
-        self.assertRaises(
-            FullWaitingList, sc.reserve, reservation_email, None, group
-        )
 
         # the only thing changing is the fact that removing part of the
         # reservation does not delete the reservation record.
@@ -329,7 +323,7 @@ class TestScheduler(IntegrationTestCase):
 
         allocations = sc.allocate(
             dates, grouped=True, quota=3,
-            waitinglist_spots=3, approve=True, reservation_quota_limit=3
+            waitinglist=True, approve=True, reservation_quota_limit=3
         )
 
         for allocation in allocations:
@@ -345,7 +339,8 @@ class TestScheduler(IntegrationTestCase):
         )
         sc.move_allocation(
             allocations[0].id, newstart, newend,
-            new_quota=2, waitinglist_spots=2, reservation_quota_limit=2
+            new_quota=2, approve=True, waitinglist=True,
+            reservation_quota_limit=2
         )
 
         group_allocations = sc.allocations_by_group(allocations[0].group).all()
@@ -354,7 +349,7 @@ class TestScheduler(IntegrationTestCase):
         for a in group_allocations:
             self.assertTrue(a.is_master)
             self.assertEqual(a.quota, 2)
-            self.assertEqual(a.waitinglist_spots, 2)
+            self.assertEqual(a.waitinglist, True)
             self.assertEqual(a.reservation_quota_limit, 2)
 
             for allocation in a.siblings():
@@ -395,7 +390,7 @@ class TestScheduler(IntegrationTestCase):
         )
 
     @serialized
-    def test_no_waitlist(self):
+    def test_no_waitinglist(self):
         sc = Scheduler(new_uuid())
 
         start = datetime(2012, 4, 6, 22, 0)
@@ -404,8 +399,7 @@ class TestScheduler(IntegrationTestCase):
 
         allocation = sc.allocate(dates, approve=False)[0]
 
-        self.assertEqual(allocation.open_waitinglist_spots(), 0)
-        self.assertEqual(allocation.pending_reservations.count(), 0)
+        self.assertEqual(allocation.waitinglist_length(), 0)
 
         # the first reservation kinda gets us in a waiting list, though
         # this time there can be only one spot in the list as long as there's
@@ -419,15 +413,14 @@ class TestScheduler(IntegrationTestCase):
         self.assertRaises(
             AlreadyReservedError, sc.reserve, reservation_email, dates
         )
-        self.assertEqual(allocation.open_waitinglist_spots(), 0)
-        self.assertEqual(allocation.pending_reservations.count(), 0)
+        self.assertEqual(allocation.waitinglist_length(), 0)
 
         # until we delete the existing reservation
         sc.remove_reservation(token)
         sc.reserve(reservation_email, dates)
 
     @serialized
-    def test_quota_waitlist(self):
+    def test_quota_waitinglist(self):
         sc = Scheduler(new_uuid())
 
         start = datetime(2012, 3, 4, 2, 0)
@@ -437,27 +430,26 @@ class TestScheduler(IntegrationTestCase):
         # in this example the waiting list will kick in only after
         # the quota has been filled
 
-        allocation = sc.allocate(dates, quota=2, waitinglist_spots=2)[0]
-        self.assertEqual(allocation.open_waitinglist_spots(), 2)
+        allocation = sc.allocate(
+            dates, quota=2, waitinglist=True, approve=True
+        )[0]
+        self.assertEqual(allocation.waitinglist_length(), 0)
 
         t1 = sc.reserve(reservation_email, dates)
         t2 = sc.reserve(reservation_email, dates)
 
-        self.assertEqual(allocation.open_waitinglist_spots(), 0)
+        self.assertEqual(allocation.waitinglist_length(), 2)
 
         sc.approve_reservation(t1)
         sc.approve_reservation(t2)
 
-        self.assertEqual(allocation.open_waitinglist_spots(), 2)
+        self.assertEqual(allocation.waitinglist_length(), 0)
 
         t3 = sc.reserve(reservation_email, dates)
         t4 = sc.reserve(reservation_email, dates)
 
-        self.assertEqual(allocation.open_waitinglist_spots(), 0)
+        self.assertEqual(allocation.waitinglist_length(), 2)
 
-        self.assertRaises(
-            FullWaitingList, sc.reserve, reservation_email, dates
-        )
         self.assertRaises(AlreadyReservedError, sc.approve_reservation, t3)
         self.assertRaises(AlreadyReservedError, sc.approve_reservation, t4)
 
@@ -921,21 +913,13 @@ class TestScheduler(IntegrationTestCase):
         end = datetime(2012, 1, 1, 19, 0)
         dates = (start, end)
 
-        sc.allocate(dates, waitinglist_spots=1)
+        sc.allocate(dates, approve=True, waitinglist=True)
         token = sc.reserve(reservation_email, dates)
 
         self.assertTrue(reservation_made_event.was_fired())
         self.assertEqual(reservation_made_event.event.reservation.token, token)
 
         reservation_made_event.reset()
-
-        # do a failing reservation (=> no event)
-        try:
-            sc.reserve(reservation_email, dates)
-        except FullWaitingList:
-            pass
-
-        self.assertFalse(reservation_made_event.was_fired())
 
         # approve it
         sc.approve_reservation(token)

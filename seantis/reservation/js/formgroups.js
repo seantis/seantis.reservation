@@ -246,14 +246,6 @@ seantis.formgroups.init = function(el) {
     });
 
     add({
-        name: "approve",
-        trigger: find('#form-widgets-approve-0'),
-        fields: [
-            find('#formfield-form-widgets-waitinglist_spots')
-        ]
-    });
-
-    add({
         name: "selected_date",
         trigger: find('#form-widgets-selected_date-1'),
         fields: [

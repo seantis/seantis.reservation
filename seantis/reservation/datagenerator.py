@@ -98,14 +98,15 @@ class DataGeneratorView(grok.View):
                 print 'a @', timespan[0], timespan[1]
 
                 try:
+                    approve = bool(random.randrange(0, 2))
                     scheduler.allocate(
                         (timespan[0], timespan[1]),
                         raster=timespan[2],
                         partly_available=bool(random.randrange(0, 2)),
                         grouped=False,
                         quota=quota,
-                        waitinglist_spots=random.randrange(quota, 100),
-                        approve=bool(random.randrange(0, 2))
+                        waitinglist=approve,
+                        approve=approve
                     )
                 except OverlappingAllocationError:
                     pass
@@ -156,9 +157,7 @@ class DataGeneratorView(grok.View):
             else:
                 start, end = allocation.start, allocation.display_end
 
-            if allocation.approve:
-                limit = allocation.waitinglist_spots
-            else:
+            if not allocation.approve:
                 limit = allocation.quota
 
             for i in xrange(0, random.randrange(0, limit + 1)):

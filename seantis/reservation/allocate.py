@@ -58,7 +58,6 @@ class AllocationAddForm(AllocationForm):
                     'quota',
                     'reservation_quota_limit',
                     'approve',
-                    'waitinglist_spots',
                     'partly_available',
                     'raster'
                 )
@@ -84,7 +83,6 @@ class AllocationAddForm(AllocationForm):
             'days': default_days,
             'quota': ctx.quota,
             'approve': ctx.approve,
-            'waitinglist_spots': ctx.waitinglist_spots,
             'raster': ctx.raster,
             'partly_available': ctx.partly_available,
             'reservation_quota_limit': ctx.reservation_quota_limit
@@ -154,7 +152,7 @@ class AllocationAddForm(AllocationForm):
                 quota=data['quota'],
                 partly_available=data['partly_available'],
                 grouped=not data['separately'],
-                waitinglist_spots=data['waitinglist_spots'],
+                waitinglist=data['approve'],  # currently the same
                 approve=data['approve'],
                 reservation_quota_limit=data['reservation_quota_limit'],
                 whole_day=data['whole_day']
@@ -201,8 +199,7 @@ class AllocationEditForm(AllocationForm):
                 field.Fields(IResourceAllocationDefaults).select(
                     'quota',
                     'reservation_quota_limit',
-                    'approve',
-                    'waitinglist_spots'
+                    'approve'
                 )
             )
         ]
@@ -234,7 +231,6 @@ class AllocationEditForm(AllocationForm):
             'quota': allocation.quota,
             'approve': allocation.approve,
             'whole_day': allocation.whole_day,
-            'waitinglist_spots': allocation.waitinglist_spots,
             'reservation_quota_limit': allocation.reservation_quota_limit
         }
 
@@ -254,7 +250,7 @@ class AllocationEditForm(AllocationForm):
             end,
             unicode(data['group'] or u''),
             data['quota'],
-            data['waitinglist_spots'],
+            data['approve'],  # waitinglist currently the same as approve
             data['approve'],
             data['reservation_quota_limit'],
             data['whole_day']
