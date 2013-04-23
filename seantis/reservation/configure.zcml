@@ -143,6 +143,15 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
     profile="seantis.reservation:default">
 </genericsetup:upgradeStep>
 
+<genericsetup:upgradeStep
+    title="Migrate waitinglist spots to boolean"
+    description=""
+    source="1007"
+    destination="1008"
+    handler=".upgrades.upgrade_1007_to_1008"
+    profile="seantis.reservation:default">
+</genericsetup:upgradeStep>
+
 <!-- Controlpanel View -->
 <browser:page
     for="plone.app.layout.navigation.interfaces.INavigationRoot"

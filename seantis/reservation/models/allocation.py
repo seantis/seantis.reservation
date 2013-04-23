@@ -40,10 +40,7 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
         types.Integer(), default=0, nullable=False
     )
 
-    # waiting list spots are interpreted like this:
-    # <1 = no spots on the waiting list
-    # >0 = n spots on the waiting list
-    waitinglist_spots = Column(types.Integer(), default=0)
+    waitinglist = Column(types.Boolean(), default=False, nullable=False)
 
     # The dates are stored without any timzone information (unaware).
     # Therefore the times are implicitly stored in the timezone the resource
@@ -72,7 +69,7 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
         allocation.quota = self.quota
         allocation.partly_available = self.partly_available
         allocation.approve = self.approve
-        allocation.waitinglist_spots = self.waitinglist_spots
+        allocation.waitinglist = self.waitinglist
         allocation._start = self._start
         allocation._end = self._end
         allocation._raster = self._raster
@@ -207,21 +204,6 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
         allocation this function returns the same value for masters and
         mirrors.
 
-        The number of pending_reservations is not necessarily the same as the
-        number of used spots in the waitinglist as allocations without a
-        waitinglist may still have pending reservations up to the set quota.
-
-        The reason is that non-waitinglist allocations still use the two-phase
-        reservation with the first phase being pending reservations.
-
-        For those, there are no spots in the waiting list, but pending
-        reservations up to the number of open quota spots may still be added.
-
-        For allocations with a waiting list the pending reservations equal the
-        number of used spots in the waiting list. This ensures that a
-        waitinglist of 100 never has more than 100 entries, no matter if we
-        count the spots toward the list or toward the unused quota.
-
         """
         Reservation = self.models.Reservation
         query = Session.query(Reservation.id)
@@ -232,13 +214,6 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
 
     def waitinglist_length(self):
         return self.pending_reservations.count()
-
-    def open_waitinglist_spots(self):
-
-        used = self.pending_reservations.count()
-        available = self.approve and self.waitinglist_spots or 0
-
-        return max(available - used, 0)
 
     @property
     def availability(self):
