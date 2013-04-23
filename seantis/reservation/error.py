@@ -55,10 +55,6 @@ class ReservationParametersInvalid(ReservationError):
     pass
 
 
-class FullWaitingList(ReservationError):
-    pass
-
-
 class InvalidReservationToken(ReservationError):
     pass
 
@@ -119,9 +115,6 @@ errormap = {
 
     ReservationParametersInvalid:
     _(u'The given reservation paramters are invalid.'),
-
-    FullWaitingList:
-    _(u'The waitinglist is full.'),
 
     InvalidReservationToken:
     _(u'The given reservation token is invalid.'),
