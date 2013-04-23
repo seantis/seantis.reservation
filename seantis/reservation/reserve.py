@@ -247,10 +247,10 @@ class ReservationBaseForm(ResourceBaseForm):
             )
 
         if approve_manually:
+            self.flash(_(u'Added to waitinglist'))
+        else:
             self.scheduler.approve_reservation(token)
             self.flash(_(u'Reservation successful'))
-        else:
-            self.flash(_(u'Added to waitinglist'))
 
 
 class ReservationForm(
