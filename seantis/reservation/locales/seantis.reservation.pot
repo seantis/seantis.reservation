@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-04-23 12:47+0000\n"
+"POT-Creation-Date: 2013-04-24 09:27+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,19 +21,19 @@ msgstr ""
 msgid "${count} Orphan Records Removed"
 msgstr ""
 
-#: ./utils.py:621
+#: ./utils.py:629
 msgid "%i people waiting"
 msgstr ""
 
-#: ./utils.py:602
+#: ./utils.py:610
 msgid "%i%% Free"
 msgstr ""
 
-#: ./utils.py:609
+#: ./utils.py:617
 msgid "%i/%i Spot Available"
 msgstr ""
 
-#: ./utils.py:605
+#: ./utils.py:613
 msgid "%i/%i Spots Available"
 msgstr ""
 
@@ -65,7 +65,7 @@ msgstr ""
 msgid "Add timeframe"
 msgstr ""
 
-#: ./reserve.py:253
+#: ./reserve.py:250
 msgid "Added to waitinglist"
 msgstr ""
 
@@ -140,7 +140,7 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: ./templates/resource.pt:105
+#: ./templates/resource.pt:110
 msgid "Click on a calendar block to reserve it."
 msgstr ""
 
@@ -363,6 +363,10 @@ msgstr ""
 
 #: ./reserve.py:276
 msgid "General Information"
+msgstr ""
+
+#: ./templates/resource.pt:70
+msgid "Has a waitinglist"
 msgstr ""
 
 #: ./templates/monthly_report.pt:28
@@ -603,7 +607,7 @@ msgstr ""
 msgid "Reservation removed"
 msgstr ""
 
-#: ./reserve.py:251
+#: ./reserve.py:253
 msgid "Reservation successful"
 msgstr ""
 
@@ -892,11 +896,11 @@ msgstr ""
 msgid "Your reservations"
 msgstr ""
 
-#: ./utils.py:619
+#: ./utils.py:627
 msgid "one person waiting"
 msgstr ""
 
-#: ./utils.py:617
+#: ./utils.py:625
 msgid "waitinglist is free"
 msgstr ""
 

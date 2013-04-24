@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-04-23 12:47+0000\n"
+"POT-Creation-Date: 2013-04-24 09:27+0000\n"
 "PO-Revision-Date: 2012-09-06 11:33+0100\n"
 "Last-Translator: Fabian Reinhard <fabian.reinhard@seantis.ch>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,19 +18,19 @@ msgstr ""
 msgid "${count} Orphan Records Removed"
 msgstr "${count} Verwaiste Datensätze entfernt"
 
-#: ./utils.py:621
+#: ./utils.py:629
 msgid "%i people waiting"
 msgstr "%i Personen warten"
 
-#: ./utils.py:602
+#: ./utils.py:610
 msgid "%i%% Free"
 msgstr "%i%% Frei"
 
-#: ./utils.py:609
+#: ./utils.py:617
 msgid "%i/%i Spot Available"
 msgstr "%i/%i Platz Verfügbar"
 
-#: ./utils.py:605
+#: ./utils.py:613
 msgid "%i/%i Spots Available"
 msgstr "%i/%i Plätze Verfügbar"
 
@@ -62,7 +62,7 @@ msgstr "Email Vorlage hinzufügen"
 msgid "Add timeframe"
 msgstr "Belegungsperiode hinzufügen"
 
-#: ./reserve.py:253
+#: ./reserve.py:250
 msgid "Added to waitinglist"
 msgstr "In Warteliste eingetragen"
 
@@ -137,7 +137,7 @@ msgstr "Das Datum das beim Öffnen des Kalenders angezeigt wird."
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: ./templates/resource.pt:105
+#: ./templates/resource.pt:110
 msgid "Click on a calendar block to reserve it."
 msgstr "Klicken Sie auf einen Block im Kalender um diesen zu reservieren."
 
@@ -361,6 +361,10 @@ msgstr "Verfügbar"
 #: ./reserve.py:276
 msgid "General Information"
 msgstr "Allgemein"
+
+#: ./templates/resource.pt:70
+msgid "Has a waitinglist"
+msgstr "Hat eine Warteliste"
 
 #: ./templates/monthly_report.pt:28
 msgid "Hide"
@@ -600,7 +604,7 @@ msgstr "Limit der Anzahl Reservationen muss Null oder grösser sein"
 msgid "Reservation removed"
 msgstr "Reservation entfernt"
 
-#: ./reserve.py:251
+#: ./reserve.py:253
 msgid "Reservation successful"
 msgstr "Reservation erfolgreich"
 
@@ -889,11 +893,11 @@ msgstr "Sie möchten 'Immer ein bestimmtes Datum anzeigen' haben aber kein Datum
 msgid "Your reservations"
 msgstr "Ihre Reservationen"
 
-#: ./utils.py:619
+#: ./utils.py:627
 msgid "one person waiting"
 msgstr "Eine Person wartet"
 
-#: ./utils.py:617
+#: ./utils.py:625
 msgid "waitinglist is free"
 msgstr "Warteliste frei"
 

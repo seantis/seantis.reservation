@@ -64,6 +64,11 @@
                             <div class="event-unavailable"></div>
                             <tal:block i18n:translate="">Unavailable</tal:block>
                         </div>
+
+                        <div class="icon">
+                            <div class="waitinglist-icon"></div>
+                            <tal:block i18n:translate="">Has a waitinglist</tal:block>
+                        </div>
                         
                     </div>
 

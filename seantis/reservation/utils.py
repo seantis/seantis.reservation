@@ -586,6 +586,14 @@ def event_class(availability):
         return 'event-available'
 
 
+def allocation_class(allocation):
+    """Returns the class set on the fullcalendar event for the allocation."""
+    if allocation.approve_manually:
+        return 'approve-manually'
+    else:
+        return 'approve-automatically'
+
+
 def event_availability(context, request, scheduler, allocation):
     """Returns the availability for an allocation shown as an event in the
     calendar view.
@@ -620,7 +628,7 @@ def event_availability(context, request, scheduler, allocation):
         else:
             text += '\n' + title(_(u'%i people waiting')) % length
 
-    return text, event_class(availability)
+    return text, ' '.join((event_class(availability), allocation_class(a)))
 
 
 def flatten(l):

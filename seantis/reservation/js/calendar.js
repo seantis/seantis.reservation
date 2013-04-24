@@ -241,6 +241,11 @@ var CalendarGroups = function() {
                 if (seantis.contextmenu.simple(event)) {
                     calendar.overlay_init(element);
                 }
+
+                // Add a box for displaying an icon on the upper right corner
+                element.find('.fc-event-time').append(
+                    $('<div class="corner-icon"></div>')
+                );
             });
         };
 

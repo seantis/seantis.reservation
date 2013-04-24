@@ -4,21 +4,6 @@
 
 */
 
-.singlecalendar .legend,
-.multicalendar .legend {
-    padding: 4px;
-    background-color: #ebf4fa;
-    border-color: #dedede;
-}
-
-.singlecalendar .legend div {
-    margin-right: 10px;
-}
-
-.singlecalendar .legend div.color {
-    padding-right: 0;
-}
-
 .multicalendar .multiCalendarContainer {
     float: none;
     width: 100%;

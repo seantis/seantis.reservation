@@ -1,6 +1,6 @@
-/* 
+/*
 
-    fullcalendar and other basic adjustments for seantis.reservation 
+    fullcalendar and other basic adjustments for seantis.reservation
     -> should probably be named base.css in the future => TODO
 
 */
@@ -15,11 +15,10 @@
 
 .your-reservations .limitedList,
 .your-reservations-view .limitedList {
-    max-width: 100%;   
+    max-width: 100%;
 }
 
 /* overview calendar */
-
 #seantis-overview-calendar .fc-widget-header.fc-mon,
 #seantis-overview-calendar .fc-widget-header.fc-tue,
 #seantis-overview-calendar .fc-widget-header.fc-wed,
@@ -31,7 +30,7 @@
 
 #seantis-overview-calendar .fc-widget-header.fc-sat,
 #seantis-overview-calendar .fc-widget-header.fc-sun {
-    background-color: #ddd !important;   
+    background-color: #ddd !important;
     border: none;
 }
 
@@ -41,7 +40,6 @@
     -moz-box-shadow: 0 0 0 1px #0e6700 !important;
     box-shadow: 0 0 0 1px #0e6700 !important;
     background-color: white !important;
-    
     position: relative;
 }
 
@@ -74,12 +72,9 @@ a.fc-event:hover {
     border-radius: 0 !important;
 }
 
-.fc-event-time {
-    line-height: 18px;
-}
-
 .fc-event-title {
     font-size: 10px;
+    line-height: 14px;
 }
 
 /* availability colors */
@@ -103,7 +98,25 @@ a.fc-event:hover {
     border-color: #ae1e00 !important;
 }
 .event-unavailable .fc-event-time {
-    background-color: #ae1e09;    
+    background-color: #ae1e09;
+}
+
+/* corner icon */
+.fc-event-time {
+    line-height: 19px !important;
+}
+
+.approve-manually .corner-icon {
+    display: inline;
+    float: right;
+    width: 13px;
+    height: 13px;
+    margin: 2px 1px 0 0;
+}
+
+.approve-manually .corner-icon,
+.waitinglist-icon {
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAANCAYAAABy6+R8AAAAyklEQVQoz2NgQAU2QLxcVFT0iZaW1k8QDeJDxTEACxBP9fHx+X/q1Kn/yADEB4mD5IGYFVnT7Pr6+v/4QF1dHUjjbJgGa5BJ+MC5c+f+h4SEwGy0BmlaBnNSaGjo/wsXLmBoUFVVBdMgdWA/Aj37AqYApAEYAHCNIIUqKipgGgaA6p8ygBQhA5jGlStXYmgAAR0dnZ8oNiFrlJGRwdAAtwnkRvRgxgXgfgJFHKHQgwFo6MEjegqR8TQFOXJZyUkR6GnvKTTtPcWW9gD/SpZeK7AzIwAAAABJRU5ErkJggg==) no-repeat;
 }
 
 /* calendar colors */
@@ -112,7 +125,7 @@ a.fc-event:hover {
 }
 
 .fc-content td, .fc-content th {
-    border-color: #ccc;   
+    border-color: #ccc;
 }
 
 .fc-event-bg {
@@ -189,37 +202,46 @@ a.fc-event:hover {
 
 /* calendar legend */
 .legend {
-     float:right;
-     border: 1px solid #ccc;
-     border-top: none;
-     color: #3a4a58;
-     padding-left: 8px;
-     padding-bottom: 1px;
-}
-.legend div {
-    display: inline;
-    background-position: left;
-    padding-left: 18px;
-    padding-right: 10px;
+    float:right;
+    border: 1px solid #ccc;
+    border-top: none;
+    padding: 1px 5px 5px 5px;
+    background-color: #f8f8f8;
+    border-radius: 0 0 2px 2px;
 }
 
-.legend div.color {
-    padding: 0;
-    padding-right: 8px;
+.legend div {
+    display: inline;
+}
+
+.legend > div {
+    margin-right: 8px;
 }
 
 .legend div.color div {
-    margin-right: 1px;
-    padding: 0;
-    width: 12px;
-    height: 12px;
+    width: 16px;
+    height: 16px;
     display: inline-block;
     position: relative;
-    top: 1px;
+    top: 3px;
+}
+
+.legend div.icon {
+    padding: 0;
+    margin: 0;
+}
+
+.legend div.icon div {
+    width: 13px;
+    height: 13px;
+    display: inline-block;
+    padding: 0;
+    position: relative;
+    top: 2px;
 }
 
 @media all and (max-width: 900px) {
-    .singlecalendar .fc-event-head {
+    .singlecalendar .corner-icon {
         background-image: none !important;
     }
 
@@ -229,15 +251,11 @@ a.fc-event:hover {
 }
 
 @media all and (max-width: 2000px) {
-    .multicalendar .fc-event-head {
+    .multicalendar .corner-icon {
         background-image: none !important;
     }
 
     .multicalendar .legend .icon {
         display: none !important;
     }
-}
-
-.fc-event-title {
-    line-height: 14px;
 }
