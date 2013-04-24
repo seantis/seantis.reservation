@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-04-24 09:27+0000\n"
+"POT-Creation-Date: 2013-04-24 12:59+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -121,10 +121,6 @@ msgstr ""
 
 #: ./report.py:52
 msgid "Approved"
-msgstr ""
-
-#: ./templates/reservations.pt:21
-msgid "Approved Reservations"
 msgstr ""
 
 #: ./interfaces.py:352
@@ -522,10 +518,6 @@ msgstr ""
 msgid "Pending"
 msgstr ""
 
-#: ./templates/reservations.pt:96
-msgid "Pending Reservations"
-msgstr ""
-
 #: ./interfaces.py:247
 msgid "Quota"
 msgstr ""
@@ -612,6 +604,7 @@ msgid "Reservation successful"
 msgstr ""
 
 #: ./resource.py:278
+#: ./templates/reservations.pt:21
 msgid "Reservations"
 msgstr ""
 
@@ -812,11 +805,11 @@ msgstr ""
 msgid "The selected view must be one of the available views."
 msgstr ""
 
-#: ./form.py:511
+#: ./form.py:547
 msgid "There are ${nb} reservations being entered for this resource."
 msgstr ""
 
-#: ./form.py:507
+#: ./form.py:543
 msgid "There is one reservation being entered for this resource."
 msgstr ""
 
@@ -869,6 +862,10 @@ msgstr ""
 msgid "Views available to the user on the calendar."
 msgstr ""
 
+#: ./templates/reservations.pt:96
+msgid "Waitinglist"
+msgstr ""
+
 #: ./interfaces.py:33
 msgid "We"
 msgstr ""
@@ -878,7 +875,7 @@ msgid "Weekly View"
 msgstr ""
 
 #: ./interfaces.py:487
-#: ./resource.py:365
+#: ./resource.py:364
 #: ./templates/group.pt:40
 msgid "Whole Day"
 msgstr ""

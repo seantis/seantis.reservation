@@ -10,15 +10,15 @@
 <metal:main fill-slot="main">
 <tal:main-macro metal:define-macro="main">
 
-<div class="inline-reservations" tal:attributes="data-group python: view.highlight_group">
+<div tal:attributes="data-group python: view.highlight_group; class python: view.hide_waitinglist and 'inline-reservations hide-waitinglist' or 'inline-reservations'">
   
   <div class="uncommitted" i18n:translate="" tal:condition="view/uncommitted_reservations_count">
     <tal:block content="view/uncommitted_reservations"></tal:block>
   </div>
 
-  <div class="splitscreen splitleft" >
+  <div class="splitscreen splitleft">
 
-    <h2 class="documentFirstHeading" i18n:translate="">Approved Reservations</h2>
+    <h2 class="documentFirstHeading" i18n:translate="">Reservations</h2>
     
     <div class="reservation-info reservation-approved" metal:define-macro="approved_reservations">
         
@@ -93,7 +93,7 @@
   </div>
   <div class="splitscreen splitright">
    
-    <h2 class="documentFirstHeading" i18n:translate="">Pending Reservations</h2>
+    <h2 class="documentFirstHeading" i18n:translate="">Waitinglist</h2>
     
     <div class="reservation-info reservation-pending" metal:define-macro="pending_reservations">
         

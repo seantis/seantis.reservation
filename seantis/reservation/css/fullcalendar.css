@@ -186,6 +186,16 @@ a.fc-event:hover {
     padding-right: 15px;
 }
 
+/* hidden waitinglist in manage reservations */
+
+.hide-waitinglist .splitleft {
+    width: 75%;   
+}
+
+.hide-waitinglist .splitright {
+    display: none;   
+}
+
 /* to overlap the overlay */
 #calroot {
     z-index: 10000;

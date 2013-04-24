@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-04-24 09:27+0000\n"
+"POT-Creation-Date: 2013-04-24 12:59+0000\n"
 "PO-Revision-Date: 2012-09-06 11:33+0100\n"
 "Last-Translator: Fabian Reinhard <fabian.reinhard@seantis.ch>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -119,10 +119,6 @@ msgstr "Reservation zulassen"
 #: ./report.py:52
 msgid "Approved"
 msgstr "Zugelassen"
-
-#: ./templates/reservations.pt:21
-msgid "Approved Reservations"
-msgstr "Zugelassene Reservationen"
 
 #: ./interfaces.py:352
 msgid "Available Views"
@@ -519,10 +515,6 @@ msgstr "Teilweise verfügbare Einteilungen können nur separat reserviert werden
 msgid "Pending"
 msgstr "Warteliste"
 
-#: ./templates/reservations.pt:96
-msgid "Pending Reservations"
-msgstr "Offene Reservationen"
-
 #: ./interfaces.py:247
 msgid "Quota"
 msgstr "Kontingent"
@@ -609,6 +601,7 @@ msgid "Reservation successful"
 msgstr "Reservation erfolgreich"
 
 #: ./resource.py:278
+#: ./templates/reservations.pt:21
 msgid "Reservations"
 msgstr "Reservationen"
 
@@ -809,11 +802,11 @@ msgstr "Die resultierende Einteilung wäre Ungültig"
 msgid "The selected view must be one of the available views."
 msgstr "Die ausgewählte Ansicht muss eine verfügbare Ansicht sein."
 
-#: ./form.py:511
+#: ./form.py:547
 msgid "There are ${nb} reservations being entered for this resource."
 msgstr "${nb} Reservationen werden gerade eingegeben."
 
-#: ./form.py:507
+#: ./form.py:543
 msgid "There is one reservation being entered for this resource."
 msgstr "Eine Reservation wird gerade eingegeben."
 
@@ -866,6 +859,10 @@ msgstr "Hilfsmittel"
 msgid "Views available to the user on the calendar."
 msgstr "Ansichten die den Benutzern auf dem Kalender zur verfügung stehen."
 
+#: ./templates/reservations.pt:96
+msgid "Waitinglist"
+msgstr "Warteliste"
+
 #: ./interfaces.py:33
 msgid "We"
 msgstr "Mi"
@@ -875,7 +872,7 @@ msgid "Weekly View"
 msgstr "Wochenansicht"
 
 #: ./interfaces.py:487
-#: ./resource.py:365
+#: ./resource.py:364
 #: ./templates/group.pt:40
 msgid "Whole Day"
 msgstr "Ganztägig"

@@ -407,6 +407,32 @@ class ReservationListView(ReservationDataView):
         """
         return hasattr(self, 'group') and utils.string_uuid(self.group) or u''
 
+    @property
+    def hide_waitinglist(self):
+        """ Returns True if the waitinglist should be hidden. It is hidden
+        if all the allocations involved in the view are set to automatic
+        approval and no existing entries can be found (there might be because
+        of switching).
+
+        """
+
+        all_allocations = self.all_allocations()
+        manual_allocations = all_allocations.filter(
+            Allocation.approve_manually == True
+        )
+
+        # don't hide if there are manually managed allocations
+        if manual_allocations.first() is not None:
+            return False
+
+        # don't hide if an automatically managed allocation has a left-over
+        # waitinglist entry in it
+        for allocation in all_allocations.all():
+            if allocation.waitinglist_length > 0:
+                return False
+
+        return True
+
     def reservation_by_token(self, token):
         if token in self.pending_reservations():
             return self.pending_reservations()[token][0]
@@ -463,6 +489,18 @@ class ReservationListView(ReservationDataView):
             return scheduler.reservations_by_allocation(self.id)
         if self.group:
             return scheduler.reservations_by_group(self.group)
+
+        return None
+
+    def all_allocations(self):
+        scheduler = self.context.scheduler()
+
+        if self.reservation:
+            return scheduler.allocations_by_reservation(self.reservation)
+        if self.id:
+            return [scheduler.allocation_by_id(self.id)]
+        if self.group:
+            return scheduler.allocations_by_group(self.group)
 
         return None
 
