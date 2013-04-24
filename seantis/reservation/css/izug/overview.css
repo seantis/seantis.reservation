@@ -1,6 +1,7 @@
 /* overview styles for izug basetheme */
 .resource-listing {
     float: left;
+    margin-top: 5px;
 }
 
 .resource-listing-entry.groupSelection,
@@ -9,13 +10,27 @@
        -moz-box-shadow: none !important;
             box-shadow: none !important;
             
-    background-color: #ffeeb3 !important;  
+    background-color: #ffeeb3 !important;
 }
 
 .resource-listing-overview {
     float: right;
     max-width: 400px;
-    margin-top: -30px;
+    margin-top: 5px;
+}
+
+.resource-listing-overview .fc-day.event-available,
+.resource-listing-overview .fc-day.event-partly-available,
+.resource-listing-overview .fc-day.event-unavailable {
+    opacity: 0.8;   
+}
+
+.resource-listing-overview .fc-day.groupSelection,
+.resource-listing-overview .fc-day.event-available:hover,
+.resource-listing-overview .fc-day.event-partly-available:hover,
+.resource-listing-overview .fc-day.event-unavailable:hover {
+   color: white;
+   opacity: 1.0;
 }
 
 .resource-listing-entry {

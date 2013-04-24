@@ -5,6 +5,12 @@
 
 */
 
+/* the approve field is now called approve_manually, since the old one has to linger around for migration
+and there's no easy way to hide it, this hack helps: */
+#formfield-form-widgets-approve {
+    display: none;   
+}
+
 /* limited list */
 .limitedList {
     overflow: auto;
@@ -128,7 +134,7 @@ a.fc-event:hover {
 }
 
 .fc-content td, .fc-content th {
-    border-color: #ccc;
+    border-color: #ddd;
 }
 
 .fc-event-bg {
