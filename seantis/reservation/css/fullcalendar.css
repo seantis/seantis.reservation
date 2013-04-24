@@ -106,12 +106,15 @@ a.fc-event:hover {
     line-height: 19px !important;
 }
 
+.fc-event-time span {
+    float: left;
+}
+
 .approve-manually .corner-icon {
-    display: inline;
     float: right;
     width: 13px;
     height: 13px;
-    margin: 2px 1px 0 0;
+    margin: 3px 2px 0 0;
 }
 
 .approve-manually .corner-icon,

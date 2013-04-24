@@ -243,9 +243,17 @@ var CalendarGroups = function() {
                 }
 
                 // Add a box for displaying an icon on the upper right corner
-                element.find('.fc-event-time').append(
-                    $('<div class="corner-icon"></div>')
-                );
+                // because of Firefox rendering differently than the other
+                // browsers we need to wrap the existing text in a span and
+                // do proper floating
+                var time = element.find('.fc-event-time');
+
+                time.html([
+                    '<span>' + time.text() + '</span>',
+                    '<span class="corner-icon"></span>',
+                    '<div style="clear:both"></div>'
+                ].join(''));
+
             });
         };
 
