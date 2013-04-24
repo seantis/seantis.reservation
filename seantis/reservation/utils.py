@@ -595,8 +595,8 @@ def allocation_class(allocation):
 
 
 def event_availability(context, request, scheduler, allocation):
-    """Returns the availability for an allocation shown as an event in the
-    calendar view.
+    """Returns the availability, the text with the availability and the class
+    for the availability to display on the calendar view.
 
     """
     a = allocation
@@ -628,7 +628,11 @@ def event_availability(context, request, scheduler, allocation):
         else:
             text += '\n' + title(_(u'%i people waiting')) % length
 
-    return text, ' '.join((event_class(availability), allocation_class(a)))
+    return (
+        availability,
+        text,
+        ' '.join((event_class(availability), allocation_class(a)))
+    )
 
 
 def flatten(l):

@@ -304,7 +304,7 @@ class AllocationGroupView(object):
         return base + ' ' + self.event_availability(allocation)[1]
 
     def event_title(self, allocation):
-        return self.event_availability(allocation)[0]
+        return self.event_availability(allocation)[1]
 
 
 class ReservationDataView(object):
