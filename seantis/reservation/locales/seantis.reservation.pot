@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-04-24 12:59+0000\n"
+"POT-Creation-Date: 2013-04-25 07:38+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -638,6 +638,10 @@ msgstr ""
 msgid "Resources"
 msgstr ""
 
+#: ./templates/reservations.pt:38
+msgid "Revoke"
+msgstr ""
+
 #: ./interfaces.py:36
 msgid "Sa"
 msgstr ""
@@ -805,11 +809,11 @@ msgstr ""
 msgid "The selected view must be one of the available views."
 msgstr ""
 
-#: ./form.py:547
+#: ./form.py:549
 msgid "There are ${nb} reservations being entered for this resource."
 msgstr ""
 
-#: ./form.py:543
+#: ./form.py:545
 msgid "There is one reservation being entered for this resource."
 msgstr ""
 

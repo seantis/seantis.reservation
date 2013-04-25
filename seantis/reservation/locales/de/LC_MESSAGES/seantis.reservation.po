@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-04-24 12:59+0000\n"
+"POT-Creation-Date: 2013-04-25 07:38+0000\n"
 "PO-Revision-Date: 2012-09-06 11:33+0100\n"
 "Last-Translator: Fabian Reinhard <fabian.reinhard@seantis.ch>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -635,6 +635,10 @@ msgstr "Reservation"
 msgid "Resources"
 msgstr "Ressourcen"
 
+#: ./templates/reservations.pt:38
+msgid "Revoke"
+msgstr "Absagen"
+
 #: ./interfaces.py:36
 msgid "Sa"
 msgstr "Sa"
@@ -802,11 +806,11 @@ msgstr "Die resultierende Einteilung wäre Ungültig"
 msgid "The selected view must be one of the available views."
 msgstr "Die ausgewählte Ansicht muss eine verfügbare Ansicht sein."
 
-#: ./form.py:547
+#: ./form.py:549
 msgid "There are ${nb} reservations being entered for this resource."
 msgstr "${nb} Reservationen werden gerade eingegeben."
 
-#: ./form.py:543
+#: ./form.py:545
 msgid "There is one reservation being entered for this resource."
 msgstr "Eine Reservation wird gerade eingegeben."
 

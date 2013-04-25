@@ -38,7 +38,7 @@
                     <a tal:condition="view/show_links"
                        tal:attributes="href python: view.remove_all_url(token)"
                        class="reservation-delete" i18n:translate="">
-                       Delete
+                       Revoke
                     </a>
 
                 </div>

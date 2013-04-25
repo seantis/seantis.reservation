@@ -711,21 +711,16 @@ class IGroupReservation(Interface):
     )
 
 
-class IRemoveReservation(Interface):
-    """ For the reservation removal form. """
+class IRevokeReservation(Interface):
+    """ For the reservation revocation form. """
 
     reservation = schema.Text(
         title=_(u'Reservation'),
         required=False
     )
 
-    start = schema.Datetime(
-        title=_(u'Start'),
-        required=False
-    )
-
-    end = schema.Datetime(
-        title=_(u'End'),
+    reason = schema.Text(
+        title=_(u'Reason'),
         required=False
     )
 

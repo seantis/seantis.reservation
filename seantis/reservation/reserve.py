@@ -23,7 +23,7 @@ from seantis.reservation.interfaces import (
     IResourceBase,
     IReservation,
     IGroupReservation,
-    IRemoveReservation,
+    IRevokeReservation,
     IApproveReservation,
 )
 
@@ -49,7 +49,7 @@ class ReservationUrls(object):
     def remove_all_url(self, token, context=None):
         context = context or self.context
         base = context.absolute_url()
-        return base + u'/remove-reservation?reservation=%s' % token
+        return base + u'/revoke-reservation?reservation=%s' % token
 
     def approve_all_url(self, token, context=None):
         context = context or self.context
@@ -617,22 +617,25 @@ class ReservationDenialForm(ReservationDecisionForm):
         self.redirect_to_context()
 
 
-class ReservationRemoveForm(ResourceBaseForm, ReservationListView,
-                            ReservationUrls):
+class ReservationRevocationForm(
+    ResourceBaseForm,
+    ReservationListView,
+    ReservationUrls
+):
 
     permission = 'seantis.reservation.ApproveReservations'
 
-    grok.name('remove-reservation')
+    grok.name('revoke-reservation')
     grok.require(permission)
 
     destructive_buttons = ('delete', )
 
-    fields = field.Fields(IRemoveReservation)
-    template = ViewPageTemplateFile('templates/remove_reservation.pt')
+    fields = field.Fields(IRevokeReservation)
+    template = ViewPageTemplateFile('templates/revoke_reservation.pt')
 
-    label = _(u'Remove reservation')
+    label = _(u'Revoke reservation')
 
-    hidden_fields = ['reservation', 'start', 'end']
+    hidden_fields = ['reservation']
     ignore_requirements = True
 
     show_links = False
@@ -650,27 +653,22 @@ class ReservationRemoveForm(ResourceBaseForm, ReservationListView,
 
     @property
     def hint(self):
-        if not self.approved_reservations():
+        if not (self.reservation or self.approved_reservations()):
             return _(u'No such reservation')
 
-        if self.reservation and not all((self.start, self.end)):
-            return _(
-                u'Do you really want to remove the following reservations?'
-            )
-
-        if self.reservation and all((self.start, self.end)):
-            return _(u'Do you really want to remove '
-                     u'the following timespans from the reservation?')
+        return _(
+            u'Do you really want to revoke the following reservations?'
+        )
 
     @button.buttonAndHandler(_(u'Delete'))
     @extract_action_data
     def delete(self, data):
 
         def delete():
-            self.scheduler.remove_reservation(
-                data['reservation'], data['start'], data['end']
+            self.scheduler.revoke_reservation(
+                data['reservation'], data['reason']
             )
-            self.flash(_(u'Reservation removed'))
+            self.flash(_(u'Reservation revoked'))
 
         utils.handle_action(action=delete, success=self.redirect_to_context)
 

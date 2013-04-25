@@ -891,35 +891,32 @@ class Scheduler(object):
         notify(ReservationDeniedEvent(reservation, self.language))
 
     @serialized
-    def remove_reservation(self, token, start=None, end=None):
+    def revoke_reservation(self, token, reason):
+        pass
+
+    @serialized
+    def remove_reservation(self, token):
         """ Removes all reserved slots of the given reservation token.
 
-        Optionnaly, only slots between start and end are deleted. Once all
-        slots are deleted the reservation itself is deleted.
+        Note that removing a reservation does not let the reservee know that
+        his reservation has been removed.
 
-        This implies of course that a reservation record may not be that
-        consistent with the reserved slots. TODO?
+        If you want to let the reservee know what happened,
+        use revoke_reservation.
 
         """
 
-        if not (start and end):
-            slots = self.reserved_slots_by_reservation(token)
-        else:
-            slots = self.reserved_slots_by_range(token, start, end)
+        slots = self.reserved_slots_by_reservation(token)
 
         for slot in slots:
             Session.delete(slot)
 
-        # remove the reservation if there's nothing left of it
-        slots_left = self.reserved_slots_by_reservation(token)
-        if not slots_left.count():
+        reservations = Session.query(Reservation).filter(
+            Reservation.token == token
+        )
 
-            reservations = Session.query(Reservation).filter(
-                Reservation.token == token
-            )
-
-            for r in reservations:
-                Session.delete(r)
+        for r in reservations:
+            Session.delete(r)
 
     @serialized
     def confirm_reservations_for_session(self, session_id, token=None):
