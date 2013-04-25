@@ -7,4 +7,4 @@ Wir haben folgende Reservationen erhalten:
 Die Reservationen die mit einem Stern (*) gekennzeichnet sind werden überprüft
 und entweder angenommmen oder abgelehnt. Sie werden dazu per Email informiert.
 
-Reservationen ohne Stern wurden automatisch angenommen und sind somit definitiv.
+Reservationen ohne Stern wurden automatisch angenommen und sind gültig. Sollte sich an einer Reservation etwas ändern werden Sie über E-Mail informiert.

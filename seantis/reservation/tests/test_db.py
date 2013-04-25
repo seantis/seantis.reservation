@@ -114,10 +114,7 @@ class TestScheduler(IntegrationTestCase):
 
         def reserve():
             token = sc.reserve(u'test@example.com', group=group)
-            reservations = sc.reservations_by_token(token).all()
-            self.assertEqual(len(reservations), 1)
-
-            reservation = reservations[0]
+            reservation = sc.reservation_by_token(token).one()
 
             targets = reservation._target_allocations().all()
             self.assertEqual(len(targets), 2)
@@ -207,7 +204,7 @@ class TestScheduler(IntegrationTestCase):
         # reservation should work
         approval_token = sc.reserve(reservation_email, dates)
         self.assertFalse(
-            sc.reservations_by_token(approval_token).one().autoapprovable
+            sc.reservation_by_token(approval_token).one().autoapprovable
         )
         self.assertTrue(allocation.is_available(start, end))
         self.assertEqual(allocation.waitinglist_length, 1)
@@ -286,7 +283,7 @@ class TestScheduler(IntegrationTestCase):
         # reserving groups is no different than single allocations
         maintoken = sc.reserve(reservation_email, group=group)
         self.assertFalse(
-            sc.reservations_by_token(maintoken).one().autoapprovable
+            sc.reservation_by_token(maintoken).one().autoapprovable
         )
         for allocation in allocations:
             self.assertEqual(allocation.waitinglist_length, 1)
@@ -393,7 +390,7 @@ class TestScheduler(IntegrationTestCase):
         # no reservation
 
         token = sc.reserve(reservation_email, dates)
-        self.assertTrue(sc.reservations_by_token(token).one().autoapprovable)
+        self.assertTrue(sc.reservation_by_token(token).one().autoapprovable)
         sc.approve_reservation(token)
 
         # it is now that we should have a problem reserving
@@ -728,6 +725,7 @@ class TestScheduler(IntegrationTestCase):
 
         sc.remove_reservation(reservations[0])
         self.assertTrue(master.is_available())
+        reservations = reservations[1:]
 
         # by removing the reservation on the master and changing the quota
         # a reordering is triggered which will ensure that the master and the
@@ -881,10 +879,14 @@ class TestScheduler(IntegrationTestCase):
         reservation_denied_event = self.subscribe(
             events.ReservationDeniedEvent
         )
+        reservation_revoked_event = self.subscribe(
+            events.ReservationRevokedEvent
+        )
 
         self.assertFalse(reservation_made_event.was_fired())
         self.assertFalse(reservation_approved_event.was_fired())
         self.assertFalse(reservation_denied_event.was_fired())
+        self.assertFalse(reservation_revoked_event.was_fired())
 
         # prepare reservation
         sc = Scheduler(new_uuid())
@@ -920,8 +922,10 @@ class TestScheduler(IntegrationTestCase):
         reservation_approved_event.reset()
         reservation_denied_event.reset()
 
-        # remove the reservation and deny the next one
-        sc.remove_reservation(token)
+        # revoke the reservation and deny the next one
+        sc.revoke_reservation(token, u'no-reason')
+
+        self.assertTrue(reservation_revoked_event.was_fired())
 
         token = sc.reserve(reservation_email, dates)
 
@@ -996,9 +1000,11 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(len(mail.messages), 1)
         mail.messages = []
 
-        # no email also when the reservation is stopped (maybe in the future)
-        sc.remove_reservation(token)
-        self.assertEqual(len(mail.messages), 0)
+        # there is an email again when the reservation is revoked
+        sc.revoke_reservation(token, u'no-reason')
+        self.assertEqual(len(mail.messages), 1)
+        self.assertTrue(u'no-reason' in mail.messages[0])
+        mail.messages = []
 
         sc.remove_allocation(allocation.id)
 

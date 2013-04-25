@@ -1,0 +1,10 @@
+Reservation for %(resource)s revoked
+====================================
+We are sorry to inform you that the following dates for %(resource)s had to be revoked.
+
+Dates:
+%(dates)s
+
+%(reason)s
+
+Please let us know if you have any questions.

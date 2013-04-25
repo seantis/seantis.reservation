@@ -9,13 +9,14 @@ from itertools import groupby
 from zope.event import notify
 
 from sqlalchemy.sql import and_, or_
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, exc
 from sqlalchemy import func, null
 
 from seantis.reservation.events import (
     ReservationMadeEvent,
     ReservationApprovedEvent,
     ReservationDeniedEvent,
+    ReservationRevokedEvent,
     ReservationsConfirmedEvent
 )
 
@@ -811,7 +812,7 @@ class Scheduler(object):
         return token
 
     @serialized
-    def approve_reservation(self, reservation_token):
+    def approve_reservation(self, token):
         """ This function approves an existing reservation and writes the
         reserved slots accordingly.
 
@@ -819,51 +820,43 @@ class Scheduler(object):
 
         """
 
-        # get the reservation
-        query = Session.query(Reservation)
-        query = query.filter(Reservation.token == reservation_token)
-
-        if not query.count():
-            raise InvalidReservationToken
+        reservation = self.reservation_by_token(token).one()
 
         # write out the slots
         slots_to_reserve = []
 
-        # we must expect multiple reservation entries per token in the future
-        for reservation in query:
+        if reservation.target_type == u'group':
+            dates = self.dates_by_group(reservation.target)
+        else:
+            dates = ((reservation.start, reservation.end),)
 
-            if reservation.target_type == u'group':
-                dates = self.dates_by_group(reservation.target)
-            else:
-                dates = ((reservation.start, reservation.end),)
+        # the reservation quota is simply implemented by multiplying the
+        # dates which are approved
 
-            # the reservation quota is simply implemented by multiplying the
-            # dates which are approved
+        dates = dates * reservation.quota
 
-            dates = dates * reservation.quota
+        for start, end in dates:
 
-            for start, end in dates:
+            for allocation in self.reservation_targets(start, end):
 
-                for allocation in self.reservation_targets(start, end):
+                for slot_start, slot_end in \
+                        allocation.all_slots(start, end):
+                    slot = ReservedSlot()
+                    slot.start = slot_start
+                    slot.end = slot_end
+                    slot.resource = allocation.resource
+                    slot.reservation_token = token
 
-                    for slot_start, slot_end in \
-                            allocation.all_slots(start, end):
-                        slot = ReservedSlot()
-                        slot.start = slot_start
-                        slot.end = slot_end
-                        slot.resource = allocation.resource
-                        slot.reservation_token = reservation_token
+                    # the slots are written with the allocation
+                    allocation.reserved_slots.append(slot)
+                    slots_to_reserve.append(slot)
 
-                        # the slots are written with the allocation
-                        allocation.reserved_slots.append(slot)
-                        slots_to_reserve.append(slot)
+                # the allocation may be a fake one, in which case we
+                # must make it realz yo
+                if allocation.is_transient:
+                    Session.add(allocation)
 
-                    # the allocation may be a fake one, in which case we
-                    # must make it realz yo
-                    if allocation.is_transient:
-                        Session.add(allocation)
-
-            reservation.status = u'approved'
+        reservation.status = u'approved'
 
         if not slots_to_reserve:
             raise NotReservableError
@@ -873,26 +866,32 @@ class Scheduler(object):
         return slots_to_reserve
 
     @serialized
-    def deny_reservation(self, reservation_token):
-        """ Denies a pending reservation, removing it from the records (and
-            in the future sending out an email..).
+    def deny_reservation(self, token):
+        """ Denies a pending reservation, removing it from the records and
+        sending an email to the reservee.
 
         """
-        query = Session.query(Reservation)
-        query = query.filter(Reservation.token == reservation_token)
-        query = query.filter(Reservation.status == u'pending')
 
-        if not query.count():
-            raise InvalidReservationToken
+        query = self.reservation_by_token(token)
+        query.filter(Reservation.status == u'pending')
 
         reservation = query.one()
-        query.delete()
+        Session.delete(reservation)
 
         notify(ReservationDeniedEvent(reservation, self.language))
 
     @serialized
     def revoke_reservation(self, token, reason):
-        pass
+        """ Revoke a reservation and inform the user of that."""
+
+        reason = reason or u''
+
+        # sending the email first is no problem as it won't work if
+        # an exception triggers later in the request
+        reservation = self.reservation_by_token(token).one()
+        notify(ReservationRevokedEvent(reservation, self.language, reason))
+
+        self.remove_reservation(token)
 
     @serialized
     def remove_reservation(self, token):
@@ -911,12 +910,7 @@ class Scheduler(object):
         for slot in slots:
             Session.delete(slot)
 
-        reservations = Session.query(Reservation).filter(
-            Reservation.token == token
-        )
-
-        for r in reservations:
-            Session.delete(r)
+        self.reservation_by_token(token).delete()
 
     @serialized
     def confirm_reservations_for_session(self, session_id, token=None):
@@ -1083,9 +1077,16 @@ class Scheduler(object):
 
         return query
 
-    def reservations_by_token(self, token):
+    def reservation_by_token(self, token):
         query = self.managed_reservations()
         query = query.filter(Reservation.token == token)
+
+        try:
+            query.one()
+        except exc.NoResultFound:
+            raise InvalidReservationToken
+        except exc.MultipleResultsFound:
+            raise NotImplementedError
 
         return query
 

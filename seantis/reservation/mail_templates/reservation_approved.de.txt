@@ -4,3 +4,5 @@ Es freut uns Ihnen mitzuteilen dass die folgenden Daten für %(resource)s zugela
 
 Daten:
 %(dates)s
+
+Sollte sich an dieser Reservation etwas ändern werden Sie über E-Mail informiert.

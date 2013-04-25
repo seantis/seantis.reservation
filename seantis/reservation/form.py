@@ -484,7 +484,7 @@ class ReservationListView(ReservationDataView):
         scheduler = self.context.scheduler()
 
         if self.reservation:
-            return scheduler.reservations_by_token(self.reservation)
+            return scheduler.reservation_by_token(self.reservation)
         if self.id:
             return scheduler.reservations_by_allocation(self.id)
         if self.group:

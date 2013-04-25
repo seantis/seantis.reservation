@@ -4,3 +4,5 @@ We are pleased to inform you that the following dates for %(resource)s were appr
 
 Dates:
 %(dates)s
+
+We will send you another e-mail should there be any changes concerning your reservation.

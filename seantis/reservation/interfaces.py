@@ -576,6 +576,10 @@ template_variables = _(
     u'%(denial_link)s - link to the denial view'
 )
 
+template_revoke_variables = template_variables + _(
+    u'%(reason)s - reason for revocation<br>'
+)
+
 reservations_template_variables = _(
     u'May contain the following template variable:<br>'
     u'%(reservations)s - list of reservations'
@@ -644,6 +648,19 @@ class IEmailTemplate(form.Schema):
         title=_(u'Email Text for Denied Reservations'),
         description=template_variables,
         default=templates['reservation_denied'].get_body('en')
+    )
+
+    reservation_revoked_subject = schema.TextLine(
+        title=_(u'Email Subject for Revoked Reservations'),
+        description=_(u'Sent to <b>users</b> when a reservation is revoked. '
+                      u'May contain the template variables listed below.'),
+        default=templates['reservation_revoked'].get_subject('en')
+    )
+
+    reservation_revoked_content = schema.Text(
+        title=_(u'Email Text for Revoked Reservations'),
+        description=template_revoke_variables,
+        default=templates['reservation_revoked'].get_body('en')
     )
 
 
@@ -721,6 +738,11 @@ class IRevokeReservation(Interface):
 
     reason = schema.Text(
         title=_(u'Reason'),
+        description=_(
+            u"Optional reason for the revocation. Sent to the reservee. "
+            u"e.g. 'Your reservation has to be cancelled because the lecturer "
+            u"is ill'."
+        ),
         required=False
     )
 
@@ -764,6 +786,17 @@ class IReservationApprovedEvent(IReservationBaseEvent):
 
 class IReservationDeniedEvent(IReservationBaseEvent):
     """ Event triggered when a reservation is denied. """
+
+
+class IReservationRevokedEvent(IReservationBaseEvent):
+    """ Event triggered when a reservation is revoked. """
+
+    reason = Attribute("""
+        Optional reason for the revocation given by manager. The reason is
+        given in the language of the one writing it as the language of the
+        reservee is unknown at this point. In the future we might have to
+        store said language on the reservation.
+    """)
 
 
 class IReservationsConfirmedEvent(Interface):

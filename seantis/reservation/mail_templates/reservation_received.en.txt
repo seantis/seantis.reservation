@@ -8,4 +8,4 @@ Reservations marked with an asterisk (*) will be reviewed first, before
 you can consider them confirmed. You will receive an email once each reservation
 has been either approved or denied.
 
-Reservations without an asterisk were automatically approved and are confirmed.
+Reservations without an asterisk were automatically approved and may be considered confirmed. We will send you another e-mail should there be any changes.

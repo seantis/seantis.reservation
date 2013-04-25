@@ -21,6 +21,7 @@ from seantis.reservation.reserve import ReservationUrls
 from seantis.reservation.interfaces import IReservationsConfirmedEvent
 from seantis.reservation.interfaces import IReservationApprovedEvent
 from seantis.reservation.interfaces import IReservationDeniedEvent
+from seantis.reservation.interfaces import IReservationRevokedEvent
 from seantis.reservation.interfaces import OverviewletManager
 from seantis.reservation.interfaces import IEmailTemplate
 from seantis.reservation.mail_templates import templates
@@ -67,6 +68,17 @@ def on_reservation_denied(event):
         send_reservation_mail(
             event.reservation, 'reservation_denied', event.language
         )
+
+
+@grok.subscribe(IReservationRevokedEvent)
+def on_reservation_revoked(event):
+    if not settings.get('send_email_to_reservees', True):
+        return
+
+    send_reservation_mail(
+        event.reservation, 'reservation_revoked', event.language,
+        to_managers=False, revocation_reason=event.reason
+    )
 
 
 class EmailTemplate(Item):
@@ -209,7 +221,7 @@ def send_reservations_confirmed(reservations, language):
 
 
 def send_reservation_mail(reservation, email_type, language,
-                          to_managers=False):
+                          to_managers=False, revocation_reason=u''):
 
     resource = utils.get_resource_by_uuid(reservation.resource)
 
@@ -243,7 +255,8 @@ def send_reservation_mail(reservation, email_type, language,
             sender=sender,
             recipient=recipient,
             subject=subject,
-            body=body
+            body=body,
+            revocation_reason=revocation_reason
         )
 
         send_mail(resource, mail)
@@ -260,6 +273,7 @@ class ReservationMail(ReservationDataView, ReservationUrls):
     subject = u''
     body = u''
     reservations = u''
+    revocation_reason = u''
 
     def __init__(self, resource, reservation, **kwargs):
         for k, v in kwargs.items():
@@ -317,6 +331,10 @@ class ReservationMail(ReservationDataView, ReservationUrls):
         # denial links
         if is_needed('denial_link'):
             p['denial_link'] = self.deny_all_url(reservation.token, resource)
+
+        # revocation reason
+        if is_needed('reason'):
+            p['reason'] = self.revocation_reason
 
         self.parameters = p
 

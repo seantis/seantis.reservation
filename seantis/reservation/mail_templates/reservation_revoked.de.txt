@@ -1,0 +1,10 @@
+Reservation für %(resource)s abgesagt
+=====================================
+Es tut uns leid Ihnen mitteilen zu müssen das wir die folgenden Daten für %(resource)s absagen müssen:
+
+Daten:
+%(dates)s
+
+%(reason)s
+
+Wir bitten Sie, sich bei allfälligen Fragen zu melden.

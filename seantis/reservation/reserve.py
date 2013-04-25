@@ -628,7 +628,7 @@ class ReservationRevocationForm(
     grok.name('revoke-reservation')
     grok.require(permission)
 
-    destructive_buttons = ('delete', )
+    destructive_buttons = ('revoke', )
 
     fields = field.Fields(IRevokeReservation)
     template = ViewPageTemplateFile('templates/revoke_reservation.pt')
@@ -645,11 +645,7 @@ class ReservationRevocationForm(
         return self.request.get('reservation')
 
     def defaults(self):
-        return dict(
-            reservation=unicode(self.reservation),
-            start=self.start,
-            end=self.end
-        )
+        return dict(reservation=unicode(self.reservation))
 
     @property
     def hint(self):
@@ -660,17 +656,17 @@ class ReservationRevocationForm(
             u'Do you really want to revoke the following reservations?'
         )
 
-    @button.buttonAndHandler(_(u'Delete'))
+    @button.buttonAndHandler(_(u'Revoke'))
     @extract_action_data
-    def delete(self, data):
+    def revoke(self, data):
 
-        def delete():
+        def revoke():
             self.scheduler.revoke_reservation(
                 data['reservation'], data['reason']
             )
             self.flash(_(u'Reservation revoked'))
 
-        utils.handle_action(action=delete, success=self.redirect_to_context)
+        utils.handle_action(action=revoke, success=self.redirect_to_context)
 
     @button.buttonAndHandler(_(u'Cancel'))
     def cancel(self, action):
