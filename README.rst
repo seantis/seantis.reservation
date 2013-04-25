@@ -54,6 +54,25 @@ is in production mode. The reason for it is that those browsers ignore
 every stylesheet after the 32th. In production these stylesheets are
 merged.
 
+Note that we also rely heavily on javascript as the calendar shown for
+reservations is rendered through javascript. If your requirement is to run
+without javascript then this is not the droid you are looking for.
+
+Limitations
+-----------
+
+These are the things seantis.reservation currently doesn't do, or doesn't do
+well:
+
+- Multilanguage. It is perfectly fine to run seantis.reservation in the language
+of your choice, though you might have to do some translations for yourself. However,
+you might find the ability to run the site in multiple languages (where the language
+is set on a per-request basis) to be lacking or with rough edges. It should mostly
+work but we cannot guarantee it or tell you that we tested this well.
+
+- Timezones. We currently do not store a timezone with the resource. Therefore
+comparing different resources of different timezones is a no go.
+
 Recommended Packages
 --------------------
 
@@ -275,14 +294,14 @@ To really understand seantis.reservation it is important to understand a
 few core concepts:
 
 Resource
---------
+~~~~~~~~
 
 Resources are Dxterity content types who display a calendar and interact
 with the core of seantis.reservation. They are heavy on the UI side of
 things, while being nothing more than a foreign key in the database.
 
 Allocations
------------
+~~~~~~~~~~~
 
 Everyone familiar with Outlook or Google Calendar knows that one can
 just click on an empty spot and add a new reservation.
@@ -305,7 +324,7 @@ may not overlap for any given resource and they are independent of Plone
 and part of the SQL database model.
 
 Reserved Slots
---------------
+~~~~~~~~~~~~~~
 
 When reserving an allocation or a part of an allocation, reserved slots
 are generated. They ensure that no reservation is ever granted twice by
@@ -341,7 +360,7 @@ Of course there are a number of optimizations to ensure that we don't
 generated millions of reserved slots. But this is basically it.
 
 Reservations
-------------
+~~~~~~~~~~~~
 
 Reservations exist in two states: Pending and Approved.
 
