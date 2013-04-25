@@ -64,14 +64,14 @@ Limitations
 These are the things seantis.reservation currently doesn't do, or doesn't do
 well:
 
-- Multilanguage. It is perfectly fine to run seantis.reservation in the language
-of your choice, though you might have to do some translations for yourself. However,
-you might find the ability to run the site in multiple languages (where the language
-is set on a per-request basis) to be lacking or with rough edges. It should mostly
-work but we cannot guarantee it or tell you that we tested this well.
+-  Multilanguage. It is perfectly fine to run seantis.reservation in the language
+   of your choice, though you might have to do some translations for yourself. However,
+   you might find the ability to run the site in multiple languages (where the language
+   is set on a per-request basis) to be lacking or with rough edges. It should mostly
+   work but we cannot guarantee it or tell you that we tested this well.
 
-- Timezones. We currently do not store a timezone with the resource. Therefore
-comparing different resources of different timezones is a no go.
+-  Timezones. We currently do not store a timezone with the resource. Therefore
+   comparing different resources of different timezones is a no go.
 
 Recommended Packages
 --------------------
