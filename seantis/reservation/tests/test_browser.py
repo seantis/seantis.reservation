@@ -162,9 +162,12 @@ class TestBrowser(FunctionalTestCase):
             'month', 'agendaWeek'
         ]
 
-        browser.getControl(name='form.widgets.selected_view:list').value = [
-            'month'
-        ]
+        try:     # plone 4.3
+            control = 'form.widgets.selected_view'
+            browser.getControl(name=control).value = ['month']
+        except:  # plone 4.2
+            control = 'form.widgets.selected_view:list'
+            browser.getControl(name=control).value = ['month']
 
         browser.getControl('Save').click()
 
