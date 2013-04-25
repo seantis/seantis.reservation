@@ -73,22 +73,6 @@ well:
 -  Timezones. We currently do not store a timezone with the resource. Therefore
    comparing different resources of different timezones is a no go.
 
-Recommended Packages
---------------------
-
-seantis.reservation is best used together with seantis.dir.facility.
-Said package enables the creation of a directory of facilities. Say a
-directory of rooms, or a directory of nurseries. Or a directory of
-community college courses.
-
-A facility directory will display an overview containing a calendar, a
-map and some management tools. This overview is part of
-seantis.reservation and may be used in other products, but that will
-require some work and a deeper understanding of Plone.
-
-seantis.reservation may be used on its own, but throughout this readme
-it is assumed that seantis.dir.facility is installed alongside.
-
 Installation
 ------------
 
@@ -109,29 +93,25 @@ Install required packages
 Install Postgresql
 ------------------
 
-Run the installer
-
-::
+Run the installer ::
 
     sudo apt-get install postgresql-9.1
     sudo apt-get install postgresql-9.1-dev
 
-Create a database user (replace ``your_password`` with your own). This
-password is needed later!
+If the dev package cannot be found try ::
 
-::
+    sudo apt-get install postgresql-server-dev-all
+
+Create a database user (replace ``your_password`` with your own). This
+password is needed later! ::
 
     sudo -u postgres psql -c "CREATE USER reservation WITH PASSWORD 'your_password'"
 
-Create the reservations database
-
-::
+Create the reservations database ::
 
     sudo -u postgres psql -c "CREATE DATABASE reservations ENCODING 'UTF8' TEMPLATE template0"
 
-Grant the required privileges to the reservation user
-
-::
+Grant the required privileges to the reservation user ::
 
     sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE reservations to reservation"
 
@@ -139,39 +119,27 @@ Install Plone
 -------------
 
 Download the buildout configs to the folder which will hold your Plone
-installation.
-
-::
+installation. ::
 
     wget -qO - https://raw.github.com/seantis/seantis.reservation/master/buildout/buildouts.sh | bash
 
-Or if you don't have wget (like on OSX):
-
-::
+Or if you don't have wget (like on OSX): ::
 
     curl https://raw.github.com/seantis/seantis.reservation/master/buildout/buildouts.sh | bash 
 
-Edit your database connection settings in the database.cfg file.
-
-::
+Edit your database connection settings in the database.cfg file. ::
 
     nano database.cfg
 
-Download the boostrap script
-
-::
+Download the boostrap script ::
 
     wget http://python-distribute.org/bootstrap.py
 
-Again, alternatively with curl
-
-::
+Again, alternatively with curl ::
 
     curl http://python-distribute.org/bootstrap.py > bootstrap.py
 
-Bootstrap your environment
-
-::
+Bootstrap your environment ::
 
     python2.7 bootstrap.py
 
@@ -184,9 +152,7 @@ must currently use develop.cfg instead of the usual buildout.cfg*
 
     bin/buildout -c develop.cfg
 
-If everything went well you may now start your instance
-
-::
+If everything went well you may now start your instance ::
 
     bin/instance fg
 
@@ -196,9 +162,7 @@ Creating a Reservation Plone Site
 Create the Site
 ~~~~~~~~~~~~~~~
 
-Having started your instance, navigate to the plone root:
-
-::
+Having started your instance, navigate to the plone root: ::
 
     http://localhost:8080
 
@@ -209,83 +173,34 @@ Plone site" If you used the develop.cfg the username and password are
 Obviously you do not want to use develop.cfg in production!
 
 On the "Create a Plone site" form, you should enter name and title of
-your plone site, followed by checking the boxes of the following
-Add-Ons:
+your plone site, followed by checking the box of the following
+Add-On:
 
--  Collective Geo Contentlocations
--  Collective Geo Geographer
--  Collective Geo Kml
--  Collective Geo MapWidget
--  Collective Geo Openlayers
--  Collective Geo Settings
--  seantis.dir.facility
--  seantis.reservation
+**Seantis Reservation - for default plone theme**
 
 Having done that, click "Create Plone Site"
 
-Create a Facility Directory
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-On your freshly minted Plone Site, click on "Add new..." and choose
-"Facility Directory". For this introduction we shall create an imaginary
-restaurant which offers the users to reserve tables over the internet.
-
-The "Facility" in "Facility Directory" really doesn't mean you can only
-enter rooms and the like. No, it's not the perfect name.
-
-Anywho, on the "Add Facility Directory" form enter the following:
-
-::
-
-    Name: **Milliways**
-    Subtitle: **The Restuarant at the End of the Universe**
-
-    1st Category Name: **Window-Seat**
-    2nd Category Name: **Smoking-Area**
-
-    Enable searching: No
-
-And add the directory.
-
-Add the Facility Items
+Create Resource Folder
 ~~~~~~~~~~~~~~~~~~~~~~
 
-In the newly created directory, click on "Add new..." and choose
-"Facility Directory Item".
-
-Enter the following on the "Add Facility Directory Item" form:
-
-::
-
-    Name: **Table #1**
-    Description: **This table offers a great view.**
-    Window-Seat: **Yes**
-    Smoking-Area: **No**
-
-Reapeat the same with the following data:
-
-::
-
-    Name: **Table #2**
-    Description: **This table has a smoky atmosphere.**
-    Window-Seat: **Yes**
-    Smoking-Area: **Yes**
+On your freshly minted Plone Site, click on "Add new..." and choose
+"Folder". Use any name you like.
 
 Add a Resource
 ~~~~~~~~~~~~~~
 
-Click on Table #1 to get to its detail view. There click on "Add new..."
-again and choose "Resource Item".
+In the newly created folder, click on "Default View" and choose 
+"Resource Listing".
 
-Enter the following:
+This will turn the folder into a view designed for displaying Resources.
 
-::
+After changing the view click on "Add new..." and choose "Resource".
+Enter any name you like.
 
-    Name: **Dinner Reservation**
-    First hour of the day: 17
-    Last hour of the day: 22
-
-Save the resource.
+You should now see a calendar in which you can create allocations that may
+be reserved. One level up, in the folder view, you may add more resources and
+compare them. Of course there is more to learn, but this is the basic setup of
+the Seantis Reservation module.
 
 Data Structure
 --------------
