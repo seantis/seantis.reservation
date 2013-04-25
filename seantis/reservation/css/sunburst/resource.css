@@ -36,6 +36,15 @@
     min-width: 120px;
 }
 
+/* calendar in resource-view */
+
+#content .fc-event:hover {
+    color: white !important;
+}
+.fc-event-title, .fc-event-time {
+     font-size: 11px !important;   
+}
+
 /* formular tabs */
 .seantis-reservation-form ul.formTabs {
     margin: 5px 0 5px 0;   

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-04-25 11:41+0000\n"
+"POT-Creation-Date: 2013-04-25 12:03+0000\n"
 "PO-Revision-Date: 2012-09-06 11:33+0100\n"
 "Last-Translator: Fabian Reinhard <fabian.reinhard@seantis.ch>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,7 +23,7 @@ msgid "%(reason)s - reason for revocation<br>"
 msgstr "%(reason)s - Grund für die Absage<br>"
 
 #: ./utils.py:629
-msgid "%i people waiting"
+msgid "%i People Waiting"
 msgstr "%i Personen warten"
 
 #: ./utils.py:610
@@ -506,6 +506,10 @@ msgstr "Legt das Kontingent der Einteilung fest. z.B. 3 Plätze in einer Kinderk
 msgid "Once"
 msgstr "Ohne"
 
+#: ./utils.py:627
+msgid "One Person Waiting"
+msgstr "Eine Person wartet"
+
 #: ./interfaces.py:741
 msgid "Optional reason for the revocation. Sent to the reservee. e.g. 'Your reservation has to be cancelled because the lecturer is ill'."
 msgstr "Optionaler Grund für die Absage. Wird an den Reservierenden gesendet. Z.B. 'Ihre Reservation muss abesagt werden weil der Dozent krank ist'."
@@ -892,6 +896,10 @@ msgstr "Ansichten die den Benutzern auf dem Kalender zur verfügung stehen."
 msgid "Waitinglist"
 msgstr "Warteliste"
 
+#: ./utils.py:625
+msgid "Waitinglist is Free"
+msgstr "Warteliste Frei"
+
 #: ./interfaces.py:33
 msgid "We"
 msgstr "Mi"
@@ -918,12 +926,4 @@ msgstr "Sie möchten 'Immer ein bestimmtes Datum anzeigen' haben aber kein Datum
 #: ./templates/your_reservations_viewlet.pt:10
 msgid "Your reservations"
 msgstr "Ihre Reservationen"
-
-#: ./utils.py:627
-msgid "one person waiting"
-msgstr "Eine Person wartet"
-
-#: ./utils.py:625
-msgid "waitinglist is free"
-msgstr "Warteliste frei"
 

@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-04-25 11:41+0000\n"
+"POT-Creation-Date: 2013-04-25 12:03+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,7 +26,7 @@ msgid "%(reason)s - reason for revocation<br>"
 msgstr ""
 
 #: ./utils.py:629
-msgid "%i people waiting"
+msgid "%i People Waiting"
 msgstr ""
 
 #: ./utils.py:610
@@ -509,6 +509,10 @@ msgstr ""
 msgid "Once"
 msgstr ""
 
+#: ./utils.py:627
+msgid "One Person Waiting"
+msgstr ""
+
 #: ./interfaces.py:741
 msgid "Optional reason for the revocation. Sent to the reservee. e.g. 'Your reservation has to be cancelled because the lecturer is ill'."
 msgstr ""
@@ -895,6 +899,10 @@ msgstr ""
 msgid "Waitinglist"
 msgstr ""
 
+#: ./utils.py:625
+msgid "Waitinglist is Free"
+msgstr ""
+
 #: ./interfaces.py:33
 msgid "We"
 msgstr ""
@@ -920,13 +928,5 @@ msgstr ""
 #: ./templates/your_reservations.pt:14
 #: ./templates/your_reservations_viewlet.pt:10
 msgid "Your reservations"
-msgstr ""
-
-#: ./utils.py:627
-msgid "one person waiting"
-msgstr ""
-
-#: ./utils.py:625
-msgid "waitinglist is free"
 msgstr ""
 

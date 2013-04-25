@@ -269,7 +269,7 @@ class IResourceAllocationDefaults(form.Schema):
             u'can be approved. Until then users are added to a waitinglist. '
             u'Reservations are automatically approved if this is not checked. '
         ),
-        default=True
+        default=False
     )
 
     partly_available = schema.Bool(
@@ -291,7 +291,7 @@ class IResourceAllocationDefaults(form.Schema):
             u'at xx:00 and xx:30 respectively'
         ),
         values=VALID_RASTER_VALUES,
-        default=30
+        default=15
     )
 
     @invariant

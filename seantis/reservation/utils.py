@@ -622,11 +622,11 @@ def event_availability(context, request, scheduler, allocation):
     if allocation.approve_manually:
         length = allocation.waitinglist_length
         if length == 0:
-            text += '\n' + title(_(u'waitinglist is free'))
+            text += '\n' + title(_(u'Waitinglist is Free'))
         elif length == 1:
-            text += '\n' + title(_(u'one person waiting'))
+            text += '\n' + title(_(u'One Person Waiting'))
         else:
-            text += '\n' + title(_(u'%i people waiting')) % length
+            text += '\n' + title(_(u'%i People Waiting')) % length
 
     return (
         availability,
