@@ -53,7 +53,7 @@ class AllocationAddForm(AllocationForm):
     def additionalSchemata(self):
         return [
             (
-                'default', _(u'Settings'),
+                'default', _(u'Advanced Settings'),
                 field.Fields(IResourceAllocationDefaults).select(
                     'quota',
                     'reservation_quota_limit',

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-04-25 11:32+0000\n"
+"POT-Creation-Date: 2013-04-25 11:41+0000\n"
 "PO-Revision-Date: 2012-09-06 11:33+0100\n"
 "Last-Translator: Fabian Reinhard <fabian.reinhard@seantis.ch>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -69,6 +69,10 @@ msgstr "Belegungsperiode hinzufügen"
 #: ./reserve.py:250
 msgid "Added to waitinglist"
 msgstr "In Warteliste eingetragen"
+
+#: ./allocate.py:56
+msgid "Advanced Settings"
+msgstr "Erweiterte Einstellungen"
 
 #: ./allocate.py:143
 msgid "Allocate"
@@ -721,7 +725,7 @@ msgstr "Wird <b>Benutzern</b> gesenet, wenn eine Reservation abgesagt wird. Kann
 msgid "Separately reservable"
 msgstr "Separat reservierbar"
 
-#: ./allocate.py:56
+#: ./allocate.py:197
 #: ./settings.py:68
 msgid "Settings"
 msgstr "Einstellungen"

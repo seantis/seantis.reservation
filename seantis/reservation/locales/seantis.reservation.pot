@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-04-25 11:32+0000\n"
+"POT-Creation-Date: 2013-04-25 11:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -71,6 +71,10 @@ msgstr ""
 
 #: ./reserve.py:250
 msgid "Added to waitinglist"
+msgstr ""
+
+#: ./allocate.py:56
+msgid "Advanced Settings"
 msgstr ""
 
 #: ./allocate.py:143
@@ -724,7 +728,7 @@ msgstr ""
 msgid "Separately reservable"
 msgstr ""
 
-#: ./allocate.py:56
+#: ./allocate.py:197
 #: ./settings.py:68
 msgid "Settings"
 msgstr ""

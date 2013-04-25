@@ -301,7 +301,7 @@ class AllocationGroupView(object):
 
     def event_class(self, allocation):
         base = 'fc-event fc-event-inner fc-event-skin groupListTime'
-        return base + ' ' + self.event_availability(allocation)[1]
+        return base + ' ' + self.event_availability(allocation)[2]
 
     def event_title(self, allocation):
         return self.event_availability(allocation)[1]
