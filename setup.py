@@ -12,7 +12,7 @@ setup(name='seantis.reservation',
       version=version,
       description="Reservation system for plone portal types",
       long_description=('\n'.join((
-          open("README.md").read(),
+          open("README.rst").read(),
           open(os.path.join("docs", "HISTORY.txt")).read()
       ))),
       # Get more strings from
