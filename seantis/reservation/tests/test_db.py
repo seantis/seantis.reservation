@@ -298,16 +298,7 @@ class TestScheduler(IntegrationTestCase):
         token = sc.reserve(reservation_email, group=group)
         self.assertRaises(AlreadyReservedError, sc.approve_reservation, token)
 
-        # the only thing changing is the fact that removing part of the
-        # reservation does not delete the reservation record.
-        sc.remove_reservation(
-            maintoken, allocations[0].start, allocations[0].end
-        )
-
-        self.assertRaises(AlreadyReservedError, sc.approve_reservation, token)
-
         sc.remove_reservation(maintoken)
-
         sc.approve_reservation(token)
 
     @serialized
