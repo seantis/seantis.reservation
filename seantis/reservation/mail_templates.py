@@ -3,7 +3,7 @@ import codecs
 from os import path
 
 logger = logging.getLogger('seantis.reservation')
-folder = path.join(path.dirname(path.abspath(__file__)), 'mail_templates')
+folder = path.join(path.dirname(path.abspath(__file__)), 'emails')
 
 
 def get_filename(key, language):
