@@ -188,7 +188,7 @@ On your freshly minted Plone Site, click on "Add new..." and choose
 Add a Resource
 ~~~~~~~~~~~~~~
 
-In the newly created folder, click on "Default View" and choose 
+In the newly created folder, click on "Display" and choose 
 "Resource Listing".
 
 This will turn the folder into a view designed for displaying Resources.
