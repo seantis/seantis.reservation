@@ -290,9 +290,6 @@ class AllocationRemoveForm(AllocationForm, AllocationGroupView):
     @extract_action_data
     def delete(self, data):
 
-        # TODO since we can't trust the id here there should be another check
-        # to make sure the user has the right to work with it.
-
         assert bool(data['id']) != bool(data['group']), \
             "Either id or group, not both"
 

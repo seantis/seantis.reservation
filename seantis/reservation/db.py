@@ -672,6 +672,12 @@ class Scheduler(object):
             raise NotImplementedError
 
         for allocation in allocations:
+            assert allocation.mirror_of == self.uuid, """
+                Trying to delete an allocation from a different resource than
+                the scheduler and context. This is a serious error or
+                someone trying to something funny with the POST parameters.
+            """
+
             if len(allocation.reserved_slots) > 0:
                 raise AffectedReservationError(allocation.reserved_slots[0])
 
