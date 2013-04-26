@@ -87,8 +87,7 @@ Install required packages
     sudo apt-get install git-core
     sudo apt-get install libxml2 libxml2-dev
     sudo apt-get install libxslt1.1 libxslt1-dev
-    sudo apt-get install pyhton2.7
-    sudo apt-get install python2.7-dev
+    sudo apt-get install python2.7 python2.7-dev
 
 Install Postgresql
 ------------------
