@@ -282,7 +282,7 @@ Pending reservations are reservations on a waitinglist. Users have
 submitted them, but nobody has confirmed them. They have therefore no
 reserved slot associated with them.
 
-Apporved reservations are reservations who are associated with reserved
+Approved reservations are reservations who are associated with reserved
 slots and are therefore confirmed and binding.
 
 Note that it is possible in the UI side of seantis.reservation to go
