@@ -16,7 +16,12 @@ seantis.formgroups.add = function(options) {
         if (!no_notify && options.on_show) options.on_show(show);
 
         _.each(options.fields, function(field) {
-            field.toggle(show);
+            // toggle does animations for some weird reason
+            if (show) {
+                field.show();
+            } else {
+                field.hide();
+            }
         });
     };
 

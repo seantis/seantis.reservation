@@ -3,7 +3,7 @@
         var formselector = '#content-core form';
         var options = {
             formselector: formselector,
-            closeselector: '[name=form.button.Cancel]',
+            closeselector: '[name="form.button.Cancel"]',
             noform: 'reload',
 
             config: {

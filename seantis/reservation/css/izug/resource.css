@@ -4,6 +4,16 @@
 
 */
 
+/* no longer supported in plone 4.3 */
+#kss-spinner {
+    display: none;   
+}
+
+/* does not work with izug.basetheme */
+#ajax-spinner {
+    display: none !important;   
+}
+
 .multicalendar .multiCalendarContainer {
     float: none;
     width: 100%;

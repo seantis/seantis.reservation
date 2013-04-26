@@ -4,6 +4,18 @@ var reservation_overlay_init = null;
 
     var popups = null;
 
+    // seantis reservation forms don't do inline validation because it works
+    // on a limited amount of cases and returns results in the wrong language
+    jQuery.ajaxSetup({
+        dataFilter: function (data, type) {
+            if (data.indexOf('seantis-reservation-form') > 0) {
+                return data.replace(/z3cformInlineValidation/g, '');
+            } else {
+                return data;
+            }
+        }
+    });
+
     // Shows portalMessages swallowed by the prepOverlay mechanism
     // on the parent page
     var get_popup_messages = function(soup) {
@@ -76,9 +88,6 @@ var reservation_overlay_init = null;
     };
 
     var on_formload_success = function(e, parent, form) {
-        if ($.fn.ploneTabInit) {
-            parent.ploneTabInit();
-        }
         seantis.formgroups.init();
         seantis.wizard.init();
 
@@ -132,8 +141,8 @@ var reservation_overlay_init = null;
         var default_options = {
             subtype:          'ajax',
             filter:           common_content_filter,
-            formselector:     'form.seantis-reservation-form',
-            closeselector:    '[name=form.buttons.cancel]',
+            formselector:     '.seantis-reservation-form',
+            closeselector:    '[name="form.buttons.cancel"]',
             noform:           'close',
             afterpost:        (function() {}),
             config: {
@@ -176,27 +185,27 @@ var reservation_overlay_init = null;
 
         // only do it on whitelisted forms
 
-        var whitelist = [
-            /kssattr-formname-allocate/gi,
-            /kssattr-formname-@@edit/gi,
-            /kssattr-formname-reserve/gi
-        ];
+        // var whitelist = [
+        //     /kssattr-formname-allocate/gi,
+        //     /kssattr-formname-@@edit/gi,
+        //     /kssattr-formname-reserve/gi
+        // ];
 
-        var whitelisted = _.find(whitelist, function(expr) {
-            return expr.test(responseText);
-        });
+        // var whitelisted = _.find(whitelist, function(expr) {
+        //     return expr.test(responseText);
+        // });
 
-        if (!whitelisted) return;
+        // if (!whitelisted) return;
 
-        var re = /<script type="text\/javascript">([\s\S]*?)<\/script>/gi;
-        var matches = null;
+        // var re = /<script type="text\/javascript">([\s\S]*?)<\/script>/gi;
+        // var matches = null;
 
-        // eval all scripts (index 0 is the whole tag, index 1 is what's within)
-        while ((matches = re.exec(responseText)) !== null) {
-            try {
-                eval(matches[1]);
-            } catch (e) {}
-        }
+        // // eval all scripts (index 0 is the whole tag, index 1 is what's within)
+        // while ((matches = re.exec(responseText)) !== null) {
+        //     try {
+        //         eval(matches[1]);
+        //     } catch (e) {}
+        // }
     };
 
     $(document).ready(function() {
@@ -206,11 +215,11 @@ var reservation_overlay_init = null;
         $(document).bind('formOverlayLoadFailure', function(e, overlay, form, api, pb, ajax_parent) {
             $(document).trigger('seantis.formload_failure', [ajax_parent, form]);
         });
-        $(document).bind('loadInsideOverlay', function(e, el, responseText, errorText, api) {
-            _.defer(function() {
-                _eval_stripped(responseText);
-            });
-        });
+        // $(document).bind('loadInsideOverlay', function(e, el, responseText, errorText, api) {
+        //     _.defer(function() {
+        //         _eval_stripped(responseText);
+        //     });
+        // });
         $(document).bind('formOverlayStart', function(e, overlay, responseText, statusText, xhr, form) {
             _.defer(function() {
                 _eval_stripped(responseText);

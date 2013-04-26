@@ -31,9 +31,13 @@ if (!this.seantis.wizard) this.seantis.wizard = {};
         /* highlight visited tabs */
         tabs.find('a').click(function() {
             current_tab = $(this).parent();
+
             $(tabs).removeClass('selected');
-            current_tab.addClass('selected');
+            $(tabs).find('a').removeClass('selected');
+
             current_tab.addClass('visited');
+            current_tab.addClass('selected');
+            current_tab.find('a').addClass('selected');
 
             if (enable_next_next) {
                 if (current_tab.hasClass('lastFormTab')) {
