@@ -31,7 +31,7 @@ setup(name='seantis.reservation',
       include_package_data=True,
       zip_safe=False,
       install_requires=[
-          'Plone>=4.1.4',
+          'Plone>=4.3',
           'plone.uuid>=1.0.2',
           'setuptools',
           'psycopg2',

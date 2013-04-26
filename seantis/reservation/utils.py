@@ -431,9 +431,14 @@ def string_uuid(obj):
     if isinstance(obj, basestring):
         obj = str(obj)
     elif hasattr(obj, 'UID'):
-        obj = obj.UID
+        if callable(obj.UID):
+            obj = obj.UID()  # plone 4.3, because
+        else:
+            obj = obj.UID
     elif IUUIDAware.providedBy(obj):
         obj = IUUID(obj)
+    elif callable(obj):
+        obj = obj()
 
     return UUID(str(obj)).hex
 
