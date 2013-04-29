@@ -10,6 +10,12 @@ and there's no easy way to hide it, this hack helps: */
     display: none;   
 }
 
+/* without this the events in the month view are not clickable */
+.fc-view-month .fc-day-content {
+    visibility: hidden; 
+}
+
+
 /* limited list */
 .limitedList {
     overflow: auto;
