@@ -1,0 +1,6 @@
+recursive-include seantis *
+recursive-include docs *
+include *.txt
+include *.rst
+global-exclude *.mo
+global-exclude *.pyc

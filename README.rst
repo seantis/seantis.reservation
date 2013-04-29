@@ -1,5 +1,3 @@
-**THIS README IS A WORK IN PROGRESS**
-
 seantis.reservation
 ===================
 
@@ -44,6 +42,7 @@ Requirements
 ------------
 
 -  Python 2.7
+-  Plone 4.3+ ( Plone 4.1 and 4.2 had to be dropped, sorry )
 -  Linux / Posix ( Windows may or may not work )
 -  Postgresql 9.1+ ( Older versions DO NOT work! )
 -  1024MB+ RAM
@@ -132,24 +131,19 @@ Edit your database connection settings in the database.cfg file. ::
 
 Download the boostrap script ::
 
-    wget http://python-distribute.org/bootstrap.py
+    wget http://downloads.buildout.org/1/bootstrap.py
 
 Again, alternatively with curl ::
 
-    curl http://python-distribute.org/bootstrap.py > bootstrap.py
+    curl http://downloads.buildout.org/1/bootstrap.py > bootstrap.py
 
 Bootstrap your environment ::
 
     python2.7 bootstrap.py
 
-Run the installation (and get that coffee machine cracking)
+Run the installation (and get that coffee machine cracking) ::
 
-*Note that due to seantis.reservation being under heavy development, you
-must currently use develop.cfg instead of the usual buildout.cfg*
-
-::
-
-    bin/buildout -c develop.cfg
+    bin/buildout
 
 If everything went well you may now start your instance ::
 
@@ -349,12 +343,6 @@ If an allcation is set to be approved manually, there's automatically an
 unlimited waitinglist. Reservations to that waitinglist can be made at
 any time - unless the allocation setting is changed - and the number of
 people in the waitinglist is shown on the allcation itself.
-
-Credits
--------
-
-This project uses Silk Icons under Creative Commons 3.0. Those icons
-were developed by http://www.famfamfam.com/lab/icons/silk/
 
 .. |overview example| image:: https://github.com/seantis/seantis.reservation/raw/master/screenshots/milliways-overview.png
 .. |calendar example| image:: https://github.com/seantis/seantis.reservation/raw/master/screenshots/milliways-calendar.png

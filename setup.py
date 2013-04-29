@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.0b4'
+version = '1.0'
 
 zug_require = [
     'izug.basetheme',
@@ -15,17 +15,18 @@ setup(name='seantis.reservation',
           open("README.rst").read(),
           open(os.path.join("docs", "HISTORY.txt")).read()
       ))),
-      # Get more strings from
-      # http://pypi.python.org/pypi?:action=list_classifiers
       classifiers=[
-          "Framework :: Plone",
-          "Programming Language :: Python",
+          'Framework :: Plone',
+          'Framework :: Plone :: 4.3',
+          'Intended Audience :: Developers',
+          'Topic :: Software Development :: Libraries :: Python Modules',
+          'Programming Language :: Python',
       ],
-      keywords='Reservation, Calendar, Zug, Seantis',
+      keywords='reservation calendar seantis plone dexterity',
       author='Seantis GmbH',
       author_email='info@seantis.ch',
-      url='http://svn.plone.org/svn/collective/',
-      license='GPL',
+      url='https://github.com/seantis/seantis.reservation',
+      license='GPL v2',
       packages=find_packages(exclude=['ez_setup']),
       namespace_packages=['seantis'],
       include_package_data=True,
@@ -63,7 +64,5 @@ setup(name='seantis.reservation',
 
       [z3c.autoinclude.plugin]
       target = plone
-      """,
-      setup_requires=["PasteScript"],
-      paster_plugins=["ZopeSkel"],
+      """
       )
