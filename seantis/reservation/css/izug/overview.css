@@ -52,12 +52,6 @@
    font-weight: normal   
 }
 
-body.icons-on #content *[class*="contenttype-"],
-body.icons-on #content *[class*="actionicon-"] {
-    background-image:none;
-    padding: 0.090909091em 0 0.090909091em 0 !important;
-}
-
 #directorySearch {
     border: none;
     margin: 0;   
@@ -134,4 +128,19 @@ body.icons-on #content *[class*="actionicon-"] {
 #seantis-overview-calendar .event-partly-available .fc-event-skin, 
 #seantis-overview-calendar .event-partly-available .fc-event-head {
     background-color: #dd7c07 !important;
+}
+
+/* fix izug basetheme's display of icons in the contentmenu */
+.actionMenuContent img {
+    margin-left: -22px;
+    display: inline-block;
+    background-color: #dedede;
+}
+
+.actionMenuContent li:hover img {
+    background-color: #99bad1; 
+}
+
+.actionMenuContent .contenttype-collection {
+    background: none;
 }
