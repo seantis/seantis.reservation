@@ -73,5 +73,16 @@ if (!this.seantis.wizard) this.seantis.wizard = {};
 
         /* after ajax reloading the first tab is sometimes unselected */
         current_tab.find('a').click();
+
+        /* select the first tab with an error in it */
+        if (enable_next_next) {
+            var fieldsets = form.find('fieldset');
+            for (var j=0; j<fieldsets.length; j++) {
+                if ($(fieldsets[j]).find('.fieldErrorBox .error').length > 0) {
+                    $(tabs[j]).find('a').click();
+                    break;
+                }
+            }
+        }
     };
 })(jQuery);

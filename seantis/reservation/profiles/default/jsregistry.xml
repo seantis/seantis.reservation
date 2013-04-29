@@ -29,11 +29,6 @@
 
         <javascript id="++resource++seantis.reservation.js/wizard.js" enabled="True" insert-after="++resource++seantis.reservation.js/formgroups.js"/>
 
-        <javascript id="++resource++seantis.reservation.js/your-reservations.js" enabled="True" insert-after="++resource++seantis.reservation.js/overlay.js"/>
-
-        <!--
-        Messes with internet explorer
-        -->
-        <javascript id="++resource++kukit.js" enabled="False" />        
+        <javascript id="++resource++seantis.reservation.js/your-reservations.js" enabled="True" insert-after="++resource++seantis.reservation.js/overlay.js"/>     
         
 </object>
