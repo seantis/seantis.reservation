@@ -382,6 +382,8 @@ body .portalMessage {
     text-align: center;
     color: #555;
     padding-top:8px;
+    background-color: transparent;
+    border: none
 }
 
 /* reservations in progress */
