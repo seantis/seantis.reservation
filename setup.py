@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-name = "Seantis Reservation"
+name = "seantis.reservation"
 description = "Plone addon to reserve stuff in a calendar."
 version = '1.0'
 
