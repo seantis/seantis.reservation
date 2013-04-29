@@ -13,9 +13,9 @@
         media="all" rendering="link"
     />
 
-    <!-- the fullcalendar is slightly changed in the default profile because
-    mostly because certain visual clues are really port of the functionality -->
-    <stylesheet id="++resource++seantis.reservation.css/fullcalendar.css"
+    <!-- styles which impact the functionality (like calendar styles are
+    put into seantis.reservation's default profile) -->
+    <stylesheet id="++resource++seantis.reservation.css/base.css"
         insert-after="++resource++collective.js.fullcalendar/fullcalendar.css"
         media="all" rendering="link"
     />

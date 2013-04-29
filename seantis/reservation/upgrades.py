@@ -224,3 +224,17 @@ def upgrade_1009_to_1010(context):
     for brain in all_resources:
         resource = brain.getObject()
         resource.approve_manually = resource.approve
+
+
+def upgrade_1010_to_1011(context):
+
+    # rename fullcalendar.css to base.css
+    css_registry = getToolByName(context, 'portal_css')
+    css_registry.unregisterResource(
+        '++resource++seantis.reservation.css/fullcalendar.css'
+    )
+
+    setup = getToolByName(context, 'portal_setup')
+    setup.runImportStepFromProfile(
+        'profile-seantis.reservation:default', 'cssregistry'
+    )
