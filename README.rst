@@ -1,9 +1,10 @@
-seantis.reservation
+Seantis Reservation
 ===================
 
-Plone addon to reserve stuff in a calendar. Not a replacement for
-Outlook or Google Calendar, but a system to manage reservations on the
-backend and to provide them on the frontend.
+Plone addon to reserve stuff in a calendar.
+
+Not a replacement for Outlook or Google Calendar, but a system to manage 
+reservations on the backend and to provide them on the frontend.
 
 Introduction
 ------------

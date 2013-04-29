@@ -1,6 +1,8 @@
 from setuptools import setup, find_packages
 import os
 
+name = "Seantis Reservation"
+description = "Plone addon to reserve stuff in a calendar."
 version = '1.0'
 
 zug_require = [
@@ -8,13 +10,18 @@ zug_require = [
     'ftw.contentmenu'
 ]
 
-setup(name='seantis.reservation',
-      version=version,
-      description="Reservation system for plone portal types",
-      long_description=('\n'.join((
-          open("README.rst").read(),
-          open(os.path.join("docs", "HISTORY.txt")).read()
-      ))),
+
+def get_long_description():
+    readme = open('README.rst').read()
+    history = open(os.path.join('docs', 'HISTORY.txt')).read()
+
+    # cut the part before the description to avoid repetition on pypi
+    readme = readme[readme.index(description) + len(description):]
+
+    return '\n'.join((readme, history))
+
+setup(name=name, version=version, description=description,
+      long_description=get_long_description(),
       classifiers=[
           'Framework :: Plone',
           'Framework :: Plone :: 4.3',
