@@ -359,7 +359,11 @@ def translator(context, request):
 
 def translate(context, request, text, domain=None):
     """Translates the given text using context & request."""
-    lang = get_current_language(context, request)
+
+    # xx-xx languages will not work here, though they work when Plone does
+    # it in a template. For now it does not matter as we have no country
+    # specific translation available
+    lang = get_current_language(context, request).split('-')[0]
     return i18n.translate(text, target_language=lang, domain=domain)
 
 
@@ -605,21 +609,21 @@ def event_availability(context, request, scheduler, allocation):
 
     """
     a = allocation
-    title = lambda msg: translate(context, request, msg)
+    translate = translator(context, request)
 
     availability = scheduler.availability(a.start, a.end)
     spots = int(round(allocation.quota * availability / 100))
 
     # get the title shown on the calendar block
     if a.partly_available:
-        text = title(_(u'%i%% Free')) % availability
+        text = translate(_(u'%i%% Free')) % availability
     else:
         if allocation.quota > 1:
-            text = title(_(u'%i/%i Spots Available')) % (
+            text = translate(_(u'%i/%i Spots Available')) % (
                 spots, allocation.quota
             )
         else:
-            text = title(_(u'%i/%i Spot Available')) % (
+            text = translate(_(u'%i/%i Spot Available')) % (
                 spots, allocation.quota
             )
 
@@ -627,11 +631,11 @@ def event_availability(context, request, scheduler, allocation):
     if allocation.approve_manually:
         length = allocation.waitinglist_length
         if length == 0:
-            text += '\n' + title(_(u'Waitinglist is Free'))
+            text += '\n' + translate(_(u'Waitinglist is Free'))
         elif length == 1:
-            text += '\n' + title(_(u'One Person Waiting'))
+            text += '\n' + translate(_(u'One Person Waiting'))
         else:
-            text += '\n' + title(_(u'%i People Waiting')) % length
+            text += '\n' + translate(_(u'%i People Waiting')) % length
 
     return (
         availability,
