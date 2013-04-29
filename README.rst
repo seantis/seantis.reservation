@@ -72,6 +72,10 @@ well:
 -  Timezones. We currently do not store a timezone with the resource. Therefore
    comparing different resources of different timezones is a no go.
 
+-  Recurrence. Though it is possible to create reservations with simple daily
+   recurrence, it is not possible to modify them, so if you create 1000 recurrences
+   and you make a mistake you have to delete all or adjust them each.
+
 Installation
 ------------
 

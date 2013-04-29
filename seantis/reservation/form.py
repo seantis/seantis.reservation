@@ -135,7 +135,7 @@ class ResourceBaseForm(GroupForm, form.Form):
 
         converter = getMultiAdapter((f, w))
 
-        # z3c forms will work with all the widgets except Checkboxes
+        # z3c forms will work with all the widgets except radio and checkboxes
         # the docs hint at differences, but I can for the
         # life of me not figure out what I should actually be doing.
         #
@@ -144,7 +144,8 @@ class ResourceBaseForm(GroupForm, form.Form):
         # this atrocity forces the right rendering
         #
         # => TODO change to normal code
-        if type(w).__name__.endswith('CheckBoxWidget'):
+        widget_type = type(w).__name__
+        if widget_type.endswith(('CheckBoxWidget', 'RadioWidget')):
             values = converter.toWidgetValue(value)
             for item in w.items:
                 if item['value'] in values:

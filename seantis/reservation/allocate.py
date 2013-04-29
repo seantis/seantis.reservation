@@ -13,8 +13,7 @@ from seantis.reservation import _
 from seantis.reservation import utils
 from seantis.reservation.interfaces import (
     IAllocation,
-    IResourceAllocationDefaults,
-    days
+    IResourceAllocationDefaults
 )
 from seantis.reservation.form import (
     ResourceBaseForm,
@@ -64,15 +63,20 @@ class AllocationAddForm(AllocationForm):
             )
         ]
 
+    @property
+    def whole_day(self):
+        if not self.start:
+            return False
+
+        return all((
+            (self.start.hour, self.start.minute) == (0, 0),
+            (self.end.hour, self.end.minute) == (0, 0)
+        ))
+
     def defaults(self):
-        if self.start:
-            weekday = self.start.weekday()
-            daymap = dict([(d.value.weekday, d.value) for d in days])
-            default_days = [daymap[weekday]]
-        else:
-            default_days = []
 
         recurrence_start, recurrence_end = self.default_recurrence()
+        recurring = recurrence_start != recurrence_end
 
         ctx = self.context
         return {
@@ -80,12 +84,13 @@ class AllocationAddForm(AllocationForm):
             'recurrence_start': recurrence_start,
             'recurrence_end': recurrence_end,
             'timeframes': self.json_timeframes(),
-            'days': default_days,
             'quota': ctx.quota,
             'approve_manually': ctx.approve_manually,
             'raster': ctx.raster,
             'partly_available': ctx.partly_available,
-            'reservation_quota_limit': ctx.reservation_quota_limit
+            'reservation_quota_limit': ctx.reservation_quota_limit,
+            'whole_day': self.whole_day,
+            'recurring': recurring
         }
 
     def timeframes(self):
@@ -108,6 +113,9 @@ class AllocationAddForm(AllocationForm):
 
         if not all((start, end)):
             return None, None
+
+        if self.whole_day:
+            start, end
 
         for frame in sorted(self.timeframes(), key=lambda f: f.start):
             if frame.start <= start and start <= frame.end:

@@ -272,12 +272,10 @@ var CalendarGroups = function() {
 
         // add an event made by a selection
         var add_event = function(start, end, allDay, calendar) {
-            if (!allDay) {
-                var url = calendar.addurl;
-                url += '?start=' + get_timestamp(start);
-                url += '&end=' + get_timestamp(end);
-                calendar.overlay_show(url);
-            }
+            var url = calendar.addurl;
+            url += '?start=' + get_timestamp(start);
+            url += '&end=' + get_timestamp(end);
+            calendar.overlay_show(url);
         };
 
         // Hookup the fullcalendar

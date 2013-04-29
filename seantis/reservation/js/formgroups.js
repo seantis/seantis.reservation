@@ -273,6 +273,7 @@ seantis.formgroups.init = function(el) {
 
     seantis.formgroups.add_utility_links();
     seantis.formgroups.add_recurrency_helper();
+    seantis.formgroups.autoselect_days();
 };
 
 (function($) {
