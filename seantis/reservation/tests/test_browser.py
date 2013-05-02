@@ -47,7 +47,12 @@ class TestBrowser(FunctionalTestCase):
         browser.getControl('Description').value = description
         browser.getControl('Save').click()
 
-    def add_allocation(self, resource, start, end, partly_available=False):
+    def add_allocation(
+        self, resource, start, end,
+        partly_available=False,
+        quota=1,
+        quota_limit=1
+    ):
         url = self.build_folder_url
 
         browser = self.admin_browser
@@ -67,6 +72,8 @@ class TestBrowser(FunctionalTestCase):
         self.assertTrue(de in browser.contents)
 
         browser.getControl('Partly available').selected = partly_available
+        browser.getControl('Quota', index=0).value = str(quota)
+        browser.getControl('Reservation Quota Limit').value = str(quota_limit)
         browser.getControl('Allocate').click()
 
     def load_slot_data(self, resource, start, end):
@@ -211,3 +218,27 @@ class TestBrowser(FunctionalTestCase):
         browser.getControl('Reserve').click()
 
         self.assertTrue('Your reservations' in browser.contents)
+
+    def test_over_quota_limit_regression(self):
+
+        # if a quota is reserved which is over the allowed amount the quota
+        # must not just be changed, but there should be an error
+
+        browser = self.new_browser()
+        browser.login_admin()
+
+        start = datetime(2013, 3, 4, 15, 0)
+        end = datetime(2013, 3, 4, 16, 0)
+
+        self.add_resource('regression')
+        self.add_allocation('regression', start, end, quota=4, quota_limit=2)
+
+        slots = self.load_slot_data('regression', start, end)
+        browser.open(slots[0]['url'])
+
+        browser.getControl('Email').value = 'test@example.com'
+        browser.getControl('Quota', index=0).value = '3'
+        browser.getControl('Reserve').click()
+
+        self.assertTrue('quota is higher than allowed' in browser.contents)
+        self.assertEqual('3', browser.getControl('Quota', index=0).value)

@@ -318,7 +318,7 @@ class ReservationForm(
         return disabled
 
     def defaults(self, **kwargs):
-        return self.your_reservation_defaults(dict(id=self.id, quota=1))
+        return self.your_reservation_defaults(dict(id=self.id))
 
     def allocation(self, id):
         if not id:
@@ -356,7 +356,7 @@ class ReservationForm(
         approve_manually = allocation.approve_manually
 
         start, end = self.validate(data)
-        quota = int(data['quota'])
+        quota = int(data.get('quota', 1))
 
         # whole day allocations don't show the start / end time which is to
         # say the data arrives with 00:00 - 00:00. we align that to the day
