@@ -141,6 +141,11 @@
     background-color: #99bad1; 
 }
 
+#cut, #copy, #delete, #rename {
+    background: none;
+    margin-left: -2px;   
+}
+
 .actionMenuContent .contenttype-collection {
     background: none;
 }
