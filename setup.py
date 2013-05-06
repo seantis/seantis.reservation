@@ -3,7 +3,7 @@ import os
 
 name = "seantis.reservation"
 description = "Plone addon to reserve stuff in a calendar."
-version = '1.0'
+version = '1.0.1'
 
 zug_require = [
     'izug.basetheme',
