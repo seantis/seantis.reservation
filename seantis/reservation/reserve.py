@@ -16,7 +16,7 @@ from z3c.form import button
 from z3c.form.browser.radio import RadioFieldWidget
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
-from zope.schema import Choice, List
+from zope.schema import Choice, List, Set
 
 from seantis.reservation.throttle import throttled
 from seantis.reservation.interfaces import (
@@ -392,12 +392,11 @@ class ReservationForm(
 
             field_type = type(field.field)
 
-            if field_type is List:
+            if field_type is List or field_type is Set:
                 field.widgetFactory = CheckBoxFieldWidget
 
             elif field_type is Choice:
                 field.widgetFactory = RadioFieldWidget
-
 
 class GroupReservationForm(
         ReservationBaseForm,
