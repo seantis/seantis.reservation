@@ -154,6 +154,39 @@ If everything went well you may now start your instance ::
 
     bin/instance fg
 
+Running Tests
+-------------
+
+The tests are run against a Postgres Database. This should be a database
+used for this purpose only. Therefore you should first create said database ::
+
+    sudo -u postgres psql -c "CREATE USER test WITH PASSWORD 'test'"
+
+Create the test database ::
+
+    sudo -u postgres psql -c "CREATE DATABASE test ENCODING 'UTF8' TEMPLATE template0"
+
+Grant the required privileges to the test user ::
+
+    sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE test to test"
+
+To get the test script you should run the development buildout ::
+
+    bin/buildout -c develop.cfg
+
+After that you need to tell the test script which database to use ::
+
+    cd src/seantis.reservation/seantis/reservation
+    cp test_database.py.example test_database.py
+
+You tell it by editing test_database.py and adding a testdsn like this ::
+
+    testdsn = "postgresql+psycopg2://test:test@localhost:5432/test"
+
+You may then run the tests as follows ::
+
+    bin/test -s seantis.reservation
+
 Creating a Reservation Plone Site
 ---------------------------------
 
