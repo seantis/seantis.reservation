@@ -89,26 +89,26 @@ a.fc-event:hover {
 }
 
 /* availability colors */
-.event-available {
+body .event-available {
     background-color: #0e6700 !important;
     border-color: #0e6700 !important;
 }
-.event-available .fc-event-time {
+body .event-available .fc-event-time {
     background-color: #0d670b;
 }
-.event-partly-available {
+body .event-partly-available {
     background-color: #dd7c07 !important;
     border-color: #dd7c07 !important;
 }
-.event-partly-available .fc-event-time {
+body .event-partly-available .fc-event-time {
     background-color: #dd7c18;
 }
 
-.event-unavailable {
+body .event-unavailable {
     background-color: #ae1e00 !important;
     border-color: #ae1e00 !important;
 }
-.event-unavailable .fc-event-time {
+body .event-unavailable .fc-event-time {
     background-color: #ae1e09;
 }
 
