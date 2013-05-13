@@ -57,12 +57,12 @@
     margin: 0;   
 }
 
-.overview-utils ul {
+.overviewlet ul {
     font-size: 1em;
     margin-top: 10px;   
 }
 
-.overview-utils ul li {
+.overviewlet ul li {
     background: none;
     list-style-type: none;
     background-repeat: no-repeat;
@@ -71,12 +71,16 @@
     font-size: 12px;
 }
 
-#email_templates div.resourceTitle,
-#email_templates a, 
-#timeframes div.resourceTitle,
-#timeframes a {
+.overviewlet div.resourceTitle,
+.overviewlet a {
     font-size: 1em;   
 }
+
+.overviewlet .resourceTitle {
+    margin: 0 10px 0 0;
+    font-size: 12px !important;
+}
+
 
 .templates-control,
 .templates-global-control,
@@ -91,12 +95,6 @@
     margin-left: 0;   
 }
 
-#email_templates .resourceTitle,
-#timeframes .resourceTitle {
-    margin: 0 10px 0 0;
-    font-size: 12px !important;
-}
-
 #timeframes .visibleTimeframe {
     color: black !important;
 }
@@ -105,6 +103,7 @@
     color: #76797C !important;
 }
 
+#contacts .resourceItem,
 #email_templates .resourceItem, 
 #timeframes .resourceItem {
    margin: 0 0 10px 0;

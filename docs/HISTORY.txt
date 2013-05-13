@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.0.2
+-----
+
+- Fixes crash in JSON Encoder 
+
 1.0.1
 -----
 

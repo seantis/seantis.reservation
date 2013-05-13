@@ -519,6 +519,9 @@ class UserFormDataEncoder(json.JSONEncoder):
 
     def default(self, obj):
 
+        if isinstance(obj, set):
+            return list(obj)
+
         if isinstance(obj, datetime):
             return u'__datetime__@%s' % isodate.datetime_isoformat(obj)
 
