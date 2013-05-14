@@ -11,7 +11,7 @@ Email:
 Formulardaten:
 %(data)s
 
-Die Reservation wurde automatisch angenommen. Um Sie zu stornieren klicken Sie
+Die Reservation wurde automatisch angenommen. Um sie zu stornieren klicken Sie
 bitte den folgenden Link:
 
 %(cancel_link)s
