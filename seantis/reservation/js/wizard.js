@@ -58,6 +58,13 @@ if (!this.seantis.wizard) this.seantis.wizard = {};
                 var nextstep = current_tab.data('wizard-step') + 1;
                 $(tabs[nextstep]).find('a').click();
 
+                /* focus the first element of the form to ensure that the
+                browser scrolls to it in long forms */
+                var fieldset = form.find(
+                     'fieldset[data-fieldset=' + parseInt(nextstep-1, 10) + ']'
+                );
+                fieldset.find('input[type!="hidden"]').first().focus();
+
                 e.preventDefault();
             });
         }

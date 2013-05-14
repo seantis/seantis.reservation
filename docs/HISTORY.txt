@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.0.3 (unreleased)
+-----
+
+- Focuses on first input when switching tabs in wizard forms
+
 1.0.2
 -----
 
