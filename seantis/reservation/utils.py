@@ -892,6 +892,13 @@ def context_path(context):
         return context.getPhysicalPath()
 
 
+def portal_type_in_site(portal_type):
+    catalog = getToolByName(getSite(), 'portal_catalog')
+    results = catalog(portal_type=portal_type)
+
+    return results
+
+
 def portal_type_in_context(context, portal_type, depth=1):
     """Returns the given portal types _within_ the current context."""
 

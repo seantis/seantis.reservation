@@ -42,12 +42,15 @@ def on_reservations_confirmed(event):
         for reservation in event.reservations:
 
             if reservation.autoapprovable:
-                continue
-
-            send_reservation_mail(
-                reservation,
-                'reservation_pending', event.language, to_managers=True
-            )
+                send_reservation_mail(
+                    reservation,
+                    'reservation_made', event.language, to_managers=True
+                )
+            else:
+                send_reservation_mail(
+                    reservation,
+                    'reservation_pending', event.language, to_managers=True
+                )
 
 
 @grok.subscribe(IReservationApprovedEvent)
@@ -328,9 +331,13 @@ class ReservationMail(ReservationDataView, ReservationUrls):
                 reservation.token, resource
             )
 
-        # denial links
+        # denial link
         if is_needed('denial_link'):
             p['denial_link'] = self.deny_all_url(reservation.token, resource)
+
+        # cancel link
+        if is_needed('cancel_link'):
+            p['cancel_link'] = self.remove_all_url(reservation.token, resource)
 
         # revocation reason
         if is_needed('reason'):

@@ -73,7 +73,8 @@ keys = [
     'reservation_pending',
     'reservation_received',
     'reservation_denied',
-    'reservation_revoked'
+    'reservation_revoked',
+    'reservation_made'
 ]
 
 templates = dict([(k, MailTemplate(k)) for k in keys])

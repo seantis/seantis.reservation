@@ -238,3 +238,23 @@ def upgrade_1010_to_1011(context):
     setup.runImportStepFromProfile(
         'profile-seantis.reservation:default', 'cssregistry'
     )
+
+
+def upgrade_1011_to_1012(context):
+
+    # go through all email templates
+    from seantis.reservation.mail_templates import templates
+    template = templates['reservation_made']
+
+    brains = utils.portal_type_in_site('seantis.reservation.emailtemplate')
+
+    for tpl in (b.getObject() for b in brains):
+
+        # and add the new email template in the correct language if available
+        if template.is_translated(tpl.language):
+            lang = tpl.language
+        else:
+            lang = 'en'
+
+        tpl.reservation_made_subject = template.get_subject(lang)
+        tpl.reservation_made_content = template.get_body(lang)

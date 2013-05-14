@@ -975,7 +975,7 @@ class TestScheduler(IntegrationTestCase):
         end = datetime(2012, 2, 29, 19, 0)
         dates = (start, end)
 
-        # one email is sent if there's no approval
+        # one email is sent because we do not have a manager yet
         session_id = new_uuid()
 
         allocation = sc.allocate(dates, approve_manually=False)[0]
@@ -1088,3 +1088,32 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(len(mail.messages), 3)
         self.assertTrue('Reservation for' in mail.messages[2])
         self.assertTrue(reservation_email in mail.messages[2])
+
+        sc.remove_reservation(token)
+        sc.remove_allocation(allocation.id)
+        mail.messages = []
+
+        # try an auto approved allocation again, this time we get two emails
+        # because there's a manager
+        session_id = new_uuid()
+        allocation = sc.allocate(dates, approve_manually=False)[0]
+        token = sc.reserve(
+            reservation_email,
+            dates, data=data, session_id=session_id
+        )
+        sc.confirm_reservations_for_session(session_id)
+
+        self.assertEqual(len(mail.messages), 2)
+
+        # the reservee mail is sent first
+        self.assertTrue('Your Reservations' in mail.messages[0])
+        self.assertTrue(reservation_email in mail.messages[0])
+
+        # the second is the one sent to the manager
+        self.assertTrue('New Reservation' in mail.messages[1])
+        self.assertFalse('To approve' in mail.messages[1])
+        self.assertFalse('To deny' in mail.messages[1])
+        self.assertTrue('To cancel' in mail.messages[1])
+        self.assertTrue(reservation_email in mail.messages[1])
+        self.assertTrue(str(token) in mail.messages[1])
+        assert_data_in_mail(mail.messages[1])

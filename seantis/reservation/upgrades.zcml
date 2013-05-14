@@ -101,4 +101,13 @@
         profile="seantis.reservation:default">
     </genericsetup:upgradeStep>
 
+    <genericsetup:upgradeStep
+        title="Add new email template"
+        description=""
+        source="1011"
+        destination="1012"
+        handler=".upgrades.upgrade_1011_to_1012"
+        profile="seantis.reservation:default">
+    </genericsetup:upgradeStep>
+
 </configure>

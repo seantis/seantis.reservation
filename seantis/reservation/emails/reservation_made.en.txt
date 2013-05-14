@@ -1,0 +1,17 @@
+New Reservation for %(resource)s
+================================
+A new reservation was made for %(resource)s:
+
+Dates:
+%(dates)s
+
+Email:
+%(reservation_mail)s
+
+Form data:
+%(data)s
+
+The reservation was automatically approved. To cancel it click the following
+link:
+
+%(cancel_link)s

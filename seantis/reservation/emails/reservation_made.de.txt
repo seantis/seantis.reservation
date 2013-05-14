@@ -1,0 +1,17 @@
+Neue Reservation für %(resource)s
+=================================
+Eine neue Reservation für %(resource)s wurde erfasst:
+
+Daten:
+%(dates)s
+
+Email:
+%(reservation_mail)s
+
+Formulardaten:
+%(data)s
+
+Die Reservation wurde automatisch angenommen. Um Sie zu stornieren klicken Sie
+bitte den folgenden Link:
+
+%(cancel_link)s

@@ -4,6 +4,7 @@ Changelog
 1.0.3 (unreleased)
 -----
 
+- Adds email sent to managers when a new reservation was automatically approved
 - Focuses on first input when switching tabs in wizard forms
 
 1.0.2

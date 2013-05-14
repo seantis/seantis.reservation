@@ -573,7 +573,8 @@ template_variables = _(
     u'%(reservation_mail)s - email of reservee<br>'
     u'%(data)s - formdata associated with the reservation<br>'
     u'%(approval_link)s - link to the approval view<br>'
-    u'%(denial_link)s - link to the denial view'
+    u'%(denial_link)s - link to the denial view<br>'
+    u'%(cancel_link)s - link to the cancel view'
 )
 
 template_revoke_variables = template_variables + _(
@@ -592,6 +593,20 @@ class IEmailTemplate(form.Schema):
     language = schema.Choice(
         title=_(u'Language'),
         source=plone_languages
+    )
+
+    reservation_made_subject = schema.TextLine(
+        title=_(u'Email Subject for Reservation Autoapproved'),
+        description=_(u'Sent to <b>managers</b> when a reservation is '
+                      u'automatically approved. '
+                      u'May contain the template variables listed below.'),
+        default=templates['reservation_made'].get_subject('en')
+    )
+
+    reservation_made_content = schema.Text(
+        title=_(u'Email Text for Reservation Autoapproved'),
+        description=template_variables,
+        default=templates['reservation_made'].get_body('en')
     )
 
     reservation_pending_subject = schema.TextLine(
