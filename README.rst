@@ -39,6 +39,11 @@ Build Status
 
 |Build Status|
 
+Latest PyPI Release
+-------------------
+
+|PyPI Release|
+
 Requirements
 ------------
 
@@ -388,3 +393,6 @@ people in the waitinglist is shown on the allcation itself.
 .. |confirm example| image:: https://github.com/seantis/seantis.reservation/raw/master/screenshots/milliways-confirm.png
 .. |Build Status| image:: https://secure.travis-ci.org/seantis/seantis.reservation.png
    :target: http://travis-ci.org/seantis/seantis.reservation
+.. |PyPI Release| image:: https://pypip.in/v/seantis.dir.base/badge.png
+    :target: https://crate.io/packages/seantis.dir.base
+    :alt: Latest PyPI version
