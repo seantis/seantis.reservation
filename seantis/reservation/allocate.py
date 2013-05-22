@@ -20,6 +20,8 @@ from seantis.reservation.form import (
     AllocationGroupView,
     extract_action_data,
 )
+from plone.formwidget.recurrence.z3cform.widget import RecurrenceFieldWidget
+from plone.formwidget.datetime.z3cform.widget import DateFieldWidget
 
 
 class AllocationForm(ResourceBaseForm):
@@ -37,16 +39,20 @@ class AllocationAddForm(AllocationForm):
 
     fields = field.Fields(IAllocation).select(
         'id', 'group', 'timeframes', 'whole_day', 'start_time', 'end_time',
-        'recurring', 'day', 'recurrence_start', 'recurrence_end',
-        'days', 'separately'
+        'day', 'separately', 'recurrence'
     )
-    fields['days'].widgetFactory = CheckBoxFieldWidget
-    fields['recurring'].widgetFactory = RadioFieldWidget
+
+    fields['day'].widgetFactory = DateFieldWidget
+    fields['recurrence'].widgetFactory = RecurrenceFieldWidget
 
     label = _(u'Allocation')
 
     enable_form_tabbing = True
     default_fieldset_label = _(u'Date')
+
+    def updateWidgets(self):
+        super(AllocationAddForm, self).updateWidgets()
+        self.widgets['recurrence'].start_field = 'day'
 
     @property
     def additionalSchemata(self):
@@ -74,23 +80,16 @@ class AllocationAddForm(AllocationForm):
         ))
 
     def defaults(self):
-
-        recurrence_start, recurrence_end = self.default_recurrence()
-        recurring = recurrence_start != recurrence_end
-
         ctx = self.context
         return {
             'group': u'',
-            'recurrence_start': recurrence_start,
-            'recurrence_end': recurrence_end,
             'timeframes': self.json_timeframes(),
             'quota': ctx.quota,
             'approve_manually': ctx.approve_manually,
             'raster': ctx.raster,
             'partly_available': ctx.partly_available,
             'reservation_quota_limit': ctx.reservation_quota_limit,
-            'whole_day': self.whole_day,
-            'recurring': recurring
+            'whole_day': self.whole_day
         }
 
     def timeframes(self):
@@ -107,22 +106,6 @@ class AllocationAddForm(AllocationForm):
             obj.isoformat() if isinstance(obj, date) else None
         return unicode(json.dumps(results, default=dthandler))
 
-    def default_recurrence(self):
-        start = self.start and self.start.date() or None
-        end = self.end and self.end.date() or None
-
-        if not all((start, end)):
-            return None, None
-
-        if self.whole_day:
-            start, end
-
-        for frame in sorted(self.timeframes(), key=lambda f: f.start):
-            if frame.start <= start and start <= frame.end:
-                return (frame.start, frame.end)
-
-        return start, end
-
     def get_dates(self, data):
         """ Return a list with date tuples depending on the data entered by the
         user, using rrule if requested.
@@ -133,15 +116,10 @@ class AllocationAddForm(AllocationForm):
             data['day'], data['start_time'], data['end_time']
         )
 
-        if not data['recurring']:
+        if not data['recurrence']:
             return ((start, end))
 
-        rule = rrule.rrule(
-            rrule.DAILY,
-            byweekday=data['days'],
-            dtstart=data['recurrence_start'],
-            until=data['recurrence_end'],
-        )
+        rule = rrule.rrulestr(data['recurrence'])
 
         event = lambda d: \
             utils.get_date_range(d, data['start_time'], data['end_time'])
