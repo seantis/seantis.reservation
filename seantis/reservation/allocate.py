@@ -39,7 +39,7 @@ class AllocationAddForm(AllocationForm):
 
     fields = field.Fields(IAllocation).select(
         'id', 'group', 'timeframes', 'whole_day', 'start_time', 'end_time',
-        'day', 'separately', 'recurrence'
+        'day', 'recurrence', 'separately',
     )
 
     fields['day'].widgetFactory = DateFieldWidget
