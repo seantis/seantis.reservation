@@ -50,7 +50,9 @@ class AllocationAddForm(AllocationForm):
 
     def updateWidgets(self):
         super(AllocationAddForm, self).updateWidgets()
-        self.widgets['recurrence'].start_field = 'day'
+        widget = self.widgets['recurrence']
+        widget.start_field = 'day'
+        widget.show_repeat_forever = False
 
     @property
     def additionalSchemata(self):
