@@ -492,22 +492,12 @@ class IAllocation(IResourceAllocationDefaults):
         default=False
     )
 
-    recurring = schema.Choice(
-        title=_(u'Recurrence'),
-        vocabulary=recurrence,
-        default=False
+    recurrence = schema.Text(
+            title=_(u'Recurrence'),
     )
 
     day = schema.Date(
         title=_(u'Day'),
-    )
-
-    recurrence_start = schema.Date(
-        title=_(u'From'),
-    )
-
-    recurrence_end = schema.Date(
-        title=_(u'Until')
     )
 
     days = schema.List(
@@ -538,6 +528,8 @@ class IAllocation(IResourceAllocationDefaults):
 
     @invariant
     def isValidOption(Allocation):
+        # XXX
+        return
         if Allocation.recurring:
             if Allocation.partly_available and not Allocation.separately:
                 raise Invalid(_(
