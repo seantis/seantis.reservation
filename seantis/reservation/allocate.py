@@ -6,8 +6,6 @@ from five import grok
 from z3c.form import field
 from z3c.form import button
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
-from z3c.form.browser.checkbox import CheckBoxFieldWidget
-from z3c.form.browser.radio import RadioFieldWidget
 
 from seantis.reservation import _
 from seantis.reservation import utils
@@ -119,7 +117,8 @@ class AllocationAddForm(AllocationForm):
         if not data['recurrence']:
             return ((start, end))
 
-        rule = rrule.rrulestr(data['recurrence'])
+        rule = rrule.rrulestr(data['recurrence'],
+                              dtstart=start)
 
         event = lambda d: \
             utils.get_date_range(d, data['start_time'], data['end_time'])
