@@ -503,6 +503,7 @@ class IAllocation(IResourceAllocationDefaults):
 
     recurrence = schema.Text(
             title=_(u'Recurrence'),
+            required=False,
     )
 
     day = schema.Date(
