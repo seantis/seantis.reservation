@@ -538,9 +538,7 @@ class IAllocation(IResourceAllocationDefaults):
 
     @invariant
     def isValidOption(Allocation):
-        # XXX
-        return
-        if Allocation.recurring:
+        if Allocation.recurrence:
             if Allocation.partly_available and not Allocation.separately:
                 raise Invalid(_(
                     u'Partly available allocations can only be reserved '

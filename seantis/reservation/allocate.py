@@ -20,6 +20,8 @@ from seantis.reservation.form import (
 )
 from plone.formwidget.recurrence.z3cform.widget import RecurrenceFieldWidget
 from plone.formwidget.datetime.z3cform.widget import DateFieldWidget
+from z3c.form.interfaces import ActionExecutionError
+from zope.interface import Invalid
 
 
 class AllocationForm(ResourceBaseForm):
@@ -130,6 +132,8 @@ class AllocationAddForm(AllocationForm):
     @button.buttonAndHandler(_(u'Allocate'))
     @extract_action_data
     def allocate(self, data):
+        self._validate_recurrence_options(data)
+
         dates = self.get_dates(data)
 
         def allocate():
@@ -147,6 +151,21 @@ class AllocationAddForm(AllocationForm):
             self.flash(_(u'Allocation added'))
 
         utils.handle_action(action=allocate, success=self.redirect_to_context)
+
+    def _validate_recurrence_options(self, data):
+        """Validate that when recurrence is configured and the resource is
+        partly available the separately option must be enabled as well.
+
+        This validation has been moved here from a form invariant since
+        invariants do not seem to work with groups.
+
+        """
+        if 'recurrence' in data and data['recurrence']:
+            if data['partly_available'] and not data['separately']:
+                raise ActionExecutionError(Invalid(_(
+                          u'Partly available allocations can only be reserved '
+                          u'separately'
+                          )))
 
     @button.buttonAndHandler(_(u'Cancel'))
     def cancel(self, action):
