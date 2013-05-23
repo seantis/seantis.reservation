@@ -28,6 +28,8 @@ from seantis.reservation.testing import SQL_FUNCTIONAL_TESTING
 from seantis.reservation import maintenance
 
 from Products.CMFCore.utils import getToolByName
+import lxml.html
+from lxml.cssselect import CSSSelector
 
 
 class TestCase(unittest.TestCase):
