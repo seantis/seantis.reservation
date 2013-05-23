@@ -133,7 +133,6 @@ class AllocationAddForm(AllocationForm):
     @extract_action_data
     def allocate(self, data):
         self._validate_recurrence_options(data)
-
         dates = self.get_dates(data)
 
         def allocate():

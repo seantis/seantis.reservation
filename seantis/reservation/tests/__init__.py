@@ -36,6 +36,8 @@ from seantis.reservation.testing import SQL_FUNCTIONAL_TESTING
 from seantis.reservation import maintenance
 
 from Products.CMFCore.utils import getToolByName
+import lxml.html
+from lxml.cssselect import CSSSelector
 
 
 class TestCase(unittest.TestCase):
@@ -369,6 +371,23 @@ class BetterBrowser(z2.Browser):
         self.getControl(name='%s-day' % widget).value = str(date.day)
         self.getControl(name='%s-hour' % widget).value = str(date.hour)
         self.getControl(name='%s-minute' % widget).value = str(date.minute)
+
+    def locate(self, css_selector):
+        elements = self.css(css_selector)
+        if elements:
+            return elements[0]
+        raise AssertionError('Element for CSS selector "{}" could not be '
+                             'found on the current browser '
+                             'page.'.format(css_selector))
+
+    def css(self, selector):
+        xpath = CSSSelector(selector).path
+        return self.xpath(xpath)
+
+    def xpath(self, selector):
+        html = lxml.html.fromstring(self.contents)
+        return html.xpath(selector)
+
 
 
 # to use with integration where security interactions need to be done manually
