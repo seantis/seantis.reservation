@@ -53,17 +53,14 @@ class SqlLayer(PloneSandboxLayer):
         self.init_config()
 
         import seantis.reservation
-        xmlconfig.file(
-            'configure.zcml',
-            seantis.reservation,
-            context=configurationContext
-        )
         self.loadZCML(package=seantis.reservation)
 
     def setUpPloneSite(self, portal):
 
         quickInstallProduct(portal, 'plone.app.dexterity')
         quickInstallProduct(portal, 'seantis.reservation')
+        quickInstallProduct(portal, 'plone.formwidget.datetime')
+        quickInstallProduct(portal, 'plone.formwidget.recurrence')
         applyProfile(portal, 'seantis.reservation:default')
 
     def tearDownZope(self, app):
