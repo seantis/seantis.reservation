@@ -6,8 +6,13 @@ description = "Plone addon to reserve stuff in a calendar."
 version = '1.0.4'
 
 zug_require = [
+    'ftw.contentmenu',
     'izug.basetheme',
-    'ftw.contentmenu'
+]
+tests_require = [
+    'collective.betterbrowser',
+    'collective.testcaselayer',
+    'plone.app.testing',
 ]
 
 
@@ -39,33 +44,30 @@ setup(name=name, version=version, description=description,
       include_package_data=True,
       zip_safe=False,
       install_requires=[
-          'Plone>=4.3',
-          'plone.uuid>=1.0.2',
-          'setuptools',
-          'psycopg2',
-          'SQLAlchemy>=0.7.3',
-          'zope.sqlalchemy',
+          'alembic>=0.5.0',
           'collective.autopermission',
-          'collective.testcaselayer',
-          'plone.app.testing',
-          'plone.app.dexterity [grok]',
-          'plone.behavior',
-          'plone.directives.form',
-          'plone.app.referenceablebehavior',
+          'collective.js.fullcalendar>=1.6.1',
           'collective.js.jqueryui',
           'collective.js.underscore',
-          'collective.js.fullcalendar>=1.6.1',
-          'profilehooks',
-          'pytz',
-          'ordereddict',
-          'alembic>=0.5.0',
-          'xlwt',
-          'tablib',
-          'mock',
           'isodate',
+          'mock',
+          'ordereddict',
+          'plone.app.dexterity [grok]',
+          'plone.app.referenceablebehavior',
+          'plone.behavior',
+          'plone.directives.form',
+          'plone.uuid>=1.0.2',
+          'Plone>=4.3',
+          'profilehooks',
+          'psycopg2',
+          'pytz',
+          'setuptools',
+          'SQLAlchemy>=0.7.3',
+          'tablib',
+          'xlwt',
+          'zope.sqlalchemy',
       ],
-      zug_require=zug_require,
-      extras_require=dict(zug=zug_require),
+      extras_require=dict(zug=zug_require, tests=tests_require),
       entry_points="""
       # -*- Entry points: -*-
 

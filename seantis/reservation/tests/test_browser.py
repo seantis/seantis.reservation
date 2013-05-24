@@ -42,7 +42,6 @@ class TestBrowser(FunctionalTestCase):
 
         browser = self.admin_browser
         browser.open(url('/++add++seantis.reservation.resource'))
-
         browser.getControl('Name').value = name
         browser.getControl('Description').value = description
         browser.getControl('Save').click()
@@ -201,7 +200,7 @@ class TestBrowser(FunctionalTestCase):
         self.assertEqual(len(slots), 1)
 
         # the reserve_url is the default url
-        browser.open(slots[0]['url'])
+        browser.open(slots[0]['url'].replace('/plone', ''))
 
         # enter some invalid dates and an email. The form should then show an
         # error, but not forget about the email like it used to
@@ -234,7 +233,7 @@ class TestBrowser(FunctionalTestCase):
         self.add_allocation('regression', start, end, quota=4, quota_limit=2)
 
         slots = self.load_slot_data('regression', start, end)
-        browser.open(slots[0]['url'])
+        browser.open(slots[0]['url'].replace('/plone', ''))
 
         browser.getControl('Email').value = 'test@example.com'
         browser.getControl('Quota', index=0).value = '3'
