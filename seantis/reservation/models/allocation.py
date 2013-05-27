@@ -3,9 +3,11 @@ from itertools import groupby
 
 from sqlalchemy import types
 from sqlalchemy.schema import Column
+from sqlalchemy.schema import ForeignKey
 from sqlalchemy.schema import Index
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.orm import object_session
+from sqlalchemy.orm import relation
 from sqlalchemy.orm.util import has_identity
 
 from seantis.reservation import ORMBase
@@ -54,6 +56,12 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
     _end = Column(types.DateTime(), nullable=False)
     _raster = Column(types.Integer(), nullable=False)
 
+    recurrence_id = Column(types.Integer(),
+                           ForeignKey('recurrences.id',
+                                      onupdate='cascade',
+                                      ondelete='cascade'))
+    recurrence = relation('Recurrence', lazy='joined')
+
     __table_args__ = (
         Index('mirror_resource_ix', 'mirror_of', 'resource'),
         UniqueConstraint('resource', '_start', name='resource_start_ix')
@@ -70,6 +78,7 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
         allocation._start = self._start
         allocation._end = self._end
         allocation._raster = self._raster
+        allocation.recurrence_id = self.recurrence_id
         return allocation
 
     def get_start(self):
@@ -242,6 +251,12 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
         query = query.limit(2)
 
         return len(query.all()) > 1
+
+    @property
+    def in_recurrence(self):
+        """True if the event is attached to a recurrence."""
+
+        return self.recurrence_id is not None
 
     @property
     def is_separate(self):

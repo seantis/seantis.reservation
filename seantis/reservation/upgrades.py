@@ -1,4 +1,6 @@
 import logging
+from sqlalchemy.schema import ForeignKey
+from sqlalchemy.engine.reflection import Inspector
 log = logging.getLogger('seantis.reservation')
 
 from functools import wraps
@@ -258,3 +260,31 @@ def upgrade_1011_to_1012(context):
 
         tpl.reservation_made_subject = template.get_subject(lang)
         tpl.reservation_made_content = template.get_body(lang)
+
+
+@db_upgrade
+def upgrade_1012_to_1013(operations, metadata):
+
+    inspector = Inspector.from_engine(metadata.bind)
+    if 'recurrences' not in inspector.get_table_names():
+        operations.create_table('recurrences',
+                                Column('id',
+                                       types.Integer,
+                                       primary_key=True,
+                                       autoincrement=True),
+                                Column('rrule', types.String()),
+                                Column('created',
+                                       types.DateTime(timezone=True),
+                                       default=utils.utcnow),
+                                Column('modified',
+                                       types.DateTime(timezone=True),
+                                       onupdate=utils.utcnow),
+                                )
+
+    allocations_table = Table('allocations', metadata, autoload=True)
+    if 'recurrence_id' not in allocations_table.columns:
+        operations.add_column('allocations',
+                              Column('recurrence_id', types.Integer(),
+                                     ForeignKey('recurrences.id',
+                                                onupdate='cascade',
+                                                ondelete='cascade')))

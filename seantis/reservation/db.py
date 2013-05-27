@@ -21,7 +21,7 @@ from seantis.reservation.events import (
 )
 
 from seantis.reservation.models import (
-    Allocation, ReservedSlot, Reservation
+    Allocation, ReservedSlot, Reservation, Recurrence
 )
 from seantis.reservation.error import (
     OverlappingAllocationError,
@@ -290,7 +290,7 @@ class Scheduler(object):
     @serialized
     def allocate(self, dates, raster=15, quota=None, partly_available=False,
                  grouped=False, approve_manually=True,
-                 reservation_quota_limit=0, whole_day=False
+                 reservation_quota_limit=0, whole_day=False, rrule=None
                  ):
         """Allocates a spot in the calendar.
 
@@ -323,7 +323,11 @@ class Scheduler(object):
 
         group = new_uuid()
         quota = quota or 1
-
+        # use recurrence to group separate allocations.
+        if not grouped and len(dates) > 1:
+            recurrence = Recurrence(rrule=rrule)
+        else:
+            recurrence = None
         # if the allocation is not partly available the raster is set to lowest
         # possible raster value
         raster = partly_available and raster or MIN_RASTER_VALUE
@@ -362,7 +366,7 @@ class Scheduler(object):
             allocation.partly_available = partly_available
             allocation.approve_manually = approve_manually
             allocation.reservation_quota_limit = reservation_quota_limit
-
+            allocation.recurrence = recurrence
             if grouped:
                 allocation.group = group
             else:
@@ -370,6 +374,8 @@ class Scheduler(object):
 
             allocations.append(allocation)
 
+        if recurrence:
+            Session.add(recurrence)
         Session.add_all(allocations)
 
         return allocations
@@ -536,6 +542,11 @@ class Scheduler(object):
         query = query.filter(Allocation.resource == self.uuid)
         return query
 
+    def allocations_by_recurrence(self, recurrence_id):
+        query = Session.query(Allocation)
+        query = query.filter_by(recurrence_id=recurrence_id)
+        return query
+
     def allocations_in_range(self, start, end):
         query = all_allocations_in_range(start, end)
         query = query.filter(Allocation.resource == self.uuid)
@@ -658,16 +669,20 @@ class Scheduler(object):
             change.group = group or master.group
 
     @serialized
-    def remove_allocation(self, id=None, group=None):
-        if id:
-            master = self.allocation_by_id(id)
-            allocations = [master]
-            allocations.extend(self.allocation_mirrors_by_master(master))
+    def remove_allocation(self, id=None, group=None, recurrence_id=None):
+        if recurrence_id:
+            query = Session.query(Allocation)
+            query = query.filter_by(recurrence_id=recurrence_id)
+            allocations = query.all()
         elif group:
             query = Session.query(Allocation)
             query = query.filter(Allocation.group == group)
             query = query.filter(Allocation.mirror_of == self.uuid)
             allocations = query.all()
+        elif id:
+            master = self.allocation_by_id(id)
+            allocations = [master]
+            allocations.extend(self.allocation_mirrors_by_master(master))
         else:
             raise NotImplementedError
 
@@ -689,6 +704,8 @@ class Scheduler(object):
         for allocation in allocations:
             if not allocation.is_transient:
                 Session.delete(allocation)
+        if recurrence_id:
+            Session.delete(Session.query(Recurrence).get(recurrence_id))
 
     @serialized
     def reserve(self, email, dates=None, group=None, data=None,

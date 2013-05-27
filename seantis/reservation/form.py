@@ -224,6 +224,13 @@ class ResourceBaseForm(GroupForm, form.Form):
             return utils.request_id_as_int(value)
 
     @property
+    def recurrence_id(self):
+        if 'recurrence_id' in self.request:
+            return utils.request_id_as_int(self.request['recurrence_id'])
+        elif self.widgets and 'recurrence_id' in self.widgets:
+            return utils.request_id_as_int(self.widgets['recurrence_id'].value)
+
+    @property
     def group(self):
         if 'group' in self.request:
             return unicode(self.request['group'].decode('utf-8'))
@@ -282,6 +289,10 @@ class AllocationGroupView(object):
 
     @utils.memoize
     def allocations(self):
+        if self.recurrence_id:
+            query = self.context.scheduler().allocations_by_recurrence(
+                                                            self.recurrence_id)
+            return query.all()
         if self.group:
             query = self.context.scheduler().allocations_by_group(self.group)
             query = query.order_by(Allocation._start)
