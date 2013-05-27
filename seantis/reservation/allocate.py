@@ -22,6 +22,8 @@ from plone.formwidget.recurrence.z3cform.widget import RecurrenceFieldWidget
 from plone.formwidget.datetime.z3cform.widget import DateFieldWidget
 from z3c.form.interfaces import ActionExecutionError
 from zope.interface import Invalid
+from zope import schema
+import itertools
 
 
 class AllocationForm(ResourceBaseForm):
@@ -144,7 +146,8 @@ class AllocationAddForm(AllocationForm):
                 grouped=not data['separately'],
                 approve_manually=data['approve_manually'],
                 reservation_quota_limit=data['reservation_quota_limit'],
-                whole_day=data['whole_day']
+                whole_day=data['whole_day'],
+                rrule=data['recurrence'],
 
             )
             self.flash(_(u'Allocation added'))
@@ -283,25 +286,31 @@ class AllocationRemoveForm(AllocationForm, AllocationGroupView):
 
     destructive_buttons = ('delete', )
 
-    fields = field.Fields(IAllocation).select('id', 'group')
+    fields = field.Fields(IAllocation).select('id', 'group') + \
+                            field.Fields(schema.Int(__name__='recurrence_id'))
     template = ViewPageTemplateFile('templates/remove_allocation.pt')
 
     label = _(u'Remove allocations')
 
-    hidden_fields = ['id', 'group']
+    hidden_fields = ['id', 'group', 'recurrence_id']
     ignore_requirements = True
 
     @button.buttonAndHandler(_(u'Delete'))
     @extract_action_data
     def delete(self, data):
-
-        assert bool(data['id']) != bool(data['group']), \
-            "Either id or group, not both"
+        nof_params = len(list(itertools.ifilter(None, (
+                                                data['id'],
+                                                data['group'],
+                                                data['recurrence_id'],)
+                         )))
+        assert nof_params == 1, "Exactly one of id, group or recurrence_id"
 
         scheduler = self.scheduler
 
         def delete():
-            scheduler.remove_allocation(id=data['id'], group=data['group'])
+            scheduler.remove_allocation(id=data['id'],
+                                        group=data['group'],
+                                        recurrence_id=data['recurrence_id'])
             self.flash(_(u'Allocation removed'))
 
         utils.handle_action(action=delete, success=self.redirect_to_context)
@@ -311,9 +320,12 @@ class AllocationRemoveForm(AllocationForm, AllocationGroupView):
         self.redirect_to_context()
 
     def defaults(self):
-        id, group = self.id, self.group
-
-        if group:
-            return dict(group=self.group, id=None)
-        else:
-            return dict(id=self.id, group=None)
+        id, group, recurrence_id = self.id, self.group, self.recurrence_id
+        result = dict(id=None, recurrence_id=None, group=None)
+        if recurrence_id:
+            result['recurrence_id'] = recurrence_id
+        elif group:
+            result['group'] = group
+        elif id:
+            result['id'] = id
+        return result
