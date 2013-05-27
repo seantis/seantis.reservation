@@ -199,10 +199,10 @@ def request_id_as_int(string):
     characters are in the requested string (like ?id=11.11).
 
     """
-    if string is None:
+    try:
+        return int(string)
+    except (ValueError, TypeError):
         return 0
-
-    return int(''.join(re.findall(_requestid_expr, string)))
 
 
 class memoize(object):
