@@ -287,7 +287,8 @@ class AllocationRemoveForm(AllocationForm, AllocationGroupView):
     destructive_buttons = ('delete', )
 
     fields = field.Fields(IAllocation).select('id', 'group') + \
-                            field.Fields(schema.Int(__name__='recurrence_id'))
+                            field.Fields(schema.Int(__name__='recurrence_id',
+                                                    required=False))
     template = ViewPageTemplateFile('templates/remove_allocation.pt')
 
     label = _(u'Remove allocations')
