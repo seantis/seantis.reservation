@@ -1,16 +1,6 @@
-import os
 import unittest2 as unittest
 
-import thread
-import time
-import webbrowser
-import cgi
-import urllib
-
 from sqlalchemy import create_engine
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
-
-from tempfile import NamedTemporaryFile
 
 from zope import event
 from zope.component import getUtility
@@ -25,6 +15,8 @@ from plone.testing import z2
 from plone.dexterity.utils import createContentInContainer
 from plone.app.testing import TEST_USER_NAME, TEST_USER_ID
 from plone.app.testing import login, logout, setRoles
+
+from collective.betterbrowser import new_browser
 
 from seantis.reservation import setuphandlers
 from seantis.reservation.utils import getSite
@@ -107,21 +99,7 @@ class TestCase(unittest.TestCase):
         z2.login(self.app['acl_users'], 'admin')
 
     def new_browser(self):
-        browser = BetterBrowser(self.app)
-        browser.portal = self.portal
-        browser.handleErrors = False
-
-        self.portal.error_log._ignored_exceptions = ()
-
-        def raising(self, info):
-            import traceback
-            traceback.print_tb(info[2])
-            print info[1]
-
-        from Products.SiteErrorLog.SiteErrorLog import SiteErrorLog
-        SiteErrorLog.raising = raising
-
-        return browser
+        return new_browser(self.layer)
 
     def assign_reservation_manager(self, email, resource):
         username = email.split('@')[0]
@@ -178,219 +156,6 @@ class TestEventSubscriber(object):
         self.event = None
 
 
-# we need something like seantis.plone-tools because this exists
-# in seantis.dir.events as well at the moment
-class BetterBrowser(z2.Browser):
-
-    portal = None
-
-    def print_state(self):
-        print
-        print '@url ------>\n{}'.format(self.url)
-        print '@headers -->\n{}'.format(self.headers.items())
-        print '@contents ->\n{}'.format(self.contents)
-        print
-
-    def login(self, user, password):
-        self.open(self.portal.absolute_url() + "/login_form")
-        self.getControl(name='__ac_name').value = user
-        self.getControl(name='__ac_password').value = password
-        self.getControl(name='submit').click()
-
-        assert 'logout' in self.contents
-
-    def logout(self):
-        self.open(self.portal.absolute_url() + "/logout")
-
-        assert 'logged out' in self.contents
-
-    def login_admin(self):
-        self.login('admin', 'secret')
-
-    def login_testuser(self):
-        self.login('test-user', 'secret')
-
-    def assert_http_exception(self, url, exception):
-        self.portal.error_log._ignored_exceptions = ()
-        self.portal.acl_users.credentials_cookie_auth.login_path = ""
-
-        expected = False
-        try:
-            self.open(url)
-        except Exception, e:
-
-            # zope does not always raise unathorized exceptions with the
-            # correct class signature, so we need to do this thing:
-            expected = e.__repr__().startswith(exception)
-
-            if not expected:
-                raise
-
-        assert expected
-
-    def assert_unauthorized(self, url):
-        self.assert_http_exception(url, 'Unauthorized')
-
-    def assert_notfound(self, url):
-        self.assert_http_exception(url, 'NotFound')
-
-    def show(self):
-        """ Opens the current contents in the default system browser """
-        tempfile = NamedTemporaryFile(delete=False)
-        tempfile.write(self.contents)
-        tempfile.close()
-
-        os.rename(tempfile.name, tempfile.name + '.html')
-        os.system("open " + tempfile.name + '.html')
-
-    def serve(self, port=8888, open_in_browser=True, threaded=False):
-        """ Serves the currently open site on localhost:<port> handling all
-        requests for full browser support.
-
-        During the session the browser will open other sites. The old one is
-        reset after the server is killed using ctrl+c
-
-        """
-
-        browser = self
-
-        external_base_url = 'http://localhost:{}/'.format(port)
-        internal_base_url = 'http://nohost/'
-
-        # stitch the local variables to the GetHandler class when it is created
-        def handler_factory(*args, **kwargs):
-            instance = type(*args, **kwargs)
-            instance.internal_base_url = internal_base_url
-            instance.external_base_url = external_base_url
-            instance.browser = browser
-            return instance
-
-        class RequestHandler(BaseHTTPRequestHandler, object):
-
-            __metaclass__ = handler_factory
-
-            @property
-            def internal_url(self):
-                return self.internal_base_url + self.path
-
-            def reencode_post_data(self):
-                """ Parse the post data and urlencode them again. This ensures
-                that the browser knows what to do with the data. It doesn't
-                seem to be too flexible there.
-
-                """
-                ctype, pdict = cgi.parse_header(
-                    self.headers.getheader('content-type')
-                )
-
-                if ctype == 'multipart/form-data':
-                    parsed = cgi.parse_multipart(self.rfile, pdict)
-
-                elif ctype == 'application/x-www-form-urlencoded':
-                    length = int(self.headers.getheader('content-length'))
-                    parsed = cgi.parse_qs(
-                        self.rfile.read(length), keep_blank_values=1
-                    )
-
-                else:
-                    parsed = {}
-
-                return urllib.urlencode(parsed, True)
-
-            def externalize(self, body):
-                return body.replace(
-                    self.internal_base_url, self.external_base_url
-                )
-
-            def do_GET(self):
-                self.browser.open(self.internal_url)
-                self.respond()
-
-            def do_POST(self):
-
-                data = self.reencode_post_data()
-
-                self.browser.open(self.internal_url, data)
-                self.respond()
-
-            def respond(self):
-                """ Write the current browser's content into the response. """
-
-                self.send_response(int(self.browser.headers['status'][:3]))
-
-                # adjust the headers except for the content-length which might
-                # later differ because the body may change
-                for key, header in self.browser.headers.items():
-                    if key != 'content-length':
-                        self.send_header(key, header)
-
-                body = self.externalize(self.browser.contents)
-
-                # calculate the length and send
-                self.send_header('Content-Length', len(body))
-                self.end_headers()
-
-                self.wfile.write(body)
-
-        open_url = browser.url
-
-        # open the external bseurl in an external browser with a short delay
-        # to get the TCPServer time to start listening
-        if open_in_browser:
-            def open_browser(url):
-                time.sleep(0.5)
-                webbrowser.open(url)
-
-            url = browser.url.replace(internal_base_url, external_base_url)
-            thread.start_new_thread(open_browser, (url, ))
-
-        server = HTTPServer(('localhost', port), RequestHandler)
-
-        if not threaded:
-            try:
-                # continue until the user presses ctril+c in the console
-                server.serve_forever()
-            except KeyboardInterrupt:
-                pass
-
-            # reopen the last used url
-            browser.open(open_url)
-        else:
-            # start the server and return a close function
-            thread.start_new_thread(server.serve_forever, ())
-
-            def close():
-                server.shutdown()
-                browser.open(open_url)
-
-            return close
-
-    def set_date(self, widget, date):
-        self.getControl(name='%s-year' % widget).value = str(date.year)
-        self.getControl(name='%s-month' % widget).value = [str(date.month)]
-        self.getControl(name='%s-day' % widget).value = str(date.day)
-        self.getControl(name='%s-hour' % widget).value = str(date.hour)
-        self.getControl(name='%s-minute' % widget).value = str(date.minute)
-
-    def locate(self, css_selector):
-        elements = self.css(css_selector)
-        if elements:
-            return elements[0]
-        raise AssertionError('Element for CSS selector "{}" could not be '
-                             'found on the current browser '
-                             'page.'.format(css_selector))
-
-    def css(self, selector):
-        xpath = CSSSelector(selector).path
-        return self.xpath(xpath)
-
-    def xpath(self, selector):
-        html = lxml.html.fromstring(self.contents)
-        return html.xpath(selector)
-
-
-
-# to use with integration where security interactions need to be done manually
 class IntegrationTestCase(TestCase):
     layer = SQL_INTEGRATION_TESTING
 
