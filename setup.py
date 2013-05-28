@@ -13,7 +13,7 @@ teamraum_require = [
     'plonetheme.teamraum'
 ]
 tests_require = [
-    'collective.betterbrowser[pyquery]',
+    'collective.betterbrowser [pyquery]',
     'collective.testcaselayer',
     'plone.app.testing',
 ]
@@ -55,6 +55,7 @@ setup(name=name, version=version, description=description,
           'collective.js.underscore',
           'collective.testcaselayer',
           'isodate',
+          'lxml',
           'mock',
           'ordereddict',
           'plone.app.dexterity [grok]',
@@ -74,10 +75,7 @@ setup(name=name, version=version, description=description,
           'SQLAlchemy>=0.7.3',
           'tablib',
           'xlwt',
-          'tablib',
-          'mock',
-          'isodate',
-          'lxml',
+          'zope.sqlalchemy',
       ],
       extras_require=dict(
           zug=zug_require,
