@@ -138,6 +138,46 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(2, len(recurrence.allocations))
 
     @serialized
+    def test_recurrence_remove(self):
+        """Test that recurrences are removed correctly.
+
+        """
+        sc = Scheduler(new_uuid())
+        dates = [(datetime(2011, 1, 1, 15), datetime(2011, 1, 1, 16)),
+                 (datetime(2011, 1, 2, 15), datetime(2011, 1, 2, 16))]
+        sc.allocate(dates, partly_available=True, grouped=False)
+        Session.flush()
+
+        recurrence = Session.query(Recurrence).one()
+        sc.remove_allocation(recurrence_id=recurrence.id)
+        Session.flush()
+
+        self.assertEqual(0, Session.query(Allocation).count())
+        self.assertEqual(0, Session.query(Recurrence).count())
+
+    @serialized
+    def test_recurrence_removed_when_last_allocation_entry_deleted(self):
+        """Test that recurrences are removed when the last allocation entry
+        for that recurrence is deleted but not before.
+
+        """
+        sc = Scheduler(new_uuid())
+        dates = [(datetime(2011, 1, 1, 15), datetime(2011, 1, 1, 16)),
+                 (datetime(2011, 1, 2, 15), datetime(2011, 1, 2, 16))]
+        sc.allocate(dates, partly_available=True, grouped=False)
+        Session.flush()
+
+        sc.remove_allocation(id=Session.query(Allocation).first().id)
+        Session.flush()
+        self.assertEqual(1, Session.query(Allocation).count())
+        self.assertEqual(1, Session.query(Recurrence).count())
+
+        sc.remove_allocation(id=Session.query(Allocation).first().id)
+        Session.flush()
+        self.assertEqual(0, Session.query(Allocation).count())
+        self.assertEqual(0, Session.query(Recurrence).count())
+
+    @serialized
     def test_group_reserve(self):
         sc = Scheduler(new_uuid())
 
