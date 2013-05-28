@@ -832,6 +832,13 @@ class Scheduler(object):
                     allocation.pending_reservations[0]
                 )
 
+        # remove recurrence as well if this is the last allocation
+        if len(allocations) == 1 and allocations[0].recurrence:
+            allocation = allocations[0]
+            if len(allocation.recurrence.allocations) == 1:
+                recurrence_id = allocation.recurrence_id
+                assert recurrence_id
+
         for allocation in allocations:
             if not allocation.is_transient:
                 Session.delete(allocation)
