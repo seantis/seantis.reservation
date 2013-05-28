@@ -117,7 +117,7 @@ class TestBrowser(FunctionalTestCase):
                             separately=False)
 
         self.assertIn('Partly available allocations can only be reserved',
-                      self.admin_browser.locate("div.field.error .error").text)
+                      str(self.admin_browser.query("div.field.error .error")))
 
     def test_resource_listing(self):
 
