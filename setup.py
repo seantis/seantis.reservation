@@ -9,10 +9,15 @@ zug_require = [
     'ftw.contentmenu',
     'izug.basetheme',
 ]
+
 tests_require = [
     'collective.betterbrowser [pyquery]',
     'collective.testcaselayer',
     'plone.app.testing',
+]
+
+multilingual_require = [
+    'plone.app.multilingual [dexterity]',
 ]
 
 
@@ -76,7 +81,9 @@ setup(name=name, version=version, description=description,
           'xlwt',
           'zope.sqlalchemy',
       ],
-      extras_require=dict(zug=zug_require, tests=tests_require),
+      extras_require=dict(zug=zug_require,
+                          tests=tests_require,
+                          multilingual=multilingual_require),
       entry_points="""
       # -*- Entry points: -*-
 
