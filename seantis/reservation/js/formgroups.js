@@ -119,7 +119,7 @@ seantis.formgroups.add_utility_links = function() {
 
             e.preventDefault();
         });
-        seantis.formgroups.groups.recurrent.fields.push(tool);
+        seantis.formgroups.groups.recurrence.fields.push(tool);
     });
 
     if (timeframes.length) {
