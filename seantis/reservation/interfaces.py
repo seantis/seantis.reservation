@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from dateutil import rrule
+import pkg_resources
 
 from five import grok
 
@@ -25,6 +26,20 @@ from seantis.reservation.raster import VALID_RASTER_VALUES
 from seantis.reservation.mail_templates import templates
 
 from seantis.reservation.utils import _languagelist
+from zope.interface.declarations import alsoProvides
+
+try:
+    pkg_resources.get_distribution('plone.multilingual')
+    from plone.multilingualbehavior import directives
+
+except pkg_resources.DistributionNotFound:
+
+    class _NullDirectives(object):
+        """Null interface use when no multilingual support is available."""
+        def languageindependent(self, ignored):
+            pass
+
+    directives = _NullDirectives()
 
 days = SimpleVocabulary(
     [
@@ -243,6 +258,7 @@ class IReservationFormSet(Interface):
 
 class IResourceAllocationDefaults(form.Schema):
 
+    directives.languageindependent('quota')
     quota = schema.Int(
         title=_(u'Quota'),
         description=_(
@@ -253,6 +269,7 @@ class IResourceAllocationDefaults(form.Schema):
         default=1
     )
 
+    directives.languageindependent('reservation_quota_limit')
     reservation_quota_limit = schema.Int(
         title=_(u'Reservation Quota Limit'),
         description=_(
@@ -262,6 +279,7 @@ class IResourceAllocationDefaults(form.Schema):
         default=1
     )
 
+    directives.languageindependent('approve_manually')
     approve_manually = schema.Bool(
         title=_(u'Manually approve reservation requests'),
         description=_(
@@ -272,6 +290,7 @@ class IResourceAllocationDefaults(form.Schema):
         default=False
     )
 
+    directives.languageindependent('partly_available')
     partly_available = schema.Bool(
         title=_(u'Partly available'),
         description=_(
@@ -282,6 +301,7 @@ class IResourceAllocationDefaults(form.Schema):
         default=False
     )
 
+    directives.languageindependent('raster')
     raster = schema.Choice(
         title=_(u'Raster'),
         description=_(
@@ -326,6 +346,7 @@ class IResourceBase(IResourceAllocationDefaults):
         required=False
     )
 
+    directives.languageindependent('first_hour')
     first_hour = schema.Int(
         title=_(u'First hour of the day'),
         description=_(
@@ -337,6 +358,7 @@ class IResourceBase(IResourceAllocationDefaults):
         default=7
     )
 
+    directives.languageindependent('last_hour')
     last_hour = schema.Int(
         title=_(u'Last hour of the day'),
         description=_(
@@ -348,6 +370,7 @@ class IResourceBase(IResourceAllocationDefaults):
         default=23
     )
 
+    directives.languageindependent('available_views')
     available_views = schema.List(
         title=_(u'Available Views'),
         description=_(u'Views available to the user on the calendar.'),
@@ -360,6 +383,7 @@ class IResourceBase(IResourceAllocationDefaults):
 
     form.widget(available_views=CheckBoxFieldWidget)
 
+    directives.languageindependent('selected_view')
     selected_view = schema.Choice(
         title=_(u'Selected View'),
         description=_(u'Selected view when opening the calendar.'),
@@ -369,6 +393,7 @@ class IResourceBase(IResourceAllocationDefaults):
 
     form.widget(selected_view=RadioFieldWidget)
 
+    directives.languageindependent('selected_date')
     selected_date = schema.Choice(
         title=_(u'Selected Date'),
         description=_(u'Calendar date shown when opening the calendar.'),
@@ -378,6 +403,7 @@ class IResourceBase(IResourceAllocationDefaults):
 
     form.widget(selected_date=RadioFieldWidget)
 
+    directives.languageindependent('specific_date')
     specific_date = schema.Date(
         title=_(u'Specific Date'),
         required=False
