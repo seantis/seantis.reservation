@@ -1,8 +1,15 @@
 from sqlalchemy.exc import IntegrityError
-from psycopg2.extensions import TransactionRollbackError
 from sqlalchemy.orm.exc import NoResultFound
+import pkg_resources
 
 from seantis.reservation import _
+
+try:
+    pkg_resources.get_distribution('psycopg2')
+    from psycopg2.extensions import TransactionRollbackError
+    HAS_PSYCOPG2 = True
+except pkg_resources.DistributionNotFound:
+    HAS_PSYCOPG2 = False
 
 
 class ReservationError(Exception):
@@ -90,9 +97,6 @@ errormap = {
     AffectedPendingReservationError:
     _(u'A pending reservation would be affected by the requested change'),
 
-    TransactionRollbackError:
-    _(u'The resource is being edited by someone else. Please try again.'),
-
     NoResultFound:
     _(u'The item does no longer exist.'),
 
@@ -135,3 +139,7 @@ errormap = {
     InvalidAllocationError:
     _(u'The resulting allocation would be invalid'),
 }
+
+if HAS_PSYCOPG2:
+    errormap[TransactionRollbackError] =  _(u'The resource is being edited by '
+                                            'someone else. Please try again.')
