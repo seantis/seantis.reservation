@@ -94,7 +94,7 @@ class SeantisReservationSettingsPanelForm(RegistryEditForm):
             brains = catalog.unrestrictedSearchResults(
                 object_provides=IResource.__identifier__
             )
-            return map(lambda brain: IUUID(brain.getObject()), brains)
+            return map(lambda brain: brain.getObject().uuid(), brains)
 
         # do this on all items in the zope instance, not just the site!
         uuids = []
