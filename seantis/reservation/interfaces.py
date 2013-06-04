@@ -474,7 +474,13 @@ class IResourceBase(IResourceAllocationDefaults):
 
 
 class IResource(IResourceBase):
-    pass
+
+    def uuid():
+        """Return the resource's UUID to be used as database foreign key.
+
+        For multilingual content this could be UUID of a canonical object.
+
+        """
 
 
 class IAllocation(IResourceAllocationDefaults):
