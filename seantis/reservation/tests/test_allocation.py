@@ -78,4 +78,4 @@ class TestAllocation(IntegrationTestCase):
         allocation.start = datetime(2013, 1, 1, 15, 0)
         allocation.end = datetime(2013, 1, 1, 0, 0)
 
-        self.assertFalse(allocation.whole_day)
+        self.assertRaises(AssertionError, lambda: allocation.whole_day)
