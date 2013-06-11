@@ -41,6 +41,7 @@ def dataset(resources, language):
         text(_(u'Start')),
         text(_(u'End')),
         text(_(u'Status')),
+        text(_(u'Quota')),
     ]
     dataheaders = additional_headers(reservations)
     headers.extend(dataheaders)
@@ -71,7 +72,8 @@ def dataset(resources, language):
                 r.email,
                 start.strftime('%Y-%m-%d %H:%M'),
                 end.strftime('%Y-%m-%d %H:%M'),
-                _(r.status.capitalize())
+                _(r.status.capitalize()),
+                r.quota
             ]
             record.extend(
                 additional_columns(r, dataheaders, dataview.display_info)

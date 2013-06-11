@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.0.5 (unreleased)
+------------------
+
+- Adds quota to reservations export
+
 1.0.4
 -----
 
