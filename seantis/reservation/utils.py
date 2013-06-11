@@ -883,6 +883,31 @@ def shift_day(stdday):
     return abs(0 - (stdday + 1) % 7)
 
 
+def whole_day(start, end):
+    """Returns true if the given start, end range should be considered
+    a whole-day range. This is so if the start time is 0:00:00 and the end
+    time either 0:59:59 or 0:00:00 and if there is at least a diff
+    erence of 23h 59m 59s / 86399 seconds between them.
+
+    This is relevant for the calendar-display for now. This might very well be
+    replaced again in the future when we introduce timezones.
+
+    """
+
+    assert start <= end, "The end needs to be equal or greater than the start"
+
+    if (start.hour, start.minute, start.second) != (0, 0, 0):
+        return False
+
+    if (end.hour, end.minute, end.second) not in ((0, 0, 0), (23, 59, 59)):
+        return False
+
+    if (end - start).total_seconds() < 86399:
+        return False
+
+    return True
+
+
 def context_path(context):
     """Returns the physical path for brains and objects alike."""
 

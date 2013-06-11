@@ -124,7 +124,7 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
         s, e = self.display_start, self.display_end
         assert s != e  # this can never be, except when caused by cosmic rays
 
-        return (s.hour, s.minute, e.hour, e.minute) == (0, 0, 0, 0)
+        return utils.whole_day(s, e)
 
     def overlaps(self, start, end):
         """ Returns true if the current timespan overlaps with the given

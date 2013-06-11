@@ -40,6 +40,7 @@ def dataset(resources, language):
         text(_(u'Email')),
         text(_(u'Start')),
         text(_(u'End')),
+        text(_(u'Whole Day')),
         text(_(u'Status')),
         text(_(u'Quota')),
     ]
@@ -72,6 +73,7 @@ def dataset(resources, language):
                 r.email,
                 start.strftime('%Y-%m-%d %H:%M'),
                 end.strftime('%Y-%m-%d %H:%M'),
+                dataview.display_info(utils.whole_day(start, end)),
                 _(r.status.capitalize()),
                 r.quota
             ]
