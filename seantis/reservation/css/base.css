@@ -210,6 +210,10 @@ body .event-unavailable .fc-event-time {
     display: none;
 }
 
+.overlay.overlay-ajax {
+    z-index: 9999 !important;
+}
+
 /* to overlap the overlay */
 .riform {
     z-index: 10000;
