@@ -114,7 +114,7 @@ def additional_data_dictionary(data, fti):
             if not key.startswith(ifacekey + '.'):
                 continue
 
-            subkey = key.split('.')[1]
+            subkey = key.split('.')[-1]
             desc = iface.getDescriptionFor(subkey).title
             sortkey = iface.get(subkey).order
 
