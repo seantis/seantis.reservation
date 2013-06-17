@@ -93,16 +93,15 @@ def form_interfaces(context):
     of interfaces which may be used as sub-forms in a resource object.
 
     """
-    dutils = getallutils(IDexterityFTI)
     behavior = 'seantis.reservation.interfaces.IReservationFormSet'
-    interfaces = [
-        (u.title, u.lookupSchema()) for u in dutils if behavior in u.behaviors
+    ftis = [
+        fti for fti in getallutils(IDexterityFTI) if behavior in fti.behaviors
     ]
 
     def get_term(item):
-        return SimpleTerm(title=item[0], value=getname(item[1].__name__))
+        return SimpleTerm(title=item.title, value=item.id)
 
-    return SimpleVocabulary(map(get_term, interfaces))
+    return SimpleVocabulary(map(get_term, ftis))
 
 
 @grok.provider(IContextSourceBinder)
