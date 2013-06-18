@@ -6,6 +6,7 @@ Changelog
 
 - Adds whole-day flag to reservations export
 - Adds quota to reservations export
+- Adds the ability to show/hide the timetable in the monthly report
 
 1.0.4
 -----

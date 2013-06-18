@@ -10,6 +10,10 @@
             elements.toggleClass('show-details', show);
         };
 
+        var show_timetable = function(elements, show) {
+            elements.toggleClass('hidden-timetable', !show);
+        };
+
         var checkbox_values = function(selector, status) {
             var values = _.map($(selector), function(checkbox) {
                 if ($(checkbox).is(status))
@@ -95,6 +99,12 @@
         $('.controlbox input[name="details"]').change(function() {
             var show = $(this).val() == 'show';
             show_details(report.find('.reservation'), show);
+        });
+
+        // Toggle all timetables
+        $('.controlbox input[name="timetable"]').change(function() {
+            var show = $(this).val() == 'show';
+            show_timetable(report.find('.timetable-wrapper'), show);
         });
 
         // Toggle specific resources

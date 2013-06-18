@@ -24,8 +24,13 @@
                 </div>
                 <div class="nav-block">
                     <h2 i18n:translate="">Details</h2>
-                    <label><input type="radio" name="details" value="show" /><span i18n:translate="">Show</span></label>
-                    <label><input type="radio" name="details" value="hide" checked="checked" /><span i18n:translate="">Hide</span></label>
+                    <label><input type="radio" name="details" value="show" tal:attributes="checked view/show_details | nothing" /><span i18n:translate="">Show</span></label>
+                    <label><input type="radio" name="details" value="hide" tal:attributes="checked not: view/show_details | nothing" /><span i18n:translate="">Hide</span></label>
+                </div>
+                <div class="nav-block">
+                    <h2 i18n:translate="">Timetable</h2>
+                    <label><input type="radio" name="timetable" value="show" tal:attributes="checked view/show_timetable | nothing" /><span i18n:translate="">Show</span></label>
+                    <label><input type="radio" name="timetable" value="hide" tal:attributes="checked not: view/show_timetable | nothing" /><span i18n:translate="">Hide</span></label>
                 </div>
                 <div class="nav-block">
                     <h2 i18n:translate="">Resources</h2>
@@ -64,10 +69,15 @@
                                         <h4 tal:content="python: resource['lists'][rtype]"></h4>
                                     </div>
                                     <div class="rightcolumn">
-                                        <div class="timetable-wrapper" tal:attributes="
-                                            data-min_hour view/min_hour;
-                                            data-max_hour view/max_hour;
-                                        "></div>
+                                        <div 
+                                            tal:attributes="
+                                                class python: ' '.join((
+                                                    'timetable-wrapper', not view.show_timetable and 'hidden-timetable' or ''
+                                                ));
+                                                data-min_hour view/min_hour;
+                                                data-max_hour view/max_hour;
+                                            "
+                                         ></div>
                                     </div>
                                     <div style="clear:both;"></div>
                                 </div>
@@ -83,11 +93,14 @@
                                             <div tal:content="structure reservation/quota"></div>
                                         </div>
                                         <div class="rightcolumn">
-                                            <div class="timetable-wrapper" tal:attributes="
+                                            <div tal:attributes="
                                                 data-min_hour view/min_hour;
                                                 data-max_hour view/max_hour;
                                                 data-show_header string:false;
                                                 data-timespans reservation/timespans;
+                                                class python: ' '.join((
+                                                    'timetable-wrapper', not view.show_timetable and 'hidden-timetable' or ''
+                                                ));
                                             "></div>
                                         </div>
                                         <div style="clear:both;"></div>

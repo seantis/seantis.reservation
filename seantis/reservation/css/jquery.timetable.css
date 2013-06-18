@@ -50,3 +50,7 @@ table.timetable td {
 table.timetable tr.empty_row td {
     height: 5px;   
 }
+
+.timetable-wrapper.hidden-timetable {
+    visibility: hidden;
+}

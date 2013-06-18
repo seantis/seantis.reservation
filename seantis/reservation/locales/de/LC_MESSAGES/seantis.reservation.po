@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-05-14 08:29+0000\n"
+"POT-Creation-Date: 2013-06-18 09:20+0000\n"
 "PO-Revision-Date: 2012-09-06 11:33+0100\n"
 "Last-Translator: Fabian Reinhard <fabian.reinhard@seantis.ch>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -58,7 +58,7 @@ msgstr "Es existiert bereits eine Einteilung für den gewählten Zeitraum"
 msgid "A pending reservation would be affected by the requested change"
 msgstr "Ein offene Reservierung wäre durch die Änderung betroffen"
 
-#: ./mail.py:479
+#: ./mail.py:482
 msgid "Add email template"
 msgstr "Email Vorlage hinzufügen"
 
@@ -114,7 +114,7 @@ msgstr "Immer das aktuelle Datum anzeigen"
 msgid "An existing reservation would be affected by the requested change"
 msgstr "Eine bestehende Reservation wäre durch die Änderung betroffen"
 
-#: ./report.py:240
+#: ./report.py:245
 #: ./reserve.py:567
 #: ./templates/reservations.pt:120
 msgid "Approve"
@@ -194,12 +194,12 @@ msgid "Defines the minimum length of any given reservation as well as the alignm
 msgstr "Definiert die Mindestlänge der Reservationen für diese Einteilung, sowie die automatische Anpassung der Start- bzw. Endzeit. Ein Raster von 30 Minuten bedeuted beispielsweise, dass die Einteilung nur um xx:00 Uhr und xx:30 Uhr beginnen kann."
 
 #: ./allocate.py:297
-#: ./mail.py:488
-#: ./report.py:234
+#: ./mail.py:491
+#: ./report.py:239
 msgid "Delete"
 msgstr "Löschen"
 
-#: ./report.py:246
+#: ./report.py:251
 #: ./reserve.py:602
 #: ./templates/reservations.pt:114
 msgid "Deny"
@@ -238,7 +238,7 @@ msgid "Do you want to reserve the following allocations?"
 msgstr "Möchten Sie die folgenden Einteilungen reservieren?"
 
 #: ./allocate.py:244
-#: ./mail.py:487
+#: ./mail.py:490
 #: ./resource.py:306
 msgid "Edit"
 msgstr "Bearbeiten"
@@ -284,7 +284,7 @@ msgstr "Email Betreff für Reservationen in der Warteliste"
 msgid "Email Subject for Revoked Reservations"
 msgstr "Email Betreff für Abgesagte Reservationen"
 
-#: ./mail.py:86
+#: ./mail.py:89
 #: ./profiles/default/types/seantis.reservation.emailtemplate.xml
 msgid "Email Template"
 msgstr "Email Vorlage"
@@ -466,7 +466,7 @@ msgstr "Mo"
 msgid "Monthly Report"
 msgstr "Monatsreport"
 
-#: ./report.py:119
+#: ./report.py:120
 msgid "Monthly Report for ${month} ${year}"
 msgstr "Monatesreport ${month} ${year}"
 
@@ -543,6 +543,7 @@ msgstr "Teilweise verfügbare Einteilungen können nur separat reserviert werden
 msgid "Pending"
 msgstr "Warteliste"
 
+#: ./exports/reservations.py:45
 #: ./interfaces.py:247
 msgid "Quota"
 msgstr "Kontingent"
@@ -659,7 +660,7 @@ msgstr "Ressource"
 msgid "Resource reservation"
 msgstr "Reservation"
 
-#: ./templates/monthly_report.pt:31
+#: ./templates/monthly_report.pt:36
 msgid "Resources"
 msgstr "Ressourcen"
 
@@ -676,7 +677,7 @@ msgstr "Reservation absagen"
 msgid "Sa"
 msgstr "Sa"
 
-#: ./mail.py:431
+#: ./mail.py:434
 #: ./timeframe.py:83
 msgid "Save"
 msgstr "Speichern"
@@ -759,11 +760,11 @@ msgstr "Bestimmtes Datum"
 msgid "Start"
 msgstr "Start"
 
-#: ./exports/reservations.py:43
+#: ./exports/reservations.py:44
 msgid "Status"
 msgstr "Status"
 
-#: ./templates/monthly_report.pt:37
+#: ./templates/monthly_report.pt:42
 msgid "Statuses"
 msgstr "Stati"
 
@@ -855,7 +856,7 @@ msgstr "${nb} Reservationen werden gerade eingegeben."
 msgid "There is one reservation being entered for this resource."
 msgstr "Eine Reservation wird gerade eingegeben."
 
-#: ./mail.py:416
+#: ./mail.py:419
 msgid "There's already an Email template in the same folder for the same language"
 msgstr "Es besteht bereits eine Email Vorlage mit dieser Sprache in diesem Order"
 
@@ -871,6 +872,10 @@ msgstr "Die Belegungsperiod überschneidet sich mit '${overlap}' in diesem Ordne
 #: ./templates/timeframes.pt:4
 msgid "Timeframes"
 msgstr "Belegungsperioden"
+
+#: ./templates/monthly_report.pt:31
+msgid "Timetable"
+msgstr "Zeitachse"
 
 #: ./exports/reservations.py:39
 msgid "Token"
@@ -920,9 +925,9 @@ msgstr "Mi"
 msgid "Weekly View"
 msgstr "Wochenansicht"
 
+#: ./exports/reservations.py:43
 #: ./interfaces.py:487
 #: ./resource.py:364
-#: ./templates/group.pt:40
 msgid "Whole Day"
 msgstr "Ganztägig"
 
