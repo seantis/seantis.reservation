@@ -349,10 +349,7 @@ class ResourceParameterView(object):
     @property
     @view.memoize
     def uuids(self):
-        uuids = self.request.get('uuid', [])
-
-        if not hasattr(uuids, '__iter__'):
-            uuids = [uuids]
+        uuids = utils.pack(self.request.get('uuid', []))
 
         if IResourceBase.providedBy(self.context):
             uuids.append(self.context.uuid())

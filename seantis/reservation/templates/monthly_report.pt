@@ -20,7 +20,7 @@
             <div class="monthly-report-navigation">
                 <div class="nav-block">
                     <h2 i18n:translate="">Navigation</h2>
-                    <a tal:attributes="href view/backward_url" i18n:translate="">&lt;&lt; Previous Month</a> | <a tal:attributes="href view/forward_url" i18n:translate="">Next Month &gt;&gt;</a>
+                    <a tal:attributes="href view/backward_url" i18n:translate="" class="previous-month">&lt;&lt; Previous Month</a> | <a tal:attributes="href view/forward_url" i18n:translate="" class="next-month">Next Month &gt;&gt;</a>
                 </div>
                 <div class="nav-block">
                     <h2 i18n:translate="">Details</h2>
@@ -35,13 +35,13 @@
                 <div class="nav-block">
                     <h2 i18n:translate="">Resources</h2>
                     <tal:block repeat="uuid view/sorted_resources">
-                        <label><input type="checkbox" class="resource-checkbox" tal:attributes="value uuid" checked="checked"><span tal:content="python: view.resource_title(uuid)"></span></label>
+                        <label><input type="checkbox" class="resource-checkbox" tal:attributes="value uuid; checked python: view.show_resource(uuid) or None"><span tal:content="python: view.resource_title(uuid)"></span></label>
                     </tal:block>
                 </div>
                 <div class="nav-block">
                     <h2 i18n:translate="">Statuses</h2>
                     <tal:block repeat="status view/statuses">
-                        <label><input type="checkbox" class="status-checkbox" tal:attributes="value python: status[0]" checked="checked"><span tal:content="python: status[1]"></span></label>
+                        <label><input type="checkbox" class="status-checkbox" tal:attributes="value python: status[0]; checked python: view.show_status(status[0]) or None"><span tal:content="python: status[1]"></span></label>
                     </tal:block>
                 </div>
 

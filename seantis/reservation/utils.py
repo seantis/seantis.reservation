@@ -662,6 +662,11 @@ def flatten(l):
             yield el
 
 
+def pack(v):
+    """Puts v in a list if not already an iterator."""
+    return [v] if not hasattr(v, '__iter__') else v
+
+
 def pairs(l):
     """Takes any list and returns pairs:
     ((a,b),(c,d)) => ((a,b),(c,d))

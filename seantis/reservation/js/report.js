@@ -14,6 +14,40 @@
             elements.toggleClass('hidden-timetable', !show);
         };
 
+        var update_url = function(base) {
+            // takes the give url and replaces the query parts which may
+            // be changed by the filter block at the top of the report with
+            // the chosen values, producing a new url which will lead to the
+            // same report with the same filter settings
+            var uri = URI(base);
+            var static_params = ['year', 'month', 'uuid'];
+            var dynamic_params = _.difference(
+                _.keys(uri.query(true)), static_params
+            );
+
+            _.each(dynamic_params, function(key) {
+                uri.removeQuery(key);
+            });
+
+            if ($('.controlbox input[name="details"]:checked').val() == 'show') {
+                uri.addQuery('show_details', '1');
+            }
+
+            if ($('.controlbox input[name="timetable"]:checked').val() == 'hide') {
+                uri.addQuery('hide_timetable', '1');
+            }
+
+            _.each(hidden_resources(), function(resource) {
+                uri.addQuery('hide_resource', resource);
+            });
+
+            _.each(hidden_statuses(), function(status) {
+                uri.addQuery('hide_status', status);
+            });
+
+            return uri.normalize().toString();
+        };
+
         var checkbox_values = function(selector, status) {
             var values = _.map($(selector), function(checkbox) {
                 if ($(checkbox).is(status))
@@ -26,8 +60,16 @@
             return checkbox_values('.controlbox .resource-checkbox', ':checked');
         };
 
+        var hidden_resources = function() {
+            return checkbox_values('.controlbox .resource-checkbox', ':not(:checked)');
+        };
+
         var visible_statuses = function() {
             return checkbox_values('.controlbox .status-checkbox', ':checked');
+        };
+
+        var hidden_statuses = function() {
+            return checkbox_values('.controlbox .status-checkbox', ':not(:checked)');
         };
 
         var update_resource_status = function(changed) {
@@ -116,6 +158,20 @@
         $('.controlbox .status-checkbox').change(function() {
             update_resource_status('status');
         });
+
+        // Any changes to the controlbox -> new urls for prev/next
+        $('.controlbox').change(function() {
+            var box = $(this);
+            var links = ['.next-month', '.previous-month'];
+
+            _.each(links, function(link) {
+                var a = box.find(link);
+                a.attr('href', update_url(a.attr('href')));
+            });
+        });
+
+        update_resource_status('resource');
+        update_resource_status('status');
 
         // Hookup approve/decline overlays
         var force_reload = false;

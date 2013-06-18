@@ -110,4 +110,13 @@
         profile="seantis.reservation:default">
     </genericsetup:upgradeStep>
 
+    <genericsetup:upgradeStep
+        title="Add URI.js"
+        description=""
+        source="1012"
+        destination="1013"
+        handler=".upgrades.upgrade_1012_to_1013"
+        profile="seantis.reservation:default">
+    </genericsetup:upgradeStep>
+
 </configure>

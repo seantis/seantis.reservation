@@ -258,3 +258,11 @@ def upgrade_1011_to_1012(context):
 
         tpl.reservation_made_subject = template.get_subject(lang)
         tpl.reservation_made_content = template.get_body(lang)
+
+
+def upgrade_1012_to_1013(context):
+    # rerun javascript step to import URI.js
+    setup = getToolByName(context, 'portal_setup')
+    setup.runImportStepFromProfile(
+        'profile-seantis.reservation:default', 'jsregistry'
+    )

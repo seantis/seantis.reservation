@@ -87,6 +87,12 @@ class MonthlyReportView(grok.View, form.ReservationDataView,
         url += self.show_details and '&show_details=1' or ''
         url += not self.show_timetable and '&hide_timetable=1' or ''
 
+        for status in self.hidden_statuses:
+            url += '&hide_status=' + status
+
+        for uuid in self.hidden_resources:
+            url += '&hide_resource=' + uuid
+
         for uuid in self.uuids:
             url += '&uuid=' + uuid
 
@@ -150,6 +156,20 @@ class MonthlyReportView(grok.View, form.ReservationDataView,
     def show_timetable(self):
         # hide_timetable is the query parameter as showing is the default
         return False if self.request.get('hide_timetable') else True
+
+    @property
+    def hidden_statuses(self):
+        return utils.pack(self.request.get('hide_status', []))
+
+    def show_status(self, status):
+        return status not in self.hidden_statuses
+
+    @property
+    def hidden_resources(self):
+        return utils.pack(self.request.get('hide_resource', []))
+
+    def show_resource(self, uuid):
+        return uuid not in self.hidden_resources
 
     @property
     @view.memoize
