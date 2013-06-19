@@ -119,4 +119,13 @@
         profile="seantis.reservation:default">
     </genericsetup:upgradeStep>
 
+    <genericsetup:upgradeStep
+        title="Fix URI.js compression"
+        description=""
+        source="1013"
+        destination="1014"
+        handler=".upgrades.upgrade_1013_to_1014"
+        profile="seantis.reservation:default">
+    </genericsetup:upgradeStep>
+
 </configure>

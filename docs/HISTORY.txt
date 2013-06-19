@@ -2,6 +2,11 @@
 Changelog
 =========
 
+1.0.6 (unreleased)
+------------------
+
+- No longer compress URI.js, fixing javascript errors in the browser
+
 1.0.5
 -----
 
