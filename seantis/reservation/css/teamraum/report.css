@@ -1,0 +1,250 @@
+/*
+
+    Styles for Plonetheme Teamraum
+
+*/
+
+/* navigation */
+.controlbox {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0px 0px 16px #eee;
+    margin: 10px 0 15px 0;
+}
+
+.nav-block {
+    float: left;
+    margin: 10px 20px 15px 20px;
+}
+
+.controlbox h2 {
+    font-size: 1.3em;
+    font-weight: normal;
+    border-bottom: 1px solid #aaa; 
+    margin: 10px 0;
+    min-width: 120px;
+}
+
+.controlbox h2:first-child {
+    margin-top: 4px;   
+}
+
+.controlbox label {
+    font-weight: normal;
+    display: block;   
+    cursor: pointer;
+}
+
+.controlbox label span {
+    padding: 3px;   
+}
+
+.controlbox label span {
+    color: #333;    
+}
+
+.controlbox label:hover span {
+    color: #205C90;
+}
+
+.controlbox input {
+    margin-right: 5px;   
+}
+
+/* daily header */
+.monthly-report .day {
+    margin: 23px 0 30px 0;   
+}
+
+.monthly-report .day:first-child {
+    margin: 5px 0 30px 0;   
+}
+
+.monthly-report .day h2 {
+    padding: 2px 20px;
+    border: 3px solid #5d768f;
+    border-width: 0 0 3px 0;
+    color: #485b6f;
+}
+
+/* daily resources */
+.monthly-report .resource {
+    margin: 5px 0 0 20px;   
+    padding: 0 0 0 0;
+}
+
+.monthly-report .resource h3 {
+    margin: 20px 0 5px 0;
+    font-size: 1.4em;
+}
+
+/* reservations */
+
+.monthly-report .reservation:hover {
+    cursor: pointer;
+    background-color: #dfdfdf !important;
+    background-image: linear-gradient(bottom, rgb(230,230,230) 0%, rgb(255,255,255) 100%);
+    background-image: -o-linear-gradient(bottom, rgb(230,230,230) 0%, rgb(255,255,255) 100%);
+    background-image: -moz-linear-gradient(bottom, rgb(230,230,230) 0%, rgb(255,255,255) 100%);
+    background-image: -webkit-linear-gradient(bottom, rgb(230,230,230) 0%, rgb(255,255,255) 100%);
+    background-image: -ms-linear-gradient(bottom, rgb(230,230,230) 0%, rgb(255,255,255) 100%);
+    
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0, rgb(230,230,230)),
+        color-stop(1, rgb(255,255,255))
+    );
+}
+
+.monthly-report .reservation.odd {
+    background-color: #efefef;   
+}
+
+.monthly-report .reservation-type {
+    margin-bottom: 10px;   
+}
+
+.monthly-report .reservation-type .reservation-header {
+    border: 1px solid #ccc;
+}
+
+.monthly-report .approved.reservation-type .reservation-header {
+    height: 100%;   
+    background-color: #4582bf;
+}
+
+.monthly-report .pending.reservation-type .reservation-header {
+    height: 100%;   
+    background-color: #888;
+}
+
+.monthly-report .reservation-type .reservation-header h4 {
+    font-size: 1.1em;   
+    font-weight: normal;
+    padding: 2px 0 0 10px;  
+    color: white;
+}
+
+.monthly-report .reservation {
+    border: 1px solid #ccc;
+    border-width: 0 1px 1px 1px;
+}
+
+.monthly-report .reservation-type .reservation-summary .leftcolumn a {
+    margin-left: 10px;
+    line-height: 25px;
+}
+
+.monthly-report .reservation-type .reservation-summary .leftcolumn div {
+    margin-left: 10px;
+}
+
+/* reservation detail */
+
+.monthly-report .reservation .reservation-detail {
+     display:none;   
+}
+
+.monthly-report .reservation.show-details .reservation-detail {
+     display: block;
+     margin: 0;
+}
+
+.monthly-report .reservation-detail {
+    padding-bottom: 10px;
+    margin-top: -10px;
+    
+    /* relevant for reservation.urls */
+    position: relative;
+    min-height: 27px;
+}
+
+.monthly-report .reservation-detail .reservation-data {
+    float: none;
+    clear: both;
+    width: 100%;
+    margin-left: 10px;
+}
+
+.monthly-report .reservation-detail .reservation-data .block-title {
+    font-weight: bold;
+     margin: 10px 0 1px 0;
+}
+
+.monthly-report .reservation-detail .reservation-data .block-title:first-child {
+     padding-top: 10px;
+}
+
+/* reservation-urls */
+
+.monthly-report .reservation .reservation-urls {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin: 0 7px 5px;
+}
+
+.monthly-report .reservation .reservation-urls a {
+    margin-left: 5px;
+}
+
+/* timetables */
+.monthly-report .day .timetable div.occupied {
+    border-radius: 0;   
+    line-height: 20px;
+}
+
+.monthly-report .day .reservation-header table.timetable th {
+    color: #666;
+    font-weight: normal;
+    border-width: 0 0 0 1px;
+}
+
+.monthly-report .day table.timetable {
+    border-width: 0 0 0 1px;
+}
+
+.monthly-report .day .reservation-summary table.timetable td {
+    border-left: 1px solid #ccc;
+    border-right: none !important;
+    border-bottom: 1px solid #ccc;
+}
+
+.monthly-report .day .reservation.show-details table.timetable td {
+    border-bottom: 1px solid #ccc;
+}
+
+.monthly-report .day .timetable .empty_row td {
+    visibility: hidden !important;
+    height: 0 !important; /* display none is no good as we need the td widths */
+    border-width: 0 1px !important;
+}
+
+/* - approved */
+.monthly-report .day .approved .timetable div.occupied {
+    background-color: #4582bf;
+    border-color: #3b70a4;
+}
+
+/* - pending */
+.monthly-report .day .pending .timetable div.occupied {
+    background-color: #888;
+    border-color: #777;   
+}
+
+/* columns */
+.monthly-report .leftcolumn {
+    width: 25%;
+    float: left;
+}
+
+.monthly-report .rightcolumn {
+    width: 75%;
+    float: right;
+}
+
+.timetable.hidden {
+    display: none;
+}

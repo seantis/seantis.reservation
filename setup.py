@@ -9,6 +9,9 @@ zug_require = [
     'ftw.contentmenu',
     'izug.basetheme',
 ]
+teamraum_require = [
+    'plonetheme.teamraum'
+]
 tests_require = [
     'collective.betterbrowser',
     'collective.testcaselayer',
@@ -67,7 +70,11 @@ setup(name=name, version=version, description=description,
           'xlwt',
           'zope.sqlalchemy',
       ],
-      extras_require=dict(zug=zug_require, tests=tests_require),
+      extras_require=dict(
+          zug=zug_require,
+          tests=tests_require,
+          teamraum=teamraum_require
+      ),
       entry_points="""
       # -*- Entry points: -*-
 

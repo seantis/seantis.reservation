@@ -1,0 +1,398 @@
+/*
+
+    Styles for Plonetheme Teamraum
+
+*/
+
+/* context menu style */
+#miniTip_c {
+    padding: 0;
+    font-size: 13px;
+}
+
+#miniTip_c div {
+    padding: 3px 0 0 5px;
+}
+
+#miniTip_c a { 
+    padding: 4px 0 2px 6px;
+    display: block;
+    color: black;
+}
+
+#miniTip_c a:before {
+    content: '▶ ';
+    font-size: 10px;
+    color: #eae4b4;
+}
+
+#miniTip_c a:hover {
+    font-weight: bold;
+}
+
+#miniTip_c a:hover:before {
+    color: #927847;
+}
+
+#miniTip_c {
+    min-width: 120px;
+}
+
+/* calendar in resource-view */
+
+#content .fc-event:hover {
+    color: white !important;
+}
+.fc-event-title, .fc-event-time {
+     font-size: 11px !important;   
+}
+
+/* formular tabs */
+.seantis-reservation-form ul.formTabs {
+    margin: 5px 0 5px 0;   
+}
+
+.seantis-reservation-form ul.formTabs li.formTab {
+    margin: 0 -1px 0 0;
+    line-height: 30px;
+}
+
+.seantis-reservation-form .formTab a {
+    background-color: #ddd;
+    padding: 4px 8px;
+    color: #555 !important;
+    border: 1px solid #bbb;
+    font-weight: normal;
+}
+
+.seantis-reservation-form .formTab a.required:after {
+    content: " *";
+    color: red;
+}
+
+.seantis-reservation-form .formTab a.selected,
+.seantis-reservation-form .formTab a:hover {
+    background-color: #c1e0ee;
+    color: #232 !important;
+    border: 1px solid #57a9cd;
+    position: relative;
+    font-weight: bold;
+    border-width: 1px 1px 5px 1px;
+}
+
+.seantis-reservation-form .formTab a:hover {
+    font-weight: normal;
+    border-color: #bbb;
+    background-color: #ddd;   
+}
+
+.seantis-reservation-form .formTab a.selected:hover {
+    font-weight: bold;
+    border-color: #57a9cd;
+    background-color: #c1e0ee;   
+}
+
+/* form buttons */
+.seantis-reservation-form .formControls {
+    margin-left: 0;   
+}
+
+/* your reservations */
+.your-reservations, .your-reservations-view ul {
+    background-color: #f0fcff;
+    border: 1px solid #8ac3db;
+    margin: 15px 0 20px 0;
+    padding: 5px 10px 10px 10px;
+}
+
+.your-reservations h2 {
+    font-size: 20px;
+    margin: 0 0 5px 0;
+    color: #205c90;
+}
+
+.your-reservations ul {
+    margin-left: 0 !important;
+}
+
+.your-reservations ul a {
+    float: left;
+    border-bottom-style: dotted !important;
+    font-size: 12px;
+    margin-bottom: 5px;
+    color: #205c90 !important;
+}
+
+.your-reservations .remove-url {
+    margin-left: 10px;
+    border: none !important;
+    color: #666 !important;
+}
+
+.your-reservations .remove-url span:before {
+    content: "< ";
+    padding-right: 5px;
+}
+
+.your-reservations ul span {
+    display: block;
+    clear: both;
+    font-size: 12px;
+}
+
+.your-reservations-view ul {
+    padding-top: 10px;
+    margin-top: 10px;
+}
+
+.your-reservations-view ul span:first-child {
+    font-weight: bold;   
+}
+
+#content .your-reservations .your_reservations_link {
+    margin-top: 5px !important;
+    padding: 5px 8px 3px 8px;
+    display: inline-block;
+    color: white !important;
+    background-color: #205c90;
+    font-size: 12px;
+}
+
+#content .your-reservations .your_reservations_link:hover {
+    text-decoration: underline;
+}
+
+#content table {
+    margin-bottom: 0;
+}
+
+#formfield-form-widgets-days span.option {
+    display: inline;
+}
+
+.multiCalendarContainer {
+    float: left;
+    width: 45%;
+    margin-right: 5%;
+    margin-bottom: 25px;
+}
+
+.reservation-title {
+    width: 100%; 
+    height: 25px;
+    background-color: #175e90;
+    margin-top: 20px;
+    padding-top: 5px;
+}
+
+.reservation-pending .reservation-title {
+    background-color: #888;   
+}
+
+/*Since the default plone theme uses !important in conjunction with an 
+id selector we need quite the selectors to get a higher weight...*/
+.reservation-title h3,
+#content .reservation-title a,
+#content .reservation-title a:visited,
+#content .reservation-info .reservation-title a,
+#content .reservation-info .reservation-title a:visited {
+    font-size: 1em !important;
+    font-weight: normal !important;
+    display: inline;
+    margin-left: 10px;
+    margin-right: 11px;
+    color: white !important;
+    border-color: white !important;
+}
+
+#content .reservation-info .reservation-title a:hover,
+#content .reservation-title a:hover {
+    border-bottom-style: solid !important;
+}
+
+#content .reservation-info {
+    margin: -10px auto 10px auto;   
+}
+
+#content .inline-reservations {
+    border-top: solid 1px #dedede;
+    margin: 0;
+    padding: 0 10px;
+    background-color: white;
+    min-height: 100px;
+}
+
+#content #inline-page {
+    border: solid 1px #dedede;
+    background-color: #eee; 
+    margin-top: 20px;  
+    min-height: 32px;
+}
+
+#content #inline-page h2 {
+     margin-top: 10px;
+}
+
+a.reservation-delete {
+   float: right;
+}
+
+.reservation-list {
+    border: 1px solid #ccc;
+    border-top: none;
+    padding: 5px 10px 5px 20px;
+}
+
+.groupListDay {
+    float: left;
+    width: 75px;
+    margin-bottom: 10px;
+}
+
+.groupListTime {
+    width:300px !important; 
+    float:left;
+    text-align: center;
+}
+
+div.error {
+    background-color: #FDC;
+    border: 1px solid red;
+    padding: 4px 4px;
+    font-size: 10px;
+}
+
+.reservations-by-month .reservation-data {
+     float:none;   
+     width: 100%;
+}
+
+.reservation-data, .reservation-timespans {
+     float:left;
+     width: 50%;
+}
+
+.reservation-data {
+    line-height: 1.35em;   
+}
+
+.reservation-data span.label {
+    font-weight: normal;
+    color: #555;
+    display: inline-block;
+    min-width: 75px;
+    margin-top: 3px;
+}
+
+.reservation-list .block-title {
+    font-size: 1em;
+    font-weight: bold;   
+    color: #222;
+    padding-top: 15px;
+    padding-bottom: 1px;
+}
+
+.reservation-data {
+    padding-bottom: 5px;    
+}
+
+body fieldset {
+    border: 1px solid #bbb;
+}
+
+body fieldset legend {
+    font-weight: normal;
+    padding: 0 10px;
+    color: #343434;
+}
+
+body .field {
+    margin-bottom: 0;
+}
+
+body .field input {
+    margin-bottom: 0.5em;   
+}
+
+body .field:last-child input {
+    margin-bottom: 0;
+}
+
+input[readonly] {
+   background-color: #efefef;
+   color: #454545;
+   border-color: #bbb;
+   padding-left: 2px;
+}
+
+body .enableFormTabbing fieldset {
+    border: none;
+    padding: 0 0 10px 2px;
+}
+
+body .fieldErrorBox .error {
+    margin-bottom: 5px; 
+}
+
+body div.error {
+    font-size: 12px;   
+
+    padding-left: 10px;
+}
+
+body div.field.error {
+    background-color: white;   
+    padding-left: 0;
+    border: none;
+}
+
+body .portalMessage {
+    font-size: 12px;
+    margin: 0 0 8px;   
+}
+
+
+
+.portaltype-seantis-reservation-emailtemplate form textarea,
+.template-seantis\.reservation\.emailtemplate form textarea {
+    height: 200px;
+    margin-bottom: 30px;
+}
+
+.portaltype-seantis-reservation-emailtemplate form select,
+.template-seantis\.reservation\.emailtemplate form select {
+    margin-bottom: 30px;   
+}
+
+
+
+.seantis-reservation-form .formHelp {
+    max-width: 50%;
+    margin-left: 5px;
+}
+
+.seantis-reservation-form div.field {
+    margin-bottom: 10px;   
+}
+
+.seantis-reservation-form .suppressVisualEditor {
+    display: none;
+}
+
+#inline-page .hint {
+    font-size: 12px;
+    width: 100%;
+    text-align: center;
+    color: #555;
+    background-color: transparent;
+    border: none;
+}
+
+/* reservations in progress */
+.uncommitted {
+    margin-top: -28px;
+    margin-bottom: 5px;
+    color: #757575;
+}
+
+

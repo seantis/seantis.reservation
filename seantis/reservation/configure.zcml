@@ -78,6 +78,14 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
     provides="Products.GenericSetup.interfaces.EXTENSION"
 />
 
+<genericsetup:registerProfile
+    name="teamraum"
+    title="Seantis Reservation - for plonetheme.teamraum"
+    description="Plonetheme Teamraum Profile for Seantis Reservation"
+    directory="profiles/teamraum"
+    provides="Products.GenericSetup.interfaces.EXTENSION"
+/>
+
 <!-- Upgrades -->
 <include file="upgrades.zcml" />
 
