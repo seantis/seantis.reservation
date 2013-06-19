@@ -1,8 +1,9 @@
+
 Changelog
 =========
 
-1.0.5 (unreleased)
-------------------
+1.0.5
+-----
 
 - Adds whole-day flag to reservations export
 - Adds quota to reservations export
@@ -32,6 +33,6 @@ Changelog
 - Fixes some tiny issues
 
 1.0
--------------------
+---
 
 - Initial release
