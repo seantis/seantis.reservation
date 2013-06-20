@@ -5,13 +5,11 @@ seantis.locale = function(text) {
 
     var lang = locale.language();
     if (typeof locale.dictionary[text] === 'undefined') {
-        console.log(text + ' is untranslated');
         return text;
     }
 
     var ix = locale.ix(lang);
     if (ix < 0) {
-        console.log('language ' + lang + ' is not supported');
         return text;
     }
 

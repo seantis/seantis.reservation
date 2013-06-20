@@ -65,7 +65,6 @@
                 _.each($('.resource[data-uuid="' + resource + '"]'), function(resource_el) {
                     if ($(resource_el).find(status_selector).length === 0) {
                         $(resource_el).hide();
-                        console.log('hit');
                     }
                 });
             });

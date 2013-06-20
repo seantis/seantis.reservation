@@ -72,39 +72,38 @@ if (!this.seantis.tablecache) this.seantis.tablecache = {};
         } else {
             table = seantis.tablecache[key].clone();
         }
-        
+
         this.$.append(table);
     };
-    
+
     Plugin.prototype.parse_time = function(time) {
         var split = time.split(':');
         if (!split.length == 2) {
-            console.log('unable to parse ' + time);
-            return undefined;            
+            return undefined;
         }
-        
+
         return {
-            hour: parseInt(split[0], 10),          
+            hour: parseInt(split[0], 10),
             minute: parseInt(split[1], 10)
         };
     };
-        
+
     // Parses the given timestrings and bounds them to the min / max hour
     Plugin.prototype.normalize_range = function(_start, _end) {
         var start = this.parse_time(_start);
         var end = this.parse_time(_end);
-        
+
         if (start.hour < this.options.min_hour)
             start = {hour: this.options.min_hour, minute: 0};
         if (end.hour > this.options.max_hour)
             end = {hour: this.options.max_hour + 1, minute: 0};
-        
-        return {"start":start, "end":end};       
+
+        return {"start":start, "end":end};
     };
-        
+
     // Goes through the min / max timerange and returns an item
     // for each cell that should be drawn in the table.
-        
+
     // Each item offers the following properties:
     //  * left   distance from start of the cell in %
     //  * right  distance from end of the cell in %
@@ -112,21 +111,21 @@ if (!this.seantis.tablecache) this.seantis.tablecache = {};
     //  * state  occupied / free
     //  * text   text of the occupied cell containing the start / end time
     Plugin.prototype.merged_divisions = function(_start, _end) {
-        
+
         var range = this.normalize_range(_start, _end);
         var start = range.start;
         var end = range.end;
 
         var result = new Array();
-        
+
         for (var hour=this.options.min_hour; hour <= this.options.max_hour; hour++) {
-            
+
             // outside of start & end are the free cells
             if (hour < start.hour || end.hour < hour) {
                 result.push({left: 0, right: 0, span: 1, state:'free', text:''});
                 continue;
             }
-            
+
             // one single occupied cell
             if (hour == start.hour && hour == end.hour) {
                 result.push({
@@ -136,7 +135,7 @@ if (!this.seantis.tablecache) this.seantis.tablecache = {};
                     state: 'occupied',
                     text: _start + ' - ' + _end
                 });
-                continue;                
+                continue;
             }
 
             // a item which will span multiple cells
@@ -147,44 +146,44 @@ if (!this.seantis.tablecache) this.seantis.tablecache = {};
                     span: 1,
                     state: 'occupied',
                     text: _start + ' - ' + _end
-                });     
+                });
                 continue;
             }
-            
+
             var previous = result[result.length - 1];
-            
+
             // increment span of most recent item
             if (start.hour < hour && hour < end.hour) {
                 previous.span += 1;
 
-                continue;                
+                continue;
             }
-            
+
             // close last item
             if (hour == end.hour) {
-                
+
                 // if the hour ends on zero the last cell is free
-                if (end.minute === 0) {                
+                if (end.minute === 0) {
                     result.push({
-                        left: 0, right: 0, state: 'free', span: 1                        
+                        left: 0, right: 0, state: 'free', span: 1
                     });
                 } else {
                     previous.right = ((60 - end.minute) / 60) * 100;
                     previous.span += 1;
                 }
-                
+
                 previous.left = (previous.left / (previous.span * 100)) * 100;
                 previous.right = (previous.right / (previous.span * 100)) * 100;
-                
+
                 continue;
             }
-        }           
-          
-        return result;        
+        }
+
+        return result;
     };
-    
+
     Plugin.prototype.render = function() {
-        
+
         var table = $('<table />').addClass('timetable hidden');
         var colcount = (this.options.max_hour - this.options.min_hour + 1);
         var hwidth = 100 / colcount;
@@ -193,73 +192,73 @@ if (!this.seantis.tablecache) this.seantis.tablecache = {};
         if (this.options.show_header) {
             var thead = $('<thead />');
             var th_row = $('<tr />');
-            
+
             thead.appendTo(table);
             th_row.appendTo(thead);
-        
+
             for (var h=this.options.min_hour; h <= this.options.max_hour; h++) {
                 var hour = this.pad(h, 2) + ':00';
                 th_row.append($('<th />').width(hwidth + '%').text(hour));
             }
-        
+
         }
 
         // render the table
         var tbody = $('<tbody />');
         tbody.appendTo(table);
-        
+
         // empoty rows are added between the timespans for easier styling
         var add_empty_row = function() {
             var empty_row = $('<tr />').addClass('empty_row');
             for (var i=0; i<colcount; i++) {
-                empty_row.append($('<td />').width(hwidth + '%'));   
+                empty_row.append($('<td />').width(hwidth + '%'));
             }
             tbody.append(empty_row);
         };
-          
-        if (this.options.timespans.length > 0)   
+
+        if (this.options.timespans.length > 0)
             add_empty_row();
-        
+
         // render a row for each timespan
         var plugin = this;
         $.each(this.options.timespans, function(index, timerow) {
-            
+
             var row = $('<tr />');
-            
+
             // add the columns
             $.each(plugin.merged_divisions(timerow.start, timerow.end), function(index, cell) {
-                
+
                 // ie 9+ does not understand colspan if added dynamically, only colSpan
                 var td = $('<td />').attr('colSpan', cell.span);
                 td.appendTo(row);
 
                 var wrapper = $('<div />').addClass('timespan');
                 wrapper.appendTo(td);
-                
+
                 var left = cell.left + '%';
                 var middle = (100 - cell.left - cell.right) + '%';
-                var right = cell.right + '%';               
-                
+                var right = cell.right + '%';
+
                 var occupied = $('<div />').addClass(cell.state).width(middle).css({
                     "margin-left": left,
                     "margin-right": right
                 });
-                
+
                 if (plugin.options.show_text && cell.text) {
-                    occupied.append($('<span />').text(cell.text));   
+                    occupied.append($('<span />').text(cell.text));
                 }
-                
-                wrapper.append(occupied); 
+
+                wrapper.append(occupied);
             });
-            
+
             tbody.append(row);
-            
+
             add_empty_row();
-        });                
-        
+        });
+
         return table;
     };
-    
+
     // Pads the given number
     Plugin.prototype.pad = function(number, length) {
         var str = '' + number;
@@ -300,14 +299,14 @@ if (!this.seantis.tablecache) this.seantis.tablecache = {};
                 // creating the tables is quite fast thanks to caching
                 $.each($('.timetable'), function(ix, el) {
                     setTimeout(function() {
-                        $(el).removeClass('hidden');        
+                        $(el).removeClass('hidden');
                     }, 0);
                 });
-                
+
             }
         };
 
-        // initialize each timetable with a timeout wrapper 
+        // initialize each timetable with a timeout wrapper
         // which makes it a bit slower but ensures that the browser
         // is not completely blocked if a large number of elements
         // need to be created
