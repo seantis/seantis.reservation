@@ -473,10 +473,17 @@ def uuid_query(uuid):
         uuid[:8], uuid[8:12], uuid[12:16], uuid[16:20], uuid[20:]]))
 
 
-def get_resource_by_uuid(uuid):
+def get_resource_by_uuid(
+    uuid, ensure_portal_type='seantis.reservation.resource'
+):
     """Returns the zodb object with the given uuid."""
     catalog = getToolByName(getSite(), 'portal_catalog')
-    results = catalog(UID=uuid_query(uuid))
+
+    if ensure_portal_type:
+        results = catalog(UID=uuid_query(uuid), portal_type=ensure_portal_type)
+    else:
+        results = catalog(UID=uuid_query(uuid))
+
     return len(results) == 1 and results[0] or None
 
 
