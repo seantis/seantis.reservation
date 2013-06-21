@@ -50,7 +50,8 @@ class TestBrowser(FunctionalTestCase):
         self, resource, start, end,
         partly_available=False,
         quota=1,
-        quota_limit=1
+        quota_limit=1,
+        approve_manually=False
     ):
         url = self.build_folder_url
 
@@ -73,6 +74,11 @@ class TestBrowser(FunctionalTestCase):
         browser.getControl('Partly available').selected = partly_available
         browser.getControl('Quota', index=0).value = str(quota)
         browser.getControl('Reservation Quota Limit').value = str(quota_limit)
+
+        browser.getControl(
+            'Manually approve reservation requests'
+        ).selected = approve_manually
+
         browser.getControl('Allocate').click()
 
     def load_slot_data(self, resource, start, end):
@@ -241,3 +247,42 @@ class TestBrowser(FunctionalTestCase):
 
         self.assertTrue('quota is higher than allowed' in browser.contents)
         self.assertEqual('3', browser.getControl('Quota', index=0).value)
+
+    def test_reservation_approval(self):
+
+        browser = self.new_browser()
+        browser.login_admin()
+
+        start = datetime(2013, 6, 21, 13, 0)
+        end = datetime(2013, 6, 21, 17, 0)
+
+        self.add_resource('approval')
+        self.add_allocation('approval', start, end, approve_manually=True)
+
+        slots = self.load_slot_data('approval', start, end)
+        browser.open(slots[0]['url'].replace('/plone', ''))
+
+        browser.getControl('Email').value = 'test@example.com'
+        browser.getControl('Reserve').click()
+
+        browser.getControl('Submit Reservations').click()
+
+        slots = self.load_slot_data('approval', start, end)
+        manage_url = slots[0]['menu']['Reservations'][1]['url'].replace(
+            '/plone', ''
+        )
+        browser.open(manage_url)
+
+        self.assertTrue('Approve' in browser.contents)
+        self.assertTrue('Deny' in browser.contents)
+
+        browser.getLink('Approve').click()
+
+        self.assertTrue('Concerned Dates' in browser.contents)
+        self.assertTrue('21.06.2013 13:00 - 17:00' in browser.contents)
+
+        browser.getControl('Approve').click()
+        browser.open(manage_url)
+
+        self.assertTrue('Revoke' in browser.contents)
+        self.assertFalse('Approve' in browser.contents)
