@@ -723,6 +723,16 @@ class IReservation(Interface):
     )
 
 
+class IReservationIdForm(Interface):
+    """ Describes a form with a hidden reservation-id field. Use with
+    seantis.reservation.reserve.ReservationIdForm. """
+
+    reservation = schema.Text(
+        title=_(u'Reservation'),
+        required=False
+    )
+
+
 class IGroupReservation(Interface):
     """ A reservation of an allocation group. """
 
@@ -743,13 +753,8 @@ class IGroupReservation(Interface):
     )
 
 
-class IRevokeReservation(Interface):
+class IRevokeReservation(IReservationIdForm):
     """ For the reservation revocation form. """
-
-    reservation = schema.Text(
-        title=_(u'Reservation'),
-        required=False
-    )
 
     reason = schema.Text(
         title=_(u'Reason'),
@@ -758,15 +763,6 @@ class IRevokeReservation(Interface):
             u"e.g. 'Your reservation has to be cancelled because the lecturer "
             u"is ill'."
         ),
-        required=False
-    )
-
-
-class IApproveReservation(Interface):
-    """ For the reservation approval form. """
-
-    reservation = schema.Text(
-        title=_(u'Reservation'),
         required=False
     )
 

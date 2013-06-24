@@ -24,7 +24,7 @@ from seantis.reservation.interfaces import (
     IReservation,
     IGroupReservation,
     IRevokeReservation,
-    IApproveReservation,
+    IReservationIdForm,
 )
 
 from seantis.reservation.error import DirtyReadOnlySession
@@ -398,6 +398,7 @@ class ReservationForm(
             elif field_type is Choice:
                 field.widgetFactory = RadioFieldWidget
 
+
 class GroupReservationForm(
         ReservationBaseForm,
         AllocationGroupView,
@@ -517,20 +518,17 @@ class YourReservationsViewlet(grok.Viewlet, YourReservationsData):
         return self.context.absolute_url() + '/your-reservations'
 
 
-class ReservationDecisionForm(ResourceBaseForm, ReservationListView,
-                              ReservationUrls):
-    """ Base class for admin's approval / denial forms. """
+class ReservationIdForm(ResourceBaseForm):
+    """ Describes a form with a hidden reservation field and the ability to
+    set the reservation using a query parameter:
+
+    example-form?reservation=298c6de470f94c64928c14246f3ee9e5
+
+    """
 
     grok.baseclass()
-
-    fields = field.Fields(IApproveReservation)
-
+    fields = field.Fields(IReservationIdForm)
     hidden_fields = ['reservation']
-    ignore_requirements = True
-
-    template = ViewPageTemplateFile('templates/decide_reservation.pt')
-
-    show_links = False
     data = None
 
     @property
@@ -544,6 +542,17 @@ class ReservationDecisionForm(ResourceBaseForm, ReservationListView,
         return dict(
             reservation=unicode(self.reservation)
         )
+
+
+class ReservationDecisionForm(ReservationIdForm, ReservationListView,
+                              ReservationUrls):
+    """ Base class for admin's approval / denial forms. """
+
+    grok.baseclass()
+
+    template = ViewPageTemplateFile('templates/decide_reservation.pt')
+
+    show_links = False
 
 
 class ReservationApprovalForm(ReservationDecisionForm):
@@ -617,7 +626,7 @@ class ReservationDenialForm(ReservationDecisionForm):
 
 
 class ReservationRevocationForm(
-    ResourceBaseForm,
+    ReservationIdForm,
     ReservationListView,
     ReservationUrls
 ):
@@ -634,17 +643,7 @@ class ReservationRevocationForm(
 
     label = _(u'Revoke reservation')
 
-    hidden_fields = ['reservation']
-    ignore_requirements = True
-
     show_links = False
-
-    @property
-    def reservation(self):
-        return self.request.get('reservation')
-
-    def defaults(self):
-        return dict(reservation=unicode(self.reservation))
 
     @property
     def hint(self):
