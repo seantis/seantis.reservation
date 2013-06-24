@@ -28,10 +28,14 @@ seantis.locale.language = function() {
 
     var lang = $('html').attr('lang') || $('body').attr('lang');
     if (!lang) {
-        locale._languge = 'en';
-    } else {
-        locale._language = lang.split('-')[0];
+        if (typeof(seantis_reservation_variables.language) != 'undefined') {
+            lang = seantis_reservation_variables.language;
+        } else {
+            lang = 'en';
+        }
     }
+
+    locale._language = lang.split('-')[0];
 
     return locale._language;
 };

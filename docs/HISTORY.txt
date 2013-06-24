@@ -6,6 +6,7 @@ Changelog
 ------------------
 
 - No longer compress URI.js, fixing javascript errors in the browser
+- Fixes missing translations in certain cases (locale.js is now more robust)
 
 1.0.5
 -----
