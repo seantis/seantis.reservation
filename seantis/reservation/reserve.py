@@ -694,15 +694,6 @@ class ReservationList(grok.View, ReservationListView, ReservationUrls):
             return u''
 
 
-class ReservationDataEditFormGroup(object):
-
-    ignoreContext = False
-
-
-from plone.z3cform import fieldsets
-import inspect
-
-
 class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
 
     # todo => separate permission
@@ -712,34 +703,6 @@ class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
     grok.require(permission)
 
     grok.context(IResourceBase)
-    ignoreContext = False
-
-    def group_name(self, callerlocals):
-        if not 'self' in callerlocals:
-            return None
-
-        if not isinstance(callerlocals['self'], fieldsets.group.Group):
-            return None
-
-        if not hasattr(callerlocals['self'], 'fields'):
-            return None
-
-        if not len(callerlocals['self'].fields):
-            return None
-
-        return callerlocals['self'].fields._data_values[0].prefix
-
-    def getContent(self):
-        callerframe = inspect.currentframe(1)
-        try:
-            name = self.group_name(inspect.getargvalues(callerframe).locals)
-        finally:
-            del callerframe
-
-        if name:
-            return self.get_form_content(name)
-        else:
-            return {'reservation': self.reservation}
 
     def get_reservation_data(self):
         if not hasattr(self, 'reservation_data'):
@@ -748,34 +711,24 @@ class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
 
         return self.reservation_data
 
-    def get_form_content(self, form):
+    def defaults(self):
         data = self.get_reservation_data()
-
-        if not form in data:
-            return {}
 
         context = {}
 
-        for value in data[form]['values']:
-            if isinstance(value['value'], basestring):
-                decoded = utils.userformdata_decode(value['value'])
-                fieldvalue = decoded or value['value']
-            else:
+        for form in data:
+            for value in data[form]['values']:
+                if isinstance(value['value'], basestring):
+                    decoded = utils.userformdata_decode(value['value'])
+                    fieldvalue = decoded or value['value']
+                else:
+                    fieldvalue = value['value']
 
-                fieldvalue = value['value']
-
-            context[value['key']] = fieldvalue
+                context['{}.{}'.format(form, value['key'])] = fieldvalue
 
         return context
 
     def customize_fields(self, fields):
-        """ This function is called by ResourceBaseForm every time fields are
-        created from the schema by z3c. This allows for changes before the
-        fields are properly integrated into the form.
-
-        Here, we want to make sure that all formset schemas have sane widgets.
-
-        """
 
         for field in fields.values():
 
