@@ -337,7 +337,7 @@ class ReservationMail(ReservationDataView, ReservationUrls):
 
         # cancel link
         if is_needed('cancel_link'):
-            p['cancel_link'] = self.remove_all_url(reservation.token, resource)
+            p['cancel_link'] = self.revoke_all_url(reservation.token, resource)
 
         # revocation reason
         if is_needed('reason'):

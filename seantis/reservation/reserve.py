@@ -46,7 +46,7 @@ from seantis.reservation.error import NoResultFound
 class ReservationUrls(object):
     """ Mixin class to create admin URLs for a specific reservation. """
 
-    def remove_all_url(self, token, context=None):
+    def revoke_all_url(self, token, context=None):
         context = context or self.context
         base = context.absolute_url()
         return base + u'/revoke-reservation?reservation=%s' % token

@@ -173,7 +173,7 @@
 
 /* reservation-urls */
 
-.monthly-report .reservation .reservation-urls {
+.monthly-report .reservation .rightcolumn .reservation-urls {
     position: absolute;
     bottom: 0;
     right: 0;

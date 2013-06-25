@@ -14,7 +14,7 @@
             elements.toggleClass('hidden-timetable', !show);
         };
 
-        var update_url = function(base) {
+        var update_url = function(base, reservation) {
             // takes the give url and replaces the query parts which may
             // be changed by the filter block at the top of the report with
             // the chosen values, producing a new url which will lead to the
@@ -44,6 +44,10 @@
             _.each(hidden_statuses(), function(status) {
                 uri.addQuery('hide_status', status);
             });
+
+            if (typeof(reservation) != "undefined") {
+                uri.addQuery('reservations', reservation);
+            }
 
             return uri.normalize().toString();
         };
@@ -132,11 +136,6 @@
 
         };
 
-        // Toggle reservation details
-        report.find('.reservation').click(function() {
-            show_details($(this));
-        });
-
         // Toggle all reservation details
         $('.controlbox input[name="details"]').change(function() {
             var show = $(this).val() == 'show';
@@ -170,26 +169,69 @@
             });
         });
 
-        update_resource_status('resource');
-        update_resource_status('status');
-
         // Hookup approve/decline overlays
-        var force_reload = false;
         var options = {
             config: {
                 onClose: function() {
-                    if (force_reload)
-                        window.location.reload();
+                    var overlay = $(this.getOverlay());
+
+                    if ($(overlay).data('reload')) {
+                        reload_list();
+                    } else if (overlay.data('update')) {
+                        update_reservation(overlay.data('current-reservation'));
+                    }
+
                 },
                 onLoad: function() {
-                    var form = this.getOverlay().find('form');
+                    var overlay = $(this.getOverlay());
 
-                    form.find('#form-buttons-approve, #form-buttons-delete, #form-buttons-deny').click(function() {
-                        force_reload = true;
+                    overlay.data('current-reservation', overlay.find('#form-widgets-reservation').val());
+                    overlay.data('reload', false);
+                    overlay.data('update', false);
+
+                    overlay.find('#form-buttons-approve, #form-buttons-revoke, #form-buttons-deny').click(function() {
+                        overlay.data('reload', true);
+                    });
+
+                    overlay.find('#form-buttons-save').click(function() {
+                        overlay.data('update', true);
                     });
                 }
             }
         };
-        reservation_overlay_init(report.find('.reservation-urls a'), options);
+
+        var inplace_update = function(target, url) {
+            $(target).load(url + ' ' + target + ' > *', function() {
+                init_reservations(this);
+                $(this).find('.timetable-wrapper').timetable();
+                $(this).find('.timetable').removeClass('hidden');
+            });
+        };
+
+        var reload_list = function() {
+            var target = '.monthly-report';
+            var url = update_url(window.location.href);
+            inplace_update(target, url);
+        };
+
+        var update_reservation = function(reservation) {
+            var target = 'div.reservation[data-token="' + reservation + '"]';
+            var url = update_url(window.location.href, reservation);
+            inplace_update(target, url);
+        };
+
+        var init_reservations = function(parent) {
+            var $parent = $(parent);
+            $parent.find('.reservation').click(function() {
+                show_details($(this));
+            });
+            reservation_overlay_init($parent.find('.reservation-urls a'), options);
+
+            update_resource_status('resource');
+            update_resource_status('status');
+        };
+
+        init_reservations(report);
+
     });
 })(jQuery);

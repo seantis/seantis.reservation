@@ -339,6 +339,11 @@ a.reservation-delete {
    float: right;
 }
 
+a.reservation-data-update {
+    display: inline-block;
+    margin-top: 10px;
+}
+
 .reservation-list {
     border: 1px solid #ccc;
     border-top: none;

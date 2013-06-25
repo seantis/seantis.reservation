@@ -39,6 +39,10 @@ class MonthlyReportView(grok.View, form.ReservationDataView,
         return int(self.request.get('month', date.today().month))
 
     @property
+    def reservations(self):
+        return utils.pack(self.request.get('reservations', []))
+
+    @property
     def sorted_resources(self):
         objs = self.resources
 
@@ -75,7 +79,9 @@ class MonthlyReportView(grok.View, form.ReservationDataView,
     @property
     @view.memoize
     def results(self):
-        return monthly_report(self.year, self.month, self.resources)
+        return monthly_report(
+            self.year, self.month, self.resources, self.reservations or '*'
+        )
 
     def build_url(self, year, month):
         url = self.context.absolute_url()
@@ -181,7 +187,7 @@ class MonthlyReportView(grok.View, form.ReservationDataView,
         return url.replace(self.context.absolute_url(), 'context')
 
 
-def monthly_report(year, month, resources):
+def monthly_report(year, month, resources, reservations='*'):
 
     schedulers, titles = dict(), dict()
 
@@ -236,6 +242,10 @@ def monthly_report(year, month, resources):
     # using the groups get the relevant reservations
     query = Session.query(Reservation)
     query = query.filter(Reservation.target.in_(groups.keys()))
+
+    if reservations != '*':
+        query = query.filter(Reservation.token.in_(reservations))
+
     query = query.order_by(Reservation.status)
 
     reservations = query.all()
@@ -256,13 +266,19 @@ def monthly_report(year, month, resources):
         start, end = start.strftime('%H:%M'), end.strftime('%H:%M')
 
         context = resources[utils.string_uuid(reservation.resource)]
+
+        leftside_urls = [(
+            _(u'&raquo; Edit Formdata'),
+            reservation_urls.update_all_url(reservation.token, context)
+        )]
+
         if reservation.status == u'approved':
-            urls = [(
+            rightside_urls = [(
                 _(u'Delete'),
-                reservation_urls.remove_all_url(reservation.token, context)
+                reservation_urls.revoke_all_url(reservation.token, context)
             )]
         elif reservation.status == u'pending':
-            urls = [
+            rightside_urls = [
                 (
                     _(u'Approve'),
                     reservation_urls.approve_all_url(
@@ -287,7 +303,8 @@ def monthly_report(year, month, resources):
                 email=reservation.email,
                 data=reservation.data,
                 timespans=json_timespans(start, end),
-                urls=urls,
+                rightside_urls=rightside_urls,
+                leftside_urls=leftside_urls,
                 token=reservation.token,
                 quota=utils.get_reservation_quota_statement(reservation.quota)
             )

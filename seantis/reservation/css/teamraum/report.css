@@ -179,7 +179,7 @@
 
 /* reservation-urls */
 
-.monthly-report .reservation .reservation-urls {
+.monthly-report .reservation .rightcolumn .reservation-urls {
     position: absolute;
     bottom: 0;
     right: 0;
@@ -187,7 +187,7 @@
 }
 
 .monthly-report .reservation .reservation-urls a {
-    margin-left: 5px;
+    margin-left: 10px;
 }
 
 /* timetables */
