@@ -24,7 +24,7 @@ from seantis.reservation.interfaces import (
     IReservation,
     IGroupReservation,
     IRevokeReservation,
-    IReservationIdForm,
+    IReservationIdForm
 )
 
 from seantis.reservation.error import DirtyReadOnlySession
@@ -60,6 +60,11 @@ class ReservationUrls(object):
         context = context or self.context
         base = context.absolute_url()
         return base + u'/deny-reservation?reservation=%s' % token
+
+    def update_all_url(self, token, context=None):
+        context = context or self.context
+        base = context.absolute_url()
+        return base + u'/update-reservation-data?reservation=%s' % token
 
 
 class ReservationSchemata(object):
@@ -528,20 +533,15 @@ class ReservationIdForm(ResourceBaseForm):
 
     grok.baseclass()
     fields = field.Fields(IReservationIdForm)
-    hidden_fields = ['reservation']
-    data = None
+    hidden_fields = ('reservation', )
+    data = {}
 
     @property
     def reservation(self):
-        data = self.data
-        return self.request.get(
-            'reservation', (data and data['reservation'] or None)
-        )
+        return self.request.get('reservation', self.data.get('reservation'))
 
     def defaults(self):
-        return dict(
-            reservation=unicode(self.reservation)
-        )
+        return dict(reservation=self.reservation)
 
 
 class ReservationDecisionForm(ReservationIdForm, ReservationListView,
@@ -577,8 +577,6 @@ class ReservationApprovalForm(ReservationDecisionForm):
     @extract_action_data
     def approve(self, data):
 
-        self.data = data
-
         def approve():
             self.scheduler.approve_reservation(data['reservation'])
             self.flash(_(u'Reservation confirmed'))
@@ -611,8 +609,6 @@ class ReservationDenialForm(ReservationDecisionForm):
     @button.buttonAndHandler(_(u'Deny'))
     @extract_action_data
     def deny(self, data):
-
-        self.data = data
 
         def deny():
             self.scheduler.deny_reservation(data['reservation'])
@@ -699,24 +695,35 @@ class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
     # todo => separate permission
     permission = "seantis.reservation.ViewReservations"
 
-    grok.name('edit-reservation-data')
+    grok.name('update-reservation-data')
     grok.require(permission)
 
     grok.context(IResourceBase)
 
+    label = _(u'Edit Formdata')
+    context_buttons = ('save', )
+    errors = []
+
     def get_reservation_data(self):
+        if not self.reservation:
+            return {}
+
         if not hasattr(self, 'reservation_data'):
-            query = self.scheduler.reservation_by_token(self.reservation)
-            self.reservation_data = query.one().data
+            try:
+                query = self.scheduler.reservation_by_token(self.reservation)
+                self.reservation_data = query.one().data
+            except DirtyReadOnlySession:
+                self.reservation_data = {}
 
         return self.reservation_data
 
     def defaults(self):
         data = self.get_reservation_data()
-
-        context = {}
+        defaults = super(ReservationDataEditForm, self).defaults()
+        errors = [e.widget.__name__ for e in self.errors]
 
         for form in data:
+
             for value in data[form]['values']:
                 if isinstance(value['value'], basestring):
                     decoded = utils.userformdata_decode(value['value'])
@@ -724,9 +731,13 @@ class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
                 else:
                     fieldvalue = value['value']
 
-                context['{}.{}'.format(form, value['key'])] = fieldvalue
+                fieldkey = '{}.{}'.format(form, value['key'])
+                if fieldkey in self.data or fieldkey in errors:
+                    continue
+                else:
+                    defaults[fieldkey] = fieldvalue
 
-        return context
+        return defaults
 
     def customize_fields(self, fields):
 
@@ -739,3 +750,23 @@ class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
 
             elif field_type is Choice:
                 field.widgetFactory = RadioFieldWidget
+
+    @button.buttonAndHandler(_(u'Save'))
+    @extract_action_data
+    def save(self, data):
+
+        self.additional_data = utils.additional_data_dictionary(data, self.fti)
+
+        def save():
+            self.scheduler.update_reservation_data(
+                self.reservation, self.additional_data
+            )
+            self.flash(_(u'Reservation-data updated'))
+
+        utils.handle_action(
+            action=save, success=self.redirect_to_context
+        )
+
+    @button.buttonAndHandler(_(u'Cancel'))
+    def cancel(self, action):
+        self.redirect_to_context()

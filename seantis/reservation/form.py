@@ -30,13 +30,13 @@ def extract_action_data(fn):
 
     @wraps(fn)
     def wrapper(self, action):
-        data, errors = self.extractData()
+        self.data, self.errors = self.extractData()
 
-        if errors:
+        if self.errors:
             self.status = self.formErrorsMessage
             return
 
-        return fn(self, data)
+        return fn(self, self.data)
 
     return wrapper
 

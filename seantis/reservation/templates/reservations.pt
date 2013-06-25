@@ -58,6 +58,12 @@
                       
                       </tal:block>
                     </tal:block>
+
+                    <a tal:condition="view/show_links"
+                       tal:attributes="href python: view.update_all_url(token)"
+                       class="reservation-data-update" i18n:translate="">
+                       &raquo; Edit Formdata
+                    </a>
                   
                   </div>
 

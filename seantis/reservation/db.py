@@ -919,6 +919,12 @@ class Scheduler(object):
         self.reservation_by_token(token).delete()
 
     @serialized
+    def update_reservation_data(self, token, data):
+
+        reservation = self.reservation_by_token(token).one()
+        reservation.data = data
+
+    @serialized
     def confirm_reservations_for_session(self, session_id, token=None):
         """ Confirms all reservations of the given session id. Optionally
         confirms only the reservations with the given token. All if None.

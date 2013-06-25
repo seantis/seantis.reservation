@@ -230,11 +230,16 @@ id selector we need quite the selectors to get a higher weight...*/
 }
 
 #content #inline-page h2 {
-     margin-top: 10px;
+    margin-top: 10px;
 }
 
 a.reservation-delete {
-   float: right;
+    float: right;
+}
+
+a.reservation-data-update {
+    display: inline-block;
+    margin-top: 10px;
 }
 
 .reservation-list {
@@ -350,7 +355,6 @@ body .portalMessage {
     font-size: 12px;
     margin: 0 0 8px;   
 }
-
 
 
 .portaltype-seantis-reservation-emailtemplate form textarea,
