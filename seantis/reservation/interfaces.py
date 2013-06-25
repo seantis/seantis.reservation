@@ -79,9 +79,14 @@ def form_interfaces(context):
 
     """
     dutils = getallutils(IDexterityFTI)
-    behavior = 'seantis.reservation.interfaces.IReservationFormSet'
+    behaviors = set((
+        'seantis.reservation.interfaces.IReservationFormSet',
+        'seantis.reservation.interfaces.IReservationManagerFormSet'
+    ))
     interfaces = [
-        (u.title, u.lookupSchema()) for u in dutils if behavior in u.behaviors
+        (
+            u.title, u.lookupSchema()
+        ) for u in dutils if behaviors & set(u.behaviors)
     ]
 
     def get_term(item):
@@ -239,6 +244,10 @@ class OverviewletManager(grok.ViewletManager):
 
 class IReservationFormSet(Interface):
     """ Marks interface as usable for sub-forms in a resource object. """
+
+
+class IReservationManagerFormSet(IReservationFormSet):
+    """ Same as IReservationFormSet but only available to managers. """
 
 
 class IResourceAllocationDefaults(form.Schema):

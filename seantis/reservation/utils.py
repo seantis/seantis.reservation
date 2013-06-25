@@ -98,7 +98,7 @@ def additional_data_dictionary(data, fti):
     """
 
     result = dict()
-    used_data = dict([(k, v) for k, v in data.items() if v])
+    used_data = dict([(k, v) for k, v in data.items() if v is not None])
 
     def values(iface, ifacekey):
         for key, value in used_data.items():

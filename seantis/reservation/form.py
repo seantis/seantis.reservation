@@ -99,6 +99,11 @@ class ResourceBaseForm(GroupForm, form.Form):
             if f in self.widgets:
                 self.widgets[f].readonly = 'readonly'
 
+        for group in self.groups:
+            for f in self.disabled_fields:
+                if f in group.widgets:
+                    group.widgets[f].readonly = 'readonly'
+
     def get_field(self, key):
         """ Returns a field either from self.fields or from any group. """
 

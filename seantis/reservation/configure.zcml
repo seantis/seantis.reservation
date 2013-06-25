@@ -112,6 +112,12 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
     description="Marks types as reservation form interfaces"
     provides=".interfaces.IReservationFormSet"
     />
+
+<plone:behavior
+    title="Reservation Manager Formset"
+    description="Marks types as reservation form interfaces for managers"
+    provides=".interfaces.IReservationManagerFormSet"
+    />
     
 <!-- Email field registration -->
 <utility zcml:condition="installed plone.schemaeditor"

@@ -10,6 +10,7 @@ from five import grok
 from plone.dexterity.interfaces import IDexterityFTI
 from zope.component import queryUtility
 from zope.interface import Interface
+from zope.security import checkPermission
 
 from z3c.form import field
 from z3c.form import button
@@ -75,6 +76,15 @@ class ReservationSchemata(object):
     code which has the behavior IReservationFormset.
 
     """
+    
+    @property
+    def may_view_manager_sets(self):
+        manager_permission = 'seantis.reservation.ViewReservations'
+        return checkPermission(manager_permission, self.context)
+
+    def is_manager_set(self, fti):
+        behavior = 'seantis.reservation.interfaces.IReservationManagerFormSet'
+        return behavior in fti.behaviors
 
     @property
     def additionalSchemata(self):
@@ -84,6 +94,9 @@ class ReservationSchemata(object):
         for ptype in self.context.formsets:
             fti = queryUtility(IDexterityFTI, name=ptype)
             if fti:
+                if self.is_manager_set(fti) and not self.may_view_manager_sets:
+                    continue  # do not show, but fill with defaults later
+
                 schema = fti.lookupSchema()
                 scs.append((ptype, fti.title, schema))
 
@@ -111,7 +124,18 @@ class SessionFormdataMixin(ReservationSchemata):
 
         return existing
 
-    def additional_data(self, form_data=None):
+    @property
+    def manager_ftis(self):
+        ftis = {}
+
+        for ptype in self.context.formsets:
+            fti = queryUtility(IDexterityFTI, name=ptype)
+            if fti and self.is_manager_set(fti):
+                ftis[ptype] = (fti.title, fti.lookupSchema())
+
+        return ftis
+
+    def additional_data(self, form_data=None, add_manager_defaults=False):
 
         if not form_data:
             data = plone_session.get_additional_data(self.context)
@@ -127,6 +151,33 @@ class SessionFormdataMixin(ReservationSchemata):
             )
 
             plone_session.set_additional_data(self.context, data)
+
+        # the default values of manager forms are added to users without
+        # the permission right before saving
+        if add_manager_defaults and not self.may_view_manager_sets:
+            defaults = {}
+            manager_ftis = self.manager_ftis
+
+            for key, info in manager_ftis.items():
+                for name, f in field.Fields(info[1]).items():
+                    if f.field.default is not None:
+                        fieldkey = '{}.{}'.format(key, name)
+                        defaults[fieldkey] = f.field.default
+
+            data = self.merge_formdata(
+                data, utils.additional_data_dictionary(defaults, manager_ftis)
+            )
+
+        # on the other hand, if the user is not allowed, the data is cleared,
+        # just in case (really more of a dev-environment problem, but it
+        # doesn't hurt anyway)
+        if data:
+            if not add_manager_defaults and not self.may_view_manager_sets:
+                manager_ftis = self.manager_ftis
+
+                for form in data.keys():
+                    if form in manager_ftis:
+                        del data[form]
 
         return data
 
@@ -230,7 +281,7 @@ class ReservationBaseForm(ResourceBaseForm):
         assert not (start and end and group)
 
         email = self.email(data)
-        additional_data = self.additional_data(data)
+        additional_data = self.additional_data(data, add_manager_defaults=True)
         session_id = self.session_id()
 
         # only store forms defined in the formsets list
