@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-06-26 13:03+0000\n"
+"POT-Creation-Date: 2013-06-26 13:12+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -251,7 +251,7 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-#: ./reserve.py:755
+#: ./reserve.py:761
 msgid "Edit Formdata"
 msgstr ""
 
@@ -368,6 +368,10 @@ msgstr ""
 
 #: ./interfaces.py:339
 msgid "First hour of the day"
+msgstr ""
+
+#: ./reserve.py:827
+msgid "Formdata updated"
 msgstr ""
 
 #: ./interfaces.py:405
@@ -500,6 +504,10 @@ msgstr ""
 
 #: ./form.py:342
 msgid "No"
+msgstr ""
+
+#: ./reserve.py:763
+msgid "No Formdata to edit"
 msgstr ""
 
 #: ./error.py:107
@@ -641,10 +649,6 @@ msgstr ""
 msgid "Reservation successful"
 msgstr ""
 
-#: ./reserve.py:816
-msgid "Reservation-data updated"
-msgstr ""
-
 #: ./resource.py:278
 #: ./templates/reservations.pt:21
 msgid "Reservations"
@@ -694,7 +698,7 @@ msgid "Sa"
 msgstr ""
 
 #: ./mail.py:434
-#: ./reserve.py:806
+#: ./reserve.py:817
 #: ./timeframe.py:83
 msgid "Save"
 msgstr ""

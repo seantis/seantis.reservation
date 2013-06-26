@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-06-26 13:03+0000\n"
+"POT-Creation-Date: 2013-06-26 13:12+0000\n"
 "PO-Revision-Date: 2012-09-06 11:33+0100\n"
 "Last-Translator: Fabian Reinhard <fabian.reinhard@seantis.ch>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -248,7 +248,7 @@ msgstr "Möchten Sie die folgenden Einteilungen reservieren?"
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: ./reserve.py:755
+#: ./reserve.py:761
 msgid "Edit Formdata"
 msgstr "Formdaten Bearbeiten"
 
@@ -366,6 +366,10 @@ msgstr "Die erste volle Stunde muss kleiner als die letzte volle Stunde sein"
 #: ./interfaces.py:339
 msgid "First hour of the day"
 msgstr "Erste volle Stunde"
+
+#: ./reserve.py:827
+msgid "Formdata updated"
+msgstr "Formdaten aktualisiert"
 
 #: ./interfaces.py:405
 msgid "Formsets"
@@ -498,6 +502,10 @@ msgstr "Nächster Monat &gt;&gt;"
 #: ./form.py:342
 msgid "No"
 msgstr "Nein"
+
+#: ./reserve.py:763
+msgid "No Formdata to edit"
+msgstr "Keine Formdaten zum Bearbeiten"
 
 #: ./error.py:107
 msgid "No reservable slot found."
@@ -638,10 +646,6 @@ msgstr "Reservation abgesagt"
 msgid "Reservation successful"
 msgstr "Reservation erfolgreich"
 
-#: ./reserve.py:816
-msgid "Reservation-data updated"
-msgstr "Reservations-Daten wurden verändert"
-
 #: ./resource.py:278
 #: ./templates/reservations.pt:21
 msgid "Reservations"
@@ -691,7 +695,7 @@ msgid "Sa"
 msgstr "Sa"
 
 #: ./mail.py:434
-#: ./reserve.py:806
+#: ./reserve.py:817
 #: ./timeframe.py:83
 msgid "Save"
 msgstr "Speichern"

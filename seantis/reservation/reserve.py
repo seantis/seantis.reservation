@@ -752,9 +752,15 @@ class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
 
     grok.context(IResourceBase)
 
-    label = _(u'Edit Formdata')
     context_buttons = ('save', )
     extracted_errors = []
+
+    @property
+    def label(self):
+        if self.context.formsets:
+            return _(u'Edit Formdata')
+        else:
+            return _(u'No Formdata to edit')
 
     def get_reservation_data(self):
         if not self.reservation:
@@ -770,8 +776,13 @@ class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
         return self.reservation_data
 
     def defaults(self):
-        data = self.get_reservation_data()
         defaults = super(ReservationDataEditForm, self).defaults()
+
+        if not self.context.formsets:
+            return defaults
+
+        data = self.get_reservation_data()
+
         errors = [e.widget.__name__ for e in self.extracted_errors]
 
         for form in data:
@@ -813,7 +824,7 @@ class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
             self.scheduler.update_reservation_data(
                 self.reservation, self.additional_data
             )
-            self.flash(_(u'Reservation-data updated'))
+            self.flash(_(u'Formdata updated'))
 
         utils.handle_action(
             action=save, success=self.redirect_to_context
