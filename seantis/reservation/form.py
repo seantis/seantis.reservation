@@ -26,17 +26,22 @@ def extract_action_data(fn):
     extract the data if possible or return before calling the decorated
     function.
 
+    The extracted data and the errors are respectively put into
+
+    - self.extracted_data
+    - self.extracted_errors
+
     """
 
     @wraps(fn)
     def wrapper(self, action):
-        self.data, self.errors = self.extractData()
+        self.extracted_data, self.extracted_errors = self.extractData()
 
-        if self.errors:
+        if self.extracted_errors:
             self.status = self.formErrorsMessage
             return
 
-        return fn(self, self.data)
+        return fn(self, self.extracted_data)
 
     return wrapper
 

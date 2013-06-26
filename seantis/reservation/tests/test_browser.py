@@ -6,6 +6,13 @@ from seantis.reservation import utils
 from seantis.reservation.tests import FunctionalTestCase
 
 
+class FormsetField(object):
+    def __init__(self, name, type, default=None):
+        self.name = name
+        self.type = type
+        self.default = default
+
+
 class TestBrowser(FunctionalTestCase):
 
     def setUp(self):
@@ -25,26 +32,51 @@ class TestBrowser(FunctionalTestCase):
 
         self.admin_browser = browser
         self.folder_url = self.baseurl + '/testfolder'
-        self.build_folder_url = lambda url: self.folder_url + url
+        self.infolder = lambda url: self.folder_url + url
+        self.formsets = []
 
     def tearDown(self):
+        browser = self.admin_browser
+
         # delete the destfolder again
-        self.admin_browser.open(
-            self.folder_url + '/delete_confirmation'
-        )
-        self.admin_browser.getControl('Delete').click()
-        self.admin_browser.assert_notfound(self.baseurl + '/testfolder')
+        browser.open(self.infolder('/delete_confirmation'))
+        browser.getControl('Delete').click()
+
+        browser.assert_notfound(self.baseurl + '/testfolder')
+
+        # delete the formsests
+        if self.formsets:
+            browser.open('/dexterity-types')
+
+            for formset in self.formsets:
+                input_name = 'crud-edit.{}.widgets.select:list'.format(formset)
+                browser.getControl(name=input_name).value = [True]
+
+            browser.getControl('Delete').click()
+
+            for formset in self.formsets:
+                browser.assert_notfound('/dexterity-types/{}'.format(formset))
 
         super(TestBrowser, self).tearDown()
 
-    def add_resource(self, name, description=''):
-        url = self.build_folder_url
-
+    def add_resource(self, name, description='', formsets=[], action=None):
         browser = self.admin_browser
-        browser.open(url('/++add++seantis.reservation.resource'))
+
+        browser.open(self.infolder('/++add++seantis.reservation.resource'))
         browser.getControl('Name').value = name
         browser.getControl('Description').value = description
+
+        for formset in formsets:
+            browser.getControl(formset).selected = True
+
         browser.getControl('Save').click()
+
+        if action:
+            browser.open(self.infolder(
+                '/{}/content_status_modify?workflow_action={}'.format(
+                    name, action
+                )
+            ))
 
     def add_allocation(
         self, resource, start, end,
@@ -53,7 +85,6 @@ class TestBrowser(FunctionalTestCase):
         quota_limit=1,
         approve_manually=False
     ):
-        url = self.build_folder_url
 
         browser = self.admin_browser
 
@@ -61,7 +92,7 @@ class TestBrowser(FunctionalTestCase):
         e = utils.utctimestamp(end)
 
         allocate_url = '/%s/allocate?start=%s&end=%s' % (resource, s, e)
-        browser.open(url(allocate_url))
+        browser.open(self.infolder(allocate_url))
 
         # Plone formats the English run tests like this: 1:30 AM
         # Python does not do single digit hours so we strip.
@@ -81,8 +112,50 @@ class TestBrowser(FunctionalTestCase):
 
         browser.getControl('Allocate').click()
 
+    def add_formset(self, name, fields, for_managers=False):
+        browser = self.admin_browser
+
+        browser.open('/dexterity-types/@@add-type')
+        browser.getControl('Type Name').value = name
+        browser.getControl('Short Name').value = name
+
+        browser.getControl('Add').click()
+
+        self.formsets.append(name)
+
+        for field in fields:
+
+            browser.open('/dexterity-types/{}/@@add-field'.format(name))
+            browser.getControl('Title').value = field.name
+            browser.getControl('Short Name').value = field.name
+            browser.getControl('Field type').value = (field.type, )
+            browser.getControl('Add').click()
+
+            # no requirements for now, there are issues with defaults
+            browser.open('/dexterity-types/{}/{}'.format(name, field.name))
+            browser.getControl('Required').selected = False
+            browser.getControl('Save').click()
+
+        browser.open('/dexterity-types/{}/fields'.format(name))
+
+        for field in (f for f in fields if f.default is not None):
+
+            ctl = browser.getControl(name='form.widgets.{}'.format(field.name))
+            ctl.value = field.default
+
+        browser.getControl('Save Defaults').click()
+
+        browser.open('/dexterity-types/{}/@@behaviors'.format(name))
+
+        standard = 'Reservation Formset'
+        managers = 'Reservation Manager Formset'
+
+        browser.getControl(standard).selected = not for_managers
+        browser.getControl(managers).selected = for_managers
+
+        browser.getControl('Save').click()
+
     def load_slot_data(self, resource, start, end):
-        url = self.build_folder_url
 
         browser = self.admin_browser
 
@@ -91,17 +164,29 @@ class TestBrowser(FunctionalTestCase):
 
         slots_url = '/%s/slots?start=%s&end=%s' % (resource, s, e)
 
-        browser.open(url(slots_url))
+        browser.open(self.infolder(slots_url))
         return json.loads(browser.contents.replace('\n', ''))
 
-    def test_resource_listing(self):
+    def allocation_menu(self, resource, start, end):
 
-        url = self.build_folder_url
+        slots = self.load_slot_data(resource, start, end)
+        assert len(slots) == 1
+
+        menu = {}
+        for group, entries in slots[0]['menu'].items():
+            for e in entries:
+                menu[e['name'].lower()] = e['url'].replace('/plone', '')
+
+        return menu
+
+    def test_resource_listing(self):
 
         browser = self.new_browser()
         browser.login_admin()
 
-        browser.open(url('/selectViewTemplate?templateId=resource_listing'))
+        browser.open(
+            self.infolder('/selectViewTemplate?templateId=resource_listing')
+        )
 
         self.add_resource('Resource 1', 'Description 1')
 
@@ -118,14 +203,12 @@ class TestBrowser(FunctionalTestCase):
 
     def test_singlecalendar(self):
 
-        url = self.build_folder_url
-
         browser = self.new_browser()
         browser.login_admin()
 
         self.add_resource('Test')
 
-        browser.open(url('/test'))
+        browser.open(self.infolder('/test'))
 
         self.assertTrue('singlecalendar' in browser.contents)
         self.assertFalse('multicalendar' in browser.contents)
@@ -137,18 +220,16 @@ class TestBrowser(FunctionalTestCase):
 
     def test_multicalendar(self):
 
-        url = self.build_folder_url
-
         browser = self.new_browser()
         browser.login_admin()
 
         self.add_resource('one')
         self.add_resource('two')
 
-        browser.open(url('/one/@@uuid'))
+        browser.open(self.infolder('/one/@@uuid'))
         uuid = browser.contents
 
-        browser.open(url('/two?compare_to=%s' % uuid))
+        browser.open(self.infolder('/two?compare_to=%s' % uuid))
 
         self.assertFalse('singlecalendar' in browser.contents)
         self.assertTrue('multicalendar' in browser.contents)
@@ -159,14 +240,12 @@ class TestBrowser(FunctionalTestCase):
 
     def test_resource_properties(self):
 
-        url = self.build_folder_url
-
         browser = self.new_browser()
         browser.login_admin()
 
         self.add_resource('test-resource')
 
-        browser.open(url('/test-resource/@@edit'))
+        browser.open(self.infolder('/test-resource/@@edit'))
         browser.getControl('First hour of the day').value = "10"
         browser.getControl('Last hour of the day').value = "12"
 
@@ -200,13 +279,11 @@ class TestBrowser(FunctionalTestCase):
         end = datetime(2013, 3, 4, 16, 0)
 
         self.add_resource('regression')
-        self.add_allocation('regression', start, end, partly_available=True)
 
-        slots = self.load_slot_data('regression', start, end)
-        self.assertEqual(len(slots), 1)
+        allocation = ('regression', start, end)
+        self.add_allocation(*allocation, partly_available=True)
 
-        # the reserve_url is the default url
-        browser.open(slots[0]['url'].replace('/plone', ''))
+        browser.open(self.allocation_menu(*allocation)['reserve'])
 
         # enter some invalid dates and an email. The form should then show an
         # error, but not forget about the email like it used to
@@ -236,10 +313,10 @@ class TestBrowser(FunctionalTestCase):
         end = datetime(2013, 3, 4, 16, 0)
 
         self.add_resource('regression')
-        self.add_allocation('regression', start, end, quota=4, quota_limit=2)
 
-        slots = self.load_slot_data('regression', start, end)
-        browser.open(slots[0]['url'].replace('/plone', ''))
+        allocation = ('regression', start, end)
+        self.add_allocation(*allocation, quota=4, quota_limit=2)
+        browser.open(self.allocation_menu(*allocation)['reserve'])
 
         browser.getControl('Email').value = 'test@example.com'
         browser.getControl('Quota', index=0).value = '3'
@@ -257,21 +334,18 @@ class TestBrowser(FunctionalTestCase):
         end = datetime(2013, 6, 21, 17, 0)
 
         self.add_resource('approval')
-        self.add_allocation('approval', start, end, approve_manually=True)
 
-        slots = self.load_slot_data('approval', start, end)
-        browser.open(slots[0]['url'].replace('/plone', ''))
+        allocation = ('approval', start, end)
+        self.add_allocation(*allocation, approve_manually=True)
+        menu = self.allocation_menu(*allocation)
+        browser.open(menu['reserve'])
 
         browser.getControl('Email').value = 'test@example.com'
         browser.getControl('Reserve').click()
 
         browser.getControl('Submit Reservations').click()
 
-        slots = self.load_slot_data('approval', start, end)
-        manage_url = slots[0]['menu']['Reservations'][1]['url'].replace(
-            '/plone', ''
-        )
-        browser.open(manage_url)
+        browser.open(menu['manage'])
 
         self.assertTrue('Approve' in browser.contents)
         self.assertTrue('Deny' in browser.contents)
@@ -282,7 +356,66 @@ class TestBrowser(FunctionalTestCase):
         self.assertTrue('21.06.2013 13:00 - 17:00' in browser.contents)
 
         browser.getControl('Approve').click()
-        browser.open(manage_url)
+        browser.open(menu['manage'])
 
         self.assertTrue('Revoke' in browser.contents)
         self.assertFalse('Approve' in browser.contents)
+
+    def test_reservation_formsets(self):
+
+        browser = self.admin_browser
+
+        self.add_formset(
+            'public', [FormsetField('name', 'Text')], for_managers=False
+        )
+
+        self.add_formset(
+            'private', [
+                FormsetField('price', 'Integer', '31415927'),
+                FormsetField('comment', 'Text')
+            ], for_managers=True
+        )
+
+        self.add_resource(
+            'formsets', formsets=['public', 'private'], action='publish'
+        )
+
+        start = datetime(2013, 6, 27, 13, 37)
+        end = datetime(2013, 6, 27, 17, 15)
+
+        allocation = ['formsets', start, end]
+        self.add_allocation(*allocation)
+        menu = self.allocation_menu(*allocation)
+
+        # admins see all form elements when reserving
+        browser.open(menu['reserve'])
+
+        self.assertTrue('public' in browser.contents)
+        self.assertTrue('private' in browser.contents)
+
+        # normal users don't
+        anonymous = self.new_browser()
+        anonymous.open(menu['reserve'])
+
+        self.assertTrue('public' in anonymous.contents)
+        self.assertFalse('private' in anonymous.contents)
+
+        # if the normal user does the reservation, the formset defaults are
+        # written even for manager formsets
+        anonymous.getControl('Email').value = 'test@example.com'
+        anonymous.getControl('Reserve').click()
+        anonymous.getControl('Submit Reservations').click()
+
+        # this can be verified on the manage-page
+        browser.open(menu['manage'])
+        self.assertTrue('31415927' in browser.contents)
+        self.assertFalse('comment' in browser.contents)
+
+        # the manager can at this point change the values
+        browser.getLink('Edit Formdata').click()
+
+        browser.getControl('comment').value = 'no comment'
+        browser.getControl('Save').click()
+
+        browser.open(menu['manage'])
+        self.assertTrue('no comment' in browser.contents)

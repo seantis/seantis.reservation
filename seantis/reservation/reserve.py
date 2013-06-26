@@ -585,11 +585,13 @@ class ReservationIdForm(ResourceBaseForm):
     grok.baseclass()
     fields = field.Fields(IReservationIdForm)
     hidden_fields = ('reservation', )
-    data = {}
+    extracted_data = {}
 
     @property
     def reservation(self):
-        return self.request.get('reservation', self.data.get('reservation'))
+        return self.request.get(
+            'reservation', self.extracted_data.get('reservation')
+        )
 
     def defaults(self):
         return dict(reservation=self.reservation)
@@ -752,7 +754,7 @@ class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
 
     label = _(u'Edit Formdata')
     context_buttons = ('save', )
-    errors = []
+    extracted_errors = []
 
     def get_reservation_data(self):
         if not self.reservation:
@@ -770,7 +772,7 @@ class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
     def defaults(self):
         data = self.get_reservation_data()
         defaults = super(ReservationDataEditForm, self).defaults()
-        errors = [e.widget.__name__ for e in self.errors]
+        errors = [e.widget.__name__ for e in self.extracted_errors]
 
         for form in data:
 
@@ -782,7 +784,7 @@ class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
                     fieldvalue = value['value']
 
                 fieldkey = '{}.{}'.format(form, value['key'])
-                if fieldkey in self.data or fieldkey in errors:
+                if fieldkey in self.extracted_data or fieldkey in errors:
                     continue
                 else:
                     defaults[fieldkey] = fieldvalue
