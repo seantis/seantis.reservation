@@ -79,7 +79,7 @@ class ReservationSchemata(object):
     
     @property
     def may_view_manager_sets(self):
-        manager_permission = 'seantis.reservation.ViewReservations'
+        manager_permission = 'seantis.reservation.EditReservations'
         return checkPermission(manager_permission, self.context)
 
     def is_manager_set(self, fti):
@@ -743,8 +743,7 @@ class ReservationList(grok.View, ReservationListView, ReservationUrls):
 
 class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
 
-    # todo => separate permission
-    permission = "seantis.reservation.ViewReservations"
+    permission = "seantis.reservation.EditReservations"
 
     grok.name('update-reservation-data')
     grok.require(permission)

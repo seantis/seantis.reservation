@@ -36,6 +36,11 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
 />
 
 <permission
+    id="seantis.reservation.EditReservations"
+    title="seantis.reservation: Edit Reservations"
+/>
+
+<permission
     id="seantis.reservation.ViewHiddenAllocations"
     title="seantis.reservation: View Hidden Allocations"
 />

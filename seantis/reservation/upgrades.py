@@ -267,9 +267,18 @@ def upgrade_1012_to_1013(context):
         'profile-seantis.reservation:default', 'jsregistry'
     )
 
+
 def upgrade_1013_to_1014(context):
     # rerun javascript step to fix URI.js compression
     setup = getToolByName(context, 'portal_setup')
     setup.runImportStepFromProfile(
         'profile-seantis.reservation:default', 'jsregistry'
+    )
+
+
+def upgrade_1014_to_1015(context):
+    # rerun javascript step to fix URI.js compression
+    setup = getToolByName(context, 'portal_setup')
+    setup.runImportStepFromProfile(
+        'profile-seantis.reservation:default', 'rolemap'
     )

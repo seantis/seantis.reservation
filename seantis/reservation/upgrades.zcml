@@ -128,4 +128,13 @@
         profile="seantis.reservation:default">
     </genericsetup:upgradeStep>
 
+    <genericsetup:upgradeStep
+        title="Add new edit-reservation permission to reservation manager role"
+        description=""
+        source="1014"
+        destination="1015"
+        handler=".upgrades.upgrade_1014_to_1015"
+        profile="seantis.reservation:default">
+    </genericsetup:upgradeStep>
+
 </configure>

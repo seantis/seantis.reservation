@@ -7,6 +7,9 @@
         <permission name="seantis.reservation: Approve Reservations" acquire="True">
             <role name="Reservation-Manager" />
         </permission>
+        <permission name="seantis.reservation: Edit Reservations" acquire="True">
+            <role name="Reservation-Manager" />
+        </permission>
         <permission name="seantis.reservation: View Reservations" acquire="True">
             <role name="Reservation-Manager" />
         </permission>
