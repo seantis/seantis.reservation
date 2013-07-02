@@ -1,8 +1,13 @@
 import json
+import transaction
+
+from zope.component import queryUtility
+from Products.CMFCore.interfaces import IPropertiesTool
 
 from datetime import datetime
 
 from seantis.reservation import utils
+from seantis.reservation import db
 from seantis.reservation.tests import FunctionalTestCase
 
 
@@ -419,3 +424,97 @@ class TestBrowser(FunctionalTestCase):
 
         browser.open(menu['manage'])
         self.assertTrue('no comment' in browser.contents)
+
+    @db.serialized
+    def test_resource_removal(self):
+
+        browser = self.admin_browser
+
+        # have one resource with data during the run, to check that there's
+        # no bleed over through the other tests
+
+        self.add_resource('keeper')
+        browser.open(self.infolder('/keeper/@@uuid'))
+        uuid = unicode(browser.contents)
+
+        keeper = db.Scheduler(uuid)
+
+        self.assertEqual(keeper.managed_allocations().count(), 0)
+        self.assertEqual(keeper.managed_reservations().count(), 0)
+        self.assertEqual(keeper.managed_reserved_slots().count(), 0)
+
+        dates = [
+            datetime(2013, 7, 2, 10, 15), datetime(2013, 7, 2, 10, 30)
+        ]
+        keeper.allocate(dates, raster=15)
+
+        token = keeper.reserve(u'test@example.com', dates)
+        keeper.approve_reservation(token)
+
+        transaction.commit()  # delete_confirmation will rollback
+                              # dropping all SQL statements
+
+        self.assertEqual(keeper.managed_allocations().count(), 1)
+        self.assertEqual(keeper.managed_reservations().count(), 1)
+        self.assertEqual(keeper.managed_reserved_slots().count(), 1)
+
+        def run_test():
+            self.add_resource('removal')
+            browser.open(self.infolder('/removal/@@uuid'))
+            uuid = unicode(browser.contents)
+
+            scheduler = db.Scheduler(uuid)
+
+            self.assertEqual(scheduler.managed_allocations().count(), 0)
+            self.assertEqual(scheduler.managed_reservations().count(), 0)
+            self.assertEqual(scheduler.managed_reserved_slots().count(), 0)
+
+            scheduler.allocate(dates, raster=15)
+
+            token = scheduler.reserve(u'test@example.com', dates)
+            scheduler.approve_reservation(token)
+
+            transaction.commit()  # delete_confirmation will rollback
+                                  # dropping all SQL statements
+
+            self.assertEqual(scheduler.managed_allocations().count(), 1)
+            self.assertEqual(scheduler.managed_reservations().count(), 1)
+            self.assertEqual(scheduler.managed_reserved_slots().count(), 1)
+
+            # linkintegrity will cause IObjectRemovedEvent to be fired,
+            # but the transaction will be rolled back
+            browser.open(self.infolder('/removal/delete_confirmation'))
+            self.assertEqual(scheduler.managed_allocations().count(), 1)
+            self.assertEqual(scheduler.managed_reservations().count(), 1)
+            self.assertEqual(scheduler.managed_reserved_slots().count(), 1)
+
+            browser.getControl('Cancel').click()
+            self.assertEqual(scheduler.managed_allocations().count(), 1)
+            self.assertEqual(scheduler.managed_reservations().count(), 1)
+            self.assertEqual(scheduler.managed_reserved_slots().count(), 1)
+
+            browser.open(self.infolder('/removal/delete_confirmation'))
+            browser.getControl('Delete').click()
+            self.assertEqual(scheduler.managed_allocations().count(), 0)
+            self.assertEqual(scheduler.managed_reservations().count(), 0)
+            self.assertEqual(scheduler.managed_reserved_slots().count(), 0)
+
+        # run once with link integrity enabled, once disabled
+        ptool = queryUtility(IPropertiesTool)
+        props = getattr(ptool, 'site_properties', None)
+
+        props.enable_link_integrity_checks = True
+        transaction.commit()
+        run_test()
+
+        self.assertEqual(keeper.managed_allocations().count(), 1)
+        self.assertEqual(keeper.managed_reservations().count(), 1)
+        self.assertEqual(keeper.managed_reserved_slots().count(), 1)
+
+        props.enable_link_integrity_checks = False
+        transaction.commit()
+        run_test()
+
+        self.assertEqual(keeper.managed_allocations().count(), 1)
+        self.assertEqual(keeper.managed_reservations().count(), 1)
+        self.assertEqual(keeper.managed_reserved_slots().count(), 1)

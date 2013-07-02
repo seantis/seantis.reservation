@@ -61,7 +61,10 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(remaining, possible_dates[2:])
 
         reserved_slots = sc.reserved_slots_by_reservation(token).all()
-        self.assertEqual(slots, reserved_slots)
+        self.assertEqual(
+            sorted(slots, key=hash),
+            sorted(reserved_slots, key=hash)
+        )
 
         # try to illegally move the slot
         movefn = lambda: sc.move_allocation(

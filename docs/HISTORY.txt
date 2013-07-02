@@ -6,6 +6,22 @@ Changelog
 ------------------
 
 - Fixes typo in German translation
+- Removes potentially dangerous orphan removal from settings panel
+- All reservation records stored in Postgres belonging to a certain resource
+  are now wiped if said resource is deleted.
+
+  The exception is the removal of a plone site through the ZMI. Though it is
+  possible to intercept that event it is not entirely save to discard all
+  resources that are part of plone site being deleted. It is namely possible
+  that those have the same uuid as another existing resource of another site.
+
+  To clean these kind of data zombies it might be good to create a tool with
+  which reservations before a given date are wiped or archived.
+
+  This is however not a priority as it is recommended to have a separate
+  database for each site anyway and until there's a high volume reservations
+  site in existance this won't ever be a problem. Postgres can handle unused
+  records.
 
 1.0.6
 -----
