@@ -2,11 +2,10 @@
 Changelog
 =========
 
-1.0.7 (unreleased)
-------------------
+1.0.7
+-----
 
-- Fixes typo in German translation
-- Removes potentially dangerous orphan removal from settings panel
+- Removes potentially dangerous orphan removal from settings panel.
 
 - All reservation records stored in Postgres belonging to a certain resource
   are now wiped if said resource is deleted.
@@ -24,7 +23,12 @@ Changelog
   site in existance this won't ever be a problem. Postgres can handle unused
   records.
 
-- Stops allocation.mirror_of from potentially being NULL
+- Stops allocation.mirror_of from potentially being NULL.
+
+- Fixes a bug where reservations could be added to waitinglists on allocations
+  that were not meant to have a waitinglist.
+
+- Fixes typo in German translation
 
 1.0.6
 -----
