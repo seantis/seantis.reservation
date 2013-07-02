@@ -330,6 +330,41 @@ class TestBrowser(FunctionalTestCase):
         self.assertTrue('quota is higher than allowed' in browser.contents)
         self.assertEqual('3', browser.getControl('Quota', index=0).value)
 
+    def test_overreserve_regression(self):
+
+        # it was possible to add reservations to the waitinglist before,
+        # even if there was no waitinglist allowed.
+        # it needed a quota to be higher than the free spots
+
+        browser = self.new_browser()
+        browser.login_admin()
+
+        start = datetime(2013, 6, 2, 14, 0)
+        end = datetime(2013, 6, 2, 16, 0)
+
+        self.add_resource('overreserve')
+        allocation = ('overreserve', start, end)
+        self.add_allocation(*allocation, quota=5, quota_limit=5)
+
+        browser.open(self.allocation_menu(*allocation)['reserve'])
+        browser.getControl('Email').value = 'test@example.com'
+        browser.getControl('Quota', index=0).value = '3'
+        browser.getControl('Reserve').click()
+        browser.getControl('Submit Reservations').click()
+
+        browser.open(self.allocation_menu(*allocation)['reserve'])
+        browser.getControl('Email').value = 'test@example.com'
+        browser.getControl('Quota', index=0).value = '3'
+        browser.getControl('Reserve').click()
+
+        self.assertTrue(
+            'The requested period is no longer available' in browser.contents
+        )
+
+        browser.open(self.infolder('/overreserve/your-reservations'))
+        self.assertFalse('limitedList' in browser.contents)
+        self.assertFalse('your-reservation-quota' in browser.contents)
+
     def test_reservation_approval(self):
 
         browser = self.new_browser()

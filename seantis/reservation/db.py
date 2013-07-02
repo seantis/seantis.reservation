@@ -797,6 +797,10 @@ class Scheduler(object):
                     if not self.find_spot(allocation, start, end):
                         raise AlreadyReservedError
 
+                    free = self.free_allocations_count(allocation, start, end)
+                    if free < quota:
+                        raise AlreadyReservedError
+
                 if allocation.reservation_quota_limit > 0:
                     if allocation.reservation_quota_limit < quota:
                         raise QuotaOverLimit
@@ -1057,6 +1061,24 @@ class Scheduler(object):
                 tries -= 1
             else:
                 return None
+
+    def free_allocations_count(self, master_allocation, start, end):
+        """ Returns the number of free allocations between master_allocation
+        and it's mirrors. """
+
+        free_allocations = 0
+
+        if master_allocation.is_available(start, end):
+            free_allocations += 1
+
+        if master_allocation.quota == 1:
+            return free_allocations
+
+        for mirror in self.allocation_mirrors_by_master(master_allocation):
+            if mirror.is_available(start, end):
+                free_allocations += 1
+
+        return free_allocations
 
     def reservation_targets(self, start, end):
         """ Returns a list of allocations that are free within start and end.
