@@ -282,3 +282,8 @@ def upgrade_1014_to_1015(context):
     setup.runImportStepFromProfile(
         'profile-seantis.reservation:default', 'rolemap'
     )
+
+
+@db_upgrade
+def upgrade_1015_to_1016(operations, metadata):
+    operations.alter_column('allocations', 'mirror_of', nullable=False)

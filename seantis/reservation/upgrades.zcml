@@ -137,4 +137,13 @@
         profile="seantis.reservation:default">
     </genericsetup:upgradeStep>
 
+    <genericsetup:upgradeStep
+        title="Stop allocation.mirror_of from potentially being null"
+        description=""
+        source="1015"
+        destination="1016"
+        handler=".upgrades.upgrade_1015_to_1016"
+        profile="seantis.reservation:default">
+    </genericsetup:upgradeStep>
+
 </configure>

@@ -46,7 +46,7 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
 
     id = Column(types.Integer(), primary_key=True, autoincrement=True)
     resource = Column(customtypes.GUID(), nullable=False)
-    mirror_of = Column(customtypes.GUID())
+    mirror_of = Column(customtypes.GUID(), nullable=False)
     group = Column(customtypes.GUID(), nullable=False)
     quota = Column(types.Integer(), default=1)
     partly_available = Column(types.Boolean(), default=False)

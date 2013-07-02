@@ -7,6 +7,7 @@ Changelog
 
 - Fixes typo in German translation
 - Removes potentially dangerous orphan removal from settings panel
+
 - All reservation records stored in Postgres belonging to a certain resource
   are now wiped if said resource is deleted.
 
@@ -22,6 +23,8 @@ Changelog
   database for each site anyway and until there's a high volume reservations
   site in existance this won't ever be a problem. Postgres can handle unused
   records.
+
+- Stops allocation.mirror_of from potentially being NULL
 
 1.0.6
 -----
