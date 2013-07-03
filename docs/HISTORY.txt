@@ -4,6 +4,9 @@ Changelog
 1.0.4
 -----
 
+- Add french translatiosn.
+  [tschanzt]
+
 - Fixes German translation typo
 
 1.0.3
