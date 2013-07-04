@@ -14,39 +14,39 @@ msgstr ""
 
 #: ./settings.py:168
 msgid "${count} Orphan Records Removed"
-msgstr "Data incorrect à retirer"
+msgstr "${count} Data incorrect à retirer"
 
 #: ./interfaces.py:580
 msgid "%(reason)s - reason for revocation<br>"
-msgstr "Raison à justifier pour retirer l'info"
+msgstr ""
 
 #: ./utils.py:641
 msgid "%i People Waiting"
-msgstr "En attente"
+msgstr "%i En attente"
 
 #: ./utils.py:622
 msgid "%i%% Free"
-msgstr "Libre"
+msgstr "%i%% Libre"
 
 #: ./utils.py:629
 msgid "%i/%i Spot Available"
-msgstr "Place disponible"
+msgstr "%i/%i Place disponible"
 
 #: ./utils.py:625
 msgid "%i/%i Spots Available"
-msgstr "Places disponibles"
+msgstr "%i/%i Places disponibles"
 
 #: ./templates/monthly_report.pt:23
 msgid "&lt;&lt; Previous Month"
-msgstr "Mois précédent"
+msgstr "&lt;&lt; Mois précédent"
 
 #: ./utils.py:496
 msgid "<b>${quota}</b> reservations"
-msgstr "Réservations"
+msgstr "<b>${quota}</b> Réservations"
 
 #: ./utils.py:498
 msgid "<b>1</b> reservation"
-msgstr "Réservation"
+msgstr "<b>1</b> Réservation"
 
 #: ./error.py:85
 msgid "A conflicting allocation exists for the requested time period."
@@ -450,11 +450,11 @@ msgstr "Les réservations doivent être confirmer manuellement"
 
 #: ./interfaces.py:584
 msgid "May contain the following template variable:<br>%(reservations)s - list of reservations"
-msgstr "Peut contenir les variables suivantes - Liste des réservations"
+msgstr ""
 
 #: ./interfaces.py:569
 msgid "May contain the following template variables:<br>%(resource)s - title of the resource<br>%(dates)s - list of dates reserved<br>%(reservation_mail)s - email of reservee<br>%(data)s - formdata associated with the reservation<br>%(approval_link)s - link to the approval view<br>%(denial_link)s - link to the denial view<br>%(cancel_link)s - link to the cancel view"
-msgstr "Peut contenir les variables  suivantes - Titre des ressources, dates des réservations, Email"
+msgstr ""
 
 #: ./interfaces.py:31
 msgid "Mo"
@@ -466,7 +466,7 @@ msgstr "Rapport mensuel"
 
 #: ./report.py:119
 msgid "Monthly Report for ${month} ${year}"
-msgstr "Rapport mensuel"
+msgstr "Rapport mensuel pour ${month} ${year}"
 
 #: ./interfaces.py:50
 msgid "Monthly View"
@@ -482,7 +482,7 @@ msgstr "Navigation"
 
 #: ./templates/monthly_report.pt:23
 msgid "Next Month &gt;&gt;"
-msgstr "Mois suivant"
+msgstr "Mois suivant &gt;&gt;"
 
 #: ./form.py:332
 msgid "No"
@@ -847,7 +847,7 @@ msgstr "Le choix de la présentation/ agenda/ timeframe doit être disponible"
 
 #: ./form.py:550
 msgid "There are ${nb} reservations being entered for this resource."
-msgstr "Des réservations sont déjà dans le système"
+msgstr "${nb} des réservations sont déjà dans le système"
 
 #: ./form.py:546
 msgid "There is one reservation being entered for this resource."
@@ -863,7 +863,7 @@ msgstr "Périodes d'occupation"
 
 #: ./timeframe.py:37
 msgid "Timeframe overlaps with '${overlap}' in the current folder"
-msgstr "La période d'occupation est concordante avec une autre réservation"
+msgstr ""
 
 #: ./interfaces.py:461
 #: ./templates/timeframes.pt:4
