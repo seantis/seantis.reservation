@@ -40,13 +40,16 @@ seantis.locale.ix = function(language) {
             return 0;
         case 'de':
             return 1;
+        case 'fr':
+            return 2;
         default:
             return -1;
     }
 };
 
 seantis.locale.fullcalendar = function() {
-    if (seantis.locale.language() == 'de') {
+    var language = seantis.locale.language();
+    if (language === 'de') {
         return {
             buttonText: {
                 today: 'Heute',
@@ -58,6 +61,19 @@ seantis.locale.fullcalendar = function() {
             monthNamesShort: ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sept','Okt','Nov','Dez'],
             dayNames: ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'],
             dayNamesShort: ['So','Mo','Di','Mi','Do','Fr','Sa']
+        };
+    } else if (language === 'fr') {
+        return {
+            buttonText: {
+                today: "aujourd'hui",
+                month: 'mois',
+                day: 'jour',
+                week: 'semaine'
+            },
+            monthNames: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'],
+            monthNamesShort: ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sept','Okt','Nov','Dez'],
+            dayNames: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
+            dayNamesShort: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam']
         };
     }
 
@@ -73,14 +89,17 @@ seantis.locale.translate = function(html) {
 seantis.locale.dictionary = {
     'free' : [
         'Free',
-        'Frei'
+        'Frei',
+        'libre'
     ],
     'continue' : [
         'Continue',
-        'Weiter'
+        'Weiter',
+        'continuer'
     ],
     'reserve' : [
         'Reserve',
-        'Reservieren'
+        'Reservieren',
+        'réserve'
     ]
 };
