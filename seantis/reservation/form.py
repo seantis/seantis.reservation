@@ -19,6 +19,10 @@ from plone.memoize import view
 
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from plone.z3cform.fieldsets import utils as z3cutils
+from zope.component.hooks import getSite
+from zope.i18n import translate
+from plone.memoize import instance
+from Products.CMFPlone.utils import safe_unicode
 
 
 def extract_action_data(fn):
@@ -322,6 +326,11 @@ class AllocationGroupView(object):
 class ReservationDataView(object):
     """Mixin for reservation-data showing."""
 
+    @property
+    @instance.memoize
+    def _request(self):
+        return getSite().REQUEST
+
     def sorted_info_keys(self, data):
         items = [(d[0], d[1]['values'][0]['sortkey']) for d in data.items()]
 
@@ -330,11 +339,20 @@ class ReservationDataView(object):
     def sorted_values(self, values):
         return sorted(values, key=lambda v: v['sortkey'])
 
+    def display_description(self, value):
+        return translate(value, context=self._request,
+                        domain='seantis.reservation')
+
     def display_info(self, value):
         """ Transforms json data values into a human readable format
         where appropriate.
 
         """
+        if isinstance(value, basestring):
+            return self.decode_for_display(value)
+
+        if isinstance(value, list):
+            return ', '.join(self.decode_for_display(v) for v in value)
 
         if value is True:
             return _(u'Yes')
@@ -349,6 +367,11 @@ class ReservationDataView(object):
             return ', '.join(utils.decode_for_display(v) for v in value)
 
         return value
+
+    def decode_for_display(self, value):
+        value = translate(value, context=self._request,
+                          domain='seantis.reservation')
+        return utils.decode_for_display(safe_unicode(value))
 
 
 class ResourceParameterView(object):

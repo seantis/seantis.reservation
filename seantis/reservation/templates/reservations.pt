@@ -11,7 +11,7 @@
 <tal:main-macro metal:define-macro="main">
 
 <div tal:attributes="data-group python: view.highlight_group; class python: view.hide_waitinglist and 'inline-reservations hide-waitinglist' or 'inline-reservations'">
-  
+
   <div class="uncommitted" i18n:translate="" tal:condition="view/uncommitted_reservations_count">
     <tal:block content="view/uncommitted_reservations"></tal:block>
   </div>
@@ -19,9 +19,9 @@
   <div class="splitscreen splitleft">
 
     <h2 class="documentFirstHeading" i18n:translate="">Reservations</h2>
-    
+
     <div class="reservation-info reservation-approved" metal:define-macro="approved_reservations">
-        
+
         <tal:block tal:repeat="group python: view.approved_reservations().items()">
           <tal:block define="
               token python: group[0];
@@ -32,7 +32,7 @@
             <div class="reservation">
 
                 <div class="reservation-title">
-                    
+
                     <h3 tal:content="python: view.reservation_info(token)"></h3>
 
                     <a tal:condition="view/show_links"
@@ -46,26 +46,27 @@
                 <div tal:repeat="reservation reservations" class="reservation-list">
 
                   <div class="reservation-data" metal:define-macro="reservation_data">
-                    
+
                     <tal:block tal:condition="data" tal:repeat="key python: view.sorted_info_keys(data)">
                       <tal:block tal:define="interface python: data[key]">
-                        
-                        <div class="block-title" tal:content="python: interface['desc']"></div>
-                        
+
+                        <div class="block-title" tal:content="python: view.display_description(interface['desc'])"></div>
+
                         <div tal:repeat="value python: view.sorted_values(interface['values'])">
-                          <span class="label" tal:content="python: value['desc']"></span><span tal:content="python: view.display_info(value['value'])"></span>
+                          <span class="label" tal:content="python: view.display_description(value['desc'])"></span>
+                          <span tal:content="python: view.display_info(value['value'])"></span>
                         </div>
-                      
+
                       </tal:block>
                     </tal:block>
-                  
+
                   </div>
 
                   <div class="reservation-timespans" metal:define-macro="reservation_timespans">
-                    
+
                     <div class="block-title" i18n:translate="">Concerned Dates</div>
                     <div class="limitedList" style="max-height: 450px; min-width: 100%;">
-                    
+
                     <tal:block tal:repeat="timespan python: sorted(reservation.timespans())">
                         <tal:block tal:define="
                         start python: timespan[0];
@@ -92,11 +93,11 @@
     </div>
   </div>
   <div class="splitscreen splitright">
-   
+
     <h2 class="documentFirstHeading" i18n:translate="">Waitinglist</h2>
-    
+
     <div class="reservation-info reservation-pending" metal:define-macro="pending_reservations">
-        
+
         <tal:block tal:repeat="group python: view.pending_reservations().items()">
           <tal:block define="
               token python: group[0];
@@ -125,10 +126,10 @@
                 </div>
 
                 <div tal:repeat="reservation reservations" class="reservation-list">
-                  
+
                   <metal:block use-macro="context/@@reservations/macros/reservation_data" />
                   <metal:block use-macro="context/@@reservations/macros/reservation_timespans" />
-                  
+
                   <div style="clear: both;"></div>
                 </div>
             </div>
