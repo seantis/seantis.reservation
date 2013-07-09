@@ -454,7 +454,7 @@ msgstr "Peut contenir les variables suivantes: <br>%(reservation)s - Liste des r
 
 #: ./interfaces.py:569
 msgid "May contain the following template variables:<br>%(resource)s - title of the resource<br>%(dates)s - list of dates reserved<br>%(reservation_mail)s - email of reservee<br>%(data)s - formdata associated with the reservation<br>%(approval_link)s - link to the approval view<br>%(denial_link)s - link to the denial view<br>%(cancel_link)s - link to the cancel view"
-msgstr ""
+msgstr "Peut contenir les variables suivantes:<br>%(resource)s – Titre de la ressource<br>%(dates)s – dates de la réservation<br>%(reservation_mail)s – Adresse courriel de la personne qui réserve<br>%(data)s – Données du formulaire de la réservation<br>%(approval_link)s – Lien à l’affichage de la confirmation<br>%(denial_link)s - Lien à l’affichage du refus<br>%(cancel_link)s - Lien à l’affichage de la réponse négative"
 
 #: ./interfaces.py:31
 msgid "Mo"
