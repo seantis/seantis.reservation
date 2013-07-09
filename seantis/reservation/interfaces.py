@@ -427,6 +427,7 @@ class IResourceBase(IResourceAllocationDefaults):
         )
     )
 
+    directives.languageindependent('formsets')
     formsets = schema.List(
         title=_(u'Formsets'),
         description=_(
