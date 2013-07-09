@@ -18,7 +18,7 @@ msgstr "${count} Data incorrect à retirer"
 
 #: ./interfaces.py:580
 msgid "%(reason)s - reason for revocation<br>"
-msgstr ""
+msgstr "%(reason)s à justifier pour retirer l'info<br>"
 
 #: ./utils.py:641
 msgid "%i People Waiting"
@@ -450,7 +450,7 @@ msgstr "Les réservations doivent être confirmer manuellement"
 
 #: ./interfaces.py:584
 msgid "May contain the following template variable:<br>%(reservations)s - list of reservations"
-msgstr ""
+msgstr "Peut contenir les variables suivantes: <br>%(reservation)s - Liste des réservations"
 
 #: ./interfaces.py:569
 msgid "May contain the following template variables:<br>%(resource)s - title of the resource<br>%(dates)s - list of dates reserved<br>%(reservation_mail)s - email of reservee<br>%(data)s - formdata associated with the reservation<br>%(approval_link)s - link to the approval view<br>%(denial_link)s - link to the denial view<br>%(cancel_link)s - link to the cancel view"
@@ -811,7 +811,7 @@ msgstr "Le quota maximum d'une seule réservation peut être utilisé de suite"
 
 #: ./settings.py:34
 msgid "The number of minutes a user needs to wait between reservations, use 0 if no throttling should occur. Users with the 'Unthrottled Reservations' permission are excempt from this rule (Reservation-Managers by default)."
-msgstr ""
+msgstr "Le temps requis entre différentes réservation. Si rien ne se passe, utiliser la variable 0. Les réservations en étranglement sont excemptées de cette règle par défaut."
 
 #: ./templates/remove_allocation.pt:18
 msgid "The requested allocations could not be found"
@@ -863,7 +863,7 @@ msgstr "Périodes d'occupation"
 
 #: ./timeframe.py:37
 msgid "Timeframe overlaps with '${overlap}' in the current folder"
-msgstr ""
+msgstr "La période d'occupation est en conflit avec '${overlap}'"
 
 #: ./interfaces.py:461
 #: ./templates/timeframes.pt:4
