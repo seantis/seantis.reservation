@@ -27,6 +27,8 @@ from seantis.reservation.mail_templates import templates
 
 from seantis.reservation.utils import _languagelist
 from zope.interface.declarations import alsoProvides
+from zope.component.hooks import getSite
+from zope.i18n import translate
 
 try:
     pkg_resources.get_distribution('plone.multilingual')
@@ -97,9 +99,11 @@ def form_interfaces(context):
     ftis = [
         fti for fti in getallutils(IDexterityFTI) if behavior in fti.behaviors
     ]
+    site = getSite()
 
     def get_term(item):
-        return SimpleTerm(title=item.title, value=item.id)
+        title = translate(item.Title(), context=site.REQUEST)
+        return SimpleTerm(title=title, value=item.id)
 
     return SimpleVocabulary(map(get_term, ftis))
 
