@@ -727,9 +727,13 @@ class Scheduler(object):
     @serialized
     def remove_allocation(self, id=None, group=None, recurrence_id=None):
         if recurrence_id:
-            allocations = self.allocations_by_recurrence().all()
+            allocations = self.allocations_by_recurrence(recurrence_id).all()
         elif group:
             allocations = self.allocations_by_group(group, masters_only=False)
+        elif id:
+            master = self.allocation_by_id(id)
+            allocations = [master]
+            allocations.extend(self.allocation_mirrors_by_master(master))
         else:
             raise NotImplementedError
 

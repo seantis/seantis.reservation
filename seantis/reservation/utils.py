@@ -201,8 +201,6 @@ def overlaps(start, end, otherstart, otherend):
 
     return False
 
-_requestid_expr = re.compile(r'\d')
-
 
 def request_id_as_int(string):
     """Returns the id of a request as int without throwing an error if invalid

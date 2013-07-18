@@ -196,14 +196,12 @@ class TestBrowser(FunctionalTestCase):
         separately when recurrence is set.
 
         """
-        url = self.build_folder_url
-
         browser = self.new_browser()
         browser.login_admin()
 
         self.add_resource('recurrence')
 
-        browser.open(url('/recurrence'))
+        browser.open(self.infolder('/recurrence'))
 
         start = datetime(2013, 3, 4, 15, 0)
         end = datetime(2013, 3, 4, 16, 0)

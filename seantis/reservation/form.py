@@ -225,17 +225,17 @@ class ResourceBaseForm(GroupForm, form.Form):
 
     @property
     def id(self):
+        value = None
+
         if 'id' in self.request:
             value = self.request['id']
         elif self.widgets and 'id' in self.widgets:
-            value = self.widgets['id'].value
-        else:
-            return 0
+            field = self.get_field('id')
+            widget = self.get_widget('id')
+            converter = getMultiAdapter((field, widget))
+            value = converter.toFieldValue(widget.value)
 
-        if value in (None, u'', ''):
-            return 0
-        else:
-            return utils.request_id_as_int(value)
+        return utils.request_id_as_int(value)
 
     @property
     def recurrence_id(self):

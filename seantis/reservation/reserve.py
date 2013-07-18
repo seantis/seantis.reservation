@@ -410,7 +410,6 @@ class ReservationForm(
     @button.buttonAndHandler(_(u'Reserve'))
     @extract_action_data
     def reserve(self, data):
-
         allocation = self.allocation(data['id'])
         approve_manually = allocation.approve_manually
 
