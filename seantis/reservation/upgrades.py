@@ -294,6 +294,11 @@ def upgrade_1015_to_1016(operations, metadata):
 @db_upgrade
 def upgrade_1016_to_1017(operations, metadata):
 
+    setup = getToolByName(operations.migration_context, 'portal_setup')
+    setup.runAllImportStepsFromProfile(
+        'profile-plone.formwidget.recurrence:default'
+    )
+
     inspector = Inspector.from_engine(metadata.bind)
     if 'recurrences' not in inspector.get_table_names():
         operations.create_table('recurrences',
