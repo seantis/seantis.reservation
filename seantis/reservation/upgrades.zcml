@@ -111,11 +111,47 @@
     </genericsetup:upgradeStep>
 
     <genericsetup:upgradeStep
-        title="Add recurrence database table"
+        title="Add URI.js"
         description=""
         source="1012"
         destination="1013"
         handler=".upgrades.upgrade_1012_to_1013"
+        profile="seantis.reservation:default">
+    </genericsetup:upgradeStep>
+
+    <genericsetup:upgradeStep
+        title="Fix URI.js compression"
+        description=""
+        source="1013"
+        destination="1014"
+        handler=".upgrades.upgrade_1013_to_1014"
+        profile="seantis.reservation:default">
+    </genericsetup:upgradeStep>
+
+    <genericsetup:upgradeStep
+        title="Add new edit-reservation permission to reservation manager role"
+        description=""
+        source="1014"
+        destination="1015"
+        handler=".upgrades.upgrade_1014_to_1015"
+        profile="seantis.reservation:default">
+    </genericsetup:upgradeStep>
+
+    <genericsetup:upgradeStep
+        title="Stop allocation.mirror_of from potentially being null"
+        description=""
+        source="1015"
+        destination="1016"
+        handler=".upgrades.upgrade_1015_to_1016"
+        profile="seantis.reservation:default">
+    </genericsetup:upgradeStep>
+
+    <genericsetup:upgradeStep
+        title="Add recurrence database table"
+        description=""
+        source="1016"
+        destination="1017"
+        handler=".upgrades.upgrade_1016_to_1017"
         profile="seantis.reservation:default">
     </genericsetup:upgradeStep>
 

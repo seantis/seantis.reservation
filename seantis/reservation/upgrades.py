@@ -262,8 +262,37 @@ def upgrade_1011_to_1012(context):
         tpl.reservation_made_content = template.get_body(lang)
 
 
+def upgrade_1012_to_1013(context):
+    # rerun javascript step to import URI.js
+    setup = getToolByName(context, 'portal_setup')
+    setup.runImportStepFromProfile(
+        'profile-seantis.reservation:default', 'jsregistry'
+    )
+
+
+def upgrade_1013_to_1014(context):
+    # rerun javascript step to fix URI.js compression
+    setup = getToolByName(context, 'portal_setup')
+    setup.runImportStepFromProfile(
+        'profile-seantis.reservation:default', 'jsregistry'
+    )
+
+
+def upgrade_1014_to_1015(context):
+    # rerun javascript step to fix URI.js compression
+    setup = getToolByName(context, 'portal_setup')
+    setup.runImportStepFromProfile(
+        'profile-seantis.reservation:default', 'rolemap'
+    )
+
+
 @db_upgrade
-def upgrade_1012_to_1013(operations, metadata):
+def upgrade_1015_to_1016(operations, metadata):
+    operations.alter_column('allocations', 'mirror_of', nullable=False)
+
+
+@db_upgrade
+def upgrade_1016_to_1017(operations, metadata):
 
     inspector = Inspector.from_engine(metadata.bind)
     if 'recurrences' not in inspector.get_table_names():

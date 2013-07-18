@@ -1,5 +1,7 @@
 /*
-    Styles for plonetheme.sunburst
+
+    Styles for Plonetheme Teamraum
+
 */
 
 /* context menu style */
@@ -228,11 +230,11 @@ id selector we need quite the selectors to get a higher weight...*/
 }
 
 #content #inline-page h2 {
-     margin-top: 10px;
+    margin-top: 10px;
 }
 
 a.reservation-delete {
-   float: right;
+    float: right;
 }
 
 a.reservation-data-update {
@@ -355,7 +357,6 @@ body .portalMessage {
 }
 
 
-
 .portaltype-seantis-reservation-emailtemplate form textarea,
 .template-seantis\.reservation\.emailtemplate form textarea {
     height: 200px;
@@ -387,9 +388,8 @@ body .portalMessage {
     width: 100%;
     text-align: center;
     color: #555;
-    padding-top:8px;
     background-color: transparent;
-    border: none
+    border: none;
 }
 
 /* reservations in progress */

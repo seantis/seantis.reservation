@@ -4,6 +4,8 @@
         <!-- third party modules (may be moved to collective.js.*) -->
         <javascript id="++resource++seantis.reservation.js/miniTip.js" enabled="True" expression="python:object.portal_type == 'seantis.reservation.resource'" insert-after="jquery.js"/>
 
+        <javascript id="++resource++seantis.reservation.js/URI.js" enabled="True" compression="None"/>
+
         <!-- internal modules -->
         <javascript id="++resource++seantis.reservation.js/utils.js" enabled="True" insert-after="++resource++collective.js.underscore/underscore.min.js"/>
 

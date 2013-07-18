@@ -10,6 +10,48 @@
             elements.toggleClass('show-details', show);
         };
 
+        var show_timetable = function(elements, show) {
+            elements.toggleClass('hidden-timetable', !show);
+        };
+
+        var update_url = function(base, reservation) {
+            // takes the give url and replaces the query parts which may
+            // be changed by the filter block at the top of the report with
+            // the chosen values, producing a new url which will lead to the
+            // same report with the same filter settings
+            var uri = URI(base);
+            var static_params = ['year', 'month', 'uuid'];
+            var dynamic_params = _.difference(
+                _.keys(uri.query(true)), static_params
+            );
+
+            _.each(dynamic_params, function(key) {
+                uri.removeQuery(key);
+            });
+
+            if ($('.controlbox input[name="details"]:checked').val() == 'show') {
+                uri.addQuery('show_details', '1');
+            }
+
+            if ($('.controlbox input[name="timetable"]:checked').val() == 'hide') {
+                uri.addQuery('hide_timetable', '1');
+            }
+
+            _.each(hidden_resources(), function(resource) {
+                uri.addQuery('hide_resource', resource);
+            });
+
+            _.each(hidden_statuses(), function(status) {
+                uri.addQuery('hide_status', status);
+            });
+
+            if (typeof(reservation) != "undefined") {
+                uri.addQuery('reservations', reservation);
+            }
+
+            return uri.normalize().toString();
+        };
+
         var checkbox_values = function(selector, status) {
             var values = _.map($(selector), function(checkbox) {
                 if ($(checkbox).is(status))
@@ -22,8 +64,16 @@
             return checkbox_values('.controlbox .resource-checkbox', ':checked');
         };
 
+        var hidden_resources = function() {
+            return checkbox_values('.controlbox .resource-checkbox', ':not(:checked)');
+        };
+
         var visible_statuses = function() {
             return checkbox_values('.controlbox .status-checkbox', ':checked');
+        };
+
+        var hidden_statuses = function() {
+            return checkbox_values('.controlbox .status-checkbox', ':not(:checked)');
         };
 
         var update_resource_status = function(changed) {
@@ -85,15 +135,16 @@
 
         };
 
-        // Toggle reservation details
-        report.find('.reservation').click(function() {
-            show_details($(this));
-        });
-
         // Toggle all reservation details
         $('.controlbox input[name="details"]').change(function() {
             var show = $(this).val() == 'show';
             show_details(report.find('.reservation'), show);
+        });
+
+        // Toggle all timetables
+        $('.controlbox input[name="timetable"]').change(function() {
+            var show = $(this).val() == 'show';
+            show_timetable(report.find('.timetable-wrapper'), show);
         });
 
         // Toggle specific resources
@@ -106,23 +157,80 @@
             update_resource_status('status');
         });
 
+        // Any changes to the controlbox -> new urls for prev/next
+        $('.controlbox').change(function() {
+            var box = $(this);
+            var links = ['.next-month', '.previous-month'];
+
+            _.each(links, function(link) {
+                var a = box.find(link);
+                a.attr('href', update_url(a.attr('href')));
+            });
+        });
+
         // Hookup approve/decline overlays
-        var force_reload = false;
         var options = {
             config: {
                 onClose: function() {
-                    if (force_reload)
-                        window.location.reload();
+                    var overlay = $(this.getOverlay());
+
+                    if ($(overlay).data('reload')) {
+                        reload_list();
+                    } else if (overlay.data('update')) {
+                        update_reservation(overlay.data('current-reservation'));
+                    }
+
                 },
                 onLoad: function() {
-                    var form = this.getOverlay().find('form');
+                    var overlay = $(this.getOverlay());
 
-                    form.find('#form-buttons-approve, #form-buttons-delete, #form-buttons-deny').click(function() {
-                        force_reload = true;
+                    overlay.data('current-reservation', overlay.find('#form-widgets-reservation').val());
+                    overlay.data('reload', false);
+                    overlay.data('update', false);
+
+                    overlay.find('#form-buttons-approve, #form-buttons-revoke, #form-buttons-deny').click(function() {
+                        overlay.data('reload', true);
+                    });
+
+                    overlay.find('#form-buttons-save').click(function() {
+                        overlay.data('update', true);
                     });
                 }
             }
         };
-        reservation_overlay_init(report.find('.reservation-urls a'), options);
+
+        var inplace_update = function(target, url) {
+            $(target).load(url + ' ' + target + ' > *', function() {
+                init_reservations(this);
+                $(this).find('.timetable-wrapper').timetable();
+                $(this).find('.timetable').removeClass('hidden');
+            });
+        };
+
+        var reload_list = function() {
+            var target = '.monthly-report';
+            var url = update_url(window.location.href);
+            inplace_update(target, url);
+        };
+
+        var update_reservation = function(reservation) {
+            var target = 'div.reservation[data-token="' + reservation + '"]';
+            var url = update_url(window.location.href, reservation);
+            inplace_update(target, url);
+        };
+
+        var init_reservations = function(parent) {
+            var $parent = $(parent);
+            $parent.find('.reservation').click(function() {
+                show_details($(this));
+            });
+            reservation_overlay_init($parent.find('.reservation-urls a'), options);
+
+            update_resource_status('resource');
+            update_resource_status('status');
+        };
+
+        init_reservations(report);
+
     });
 })(jQuery);

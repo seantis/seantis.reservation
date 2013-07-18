@@ -39,6 +39,10 @@ class MonthlyReportView(grok.View, form.ReservationDataView,
         return int(self.request.get('month', date.today().month))
 
     @property
+    def reservations(self):
+        return utils.pack(self.request.get('reservations', []))
+
+    @property
     def sorted_resources(self):
         objs = self.resources
 
@@ -75,7 +79,9 @@ class MonthlyReportView(grok.View, form.ReservationDataView,
     @property
     @view.memoize
     def results(self):
-        return monthly_report(self.year, self.month, self.resources)
+        return monthly_report(
+            self.year, self.month, self.resources, self.reservations or '*'
+        )
 
     def build_url(self, year, month):
         url = self.context.absolute_url()
@@ -85,6 +91,13 @@ class MonthlyReportView(grok.View, form.ReservationDataView,
         url += 'year=' + str(year)
         url += '&month=' + str(month)
         url += self.show_details and '&show_details=1' or ''
+        url += not self.show_timetable and '&hide_timetable=1' or ''
+
+        for status in self.hidden_statuses:
+            url += '&hide_status=' + status
+
+        for uuid in self.hidden_resources:
+            url += '&hide_resource=' + uuid
 
         for uuid in self.uuids:
             url += '&uuid=' + uuid
@@ -142,7 +155,27 @@ class MonthlyReportView(grok.View, form.ReservationDataView,
 
     @property
     def show_details(self):
-        return self.request.get('show_details', None) and True or False
+        # show_details is the query parameter as hiding is the default
+        return True if self.request.get('show_details') else False
+
+    @property
+    def show_timetable(self):
+        # hide_timetable is the query parameter as showing is the default
+        return False if self.request.get('hide_timetable') else True
+
+    @property
+    def hidden_statuses(self):
+        return utils.pack(self.request.get('hide_status', []))
+
+    def show_status(self, status):
+        return status not in self.hidden_statuses
+
+    @property
+    def hidden_resources(self):
+        return utils.pack(self.request.get('hide_resource', []))
+
+    def show_resource(self, uuid):
+        return uuid not in self.hidden_resources
 
     @property
     @view.memoize
@@ -154,7 +187,7 @@ class MonthlyReportView(grok.View, form.ReservationDataView,
         return url.replace(self.context.absolute_url(), 'context')
 
 
-def monthly_report(year, month, resources):
+def monthly_report(year, month, resources, reservations='*'):
 
     schedulers, titles = dict(), dict()
 
@@ -209,6 +242,10 @@ def monthly_report(year, month, resources):
     # using the groups get the relevant reservations
     query = Session.query(Reservation)
     query = query.filter(Reservation.target.in_(groups.keys()))
+
+    if reservations != '*':
+        query = query.filter(Reservation.token.in_(reservations))
+
     query = query.order_by(Reservation.status)
 
     reservations = query.all()
@@ -229,13 +266,19 @@ def monthly_report(year, month, resources):
         start, end = start.strftime('%H:%M'), end.strftime('%H:%M')
 
         context = resources[utils.string_uuid(reservation.resource)]
+
+        leftside_urls = [(
+            _(u'&raquo; Edit Formdata'),
+            reservation_urls.update_all_url(reservation.token, context)
+        )]
+
         if reservation.status == u'approved':
-            urls = [(
+            rightside_urls = [(
                 _(u'Delete'),
-                reservation_urls.remove_all_url(reservation.token, context)
+                reservation_urls.revoke_all_url(reservation.token, context)
             )]
         elif reservation.status == u'pending':
-            urls = [
+            rightside_urls = [
                 (
                     _(u'Approve'),
                     reservation_urls.approve_all_url(
@@ -260,7 +303,8 @@ def monthly_report(year, month, resources):
                 email=reservation.email,
                 data=reservation.data,
                 timespans=json_timespans(start, end),
-                urls=urls,
+                rightside_urls=rightside_urls,
+                leftside_urls=leftside_urls,
                 token=reservation.token,
                 quota=utils.get_reservation_quota_statement(reservation.quota)
             )

@@ -1,3 +1,9 @@
+/*
+
+    Styles for Plonetheme Teamraum
+
+*/
+
 /* navigation */
 .controlbox {
     background-color: #fff;
@@ -181,7 +187,7 @@
 }
 
 .monthly-report .reservation .reservation-urls a {
-    margin-left: 5px;
+    margin-left: 10px;
 }
 
 /* timetables */

@@ -18,6 +18,7 @@ class TestAllocation(IntegrationTestCase):
         allocation.start = datetime(2011, 1, 1, 15)
         allocation.end = datetime(2011, 1, 1, 15, 59)
         allocation.group = str(uuid())
+        allocation.mirror_of = allocation.resource
 
         Session.add(allocation)
 
@@ -78,4 +79,4 @@ class TestAllocation(IntegrationTestCase):
         allocation.start = datetime(2013, 1, 1, 15, 0)
         allocation.end = datetime(2013, 1, 1, 0, 0)
 
-        self.assertFalse(allocation.whole_day)
+        self.assertRaises(AssertionError, lambda: allocation.whole_day)

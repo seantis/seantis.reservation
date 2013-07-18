@@ -1,3 +1,6 @@
+from logging import getLogger
+log = getLogger('seantis.reservation')
+
 import json
 import pytz
 import pkg_resources
@@ -10,14 +13,16 @@ from Acquisition import aq_inner
 from five import grok
 from plone.dexterity.content import Container
 from plone.uuid.interfaces import IUUID
+from plone.app.linkintegrity.interfaces import ILinkIntegrityInfo
 from plone.memoize import view
 from zope.component import queryAdapter
 from zope.event import notify
 from zope.interface import implements
+from zope.lifecycleevent.interfaces import IObjectRemovedEvent
 
 from seantis.reservation import exposure
 from seantis.reservation import utils
-from seantis.reservation.db import Scheduler
+from seantis.reservation import db
 from seantis.reservation import _
 from seantis.reservation.events import ResourceViewedEvent
 from seantis.reservation.timeframe import timeframes_by_context
@@ -54,10 +59,41 @@ class Resource(Container):
         uuid = utils.string_uuid(self.uuid())
         is_exposed = exposure.for_allocations(self, [uuid])
 
-        return Scheduler(self.uuid(), is_exposed=is_exposed, language=language)
+        return db.Scheduler(
+            self.uuid(), is_exposed=is_exposed, language=language
+        )
 
     def timeframes(self):
         return timeframes_by_context(self)
+
+
+@grok.subscribe(IResourceBase, IObjectRemovedEvent)
+def on_removed_resource(resource, event):
+    request = getattr(resource, 'REQUEST', None)
+
+    if request is None:
+        return
+
+    info = ILinkIntegrityInfo(request)
+
+    if info.integrityCheckingEnabled():
+        if info.getIntegrityBreaches():
+            return
+
+        # info.isConfirmedItem simply does not work
+        # it is really awful to have to deal with these internals
+
+        if 'form.submitted' not in request:
+            return
+
+        if 'form.button.Cancel' in request:
+            return
+
+        if getattr(request, 'link_integrity_events_counter', 0) != 2:
+            return
+
+    log.info('extinguising resource {}'.format(resource.uuid()))
+    db.extinguish_resource(resource.uuid())
 
 
 class View(grok.View):

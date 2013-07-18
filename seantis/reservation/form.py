@@ -30,17 +30,22 @@ def extract_action_data(fn):
     extract the data if possible or return before calling the decorated
     function.
 
+    The extracted data and the errors are respectively put into
+
+    - self.extracted_data
+    - self.extracted_errors
+
     """
 
     @wraps(fn)
     def wrapper(self, action):
-        data, errors = self.extractData()
+        self.extracted_data, self.extracted_errors = self.extractData()
 
-        if errors:
+        if self.extracted_errors:
             self.status = self.formErrorsMessage
             return
 
-        return fn(self, data)
+        return fn(self, self.extracted_data)
 
     return wrapper
 
@@ -102,6 +107,11 @@ class ResourceBaseForm(GroupForm, form.Form):
         for f in self.disabled_fields:
             if f in self.widgets:
                 self.widgets[f].readonly = 'readonly'
+
+        for group in self.groups:
+            for f in self.disabled_fields:
+                if f in group.widgets:
+                    group.widgets[f].readonly = 'readonly'
 
     def get_field(self, key):
         """ Returns a field either from self.fields or from any group. """
@@ -383,10 +393,7 @@ class ResourceParameterView(object):
     @property
     @view.memoize
     def uuids(self):
-        uuids = self.request.get('uuid', [])
-
-        if not hasattr(uuids, '__iter__'):
-            uuids = [uuids]
+        uuids = utils.pack(self.request.get('uuid', []))
 
         if IResourceBase.providedBy(self.context):
             uuids.append(self.context.uuid())

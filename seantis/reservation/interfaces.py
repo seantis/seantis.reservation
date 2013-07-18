@@ -95,9 +95,12 @@ def form_interfaces(context):
     of interfaces which may be used as sub-forms in a resource object.
 
     """
-    behavior = 'seantis.reservation.interfaces.IReservationFormSet'
+    behaviors = set((
+        'seantis.reservation.interfaces.IReservationFormSet',
+        'seantis.reservation.interfaces.IReservationManagerFormSet'
+    ))
     ftis = [
-        fti for fti in getallutils(IDexterityFTI) if behavior in fti.behaviors
+        fti for fti in getallutils(IDexterityFTI) if behaviors & set(fti.behaviors)
     ]
     site = getSite()
 
@@ -257,6 +260,10 @@ class OverviewletManager(grok.ViewletManager):
 
 class IReservationFormSet(Interface):
     """ Marks interface as usable for sub-forms in a resource object. """
+
+
+class IReservationManagerFormSet(IReservationFormSet):
+    """ Same as IReservationFormSet but only available to managers. """
 
 
 class IResourceAllocationDefaults(form.Schema):
@@ -750,6 +757,16 @@ class IReservation(Interface):
     )
 
 
+class IReservationIdForm(Interface):
+    """ Describes a form with a hidden reservation-id field. Use with
+    seantis.reservation.reserve.ReservationIdForm. """
+
+    reservation = schema.Text(
+        title=_(u'Reservation'),
+        required=False
+    )
+
+
 class IGroupReservation(Interface):
     """ A reservation of an allocation group. """
 
@@ -770,13 +787,8 @@ class IGroupReservation(Interface):
     )
 
 
-class IRevokeReservation(Interface):
+class IRevokeReservation(IReservationIdForm):
     """ For the reservation revocation form. """
-
-    reservation = schema.Text(
-        title=_(u'Reservation'),
-        required=False
-    )
 
     reason = schema.Text(
         title=_(u'Reason'),
@@ -785,15 +797,6 @@ class IRevokeReservation(Interface):
             u"e.g. 'Your reservation has to be cancelled because the lecturer "
             u"is ill'."
         ),
-        required=False
-    )
-
-
-class IApproveReservation(Interface):
-    """ For the reservation approval form. """
-
-    reservation = schema.Text(
-        title=_(u'Reservation'),
         required=False
     )
 

@@ -3,23 +3,23 @@ import os
 
 name = "seantis.reservation"
 description = "Plone addon to reserve stuff in a calendar."
-version = '1.0.4'
+version = '1.0.7'
 
 zug_require = [
     'ftw.contentmenu',
     'izug.basetheme',
 ]
-
+teamraum_require = [
+    'plonetheme.teamraum'
+]
 tests_require = [
     'collective.betterbrowser [pyquery]',
     'collective.testcaselayer',
     'plone.app.testing',
 ]
-
 multilingual_require = [
     'plone.app.multilingual [dexterity]',
 ]
-
 postgres_require = [
     'psycopg2',
 ]
@@ -53,42 +53,44 @@ setup(name=name, version=version, description=description,
       include_package_data=True,
       zip_safe=False,
       install_requires=[
+          'Plone>=4.3',
+          'SQLAlchemy>=0.7.3',
           'alembic>=0.5.0',
           'collective.autopermission',
           'collective.js.fullcalendar>=1.6.1',
+          'collective.js.fullcalendar>=1.6.1',
+          'collective.js.jqueryui',
           'collective.js.jqueryui',
           'collective.js.underscore',
+          'collective.js.underscore',
           'isodate',
+          'isodate',
+          'lxml',
+          'mock',
           'mock',
           'ordereddict',
           'plone.app.dexterity [grok]',
           'plone.app.referenceablebehavior',
+          'plone.app.referenceablebehavior',
           'plone.behavior',
           'plone.directives.form',
-          'plone.app.referenceablebehavior',
           'plone.formwidget.datetime [z3cform]',
           'plone.formwidget.recurrence [z3cform]',
-          'collective.js.jqueryui',
-          'collective.js.underscore',
-          'collective.js.fullcalendar>=1.6.1',
           'plone.uuid>=1.0.2',
-          'Plone>=4.3',
           'profilehooks',
           'pytz',
           'setuptools',
-          'SQLAlchemy>=0.7.3',
           'tablib',
-          'mock',
-          'isodate',
-          'lxml',
           'xlwt',
           'zope.sqlalchemy',
       ],
-      extras_require=dict(zug=zug_require,
-                          tests=tests_require,
-                          multilingual=multilingual_require,
-                          postgres=postgres_require,
-                          ),
+      extras_require=dict(
+          zug=zug_require,
+          tests=tests_require,
+          teamraum=teamraum_require,
+          multilingual=multilingual_require,
+          postgres=postgres_require
+      ),
       entry_points="""
       # -*- Entry points: -*-
 

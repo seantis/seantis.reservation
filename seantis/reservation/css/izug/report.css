@@ -216,7 +216,7 @@
 
 /* reservation urls */
 
-.monthly-report .reservation .reservation-urls {
+.monthly-report .reservation .rightcolumn .reservation-urls {
     position: absolute;
     bottom: 0;
     right: 0;
@@ -231,7 +231,7 @@
 
 .monthly-report .day .timetable div.occupied {
     border-radius: 0;
-    line-height: 16x;
+    line-height: 16px;
 }
 
 .approved .timespan div.occupied {

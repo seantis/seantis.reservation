@@ -245,6 +245,22 @@ def remove_expired_reservation_sessions(expiration_date=None):
     return expired_sessions
 
 
+@serialized
+def extinguish_resource(resource_uuid):
+    """ WARNING:
+    Completely removes any trace of the given resource uuid. That means
+    all reservations, reserved slots and allocations!
+
+    """
+
+    # set the language as this may be called when deleting plone which
+    # will render all plone utils calls, like portal_languages, useless
+    scheduler = Scheduler(resource_uuid, language='en')
+    scheduler.managed_reservations().delete('fetch')
+    scheduler.managed_reserved_slots().delete('fetch')
+    scheduler.managed_allocations().delete('fetch')
+
+
 class Scheduler(object):
     """Used to manage a resource as well as all connected mirrors.
 
@@ -286,6 +302,32 @@ class Scheduler(object):
             self.language = language
         else:
             self.language = utils.get_current_site_language()
+
+    # using the managed_* functions as a starting point for queries is a good
+    # idea because the querie's scope will always be correctly limited
+
+    def managed_reservations(self):
+        """ The reservations managed by this scheduler / resource. """
+        query = Session.query(Reservation)
+        query = query.filter(Reservation.resource == self.uuid)
+
+        return query
+
+    def managed_allocations(self):
+        """ The allocations managed by this scheduler / resource. """
+        query = Session.query(Allocation)
+        query = query.filter(Allocation.mirror_of == self.uuid)
+
+        return query
+
+    def managed_reserved_slots(self):
+        """ The reserved_slots managed by this scheduler / resource. """
+        uuids = self.managed_allocations().with_entities(Allocation.resource)
+
+        query = Session.query(ReservedSlot)
+        query = query.filter(ReservedSlot.resource.in_(uuids))
+
+        return query
 
     @serialized
     def allocate(self, dates, raster=15, quota=None, partly_available=False,
@@ -347,10 +389,7 @@ class Scheduler(object):
         for start, end in dates:
             start, end = rasterize_span(start, end, raster)
 
-            query = all_allocations_in_range(start, end)
-            query = query.filter(Allocation.resource == self.uuid)
-
-            existing = query.first()
+            existing = self.allocations_in_range(start, end).first()
             if existing:
                 raise OverlappingAllocationError(start, end, existing)
 
@@ -531,29 +570,49 @@ class Scheduler(object):
         return reordered
 
     def allocation_by_id(self, id):
-        query = Session.query(Allocation)
+        query = self.managed_allocations()
         query = query.filter(Allocation.mirror_of == self.uuid)
         query = query.filter(Allocation.id == id)
         return query.one()
 
-    def allocations_by_group(self, group):
-        query = Session.query(Allocation)
+    def allocations_by_group(self, group, masters_only=True):
+        query = self.managed_allocations()
         query = query.filter(Allocation.group == group)
-        query = query.filter(Allocation.resource == self.uuid)
+
+        if masters_only:
+            query = query.filter(Allocation.resource == self.uuid)
+
         return query
 
     def allocations_by_recurrence(self, recurrence_id):
+        #XXX self.managed_allocations() ?
         query = Session.query(Allocation)
         query = query.filter_by(recurrence_id=recurrence_id)
         return query
 
-    def allocations_in_range(self, start, end):
-        query = all_allocations_in_range(start, end)
-        query = query.filter(Allocation.resource == self.uuid)
+    def allocations_in_range(self, start, end, masters_only=True):
+        query = self.managed_allocations()
+        query = query.filter(
+            or_(
+                and_(
+                    Allocation._start <= start,
+                    start <= Allocation._end
+                ),
+                and_(
+                    start <= Allocation._start,
+                    Allocation._start <= end
+                )
+            )
+        )
+
+        if masters_only:
+            query = query.filter(Allocation.resource == self.uuid)
+
         return query
 
     def allocations_by_reservation(self, reservation_token):
-        query = Session.query(Allocation).join(ReservedSlot)
+        query = self.managed_allocations()
+        query = query.join(ReservedSlot)
         query = query.filter(
             ReservedSlot.reservation_token == reservation_token
         )
@@ -567,11 +626,8 @@ class Scheduler(object):
         return [s for s in master.siblings() if not s.is_master]
 
     def dates_by_group(self, group):
-        query = Session.query(Allocation._start, Allocation._end)
-        query = query.filter(Allocation.group == group)
-
-        # masters only to avoid duplicate dates
-        query = query.filter(Allocation.resource == Allocation.mirror_of)
+        query = self.allocations_by_group(group)
+        query = query.with_entities(Allocation._start, Allocation._end)
 
         return query.all()
 
@@ -671,18 +727,9 @@ class Scheduler(object):
     @serialized
     def remove_allocation(self, id=None, group=None, recurrence_id=None):
         if recurrence_id:
-            query = Session.query(Allocation)
-            query = query.filter_by(recurrence_id=recurrence_id)
-            allocations = query.all()
+            allocations = self.allocations_by_recurrence().all()
         elif group:
-            query = Session.query(Allocation)
-            query = query.filter(Allocation.group == group)
-            query = query.filter(Allocation.mirror_of == self.uuid)
-            allocations = query.all()
-        elif id:
-            master = self.allocation_by_id(id)
-            allocations = [master]
-            allocations.extend(self.allocation_mirrors_by_master(master))
+            allocations = self.allocations_by_group(group, masters_only=False)
         else:
             raise NotImplementedError
 
@@ -767,6 +814,10 @@ class Scheduler(object):
                 # waitinglist and does not yet need a spot
                 if not allocation.approve_manually:
                     if not self.find_spot(allocation, start, end):
+                        raise AlreadyReservedError
+
+                    free = self.free_allocations_count(allocation, start, end)
+                    if free < quota:
                         raise AlreadyReservedError
 
                 if allocation.reservation_quota_limit > 0:
@@ -943,6 +994,12 @@ class Scheduler(object):
         self.reservation_by_token(token).delete()
 
     @serialized
+    def update_reservation_data(self, token, data):
+
+        reservation = self.reservation_by_token(token).one()
+        reservation.data = data
+
+    @serialized
     def confirm_reservations_for_session(self, session_id, token=None):
         """ Confirms all reservations of the given session id. Optionally
         confirms only the reservations with the given token. All if None.
@@ -1024,6 +1081,24 @@ class Scheduler(object):
             else:
                 return None
 
+    def free_allocations_count(self, master_allocation, start, end):
+        """ Returns the number of free allocations between master_allocation
+        and it's mirrors. """
+
+        free_allocations = 0
+
+        if master_allocation.is_available(start, end):
+            free_allocations += 1
+
+        if master_allocation.quota == 1:
+            return free_allocations
+
+        for mirror in self.allocation_mirrors_by_master(master_allocation):
+            if mirror.is_available(start, end):
+                free_allocations += 1
+
+        return free_allocations
+
     def reservation_targets(self, start, end):
         """ Returns a list of allocations that are free within start and end.
         These allocations may come from the master or any of the mirrors.
@@ -1047,14 +1122,6 @@ class Scheduler(object):
             targets.append(found)
 
         return targets
-
-    def managed_reserved_slots(self):
-        """Returns the reserved slots which are managed by this scheduler."""
-        query = Session.query(ReservedSlot)
-        query = query.join(Allocation)
-        query = query.filter(Allocation.mirror_of == self.uuid)
-
-        return query
 
     def reserved_slots_by_reservation(self, reservation_token):
         """Returns all reserved slots of the given reservation."""
@@ -1098,12 +1165,6 @@ class Scheduler(object):
 
         query = self.managed_reserved_slots()
         query = query.filter(ReservedSlot.allocation_id.in_(ids))
-
-        return query
-
-    def managed_reservations(self):
-        query = Session.query(Reservation)
-        query = query.filter(Reservation.resource == self.uuid)
 
         return query
 

@@ -11,6 +11,7 @@ from five import grok
 from plone.dexterity.interfaces import IDexterityFTI
 from zope.component import queryUtility
 from zope.interface import Interface
+from zope.security import checkPermission
 
 from z3c.form import field
 from z3c.form import button
@@ -26,7 +27,7 @@ from seantis.reservation.interfaces import (
     IReservation,
     IGroupReservation,
     IRevokeReservation,
-    IApproveReservation,
+    IReservationIdForm
 )
 
 from seantis.reservation.error import DirtyReadOnlySession
@@ -48,7 +49,7 @@ from seantis.reservation.error import NoResultFound
 class ReservationUrls(object):
     """ Mixin class to create admin URLs for a specific reservation. """
 
-    def remove_all_url(self, token, context=None):
+    def revoke_all_url(self, token, context=None):
         context = context or self.context
         base = context.absolute_url()
         return base + u'/revoke-reservation?reservation=%s' % token
@@ -63,6 +64,11 @@ class ReservationUrls(object):
         base = context.absolute_url()
         return base + u'/deny-reservation?reservation=%s' % token
 
+    def update_all_url(self, token, context=None):
+        context = context or self.context
+        base = context.absolute_url()
+        return base + u'/update-reservation-data?reservation=%s' % token
+
 
 class ReservationSchemata(object):
     """ Mixin to use with plone.autoform and IResourceBase which makes the
@@ -74,6 +80,15 @@ class ReservationSchemata(object):
     """
 
     @property
+    def may_view_manager_sets(self):
+        manager_permission = 'seantis.reservation.EditReservations'
+        return checkPermission(manager_permission, self.context)
+
+    def is_manager_set(self, fti):
+        behavior = 'seantis.reservation.interfaces.IReservationManagerFormSet'
+        return behavior in fti.behaviors
+
+    @property
     def additionalSchemata(self):
         scs = []
         self.fti = dict()
@@ -81,6 +96,9 @@ class ReservationSchemata(object):
         for ptype in self.context.formsets:
             fti = queryUtility(IDexterityFTI, name=ptype)
             if fti:
+                if self.is_manager_set(fti) and not self.may_view_manager_sets:
+                    continue  # do not show, but fill with defaults later
+
                 schema = fti.lookupSchema()
                 title = translate(fti.Title(), context=site.REQUEST)
                 scs.append((ptype, title, schema))
@@ -109,7 +127,18 @@ class SessionFormdataMixin(ReservationSchemata):
 
         return existing
 
-    def additional_data(self, form_data=None):
+    @property
+    def manager_ftis(self):
+        ftis = {}
+
+        for ptype in self.context.formsets:
+            fti = queryUtility(IDexterityFTI, name=ptype)
+            if fti and self.is_manager_set(fti):
+                ftis[ptype] = (fti.title, fti.lookupSchema())
+
+        return ftis
+
+    def additional_data(self, form_data=None, add_manager_defaults=False):
 
         if not form_data:
             data = plone_session.get_additional_data(self.context)
@@ -125,6 +154,33 @@ class SessionFormdataMixin(ReservationSchemata):
             )
 
             plone_session.set_additional_data(self.context, data)
+
+        # the default values of manager forms are added to users without
+        # the permission right before saving
+        if add_manager_defaults and not self.may_view_manager_sets:
+            defaults = {}
+            manager_ftis = self.manager_ftis
+
+            for key, info in manager_ftis.items():
+                for name, f in field.Fields(info[1]).items():
+                    if f.field.default is not None:
+                        fieldkey = '{}.{}'.format(key, name)
+                        defaults[fieldkey] = f.field.default
+
+            data = self.merge_formdata(
+                data, utils.additional_data_dictionary(defaults, manager_ftis)
+            )
+
+        # on the other hand, if the user is not allowed, the data is cleared,
+        # just in case (really more of a dev-environment problem, but it
+        # doesn't hurt anyway)
+        if data:
+            if not add_manager_defaults and not self.may_view_manager_sets:
+                manager_ftis = self.manager_ftis
+
+                for form in data.keys():
+                    if form in manager_ftis:
+                        del data[form]
 
         return data
 
@@ -228,7 +284,7 @@ class ReservationBaseForm(ResourceBaseForm):
         assert not (start and end and group)
 
         email = self.email(data)
-        additional_data = self.additional_data(data)
+        additional_data = self.additional_data(data, add_manager_defaults=True)
         session_id = self.session_id()
 
         # only store forms defined in the formsets list
@@ -401,6 +457,7 @@ class ReservationForm(
             elif field_type is Choice:
                 field.widgetFactory = RadioFieldWidget
 
+
 class GroupReservationForm(
         ReservationBaseForm,
         AllocationGroupView,
@@ -520,33 +577,38 @@ class YourReservationsViewlet(grok.Viewlet, YourReservationsData):
         return self.context.absolute_url() + '/your-reservations'
 
 
-class ReservationDecisionForm(ResourceBaseForm, ReservationListView,
+class ReservationIdForm(ResourceBaseForm):
+    """ Describes a form with a hidden reservation field and the ability to
+    set the reservation using a query parameter:
+
+    example-form?reservation=298c6de470f94c64928c14246f3ee9e5
+
+    """
+
+    grok.baseclass()
+    fields = field.Fields(IReservationIdForm)
+    hidden_fields = ('reservation', )
+    extracted_data = {}
+
+    @property
+    def reservation(self):
+        return self.request.get(
+            'reservation', self.extracted_data.get('reservation')
+        )
+
+    def defaults(self):
+        return dict(reservation=self.reservation)
+
+
+class ReservationDecisionForm(ReservationIdForm, ReservationListView,
                               ReservationUrls):
     """ Base class for admin's approval / denial forms. """
 
     grok.baseclass()
 
-    fields = field.Fields(IApproveReservation)
-
-    hidden_fields = ['reservation']
-    ignore_requirements = True
-
     template = ViewPageTemplateFile('templates/decide_reservation.pt')
 
     show_links = False
-    data = None
-
-    @property
-    def reservation(self):
-        data = self.data
-        return self.request.get(
-            'reservation', (data and data['reservation'] or None)
-        )
-
-    def defaults(self):
-        return dict(
-            reservation=unicode(self.reservation)
-        )
 
 
 class ReservationApprovalForm(ReservationDecisionForm):
@@ -570,8 +632,6 @@ class ReservationApprovalForm(ReservationDecisionForm):
     @button.buttonAndHandler(_(u'Approve'))
     @extract_action_data
     def approve(self, data):
-
-        self.data = data
 
         def approve():
             self.scheduler.approve_reservation(data['reservation'])
@@ -606,8 +666,6 @@ class ReservationDenialForm(ReservationDecisionForm):
     @extract_action_data
     def deny(self, data):
 
-        self.data = data
-
         def deny():
             self.scheduler.deny_reservation(data['reservation'])
             self.flash(_(u'Reservation denied'))
@@ -620,7 +678,7 @@ class ReservationDenialForm(ReservationDecisionForm):
 
 
 class ReservationRevocationForm(
-    ResourceBaseForm,
+    ReservationIdForm,
     ReservationListView,
     ReservationUrls
 ):
@@ -637,17 +695,7 @@ class ReservationRevocationForm(
 
     label = _(u'Revoke reservation')
 
-    hidden_fields = ['reservation']
-    ignore_requirements = True
-
     show_links = False
-
-    @property
-    def reservation(self):
-        return self.request.get('reservation')
-
-    def defaults(self):
-        return dict(reservation=unicode(self.reservation))
 
     @property
     def hint(self):
@@ -696,3 +744,95 @@ class ReservationList(grok.View, ReservationListView, ReservationUrls):
             return unicode(self.request['group'].decode('utf-8'))
         else:
             return u''
+
+
+class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
+
+    permission = "seantis.reservation.EditReservations"
+
+    grok.name('update-reservation-data')
+    grok.require(permission)
+
+    grok.context(IResourceBase)
+
+    context_buttons = ('save', )
+    extracted_errors = []
+
+    @property
+    def label(self):
+        if self.context.formsets:
+            return _(u'Edit Formdata')
+        else:
+            return _(u'No Formdata to edit')
+
+    def get_reservation_data(self):
+        if not self.reservation:
+            return {}
+
+        if not hasattr(self, 'reservation_data'):
+            try:
+                query = self.scheduler.reservation_by_token(self.reservation)
+                self.reservation_data = query.one().data
+            except DirtyReadOnlySession:
+                self.reservation_data = {}
+
+        return self.reservation_data
+
+    def defaults(self):
+        defaults = super(ReservationDataEditForm, self).defaults()
+
+        if not self.context.formsets:
+            return defaults
+
+        data = self.get_reservation_data()
+
+        errors = [e.widget.__name__ for e in self.extracted_errors]
+
+        for form in data:
+
+            for value in data[form]['values']:
+                if isinstance(value['value'], basestring):
+                    decoded = utils.userformdata_decode(value['value'])
+                    fieldvalue = decoded or value['value']
+                else:
+                    fieldvalue = value['value']
+
+                fieldkey = '{}.{}'.format(form, value['key'])
+                if fieldkey in self.extracted_data or fieldkey in errors:
+                    continue
+                else:
+                    defaults[fieldkey] = fieldvalue
+
+        return defaults
+
+    def customize_fields(self, fields):
+
+        for field in fields.values():
+
+            field_type = type(field.field)
+
+            if field_type is List or field_type is Set:
+                field.widgetFactory = CheckBoxFieldWidget
+
+            elif field_type is Choice:
+                field.widgetFactory = RadioFieldWidget
+
+    @button.buttonAndHandler(_(u'Save'))
+    @extract_action_data
+    def save(self, data):
+
+        self.additional_data = utils.additional_data_dictionary(data, self.fti)
+
+        def save():
+            self.scheduler.update_reservation_data(
+                self.reservation, self.additional_data
+            )
+            self.flash(_(u'Formdata updated'))
+
+        utils.handle_action(
+            action=save, success=self.redirect_to_context
+        )
+
+    @button.buttonAndHandler(_(u'Cancel'))
+    def cancel(self, action):
+        self.redirect_to_context()

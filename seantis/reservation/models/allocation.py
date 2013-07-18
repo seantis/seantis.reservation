@@ -26,13 +26,29 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
     """Describes a timespan within which one or many timeslots can be
     reserved.
 
+    There's an important concept to understand before working with allocations.
+    The resource uuid of an alloction is not always pointing to the actual
+    resource.
+
+    A resource may in fact be a real resource, or an imaginary resource with
+    a uuid derived from the real resource. This is a somewhat historical
+    artifact.
+
+    If you need to know which allocations belong to a real resource, the
+    mirror_of field is what's relevant. The originally created allocation
+    with the real_resource is also called the master-allocation and it is
+    the one allocation with mirror_of and resource being equal.
+
+    When in doubt look at the managed_* functions of seantis.reservation.db's
+    Scheduler class.
+
     """
 
     __tablename__ = 'allocations'
 
     id = Column(types.Integer(), primary_key=True, autoincrement=True)
     resource = Column(customtypes.GUID(), nullable=False)
-    mirror_of = Column(customtypes.GUID())
+    mirror_of = Column(customtypes.GUID(), nullable=False)
     group = Column(customtypes.GUID(), nullable=False)
     quota = Column(types.Integer(), default=1)
     partly_available = Column(types.Boolean(), default=False)
@@ -133,7 +149,7 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
         s, e = self.display_start, self.display_end
         assert s != e  # this can never be, except when caused by cosmic rays
 
-        return (s.hour, s.minute, e.hour, e.minute) == (0, 0, 0, 0)
+        return utils.whole_day(s, e)
 
     def overlaps(self, start, end):
         """ Returns true if the current timespan overlaps with the given

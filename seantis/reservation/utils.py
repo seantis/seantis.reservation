@@ -108,7 +108,7 @@ def additional_data_dictionary(data, fti):
     """
 
     result = dict()
-    used_data = dict([(k, v) for k, v in data.items() if v])
+    used_data = dict([(k, v) for k, v in data.items() if v is not None])
 
     def values(iface, ifacekey):
         for key, value in used_data.items():
@@ -499,15 +499,24 @@ def has_resource_translations_enabled():
     return iface_name in fti.behaviors
 
 
-def get_resource_by_uuid(uuid):
+def get_resource_by_uuid(
+    uuid, ensure_portal_type='seantis.reservation.resource'
+):
     """Returns the zodb object with the given uuid."""
 
     catalog = getToolByName(getSite(), 'portal_catalog')
+    kwargs = {}
 
     if HAS_MULTILINGUAL and has_resource_translations_enabled():
-        results = catalog(TranslationGroup=uuid_query(uuid))
+        kwargs['TranslationGroup'] = uuid_query(uuid)
     else:
-        results = catalog(UID=uuid_query(uuid))
+        kwargs['UID'] = uuid_query(uuid)
+
+    if ensure_portal_type:
+        kwargs['portal_type'] = ensure_portal_type
+
+    results = catalog(**kwargs)
+
     return len(results) == 1 and results[0] or None
 
 
@@ -693,6 +702,11 @@ def flatten(l):
                 yield sub
         else:
             yield el
+
+
+def pack(v):
+    """Puts v in a list if not already an iterator."""
+    return [v] if not hasattr(v, '__iter__') else v
 
 
 def pairs(l):
@@ -914,6 +928,31 @@ def weekdayname_abbr(context, request, day):
 
 def shift_day(stdday):
     return abs(0 - (stdday + 1) % 7)
+
+
+def whole_day(start, end):
+    """Returns true if the given start, end range should be considered
+    a whole-day range. This is so if the start time is 0:00:00 and the end
+    time either 0:59:59 or 0:00:00 and if there is at least a diff
+    erence of 23h 59m 59s / 86399 seconds between them.
+
+    This is relevant for the calendar-display for now. This might very well be
+    replaced again in the future when we introduce timezones.
+
+    """
+
+    assert start <= end, "The end needs to be equal or greater than the start"
+
+    if (start.hour, start.minute, start.second) != (0, 0, 0):
+        return False
+
+    if (end.hour, end.minute, end.second) not in ((0, 0, 0), (23, 59, 59)):
+        return False
+
+    if (end - start).total_seconds() < 86399:
+        return False
+
+    return True
 
 
 def context_path(context):

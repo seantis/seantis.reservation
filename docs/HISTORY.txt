@@ -1,5 +1,67 @@
+
 Changelog
 =========
+
+1.0.7
+-----
+
+- Removes potentially dangerous orphan removal from settings panel.
+
+- All reservation records stored in Postgres belonging to a certain resource
+  are now wiped if said resource is deleted.
+
+  The exception is the removal of a plone site through the ZMI. Though it is
+  possible to intercept that event it is not entirely save to discard all
+  resources that are part of plone site being deleted. It is namely possible
+  that those have the same uuid as another existing resource of another site.
+
+  To clean these kind of data zombies it might be good to create a tool with
+  which reservations before a given date are wiped or archived.
+
+  This is however not a priority as it is recommended to have a separate
+  database for each site anyway and until there's a high volume reservations
+  site in existance this won't ever be a problem. Postgres can handle unused
+  records.
+
+- Stops allocation.mirror_of from potentially being NULL.
+
+- Fixes a bug where reservations could be added to waitinglists on allocations
+  that were not meant to have a waitinglist.
+
+- Fixes typo in German translation
+
+1.0.6
+-----
+
+- Adds the ability to edit the formdata of a reservation through the management
+  or the report interface
+
+- Adds the ability to define Manager Formsests which are the same as Default
+  Formsets but can only be edited by someone with the appropriate permission.
+
+  With these formsets and the ability to edit the formdata it's possible to
+  create simple ways to organize reservations. A manager formset could be added
+  with a checkbox "paid" for example, along a normal formset with the address.
+
+  Each reservation will then have an address filled by the user and a "paid"-checkbox.
+  The reservee cannot see or change this checkbox, but the manager can do so
+  once the reservee has actually paid whatever he was supposed to.
+
+  The initial values of those manager-only fields are defined throught the
+  Dexterity-Schema editor.
+
+- No longer compresses URI.js, fixing javascript errors in the browser
+- Fixes missing translations in certain cases (locale.js is now more robust)
+- Uses ajax on the monthly report to load reservation changes
+
+1.0.5
+-----
+
+- Adds whole-day flag to reservations export
+- Adds quota to reservations export
+- Adds the ability to show/hide the timetable in the monthly report
+- Keep filter state between months in monthly report
+- Adds basic support for plonetheme.teamraum
 
 1.0.4
 -----
@@ -18,7 +80,7 @@ Changelog
 1.0.2
 -----
 
-- Fixes crash in JSON Encoder 
+- Fixes crash in JSON Encoder
 
 1.0.1
 -----
@@ -26,6 +88,6 @@ Changelog
 - Fixes some tiny issues
 
 1.0
--------------------
+---
 
 - Initial release

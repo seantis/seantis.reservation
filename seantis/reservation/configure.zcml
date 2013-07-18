@@ -36,6 +36,11 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
 />
 
 <permission
+    id="seantis.reservation.EditReservations"
+    title="seantis.reservation: Edit Reservations"
+/>
+
+<permission
     id="seantis.reservation.ViewHiddenAllocations"
     title="seantis.reservation: View Hidden Allocations"
 />
@@ -78,6 +83,14 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
     provides="Products.GenericSetup.interfaces.EXTENSION"
 />
 
+<genericsetup:registerProfile
+    name="teamraum"
+    title="Seantis Reservation - for plonetheme.teamraum"
+    description="Plonetheme Teamraum Profile for Seantis Reservation"
+    directory="profiles/teamraum"
+    provides="Products.GenericSetup.interfaces.EXTENSION"
+/>
+
 <!-- Upgrades -->
 <include file="upgrades.zcml" />
 
@@ -103,6 +116,12 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
     title="Reservation Formset"
     description="Marks types as reservation form interfaces"
     provides=".interfaces.IReservationFormSet"
+    />
+
+<plone:behavior
+    title="Reservation Manager Formset"
+    description="Marks types as reservation form interfaces for managers"
+    provides=".interfaces.IReservationManagerFormSet"
     />
     
 <!-- Email field registration -->

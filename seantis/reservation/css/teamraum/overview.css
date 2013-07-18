@@ -1,0 +1,189 @@
+/*
+
+    Styles for Plonetheme Teamraum
+
+*/
+
+/* resource listing overview*/
+.resource-listing {
+    float: left;
+    margin-bottom: 90px;
+    display: block;
+    width: 55%;
+}
+
+.resource-listing-overview {
+    float: right;
+    margin-top: -39px; 
+    width: 45%;
+    max-width: 500px;
+}
+
+.resource-listing-overview h2 {
+    font-size: 1.4em;
+}
+
+@media all and (max-width: 750px) {
+     .resource-listing, .resource-listing-overview {
+          float: none;
+          margin-top: auto;
+          margin-bottom: 20px;
+          width: 100%;
+     }
+}
+
+/* overview blocks */
+.overviewlet {
+    background-color: #f9f9f9;
+    padding: 10px;
+    margin: 12px 0;
+    border: 1px solid #f3f3f3;
+}
+
+.overviewlet h2 {
+    font-weight: normal;
+    font-size: 1em !important;
+    margin-bottom: 8px;
+    margin-top: 0;
+}
+
+.overviewlet .resourceTitle {
+    display: inline;
+    font-size: 13px !important;
+}
+
+/* overview map */
+#seantis-overview-calendar h2 {
+    font-weight: normal;
+    color: #444;
+    font-size: 1.3em;
+}
+
+/* overview control */
+.timeframes-control, .templates-control {
+    font-size: 12px;
+    margin-bottom: 10px;   
+}
+
+.templates-control a,
+.timeframes-control a {
+    margin-right: 3px;
+}
+
+.templates-global-control:before,
+.timeframes-global-control:before{
+    content: '+';
+    margin-right: 5px;
+}
+
+/* overview utils */
+.overview-utils ul {
+    margin-left: 0 !important;   
+}
+.overview-utils ul li {
+    list-style-type: none;
+    font-size: 12px;
+}
+
+/* resource listing */
+.resource-listing-entry {
+    padding: 10px;
+    margin: auto 10px auto -10px;
+    border: 1px solid transparent;
+    
+}
+
+.resource-listing-entry.groupSelection,
+.resource-listing-entry:hover {
+    -webkit-box-shadow: none !important;
+       -moz-box-shadow: none !important;
+            box-shadow: none !important;
+    
+    background-color: #fff6d2 !important; 
+    border-color: #ffeea9;
+    
+}
+
+.resource-listing-entry * {
+    margin: 0;   
+}
+
+.resource-listing-entry p {
+   color: #333;
+   max-width: 500px;
+   margin-bottom: 0 !important;
+}
+
+.template-resource_listing .documentDescription {
+   margin: 5px 0 15px 0;
+   font-weight: normal   
+}
+
+/* group selection */
+#seantis-overview-calendar td.groupSelection {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+
+    /* if the box shadow is reduced to none here, mozilla's rendering
+    gets flickery and slow. Reducing the width of the shadow helps and
+    accomplishes the same effect */
+    -moz-box-shadow: 0 0 0 0 white;
+    opacity: 1.0;
+    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+    filter: alpha(opacity=100);
+    zoom: 1;
+    
+    position: relative;
+    z-index: 1000;
+}
+
+#seantis-overview-calendar .fc-widget-content, 
+#seantis-overview-calendar td.fc-widget-content .fc-event-skin, 
+#seantis-overview-calendar td.fc-widget-content .fc-event-head {
+    border: none;
+    opacity: 0.6;
+    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
+    filter: alpha(opacity=60);
+    zoom: 1; 
+}
+
+#seantis-overview-calendar .event-unavailable, 
+#seantis-overview-calendar .event-unavailable .fc-event-skin, 
+#seantis-overview-calendar .event-unavailable .fc-event-head {
+    background-color: #d7160f !important;
+}
+
+#seantis-overview-calendar .event-available, 
+#seantis-overview-calendar .event-available .fc-event-skin, 
+#seantis-overview-calendar .event-available .fc-event-head {
+    background-color: #79aa00 !important;
+}
+
+#seantis-overview-calendar .event-partly-available, 
+#seantis-overview-calendar .event-partly-available .fc-event-skin, 
+#seantis-overview-calendar .event-partly-available .fc-event-head {
+    background-color: #fd671f !important;
+}
+
+#default-cgmap {
+    height: 300px;
+}
+
+/* Temporary fix for missing radio buttons */
+
+input.required[type="radio"] {
+    visibility: visible !important;
+    position: relative;
+    top: -2px;
+    margin-right: 8px; 
+}
+
+input.required[type="radio"]:after {
+    display: none !important;   
+}
+
+/* Temporary fix for overlay font issue */
+
+.pb-ajax {
+    font-size: 1.2em !important;   
+}

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from seantis.reservation import utils
 from seantis.reservation.tests import IntegrationTestCase
@@ -76,3 +76,47 @@ class UtilsTestCase(IntegrationTestCase):
         self.assertEqual(0, utils.request_id_as_int('0'))
         self.assertEqual(1, utils.request_id_as_int(1))
         self.assertEqual(99, utils.request_id_as_int('99'))
+
+    def test_whole_day(self):
+        self.assertTrue(
+            utils.whole_day(
+                datetime(2012, 1, 1),
+                datetime(2012, 1, 2)
+            )
+        )
+        self.assertFalse(
+            utils.whole_day(
+                datetime(2012, 1, 1),
+                datetime(2012, 1, 1)
+            )
+        )
+        self.assertTrue(
+            utils.whole_day(
+                datetime(2012, 1, 1),
+                datetime(2012, 1, 2) - timedelta(seconds=1)
+            )
+        )
+        self.assertFalse(
+            utils.whole_day(
+                datetime(2012, 1, 1),
+                datetime(2012, 1, 2) - timedelta(seconds=2)
+            )
+        )
+        self.assertTrue(
+            utils.whole_day(
+                datetime(2012, 1, 1),
+                datetime(2012, 1, 3)
+            )
+        )
+        self.assertTrue(
+            utils.whole_day(
+                datetime(2012, 1, 1),
+                datetime(2012, 1, 3) - timedelta(seconds=1)
+            )
+        )
+        self.assertFalse(
+            utils.whole_day(
+                datetime(2012, 1, 1),
+                datetime(2012, 1, 3) - timedelta(seconds=2)
+            )
+        )
