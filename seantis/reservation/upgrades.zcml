@@ -155,4 +155,13 @@
         profile="seantis.reservation:default">
     </genericsetup:upgradeStep>
 
+    <genericsetup:upgradeStep
+        title="Add dependency to plone.formwidget.recurrence"
+        description=""
+        source="1017"
+        destination="1018"
+        handler=".upgrades.upgrade_1017_to_1018"
+        profile="seantis.reservation:default">
+    </genericsetup:upgradeStep>
+
 </configure>
