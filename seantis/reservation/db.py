@@ -17,26 +17,28 @@ from seantis.reservation.events import (
     ReservationApprovedEvent,
     ReservationDeniedEvent,
     ReservationRevokedEvent,
-    ReservationsConfirmedEvent
+    ReservationsConfirmedEvent,
+    ReservationSlotsCreatedEvent
 )
 
 from seantis.reservation.models import (
-    Allocation, ReservedSlot, Reservation, Recurrence
+    Allocation, BlockedPeriod, ReservedSlot, Reservation, Recurrence
 )
 from seantis.reservation.error import (
-    OverlappingAllocationError,
-    AffectedReservationError,
     AffectedPendingReservationError,
+    AffectedReservationError,
     AlreadyReservedError,
-    NotReservableError,
-    ReservationTooLong,
-    ReservationParametersInvalid,
-    InvalidReservationToken,
-    InvalidReservationError,
-    QuotaOverLimit,
+    InvalidAllocationError,
     InvalidQuota,
+    InvalidReservationError,
+    InvalidReservationToken,
+    NotReservableError,
+    OverlappingAllocationError,
     QuotaImpossible,
-    InvalidAllocationError
+    QuotaOverLimit,
+    ReservationParametersInvalid,
+    ReservationTooLong,
+    UnblockableAlreadyReservedError,
 )
 
 from seantis.reservation.session import serialized
@@ -326,6 +328,13 @@ class Scheduler(object):
 
         query = Session.query(ReservedSlot)
         query = query.filter(ReservedSlot.resource.in_(uuids))
+
+        return query
+
+    def managed_blocked_periods(self):
+        """" The block_periods managed by this scheduler / resource. """
+        query = Session.query(BlockedPeriod)
+        query = query.filter(BlockedPeriod.resource == self.uuid)
 
         return query
 
@@ -940,6 +949,7 @@ class Scheduler(object):
         if not slots_to_reserve:
             raise NotReservableError
 
+        notify(ReservationSlotsCreatedEvent(reservation, self.language, self))
         notify(ReservationApprovedEvent(reservation, self.language))
 
         return slots_to_reserve
@@ -1133,23 +1143,6 @@ class Scheduler(object):
 
         return query
 
-    def reserved_slots_by_range(self, reservation_token, start, end):
-        assert start and end
-
-        query = self.reserved_slots_by_reservation(reservation_token)
-        query = query.filter(start <= ReservedSlot.start)
-        query = query.filter(ReservedSlot.end <= end)
-
-        slots = []
-        for slot in query:
-            if not slot.allocation.overlaps(start, end):
-                # Might happen because start and end are not rasterized
-                continue
-
-            slots.append(slot)
-
-        return slots
-
     def reserved_slots_by_group(self, group):
         query = self.managed_reserved_slots()
         query = query.filter(Allocation.group == group)
@@ -1189,3 +1182,33 @@ class Scheduler(object):
         master = self.allocation_by_id(allocation_id)
 
         return self.reservations_by_group(master.group)
+
+    def has_reserved_slot_in_range(self, start, end):
+        assert start and end
+
+        query = self.managed_reserved_slots()
+        query = query.filter(start <= ReservedSlot.start)
+        query = query.filter(ReservedSlot.end <= end)
+
+        for slot in query:
+            if slot.allocation.overlaps(start, end):
+                return True
+
+        return False
+
+    @serialized
+    def block_periods(self, reservation):
+
+        for start, end in reservation.target_dates():
+
+            if self.has_reserved_slot_in_range(start, end):
+                raise UnblockableAlreadyReservedError
+
+            blocked_period = BlockedPeriod(
+                resource=self.uuid,
+                token=reservation.token,
+                start=start,
+                end=end
+            )
+
+            Session.add(blocked_period)

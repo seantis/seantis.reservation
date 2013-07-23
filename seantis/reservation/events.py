@@ -52,3 +52,13 @@ class ReservationsConfirmedEvent(object):
     def __init__(self, reservations, language):
         self.reservations = reservations
         self.language = language
+
+
+class ReservationSlotsCreatedEvent(ReservationBaseEvent):
+    implements(IReservationBaseEvent)
+
+    def __init__(self, reservation, language, scheduler):
+        super(ReservationSlotsCreatedEvent, self).__init__(
+            reservation, language
+        )
+        self.scheduler = scheduler

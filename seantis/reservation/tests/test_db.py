@@ -9,7 +9,8 @@ from seantis.reservation.error import (
     AlreadyReservedError,
     ReservationTooLong,
     InvalidReservationError,
-    InvalidAllocationError
+    InvalidAllocationError,
+    UnblockableAlreadyReservedError
 )
 
 from seantis.reservation import events
@@ -577,6 +578,87 @@ class TestScheduler(IntegrationTestCase):
         ]
 
         sc.allocate(dates)
+
+    def test_block_periods_event_fired(self):
+        sc = Scheduler(new_uuid())
+        start, end = (
+            datetime(2013, 7, 23, 8, 0),
+            datetime(2013, 7, 23, 12, 0)
+        )
+
+        sc.allocate((start, end))
+
+        slots_created = self.subscribe(events.ReservationSlotsCreatedEvent)
+
+        approval_token = sc.reserve(reservation_email, (start, end))
+        sc.approve_reservation(approval_token)
+
+        self.assertTrue(slots_created.was_fired())
+
+    def test_block_periods_event_not_fired(self):
+        sc = Scheduler(new_uuid())
+        start, end = (
+            datetime(2013, 7, 23, 8, 0),
+            datetime(2013, 7, 23, 12, 0)
+        )
+
+        sc.allocate((start, end))
+
+        # two parallel reservations may be created
+        one = sc.reserve(reservation_email, (start, end))
+        two = sc.reserve(reservation_email, (start, end))
+
+        # but once one is approved..
+        slots_created = self.subscribe(events.ReservationSlotsCreatedEvent)
+        sc.approve_reservation(one)
+        self.assertTrue(slots_created.was_fired())
+
+        # the second one should not be approvable (and no event will be fired)
+        slots_created.reset()
+        self.assertRaises(AlreadyReservedError, sc.approve_reservation, two)
+        self.assertFalse(slots_created.was_fired())
+
+    @serialized
+    def test_block_periods_success(self):
+        sc1 = Scheduler(new_uuid())
+        sc2 = Scheduler(new_uuid())
+
+        start, end = (
+            datetime(2013, 7, 23, 8, 0),
+            datetime(2013, 7, 23, 12, 0)
+        )
+
+        sc1.allocate((start, end))
+        token = sc1.reserve(reservation_email, (start, end))
+        sc1.approve_reservation(token)
+
+        sc2.block_periods(sc1.reservation_by_token(token).one())
+        self.assertEqual(sc2.managed_blocked_periods().count(), 1)
+
+    @serialized
+    def test_block_periods_error(self):
+        sc1 = Scheduler(new_uuid())
+        sc2 = Scheduler(new_uuid())
+
+        start, end = (
+            datetime(2013, 7, 23, 8, 0),
+            datetime(2013, 7, 23, 12, 0)
+        )
+
+        sc1.allocate((start, end))
+        token1 = sc1.reserve(reservation_email, (start, end))
+        sc1.approve_reservation(token1)
+
+        sc2.allocate((start, end))
+        token2 = sc2.reserve(reservation_email, (start, end))
+        sc2.approve_reservation(token2)
+
+        self.assertRaises(
+            UnblockableAlreadyReservedError,
+            sc2.block_periods,
+            sc1.reservation_by_token(token1).one()
+        )
+        self.assertEqual(sc2.managed_blocked_periods().count(), 0)
 
     def test_allocation_partition(self):
         sc = Scheduler(new_uuid())
