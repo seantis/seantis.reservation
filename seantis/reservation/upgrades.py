@@ -325,3 +325,23 @@ def upgrade_1017_to_1018(context):
     setup.runAllImportStepsFromProfile(
         'profile-plone.formwidget.recurrence:default'
     )
+
+
+@db_upgrade
+def upgrade_1018_to_1019(operations, metadata):
+
+    inspector = Inspector.from_engine(metadata.bind)
+
+    if 'blocked_periods' not in inspector.get_table_names():
+        operations.create_table('blocked_periods',
+                                Column('id', types.Integer(),
+                                       primary_key=True,
+                                       autoincrement=True),
+                                Column('resource', customtypes.GUID(),
+                                       nullable=False),
+                                Column('token', customtypes.GUID(),
+                                       nullable=False),
+                                Column('start', types.DateTime(),
+                                       nullable=False),
+                                Column('end', types.DateTime(), nullable=False)
+                                )
