@@ -915,18 +915,12 @@ class Scheduler(object):
 
         reservation = self.reservation_by_token(token).one()
 
-        # write out the slots
+        # return these slots
         slots_to_reserve = []
-
-        if reservation.target_type == u'group':
-            dates = self.dates_by_group(reservation.target)
-        else:
-            dates = ((reservation.start, reservation.end),)
 
         # the reservation quota is simply implemented by multiplying the
         # dates which are approved
-
-        dates = dates * reservation.quota
+        dates = reservation.target_dates() * reservation.quota
 
         for start, end in dates:
 
