@@ -2,6 +2,7 @@
 
 from logging import getLogger
 from zope.component.hooks import getSite
+from plone.formwidget.recurrence.z3cform.widget import RecurrenceFieldWidget
 log = getLogger('seantis.reservation')
 
 from datetime import time
@@ -9,6 +10,7 @@ from DateTime import DateTime
 from five import grok
 
 from plone.dexterity.interfaces import IDexterityFTI
+from plone.formwidget.datetime.z3cform.widget import DateFieldWidget
 from zope.component import queryUtility
 from zope.interface import Interface
 from zope.security import checkPermission
@@ -277,11 +279,12 @@ class ReservationBaseForm(ResourceBaseForm):
         return defaults
 
     def run_reserve(
-        self, data, approve_manually, start=None, end=None, group=None, quota=1
+            self, data, approve_manually, dates=None, group=None, quota=1,
+            rrule=None
     ):
 
-        assert (start and end) or group
-        assert not (start and end and group)
+        assert dates or group
+        assert not (dates and group)
 
         email = self.email(data)
         additional_data = self.additional_data(data, add_manager_defaults=True)
@@ -294,10 +297,10 @@ class ReservationBaseForm(ResourceBaseForm):
             ) for form in self.context.formsets if form in additional_data
         )
 
-        if start and end:
+        if dates:
             token = self.scheduler.reserve(
-                email, (start, end),
-                data=additional_data, session_id=session_id, quota=quota
+                email, dates, data=additional_data,
+                session_id=session_id, quota=quota, rrule=rrule
             )
         else:
             token = self.scheduler.reserve(
@@ -326,6 +329,10 @@ class ReservationForm(
     context_buttons = ('reserve', )
 
     fields = field.Fields(IReservation)
+
+    fields['day'].widgetFactory = DateFieldWidget
+    fields['recurrence'].widgetFactory = RecurrenceFieldWidget
+
     label = _(u'Resource reservation')
 
     fti = None
@@ -333,6 +340,12 @@ class ReservationForm(
     autoGroups = True
     enable_form_tabbing = True
     default_fieldset_label = _(u'General Information')
+
+    def updateWidgets(self):
+        super(ReservationForm, self).updateWidgets()
+        widget = self.widgets['recurrence']
+        widget.start_field = 'day'
+        widget.show_repeat_forever = False
 
     @property
     def css_class(self):
@@ -395,37 +408,20 @@ class ReservationForm(
         dt = DateTime(value)
         return time(dt.hour(), dt.minute())
 
-    def validate(self, data):
-        try:
-            start, end = utils.get_date_range(
-                data['day'], data['start_time'], data['end_time']
-            )
-            if not self.allocation(data['id']).contains(start, end):
-                utils.form_error(_(u'Reservation out of bounds'))
-
-            return start, end
-        except (NoResultFound, TypeError):
-            utils.form_error(_(u'Invalid reservation request'))
-
     @button.buttonAndHandler(_(u'Reserve'))
     @extract_action_data
     def reserve(self, data):
         allocation = self.allocation(data['id'])
         approve_manually = allocation.approve_manually
 
-        start, end = self.validate(data)
+        dates = utils.get_dates(data, is_whole_day=allocation.whole_day)
         quota = int(data.get('quota', 1))
-
-        # whole day allocations don't show the start / end time which is to
-        # say the data arrives with 00:00 - 00:00. we align that to the day
-        if allocation.whole_day:
-            assert start == end
-            start, end = utils.align_range_to_day(start, end)
 
         def reserve():
             self.run_reserve(
                 data=data, approve_manually=approve_manually,
-                start=start, end=end, quota=quota
+                dates=dates, quota=quota,
+                rrule=data['recurrence']
             )
 
         action = throttled(reserve, self.context, 'reserve')

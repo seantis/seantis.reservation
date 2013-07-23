@@ -17,3 +17,12 @@ class Recurrence(TimestampMixin, ORMBase, OtherModels):
     id = Column(Integer, primary_key=True, autoincrement=True)
     rrule = Column(String)
     allocations = relation('Allocation', lazy='joined')
+
+
+class RecurringReservation(TimestampMixin, ORMBase, OtherModels):
+
+    __tablename__ = 'recurring_reservations'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    rrule = Column(String)
+    reservations = relation('Reservation', lazy='joined')

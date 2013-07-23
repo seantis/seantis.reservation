@@ -164,4 +164,13 @@
         profile="seantis.reservation:default">
     </genericsetup:upgradeStep>
 
+    <genericsetup:upgradeStep
+        title="Add recurring-reservations database table"
+        description=""
+        source="1018"
+        destination="1019"
+        handler=".upgrades.upgrade_1018_to_1019"
+        profile="seantis.reservation:default">
+    </genericsetup:upgradeStep>
+
 </configure>

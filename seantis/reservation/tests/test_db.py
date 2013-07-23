@@ -20,12 +20,17 @@ from seantis.reservation.models import Allocation
 from seantis.reservation.models import Recurrence
 
 from seantis.reservation import db
+from seantis.reservation.error import ReservationOutOfBounds
 Scheduler = db.Scheduler
 
 reservation_email = u'test@example.com'
 
 
 class TestScheduler(IntegrationTestCase):
+
+    def tearDown(self):
+        super(TestScheduler, self).tearDown()
+        Session.remove()  # kill the session between tests
 
     @serialized
     def test_reserve(self):
@@ -98,6 +103,20 @@ class TestScheduler(IntegrationTestCase):
 
         remaining = allocation.free_slots()
         self.assertEqual(len(remaining), 2)
+
+    @serialized
+    def test_recurring_reservation_generated(self):
+        sc = Scheduler(new_uuid())
+
+        dates = [datetime(2011, 1, 1, 15), datetime(2011, 1, 1, 16),
+                 datetime(2011, 1, 2, 15), datetime(2011, 1, 2, 16)]
+        rrule = 'RRULE:FREQ=DAILY;COUNT=10'
+
+        sc.allocate(utils.pairs(dates), raster=15, partly_available=True,
+                    grouped=False, rrule=rrule)
+        Session.flush()
+
+        sc.reserve(u'foo@example.com', dates=dates, rrule=rrule)
 
     @serialized
     def test_recurrence_reserve_single_allocation_no_recurrence(self):
@@ -273,7 +292,7 @@ class TestScheduler(IntegrationTestCase):
         sc.allocate(dates=adates, approve_manually=True)
 
         self.assertRaises(
-            InvalidReservationError, sc.reserve, reservation_email, rdates
+            ReservationOutOfBounds, sc.reserve, reservation_email, rdates
         )
 
     @serialized

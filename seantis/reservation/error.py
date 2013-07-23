@@ -54,6 +54,10 @@ class ReservationTooLong(ReservationError):
     pass
 
 
+class ReservationOutOfBounds(ReservationError):
+    pass
+
+
 class ThrottleBlock(ReservationError):
     pass
 
@@ -119,6 +123,9 @@ errormap = {
 
     ReservationParametersInvalid:
     _(u'The given reservation paramters are invalid.'),
+
+    ReservationOutOfBounds:
+    _(u'Reservation out of bounds'),
 
     InvalidReservationToken:
     _(u'The given reservation token is invalid.'),

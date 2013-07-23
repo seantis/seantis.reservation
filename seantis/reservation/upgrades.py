@@ -325,3 +325,31 @@ def upgrade_1017_to_1018(context):
     setup.runAllImportStepsFromProfile(
         'profile-plone.formwidget.recurrence:default'
     )
+
+
+@db_upgrade
+def upgrade_1018_to_1019(operations, metadata):
+
+    inspector = Inspector.from_engine(metadata.bind)
+    if 'recurring_reservations' not in inspector.get_table_names():
+        operations.create_table('recurring_reservations',
+                                Column('id',
+                                       types.Integer,
+                                       primary_key=True,
+                                       autoincrement=True),
+                                Column('rrule', types.String()),
+                                Column('created',
+                                       types.DateTime(timezone=True),
+                                       default=utils.utcnow),
+                                Column('modified',
+                                       types.DateTime(timezone=True),
+                                       onupdate=utils.utcnow),
+                                )
+
+    allocations_table = Table('reservations', metadata, autoload=True)
+    if 'recurrence_id' not in allocations_table.columns:
+        operations.add_column('reservations',
+                              Column('recurrence_id', types.Integer(),
+                                     ForeignKey('recurring_reservations.id',
+                                                onupdate='cascade',
+                                                ondelete='cascade')))

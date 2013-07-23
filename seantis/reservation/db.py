@@ -1,4 +1,6 @@
 from logging import getLogger
+from seantis.reservation.models.recurrence import RecurringReservation
+from seantis.reservation.error import ReservationOutOfBounds
 log = getLogger('seantis.reservation')
 
 from uuid import UUID
@@ -767,7 +769,7 @@ class Scheduler(object):
 
     @serialized
     def reserve(self, email, dates=None, group=None, data=None,
-                session_id=None, quota=1):
+                session_id=None, quota=1, rrule=None):
         """ First step of the reservation.
 
         Seantis.reservation uses a two-step reservation process. The first
@@ -784,15 +786,19 @@ class Scheduler(object):
         approve the reservation in approve_reservation.
 
         """
-
         assert (dates or group) and not (dates and group)
-
-        validate_email(email)
 
         if group:
             dates = self.dates_by_group(group)
-
         dates = utils.pairs(dates)
+
+        # use recurrence to group separate allocations.
+        if not group and dates and len(dates) > 1:
+            recurrence = RecurringReservation(rrule=rrule)
+        else:
+            recurrence = None
+
+        validate_email(email)
 
         # First, the request is checked for saneness. If any requested
         # date cannot be reserved the request as a whole fails.
@@ -805,6 +811,7 @@ class Scheduler(object):
             if start > end or (end - start).seconds < 5 * 60:
                 raise ReservationParametersInvalid
 
+            has_allocation = False
             # can all allocations be reserved?
             for allocation in self.allocations_in_range(start, end):
 
@@ -812,6 +819,10 @@ class Scheduler(object):
                 if not allocation.overlaps(start, end):
                     continue
 
+                if not allocation.contains(start, end):
+                    continue
+
+                has_allocation = True
                 assert allocation.is_master
 
                 # with manual approval the reservation ends up on the
@@ -833,6 +844,10 @@ class Scheduler(object):
 
                 if quota < 1:
                     raise InvalidQuota
+
+            # if we did not find an allocation for a start/end pair
+            if not has_allocation:
+                raise ReservationOutOfBounds
 
         # ok, we're good to go
         token = new_uuid()
@@ -879,6 +894,7 @@ class Scheduler(object):
                     reservation.session_id = session_id
                     reservation.email = email
                     reservation.quota = quota
+                    reservation.recurrence = recurrence
                     Session.add(reservation)
 
                     groups.append(allocation.group)
@@ -888,6 +904,9 @@ class Scheduler(object):
             # do that automatically)
             assert len(groups) == len(set(groups)), \
                 'wrongly trying to reserve a group'
+
+        if recurrence:
+            Session.add(recurrence)
 
         if found:
             notify(ReservationMadeEvent(reservation, self.language))

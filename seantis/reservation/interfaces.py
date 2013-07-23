@@ -756,6 +756,11 @@ class IReservation(Interface):
         required=True
     )
 
+    recurrence = schema.Text(
+            title=_(u'Recurrence'),
+            required=False,
+    )
+
 
 class IReservationIdForm(Interface):
     """ Describes a form with a hidden reservation-id field. Use with
