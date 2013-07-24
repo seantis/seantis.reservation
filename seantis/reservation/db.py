@@ -995,9 +995,7 @@ class Scheduler(object):
         """
 
         slots = self.reserved_slots_by_reservation(token)
-
-        for slot in slots:
-            Session.delete(slot)
+        slots.delete('fetch')
 
         self.reservation_by_token(token).delete()
 
