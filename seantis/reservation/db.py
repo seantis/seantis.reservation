@@ -1215,5 +1215,7 @@ class Scheduler(object):
     def unblock_periods(self, reservation):
         # XXX maybe this does not belong on a scheduler, this is a
         # multi-resurce operation.
-        query = Session.query(BlockedPeriod).filter_by(token=reservation.token)
+        if not utils.is_uuid(reservation):
+            reservation = reservation.token
+        query = Session.query(BlockedPeriod).filter_by(token=reservation)
         query.delete('fetch')
