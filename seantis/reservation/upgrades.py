@@ -343,5 +343,12 @@ def upgrade_1018_to_1019(operations, metadata):
                                        nullable=False),
                                 Column('start', types.DateTime(),
                                        nullable=False),
-                                Column('end', types.DateTime(), nullable=False)
+                                Column('end', types.DateTime(),
+                                       nullable=False),
+                                Column('created',
+                                       types.DateTime(timezone=True),
+                                       default=utils.utcnow),
+                                Column('modified',
+                                       types.DateTime(timezone=True),
+                                       onupdate=utils.utcnow),
                                 )
