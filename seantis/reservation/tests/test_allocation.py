@@ -7,6 +7,116 @@ from seantis.reservation import Session
 from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation.models import Allocation
 from seantis.reservation.session import serialized
+from seantis.reservation.models.blocked_periods import BlockedPeriod
+
+
+class TestAllocationIsBlocked(IntegrationTestCase):
+    """Test that is_blocked works as expected for all ranges
+
+          |-------------------|          *compare to this one*
+    blocked:
+              |---------|                contained within
+          |----------|                   contained within, equal start
+                  |-----------|          contained within, equal end
+          |-------------------|          contained within, equal start+end
+    |------------|                       not fully contained, overlaps start
+                  |---------------|      not fully contained, overlaps end
+    |-------------------------|          overlaps start, bigger
+    |------------------------------|     overlaps entire period
+    not blocked:
+     |---|                                ends before
+                                 |---|    starts after
+
+    see: http://stackoverflow.com/questions/143552/comparing-date-ranges
+    """
+
+    def setUp(self):
+        super(TestAllocationIsBlocked, self).setUp()
+        self.allocation = self._create_allocation()
+
+    def _create_allocation(self):
+        allocation = Allocation(raster=15, resource=uuid())
+        allocation.start = datetime(2011, 1, 1, 15, 00)
+        allocation.end = datetime(2011, 1, 1, 16, 00)
+        allocation.group = str(uuid())
+        allocation.mirror_of = allocation.resource
+        Session.add(allocation)
+        return allocation
+
+    def _create_blocked_period(self, resource, start, end):
+        blocked = BlockedPeriod(resource=resource,
+                                token=uuid(),
+                                start=start,
+                                end=end)
+        Session.add(blocked)
+        return blocked
+
+    def assertAllocationIsBlocked(self, start, end):
+        self._create_blocked_period(self.allocation.resource,
+                                    start,
+                                    end)
+        self.assertTrue(self.allocation.is_blocked())
+
+    def assertAllocationIsNotBlocked(self, start, end):
+        self._create_blocked_period(self.allocation.resource,
+                                    start,
+                                    end)
+        self.assertFalse(self.allocation.is_blocked())
+
+    @serialized
+    def test_contained_within(self):
+        self.assertAllocationIsBlocked(datetime(2011, 1, 1, 15, 30),
+                                       datetime(2011, 1, 1, 15, 45))
+
+    @serialized
+    def test_contained_within_equal_start(self):
+        self.assertAllocationIsBlocked(datetime(2011, 1, 1, 15, 00),
+                                       datetime(2011, 1, 1, 15, 45))
+
+    @serialized
+    def test_contained_within_equal_end(self):
+        self.assertAllocationIsBlocked(datetime(2011, 1, 1, 15, 15),
+                                       datetime(2011, 1, 1, 16, 00))
+
+    @serialized
+    def test_contained_within_equal_start_and_end(self):
+        self.assertAllocationIsBlocked(datetime(2011, 1, 1, 15, 00),
+                                       datetime(2011, 1, 1, 16, 00))
+
+    @serialized
+    def test_not_fully_contained_overlaps_start(self):
+        self.assertAllocationIsBlocked(datetime(2011, 1, 1, 14, 00),
+                                       datetime(2011, 1, 1, 15, 30))
+
+    @serialized
+    def test_not_fully_contained_overlaps_end(self):
+        self.assertAllocationIsBlocked(datetime(2011, 1, 1, 15, 30),
+                                       datetime(2011, 1, 1, 16, 30))
+
+    @serialized
+    def test_overlaps_start_bigger(self):
+        self.assertAllocationIsBlocked(datetime(2011, 1, 1, 14, 30),
+                                       datetime(2011, 1, 1, 16, 00))
+
+    @serialized
+    def test_overlaps_end_bigger(self):
+        self.assertAllocationIsBlocked(datetime(2011, 1, 1, 15, 00),
+                                       datetime(2011, 1, 1, 16, 30))
+
+    @serialized
+    def test_overlaps_entire_period(self):
+        self.assertAllocationIsBlocked(datetime(2011, 1, 1, 14, 30),
+                                       datetime(2011, 1, 1, 16, 30))
+
+    @serialized
+    def test_ends_before(self):
+        self.assertAllocationIsNotBlocked(datetime(2011, 1, 1, 14, 30),
+                                          datetime(2011, 1, 1, 14, 45))
+
+    @serialized
+    def test_starts_after(self):
+        self.assertAllocationIsNotBlocked(datetime(2011, 1, 1, 16, 15),
+                                          datetime(2011, 1, 1, 16, 45))
 
 
 class TestAllocation(IntegrationTestCase):

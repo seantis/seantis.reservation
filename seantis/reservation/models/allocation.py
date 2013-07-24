@@ -212,12 +212,27 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
 
         assert(self.overlaps(start, end))
 
+        if self.is_blocked(start, end):
+            return False
+
         reserved = [slot.start for slot in self.reserved_slots]
         for start, end in self.all_slots(start, end):
             if start in reserved:
                 return False
 
         return True
+
+    def is_blocked(self, start=None, end=None):
+        if not (start and end):
+            start, end = self.start, self.end
+
+        BlockedPeriod = self.models.BlockedPeriod
+
+        query = Session.query(BlockedPeriod)
+        query = query.filter_by(resource=self.resource)
+        query = query.filter(BlockedPeriod.start <= end)
+        query = query.filter(BlockedPeriod.end >= start)
+        return query.first() is not None
 
     @property
     def pending_reservations(self):
