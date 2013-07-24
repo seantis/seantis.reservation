@@ -986,6 +986,8 @@ class Scheduler(object):
     def remove_reservation(self, token):
         """ Removes all reserved slots of the given reservation token.
 
+        Removes all blocked periods related to this reservation as well.
+
         Note that removing a reservation does not let the reservee know that
         his reservation has been removed.
 
@@ -996,6 +998,8 @@ class Scheduler(object):
 
         slots = self.reserved_slots_by_reservation(token)
         slots.delete('fetch')
+
+        self.unblock_periods(token)
 
         self.reservation_by_token(token).delete()
 

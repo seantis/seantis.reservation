@@ -1328,3 +1328,24 @@ class TestScheduler(IntegrationTestCase):
         self.assertTrue(reservation_email in mail.messages[1])
         self.assertTrue(str(token) in mail.messages[1])
         assert_data_in_mail(mail.messages[1])
+
+    @serialized
+    def test_remove_reservation_removes_blocked_periods(self):
+        sc1 = Scheduler(new_uuid())
+        sc2 = Scheduler(new_uuid())
+
+        start, end = (
+            datetime(2013, 7, 23, 8, 0),
+            datetime(2013, 7, 23, 12, 0)
+        )
+
+        sc1.allocate((start, end))
+        token = sc1.reserve(reservation_email, (start, end))
+        sc1.approve_reservation(token)
+
+        reservation_1 = sc1.reservation_by_token(token).one()
+        sc2.block_periods(reservation_1)
+
+        self.assertEqual(sc2.managed_blocked_periods().count(), 1)
+        sc1.remove_reservation(token)
+        self.assertEqual(sc2.managed_blocked_periods().count(), 0)
