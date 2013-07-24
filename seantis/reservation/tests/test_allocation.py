@@ -1,13 +1,11 @@
 from datetime import datetime
-from uuid import uuid1 as uuid
-
-from sqlalchemy.exc import IntegrityError
-
 from seantis.reservation import Session
-from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation.models import Allocation
-from seantis.reservation.session import serialized
 from seantis.reservation.models.blocked_period import BlockedPeriod
+from seantis.reservation.session import serialized
+from seantis.reservation.tests import IntegrationTestCase
+from sqlalchemy.exc import IntegrityError
+from uuid import uuid1 as uuid
 
 
 class TestAllocationIsBlocked(IntegrationTestCase):
