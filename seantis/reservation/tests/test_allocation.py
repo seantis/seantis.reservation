@@ -7,7 +7,7 @@ from seantis.reservation import Session
 from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation.models import Allocation
 from seantis.reservation.session import serialized
-from seantis.reservation.models.blocked_periods import BlockedPeriod
+from seantis.reservation.models.blocked_period import BlockedPeriod
 
 
 class TestAllocationIsBlocked(IntegrationTestCase):
