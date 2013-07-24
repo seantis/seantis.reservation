@@ -857,5 +857,4 @@ class IReservationsConfirmedEvent(Interface):
 
 
 class IReservationSlotsCreatedEvent(IReservationBaseEvent):
-
-    scheduler = Attribute("The scheduler with which the reservation is made")
+    """Event triggered when all reservations slots have been created."""

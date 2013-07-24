@@ -1,13 +1,14 @@
 from zope.interface import implements
 
 from seantis.reservation.interfaces import (
-    IResourceViewedEvent,
-    IReservationBaseEvent,
-    IReservationMadeEvent,
     IReservationApprovedEvent,
+    IReservationBaseEvent,
     IReservationDeniedEvent,
+    IReservationMadeEvent,
     IReservationRevokedEvent,
-    IReservationsConfirmedEvent
+    IReservationSlotsCreatedEvent,
+    IReservationsConfirmedEvent,
+    IResourceViewedEvent
 )
 
 
@@ -55,10 +56,4 @@ class ReservationsConfirmedEvent(object):
 
 
 class ReservationSlotsCreatedEvent(ReservationBaseEvent):
-    implements(IReservationBaseEvent)
-
-    def __init__(self, reservation, language, scheduler):
-        super(ReservationSlotsCreatedEvent, self).__init__(
-            reservation, language
-        )
-        self.scheduler = scheduler
+    implements(IReservationSlotsCreatedEvent)

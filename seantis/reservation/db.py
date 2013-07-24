@@ -949,7 +949,7 @@ class Scheduler(object):
         if not slots_to_reserve:
             raise NotReservableError
 
-        notify(ReservationSlotsCreatedEvent(reservation, self.language, self))
+        notify(ReservationSlotsCreatedEvent(reservation, self.language))
         notify(ReservationApprovedEvent(reservation, self.language))
 
         return slots_to_reserve
