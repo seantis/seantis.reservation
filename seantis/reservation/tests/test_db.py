@@ -19,8 +19,10 @@ from seantis.reservation import Session
 from seantis.reservation.session import serialized
 from seantis.reservation.models import Allocation
 from seantis.reservation.models import Recurrence
-
 from seantis.reservation import db
+from seantis.reservation.db import unblock_periods
+
+
 Scheduler = db.Scheduler
 
 reservation_email = u'test@example.com'
@@ -678,7 +680,7 @@ class TestScheduler(IntegrationTestCase):
         sc2.block_periods(reservation_1)
 
         self.assertEqual(sc2.managed_blocked_periods().count(), 1)
-        sc2.unblock_periods(reservation_1)
+        unblock_periods(reservation_1)
         self.assertEqual(sc2.managed_blocked_periods().count(), 0)
 
     @serialized
@@ -699,7 +701,7 @@ class TestScheduler(IntegrationTestCase):
         sc2.block_periods(reservation_1)
 
         self.assertEqual(sc2.managed_blocked_periods().count(), 1)
-        sc2.unblock_periods(reservation_1.token)
+        unblock_periods(reservation_1.token)
         self.assertEqual(sc2.managed_blocked_periods().count(), 0)
 
     @serialized
@@ -1389,4 +1391,27 @@ class TestScheduler(IntegrationTestCase):
 
         self.assertEqual(sc2.managed_blocked_periods().count(), 1)
         sc1.remove_reservation(token)
+        self.assertEqual(sc2.managed_blocked_periods().count(), 0)
+
+    @serialized
+    def test_remove_reservation_from_session_removes_blocked_periods(self):
+        sc1 = Scheduler(new_uuid())
+        sc2 = Scheduler(new_uuid())
+
+        start, end = (
+            datetime(2013, 7, 23, 8, 0),
+            datetime(2013, 7, 23, 12, 0)
+        )
+
+        session_id = new_uuid()
+        sc1.allocate((start, end))
+        token = sc1.reserve(reservation_email, (start, end),
+                            session_id=session_id)
+        sc1.approve_reservation(token)
+
+        reservation_1 = sc1.reservation_by_token(token).one()
+        sc2.block_periods(reservation_1)
+
+        self.assertEqual(sc2.managed_blocked_periods().count(), 1)
+        sc1.remove_reservation_from_session(session_id, token)
         self.assertEqual(sc2.managed_blocked_periods().count(), 0)
