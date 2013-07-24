@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-06-26 13:45+0000\n"
+"POT-Creation-Date: 2013-07-24 12:50+0000\n"
 "PO-Revision-Date: 2012-09-06 11:33+0100\n"
 "Last-Translator: Fabian Reinhard <fabian.reinhard@seantis.ch>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -13,10 +13,6 @@ msgstr ""
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: DOMAIN\n"
-
-#: ./settings.py:168
-msgid "${count} Orphan Records Removed"
-msgstr "${count} Verwaiste Datensätze entfernt"
 
 #: ./interfaces.py:589
 msgid "%(reason)s - reason for revocation<br>"
@@ -244,7 +240,7 @@ msgstr "Möchten Sie die folgenden Einteilungen reservieren?"
 
 #: ./allocate.py:244
 #: ./mail.py:490
-#: ./resource.py:306
+#: ./resource.py:342
 msgid "Edit"
 msgstr "Bearbeiten"
 
@@ -261,11 +257,11 @@ msgstr "Einteilung bearbeiten"
 msgid "Email"
 msgstr "Email"
 
-#: ./settings.py:43
+#: ./settings.py:31
 msgid "Email Notifications for Managers"
 msgstr "Email Benachrichtigung für Manager"
 
-#: ./settings.py:51
+#: ./settings.py:39
 msgid "Email Notifications for Reservees"
 msgstr "Email Benachrichtigung für Reservierende"
 
@@ -335,7 +331,7 @@ msgstr "Ende"
 msgid "End date before start date"
 msgstr "Ende vor Start"
 
-#: ./resource.py:303
+#: ./resource.py:339
 msgid "Entry"
 msgstr "Eintrag"
 
@@ -408,16 +404,12 @@ msgid "If checked a reservation manager must decide if a reservation can be appr
 msgstr "Falls gewählt muss ein Reservations-Manager entscheiden ob eine Reservations-Anfrage angenommen wird. Bis dahin landen die Anfragen auf einer Warteliste. Ist diese Option nicht gewählt, werden Anfragen automatisch angenommen."
 
 #: ./interfaces.py:530
-msgid "If checked parts of the recurrance may be reserved. If not checkd the recurrance must be reserved as a whole."
+msgid "If checked parts of the recurrance may be reserved. If not checked the recurrance must be reserved as a whole."
 msgstr "Falls gewählt, ist eine teilweise separate Reservation der Wiederholung möglich. Ist die Option nicht gewählt, müssen alle Wiederholungen als Ganzes reserviert werden."
 
 #: ./interfaces.py:286
 msgid "If the allocation is partly available users may reserve only a part of it (e.g. half of it). If not the allocation Must be reserved as a whole or not at all"
 msgstr "Falls die Einteilung teilweise verfügbar ist, kann ein Benutzer einen einzelnen Zeitabschnitt der Einteilung reservieren. Falls nicht, muss die Einteilung über die gesamte Zeitdauer reserviert werden."
-
-#: ./templates/controlpanel.pt:35
-msgid "If you do want to get rid of those records be adviced to do a backup of your current SQL database first, before cleaning up."
-msgstr "Wenn Sie diese Datensätze entfernen möchten, sollten Sie zuerst ein Backup Ihrer SQL Datenbank machen."
 
 #: ./error.py:103
 msgid "Invalid change. Your request may have already been processed earlier."
@@ -447,15 +439,11 @@ msgstr "Sprache"
 msgid "Last hour of the day"
 msgstr "Letzte volle Stunde"
 
-#: ./resource.py:322
+#: ./resource.py:358
 msgid "List"
 msgstr "Auflisten"
 
-#: ./templates/controlpanel.pt:19
-msgid "Maintenance"
-msgstr "Wartung"
-
-#: ./resource.py:297
+#: ./resource.py:333
 msgid "Manage"
 msgstr "Verwalten"
 
@@ -515,14 +503,6 @@ msgstr "Der gewünschte Zeitbereich ist bereits besetzt."
 msgid "No such reservation"
 msgstr "Unbekannte Reservation"
 
-#: ./templates/controlpanel.pt:26
-msgid "Number of Orphan Records in Databse:"
-msgstr "Anzahl verwaister Datensätze in der Datenbank:"
-
-#: ./templates/controlpanel.pt:22
-msgid "Number of Records in Database:"
-msgstr "Anzahl Datensätze in der Datenbank"
-
 #: ./interfaces.py:257
 msgid "Number of times an allocation may be reserved at the same time. e.g. 3 spots in a daycare center, 2 available cars, 1 meeting room. "
 msgstr "Legt das Kontingent der Einteilung fest. z.B. 3 Plätze in einer Kinderkrippe, 2 verfügbare Autos, 1 Besprechungszimmer"
@@ -538,10 +518,6 @@ msgstr "Eine Person wartet"
 #: ./interfaces.py:770
 msgid "Optional reason for the revocation. Sent to the reservee. e.g. 'Your reservation has to be cancelled because the lecturer is ill'."
 msgstr "Optionaler Grund für die Absage. Wird an den Reservierenden gesendet. Z.B. 'Ihre Reservation muss abesagt werden weil der Dozent krank ist'."
-
-#: ./templates/controlpanel.pt:31
-msgid "Orphan Records are records in the database for which no corresponding plone resource object can be found. Those records exist because there is no reliable way to detect that a plone resource object is being deleted, hence no cleanup is ever done in this case."
-msgstr "Verwaiste Datensätze sind Datensätze in der Datenbank für welche es keine abhängige Plone Ressource mehr gibt. Diese Datensätze existieren weil es keinen verlässlichen Weg gibt zu erfahren dass eine Ressource gerade gelöscht wird, weswegen in diesem Fall nicht aufgeräumt wird."
 
 #: ./exports/reservations.py:37
 msgid "Parent"
@@ -589,18 +565,14 @@ msgstr "Wiederholung"
 msgid "Recurrence View"
 msgstr "Auflistung der Wiederholung"
 
-#: ./resource.py:319
+#: ./resource.py:355
 msgid "Recurrences"
 msgstr "Wiederholungen"
 
-#: ./resource.py:310
+#: ./resource.py:346
 #: ./templates/your_reservations_viewlet.pt:16
 msgid "Remove"
 msgstr "Entfernen"
-
-#: ./templates/controlpanel.pt:42
-msgid "Remove Orphan Records"
-msgstr "Verwaiste Datensätze entfernen"
 
 #: ./allocate.py:292
 msgid "Remove allocations"
@@ -618,7 +590,7 @@ msgstr "Anzahl Reservationen"
 msgid "Reservation Quota Limit"
 msgstr "Limite der Anzahl Reservationen"
 
-#: ./settings.py:33
+#: ./settings.py:21
 msgid "Reservation Throttling"
 msgstr "Reservations-Beschränkung"
 
@@ -646,7 +618,7 @@ msgstr "Reservation abgesagt"
 msgid "Reservation successful"
 msgstr "Reservation erfolgreich"
 
-#: ./resource.py:278
+#: ./resource.py:314
 #: ./templates/reservations.pt:21
 msgid "Reservations"
 msgstr "Reservationen"
@@ -660,7 +632,7 @@ msgid "Reservations can't be made for more than 24 hours at a time"
 msgstr "Reservationen können nicht über mehr als 24 Stunden gemacht werden"
 
 #: ./reserve.py:407
-#: ./resource.py:281
+#: ./resource.py:317
 msgid "Reserve"
 msgstr "Reservieren"
 
@@ -700,7 +672,7 @@ msgstr "Sa"
 msgid "Save"
 msgstr "Speichern"
 
-#: ./settings.py:74
+#: ./settings.py:57
 msgid "Seantis Reservation Control Panel"
 msgstr "Seantis Reservation Kontrollzentrum"
 
@@ -724,11 +696,11 @@ msgstr "Ausgewählte Ansicht"
 msgid "Selected view when opening the calendar."
 msgstr "Ansicht die beim Öffnen des Kalenders angezeigt wird."
 
-#: ./settings.py:52
+#: ./settings.py:40
 msgid "Send emails about made, approved and denied reservations to the user that made the reservation."
 msgstr "Sende Emails zu gemachten, zugelassenen und abgelehnten Reservationen zu dem Benutzer der die Reservation gemacht hat."
 
-#: ./settings.py:44
+#: ./settings.py:32
 msgid "Send emails about new pending reservations to the first reservation managers found in the path."
 msgstr "Sende Emails zu neuen Reservationen in der Warteliste zum ersten Reservationsmanager der im Pfad gefunden werden kann."
 
@@ -761,7 +733,6 @@ msgid "Separately reservable"
 msgstr "Separat reservierbar"
 
 #: ./allocate.py:205
-#: ./settings.py:68
 msgid "Settings"
 msgstr "Einstellungen"
 
@@ -830,7 +801,7 @@ msgstr "Der Eintrag existiert nicht mehr"
 msgid "The maximum quota a single reservation may occupy at once. There is no limit if set to zero."
 msgstr "Die maximale Anzahl die eine einzelne Reservation auf einmal bsetzen kann. Null wenn kein Limit."
 
-#: ./settings.py:34
+#: ./settings.py:22
 msgid "The number of minutes a user needs to wait between reservations, use 0 if no throttling should occur. Users with the 'Unthrottled Reservations' permission are excempt from this rule (Reservation-Managers by default)."
 msgstr "Die Anzahl Minuten die ein Benutzer nach dem reservieren warten muss bis die nächste Reservation des Benutzers akzeptiert wird. Wird 0 eingeben gibt es kein Limit. Benutzer mit dem 'Unthrottled Reservations' Recht sind von dieser Regelung ausgenommen (Standardmässig sind dies Reservations-Manager)."
 
@@ -915,10 +886,6 @@ msgstr "Nicht verfügbar"
 msgid "Until"
 msgstr "Bis"
 
-#: ./templates/controlpanel.pt:33
-msgid "Usually there is no reason to clean these records until their number grows large."
-msgstr "Normalerweise gibt es keinen Grund diese Datensätze zu entfernen, ausser ihre Zahl ist gross."
-
 #: ./templates/utils.pt:4
 msgid "Utils"
 msgstr "Hilfsmittel"
@@ -945,7 +912,7 @@ msgstr "Wochenansicht"
 
 #: ./exports/reservations.py:43
 #: ./interfaces.py:496
-#: ./resource.py:364
+#: ./resource.py:400
 msgid "Whole Day"
 msgstr "Ganztägig"
 

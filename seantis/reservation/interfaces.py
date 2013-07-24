@@ -529,7 +529,7 @@ class IAllocation(IResourceAllocationDefaults):
         title=_(u'Separately reservable'),
         description=_(
             u'If checked parts of the recurrance may be reserved. '
-            u'If not checkd the recurrance must be reserved as a whole.'
+            u'If not checked the recurrance must be reserved as a whole.'
         ),
         required=False,
         default=False

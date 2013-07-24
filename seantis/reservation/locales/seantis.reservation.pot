@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-06-26 13:45+0000\n"
+"POT-Creation-Date: 2013-07-24 12:50+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,10 +16,6 @@ msgstr ""
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: seantis.reservation\n"
-
-#: ./settings.py:168
-msgid "${count} Orphan Records Removed"
-msgstr ""
 
 #: ./interfaces.py:589
 msgid "%(reason)s - reason for revocation<br>"
@@ -247,7 +243,7 @@ msgstr ""
 
 #: ./allocate.py:244
 #: ./mail.py:490
-#: ./resource.py:306
+#: ./resource.py:342
 msgid "Edit"
 msgstr ""
 
@@ -264,11 +260,11 @@ msgstr ""
 msgid "Email"
 msgstr ""
 
-#: ./settings.py:43
+#: ./settings.py:31
 msgid "Email Notifications for Managers"
 msgstr ""
 
-#: ./settings.py:51
+#: ./settings.py:39
 msgid "Email Notifications for Reservees"
 msgstr ""
 
@@ -338,7 +334,7 @@ msgstr ""
 msgid "End date before start date"
 msgstr ""
 
-#: ./resource.py:303
+#: ./resource.py:339
 msgid "Entry"
 msgstr ""
 
@@ -411,15 +407,11 @@ msgid "If checked a reservation manager must decide if a reservation can be appr
 msgstr ""
 
 #: ./interfaces.py:530
-msgid "If checked parts of the recurrance may be reserved. If not checkd the recurrance must be reserved as a whole."
+msgid "If checked parts of the recurrance may be reserved. If not checked the recurrance must be reserved as a whole."
 msgstr ""
 
 #: ./interfaces.py:286
 msgid "If the allocation is partly available users may reserve only a part of it (e.g. half of it). If not the allocation Must be reserved as a whole or not at all"
-msgstr ""
-
-#: ./templates/controlpanel.pt:35
-msgid "If you do want to get rid of those records be adviced to do a backup of your current SQL database first, before cleaning up."
 msgstr ""
 
 #: ./error.py:103
@@ -450,15 +442,11 @@ msgstr ""
 msgid "Last hour of the day"
 msgstr ""
 
-#: ./resource.py:322
+#: ./resource.py:358
 msgid "List"
 msgstr ""
 
-#: ./templates/controlpanel.pt:19
-msgid "Maintenance"
-msgstr ""
-
-#: ./resource.py:297
+#: ./resource.py:333
 msgid "Manage"
 msgstr ""
 
@@ -518,14 +506,6 @@ msgstr ""
 msgid "No such reservation"
 msgstr ""
 
-#: ./templates/controlpanel.pt:26
-msgid "Number of Orphan Records in Databse:"
-msgstr ""
-
-#: ./templates/controlpanel.pt:22
-msgid "Number of Records in Database:"
-msgstr ""
-
 #: ./interfaces.py:257
 msgid "Number of times an allocation may be reserved at the same time. e.g. 3 spots in a daycare center, 2 available cars, 1 meeting room. "
 msgstr ""
@@ -540,10 +520,6 @@ msgstr ""
 
 #: ./interfaces.py:770
 msgid "Optional reason for the revocation. Sent to the reservee. e.g. 'Your reservation has to be cancelled because the lecturer is ill'."
-msgstr ""
-
-#: ./templates/controlpanel.pt:31
-msgid "Orphan Records are records in the database for which no corresponding plone resource object can be found. Those records exist because there is no reliable way to detect that a plone resource object is being deleted, hence no cleanup is ever done in this case."
 msgstr ""
 
 #: ./exports/reservations.py:37
@@ -592,17 +568,13 @@ msgstr ""
 msgid "Recurrence View"
 msgstr ""
 
-#: ./resource.py:319
+#: ./resource.py:355
 msgid "Recurrences"
 msgstr ""
 
-#: ./resource.py:310
+#: ./resource.py:346
 #: ./templates/your_reservations_viewlet.pt:16
 msgid "Remove"
-msgstr ""
-
-#: ./templates/controlpanel.pt:42
-msgid "Remove Orphan Records"
 msgstr ""
 
 #: ./allocate.py:292
@@ -621,7 +593,7 @@ msgstr ""
 msgid "Reservation Quota Limit"
 msgstr ""
 
-#: ./settings.py:33
+#: ./settings.py:21
 msgid "Reservation Throttling"
 msgstr ""
 
@@ -649,7 +621,7 @@ msgstr ""
 msgid "Reservation successful"
 msgstr ""
 
-#: ./resource.py:278
+#: ./resource.py:314
 #: ./templates/reservations.pt:21
 msgid "Reservations"
 msgstr ""
@@ -663,7 +635,7 @@ msgid "Reservations can't be made for more than 24 hours at a time"
 msgstr ""
 
 #: ./reserve.py:407
-#: ./resource.py:281
+#: ./resource.py:317
 msgid "Reserve"
 msgstr ""
 
@@ -703,7 +675,7 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-#: ./settings.py:74
+#: ./settings.py:57
 msgid "Seantis Reservation Control Panel"
 msgstr ""
 
@@ -727,11 +699,11 @@ msgstr ""
 msgid "Selected view when opening the calendar."
 msgstr ""
 
-#: ./settings.py:52
+#: ./settings.py:40
 msgid "Send emails about made, approved and denied reservations to the user that made the reservation."
 msgstr ""
 
-#: ./settings.py:44
+#: ./settings.py:32
 msgid "Send emails about new pending reservations to the first reservation managers found in the path."
 msgstr ""
 
@@ -764,7 +736,6 @@ msgid "Separately reservable"
 msgstr ""
 
 #: ./allocate.py:205
-#: ./settings.py:68
 msgid "Settings"
 msgstr ""
 
@@ -833,7 +804,7 @@ msgstr ""
 msgid "The maximum quota a single reservation may occupy at once. There is no limit if set to zero."
 msgstr ""
 
-#: ./settings.py:34
+#: ./settings.py:22
 msgid "The number of minutes a user needs to wait between reservations, use 0 if no throttling should occur. Users with the 'Unthrottled Reservations' permission are excempt from this rule (Reservation-Managers by default)."
 msgstr ""
 
@@ -918,10 +889,6 @@ msgstr ""
 msgid "Until"
 msgstr ""
 
-#: ./templates/controlpanel.pt:33
-msgid "Usually there is no reason to clean these records until their number grows large."
-msgstr ""
-
 #: ./templates/utils.pt:4
 msgid "Utils"
 msgstr ""
@@ -948,7 +915,7 @@ msgstr ""
 
 #: ./exports/reservations.py:43
 #: ./interfaces.py:496
-#: ./resource.py:364
+#: ./resource.py:400
 msgid "Whole Day"
 msgstr ""
 
