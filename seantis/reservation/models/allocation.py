@@ -359,8 +359,8 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
                 piece = 'blocked'
             pieces.append(piece)
 
-        # Group by the true/false values in the pieces and sum up the
-        # percentage
+        # Group by the None/'reserved'/'blocked' values in the pieces and sum
+        # up the percentage
         partitions = []
         for flag, group in groupby(pieces, key=lambda p: p):
             percentage = len(list(group)) * step
