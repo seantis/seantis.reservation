@@ -1200,25 +1200,38 @@ class Scheduler(object):
 
     @serialized
     def block_periods(self, reservation):
+        """Block periods for the scheduler's resource based on another
+        reservation.
 
+        """
         for start, end in reservation.target_dates():
+            self.block_period(start, end, reservation.token)
 
-            if self.has_reserved_slot_in_range(start, end):
-                raise UnblockableAlreadyReservedError
+    @serialized
+    def block_period(self, start, end, token):
+        """Block the period from start to end for the scheduler's resource.
 
-            blocked_period = BlockedPeriod(
-                resource=self.uuid,
-                token=reservation.token,
-                start=start,
-                end=end
-            )
+        """
+        start, end = utils.as_machine_date(start, end)
 
-            Session.add(blocked_period)
+        if self.has_reserved_slot_in_range(start, end):
+            raise UnblockableAlreadyReservedError
+
+        blocked_period = BlockedPeriod(
+            resource=self.uuid,
+            token=token,
+            start=start,
+            end=end
+        )
+        Session.add(blocked_period)
 
     @serialized
     def unblock_periods(self, reservation):
+        """Unblock periods for any resource based o a reservation.
+
+        """
         # XXX maybe this does not belong on a scheduler, this is a
-        # multi-resurce operation.
+        # multi-resource operation.
         if not utils.is_uuid(reservation):
             reservation = reservation.token
         query = Session.query(BlockedPeriod).filter_by(token=reservation)

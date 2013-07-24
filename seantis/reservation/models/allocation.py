@@ -227,12 +227,15 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
             start, end = self.start, self.end
 
         BlockedPeriod = self.models.BlockedPeriod
-
-        query = Session.query(BlockedPeriod)
-        query = query.filter_by(resource=self.resource)
+        query = self._query_blocked_periods()
         query = query.filter(BlockedPeriod.start <= end)
         query = query.filter(BlockedPeriod.end >= start)
         return query.first() is not None
+
+    def _query_blocked_periods(self):
+        query = Session.query(self.models.BlockedPeriod)
+        query = query.filter_by(resource=self.resource)
+        return query
 
     @property
     def pending_reservations(self):
@@ -263,6 +266,10 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
             total = 1
 
         count = len(self.reserved_slots)
+        for blocked_period in self._query_blocked_periods():
+            count += len(list(iterate_span(blocked_period.start,
+                                           blocked_period.end,
+                                           self.raster)))
 
         if total == count:
             return 0.0
@@ -303,38 +310,54 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
 
     def availability_partitions(self):
         """Partitions the space between start and end into blocks of either
-        free or reserved time. Each block has a percentage representing the
-        space the block occupies compared to the size of the whole allocation.
+        free, blocked or reserved time. Each block has a percentage
+        representing the space the block occupies compared to the size of the
+        whole allocation.
 
         The blocks are ordered from start to end. Each block is an item with
-        two values. The first being the percentage, the second being true if
-        the block is reserved.
+        two values. The first being the percentage, the second being the type.
+        The type can be one of None, 'reserved' or 'blocked'.
 
         So given an allocation that goes from 8 to 9 and a reservation that
-        goes from 8:15 until 8:30 we get the following blocks:
+        goes from 8:15 until 8:30 and a block that goes from 8:30 to 9:00
+        we get the following blocks:
 
         [
-            (25%, False),
-            (25%, True),
-            (50%, False)
+            (25%, None),
+            (25%, 'reserved'),
+            (50%, 'blocked')
         ]
 
         This is useful to divide an allocation block into different divs on the
         frontend, indicating to the user which parts of an allocation are
-        reserved.
+        available for reservation.
 
         """
-        if (len(self.reserved_slots) == 0):
-            return [(100.0, False)]
 
-        reserved = [r.start for r in self.reserved_slots]
+        reserved = set(r.start for r in self.reserved_slots)
+        blocked = set()
+        for blocked_period in self._query_blocked_periods():
+            blocked.update(start for start, end in
+                           iterate_span(blocked_period.start,
+                                        blocked_period.end,
+                                        self.raster))
+
+        if not (reserved or blocked):
+            return [(100.0, None)]
 
         # Get the percentage one slot represents
         slots = list(self.all_slots())
         step = 100.0 / float(len(slots))
 
         # Create an entry for each slot with either True or False
-        pieces = [s[0] in reserved for s in slots]
+        pieces = []
+        for slot in slots:
+            piece = None
+            if slot[0] in reserved:
+                piece = 'reserved'
+            elif slot[0] in blocked:
+                piece = 'blocked'
+            pieces.append(piece)
 
         # Group by the true/false values in the pieces and sum up the
         # percentage
@@ -346,7 +369,6 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
         # Make sure to get rid of floating point rounding errors
         total = sum([p[0] for p in partitions])
         diff = 100.0 - total
-
         partitions[-1:][0][0] -= diff
 
         return partitions

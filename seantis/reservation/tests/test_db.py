@@ -702,7 +702,8 @@ class TestScheduler(IntegrationTestCase):
         sc2.unblock_periods(reservation_1.token)
         self.assertEqual(sc2.managed_blocked_periods().count(), 0)
 
-    def test_allocation_partition(self):
+    @serialized
+    def test_allocation_partition_completely_available(self):
         sc = Scheduler(new_uuid())
 
         allocations = sc.allocate(
@@ -717,21 +718,61 @@ class TestScheduler(IntegrationTestCase):
         partitions = allocation.availability_partitions()
         self.assertEqual(len(partitions), 1)
         self.assertEqual(partitions[0][0], 100.0)
-        self.assertEqual(partitions[0][1], False)
+        self.assertEqual(partitions[0][1], None)
 
+    @serialized
+    def test_allocation_partition_reserved_partitions(self):
+        sc = Scheduler(new_uuid())
+
+        allocations = sc.allocate(
+            (
+                datetime(2011, 1, 1, 8, 0),
+                datetime(2011, 1, 1, 10, 0)
+            ),
+            partly_available=True
+        )
+
+        allocation = allocations[0]
         start, end = datetime(2011, 1, 1, 8, 30), datetime(2011, 1, 1, 9, 00)
-
         token = sc.reserve(reservation_email, (start, end))
         sc.approve_reservation(token)
 
         partitions = allocation.availability_partitions()
         self.assertEqual(len(partitions), 3)
         self.assertEqual(partitions[0][0], 25.00)
-        self.assertEqual(partitions[0][1], False)
+        self.assertEqual(partitions[0][1], None)
         self.assertEqual(partitions[1][0], 25.00)
-        self.assertEqual(partitions[1][1], True)
+        self.assertEqual(partitions[1][1], 'reserved')
         self.assertEqual(partitions[2][0], 50.00)
-        self.assertEqual(partitions[2][1], False)
+        self.assertEqual(partitions[2][1], None)
+
+    @serialized
+    def test_allocation_partition_reserved_and_blocked_partitions(self):
+        sc = Scheduler(new_uuid())
+
+        allocations = sc.allocate(
+            (
+                datetime(2011, 1, 1, 8, 0),
+                datetime(2011, 1, 1, 10, 0)
+            ),
+            partly_available=True
+        )
+
+        allocation = allocations[0]
+        start, end = datetime(2011, 1, 1, 8, 30), datetime(2011, 1, 1, 9, 00)
+        token = sc.reserve(reservation_email, (start, end))
+        sc.approve_reservation(token)
+        start, end = datetime(2011, 1, 1, 9, 00), datetime(2011, 1, 1, 10, 00)
+        sc.block_period(start, end, token)
+
+        partitions = allocation.availability_partitions()
+        self.assertEqual(len(partitions), 3)
+        self.assertEqual(partitions[0][0], 25.00)
+        self.assertEqual(partitions[0][1], None)
+        self.assertEqual(partitions[1][0], 25.00)
+        self.assertEqual(partitions[1][1], 'reserved')
+        self.assertEqual(partitions[2][0], 50.00)
+        self.assertEqual(partitions[2][1], 'blocked')
 
     def test_partly(self):
         sc = Scheduler(new_uuid())
