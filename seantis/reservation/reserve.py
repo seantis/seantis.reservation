@@ -257,6 +257,16 @@ class YourReservationsData(object):
 
 class ReservationBaseForm(ResourceBaseForm):
 
+    def get_additional_data(self, data):
+        additional_data = self.additional_data(data, add_manager_defaults=True)
+        # only store forms defined in the formsets list
+        additional_data = dict(
+            (
+                form, additional_data[form]
+            ) for form in self.context.formsets if form in additional_data
+        )
+        return additional_data
+
     def your_reservation_defaults(self, defaults):
         """ Extends the given dictionary containing field defaults with
         the defaults found in your-reservations.
@@ -287,15 +297,9 @@ class ReservationBaseForm(ResourceBaseForm):
         assert not (dates and group)
 
         email = self.email(data)
-        additional_data = self.additional_data(data, add_manager_defaults=True)
         session_id = self.session_id()
 
-        # only store forms defined in the formsets list
-        additional_data = dict(
-            (
-                form, additional_data[form]
-            ) for form in self.context.formsets if form in additional_data
-        )
+        additional_data = self.get_additional_data(data)
 
         if dates:
             token = self.scheduler.reserve(
