@@ -86,6 +86,30 @@ class Reservation(TimestampMixin, ORMBase, OtherModels):
         Index('target_status_ix', 'status', 'target', 'id'),
     )
 
+    @classmethod
+    def for_allocation(cls, allocation, **args):
+        reservation = cls(**args)
+        reservation.target_type = u'allocation'
+        reservation.status = u'pending'
+        reservation.target = allocation.group
+        return reservation
+
+    @classmethod
+    def for_recurrence(cls, rrule, **args):
+        reservation = cls(**args)
+        reservation.target_type = u'recurrence'
+        reservation.status = u'pending'
+        reservation.rrule = rrule
+        return reservation
+
+    @classmethod
+    def for_group(cls, group, **args):
+        reservation = cls(**args)
+        reservation.target_type = u'group'
+        reservation.status = u'pending'
+        reservation.target = group
+        return reservation
+
     def _target_allocations(self):
         """ Returns the allocations this reservation is targeting. This should
         NOT be confused with db.allocations_by_reservation. The method in

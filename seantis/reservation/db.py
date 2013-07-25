@@ -765,35 +765,11 @@ class Scheduler(object):
         if recurrence_id:
             Session.delete(Session.query(Recurrence).get(recurrence_id))
 
-    @serialized
-    def reserve(self, email, dates=None, group=None, data=None,
-                session_id=None, quota=1, rrule=None):
-        """ First step of the reservation.
-
-        Seantis.reservation uses a two-step reservation process. The first
-        step is reserving what is either an open spot or a place on the
-        waiting list.
-
-        The second step is to actually write out the reserved slots, which
-        is done by approving an existing reservation.
-
-        Most checks are done in the reserve functions. The approval step
-        only fails if there's no open spot.
-
-        This function returns a reservation token which can be used to
-        approve the reservation in approve_reservation.
+    def _reserve_sanity_check(self, dates, quota):
+        """Check the request for saneness. If any requested date cannot be
+        reserved the request as a whole fails.
 
         """
-        assert (dates or group) and not (dates and group)
-
-        if group:
-            dates = self.dates_by_group(group)
-        dates = utils.pairs(dates)
-
-        validate_email(email)
-
-        # First, the request is checked for saneness. If any requested
-        # date cannot be reserved the request as a whole fails.
         for start, end in dates:
 
             # are the parameters valid?
@@ -841,36 +817,23 @@ class Scheduler(object):
             if not has_allocation:
                 raise ReservationOutOfBounds
 
-        # ok, we're good to go
-        token = new_uuid()
-        found = 0
-
+    def _create_reservation(self, email, dates, group, data, session_id,
+                            quota, rrule, token):
+        reservation = None
         # groups are reserved by group-identifier - so all members of a group
         # or none of them. As such there's no start / end date which is defined
         # implicitly by the allocation
         if group:
-            found = 1
-            reservation = Reservation()
-            reservation.token = token
-            reservation.target = group
-            reservation.status = u'pending'
-            reservation.target_type = u'group'
-            reservation.resource = self.uuid
-            reservation.data = data
-            reservation.session_id = session_id
-            reservation.email = email
-            reservation.quota = quota
-            Session.add(reservation)
+            reservation = Reservation.for_group(group)
 
         # XXX i'm confused and/or unhappy about this code.
         # - we iterate dates and could theoretically create more than one
         #   reservation, but in the end it (approval) only works with one
-        #   it feels like there should be a better way
-        # - furthermore the code has become very ugly.
+        #   it feels like there should be a better way?
 
         elif rrule:
-            target_type = u'recurrence'
-            assert len(dates) > 1
+            assert len(dates) > 1, 'recurrence only makes sense for '\
+                                                            'multiple dates?!?'
             target_start, target_end = dates[0]
             for allocation in self.allocations_in_range(target_start,
                                                         target_end):
@@ -878,50 +841,28 @@ class Scheduler(object):
                     if not allocation.overlaps(target_start, target_end):
                         continue
 
-                    found += 1
-                    reservation = Reservation()
-                    reservation.token = token
+                    reservation = Reservation.for_recurrence(rrule)
                     reservation.start, reservation.end = rasterize_span(
                         target_start, target_end, allocation.raster
                     )
+                    # XXX do we need a target in this case?
                     reservation.target = allocation.group
-                    reservation.status = u'pending'
-                    reservation.target_type = target_type
-                    reservation.resource = self.uuid
-                    reservation.data = data
-                    reservation.session_id = session_id
-                    reservation.email = email
-                    reservation.quota = quota
-                    reservation.rrule = rrule
-                    Session.add(reservation)
 
         else:
             groups = []
-            target_type = u'allocation'
             for start, end in dates:
                 for allocation in self.allocations_in_range(start, end):
 
                     if not allocation.overlaps(start, end):
                         continue
 
-                    found += 1
+                    assertion_msg = "can't create multiple reservations"
+                    assert reservation is None, assertion_msg
 
-                    reservation = Reservation()
-                    reservation.token = token
+                    reservation = Reservation.for_allocation(allocation)
                     reservation.start, reservation.end = rasterize_span(
                         start, end, allocation.raster
                     )
-                    reservation.target = allocation.group
-                    reservation.status = u'pending'
-                    reservation.target_type = target_type
-                    reservation.resource = self.uuid
-                    reservation.data = data
-                    reservation.session_id = session_id
-                    reservation.email = email
-                    reservation.quota = quota
-                    reservation.rrule = rrule
-                    Session.add(reservation)
-
                     groups.append(allocation.group)
 
                 # check if no group reservation is made with this request.
@@ -930,7 +871,47 @@ class Scheduler(object):
                 assert len(groups) == len(set(groups)), \
                     'wrongly trying to reserve a group'
 
-        if found:
+        if reservation:
+            reservation.token = token
+            reservation.email = email
+            reservation.quota = quota
+            reservation.session_id = session_id
+            reservation.data = data
+            reservation.resource = self.uuid
+        return reservation
+
+    @serialized
+    def reserve(self, email, dates=None, group=None, data=None,
+                session_id=None, quota=1, rrule=None):
+        """ First step of the reservation.
+
+        Seantis.reservation uses a two-step reservation process. The first
+        step is reserving what is either an open spot or a place on the
+        waiting list.
+
+        The second step is to actually write out the reserved slots, which
+        is done by approving an existing reservation.
+
+        Most checks are done in the reserve functions. The approval step
+        only fails if there's no open spot.
+
+        This function returns a reservation token which can be used to
+        approve the reservation in approve_reservation.
+
+        """
+        assert (dates or group) and not (dates and group)
+        validate_email(email)
+
+        if group:
+            dates = self.dates_by_group(group)
+        dates = utils.pairs(dates)
+        token = new_uuid()
+
+        self._reserve_sanity_check(dates, quota)
+        reservation = self._create_reservation(email, dates, group, data,
+                                               session_id, quota, rrule, token)
+        if reservation:
+            Session.add(reservation)
             notify(ReservationMadeEvent(reservation, self.language))
         else:
             raise InvalidReservationError
