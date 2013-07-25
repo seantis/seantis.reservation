@@ -1,6 +1,7 @@
 import logging
 from sqlalchemy.schema import ForeignKey
 from sqlalchemy.engine.reflection import Inspector
+from sqlalchemy.exc import IntegrityError
 log = logging.getLogger('seantis.reservation')
 
 from functools import wraps
@@ -46,6 +47,23 @@ def db_upgrade(fn):
             transaction.rollback()
             raise
 
+        finally:
+            connection.close()
+
+    return wrapper
+
+
+def raw_db_upgrade(fn):
+
+    @wraps(fn)
+    def wrapper(context):
+        util = getUtility(ISessionUtility)
+        dsn = util.get_dsn(utils.getSite())
+
+        engine = create_engine(dsn)
+        connection = engine.connect()
+        try:
+            fn(connection)
         finally:
             connection.close()
 
@@ -327,29 +345,56 @@ def upgrade_1017_to_1018(context):
     )
 
 
-@db_upgrade
-def upgrade_1018_to_1019(operations, metadata):
+def upgrade_1018_to_1019(context):
 
-    inspector = Inspector.from_engine(metadata.bind)
-    if 'recurring_reservations' not in inspector.get_table_names():
-        operations.create_table('recurring_reservations',
-                                Column('id',
-                                       types.Integer,
-                                       primary_key=True,
-                                       autoincrement=True),
-                                Column('rrule', types.String()),
-                                Column('created',
-                                       types.DateTime(timezone=True),
-                                       default=utils.utcnow),
-                                Column('modified',
-                                       types.DateTime(timezone=True),
-                                       onupdate=utils.utcnow),
-                                )
+    @db_upgrade
+    def add_rrule_column(operations, metadata):
+        reservations_table = Table('reservations', metadata, autoload=True)
+        if 'rrule' not in reservations_table.columns:
+            operations.add_column('reservations',
+                                  Column('rrule', types.String,))
 
-    allocations_table = Table('reservations', metadata, autoload=True)
-    if 'recurrence_id' not in allocations_table.columns:
-        operations.add_column('reservations',
-                              Column('recurrence_id', types.Integer(),
-                                     ForeignKey('recurring_reservations.id',
-                                                onupdate='cascade',
-                                                ondelete='cascade')))
+    @raw_db_upgrade
+    def alter_postgres_enum_type(connection):
+        """Issue an ALTER TYPE statement for postgres to modify possible
+        enum values.
+
+        To debug if the migration worked you can run:
+        SELECT n.nspname AS "schema", t.typname
+             ,string_agg(e.enumlabel, '|' ORDER BY e.enumsortorder)
+             AS enum_labels
+        FROM   pg_catalog.pg_type t
+        JOIN   pg_catalog.pg_namespace n ON n.oid = t.typnamespace
+        JOIN   pg_catalog.pg_enum e ON t.oid = e.enumtypid
+        WHERE  t.typname = 'reservation_target_type'
+        GROUP  BY 1,2;
+
+        If this breaks stuff and we need to cleanup, read this:
+        http://tech.valgog.com/2010/08/alter-enum-in-postgresql.html
+
+        then this:
+        http://en.dklab.ru/lib/dklab_postgresql_enum/
+
+        then maybe import the script and run it:
+        http://en.dklab.ru/lib/dklab_postgresql_enum/demo/dklab_postgresql_enum_2009-02-26.sql
+
+        delete enums:
+        SELECT enum.enum_del('reservation_target_type', 'recurrence');
+
+        add enums:
+        SELECT enum.enum_add('reservation_target_type', 'recurrence');
+
+        """
+        statement = "ALTER TYPE reservation_target_type ADD VALUE 'recurrence'"
+        try:
+            # XXX this feels wrong ...
+            raw_connection = connection.connection.connection
+            raw_connection.set_isolation_level(0)
+            connection.execute(statement)
+        # raised when recurrence has already been added
+        except IntegrityError:
+            pass
+
+    add_rrule_column(context)
+    # XXX maybe add migration for non-postgres infrastructure
+    alter_postgres_enum_type(context)

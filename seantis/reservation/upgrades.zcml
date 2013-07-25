@@ -165,7 +165,7 @@
     </genericsetup:upgradeStep>
 
     <genericsetup:upgradeStep
-        title="Add recurring-reservations database table"
+        title="Add recurring-reservation support"
         description=""
         source="1018"
         destination="1019"

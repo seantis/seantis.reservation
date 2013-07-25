@@ -1,6 +1,4 @@
 from logging import getLogger
-from seantis.reservation.models.recurrence import RecurringReservation
-from seantis.reservation.error import ReservationOutOfBounds
 log = getLogger('seantis.reservation')
 
 from uuid import UUID
@@ -38,9 +36,9 @@ from seantis.reservation.error import (
     QuotaOverLimit,
     InvalidQuota,
     QuotaImpossible,
-    InvalidAllocationError
+    InvalidAllocationError,
+    ReservationOutOfBounds
 )
-
 from seantis.reservation.session import serialized
 from seantis.reservation.raster import rasterize_span, MIN_RASTER_VALUE
 from seantis.reservation.interfaces import validate_email
@@ -792,12 +790,6 @@ class Scheduler(object):
             dates = self.dates_by_group(group)
         dates = utils.pairs(dates)
 
-        # use recurrence to group separate allocations.
-        if not group and dates and len(dates) > 1:
-            recurrence = RecurringReservation(rrule=rrule)
-        else:
-            recurrence = None
-
         validate_email(email)
 
         # First, the request is checked for saneness. If any requested
@@ -871,7 +863,7 @@ class Scheduler(object):
             Session.add(reservation)
         else:
             groups = []
-
+            target_type = u'recurrence' if rrule else u'allocation'
             for start, end in dates:
 
                 for allocation in self.allocations_in_range(start, end):
@@ -888,13 +880,13 @@ class Scheduler(object):
                     )
                     reservation.target = allocation.group
                     reservation.status = u'pending'
-                    reservation.target_type = u'allocation'
+                    reservation.target_type = target_type
                     reservation.resource = self.uuid
                     reservation.data = data
                     reservation.session_id = session_id
                     reservation.email = email
                     reservation.quota = quota
-                    reservation.recurrence = recurrence
+                    reservation.rrule = rrule
                     Session.add(reservation)
 
                     groups.append(allocation.group)
@@ -904,9 +896,6 @@ class Scheduler(object):
             # do that automatically)
             assert len(groups) == len(set(groups)), \
                 'wrongly trying to reserve a group'
-
-        if recurrence:
-            Session.add(recurrence)
 
         if found:
             notify(ReservationMadeEvent(reservation, self.language))

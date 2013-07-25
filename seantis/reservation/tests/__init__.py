@@ -30,6 +30,7 @@ from seantis.reservation import maintenance
 from Products.CMFCore.utils import getToolByName
 import lxml.html
 from lxml.cssselect import CSSSelector
+from seantis.reservation.session import Session
 
 
 class TestCase(unittest.TestCase):
@@ -69,6 +70,8 @@ class TestCase(unittest.TestCase):
         util = getUtility(ISessionUtility)
         util.sessionstore.readonly.rollback()
         util.sessionstore.serial.rollback()
+        util.sessionstore.readonly.remove()
+        util.sessionstore.serial.remove()
 
         maintenance.clear_clockservers()
 

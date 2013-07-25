@@ -9,8 +9,6 @@ from seantis.reservation import Session
 from seantis.reservation.models import customtypes
 from seantis.reservation.models.other import OtherModels
 from seantis.reservation.models.timestamp import TimestampMixin
-from sqlalchemy.schema import ForeignKey
-from sqlalchemy.orm import relation
 
 
 class Reservation(TimestampMixin, ORMBase, OtherModels):
@@ -37,7 +35,8 @@ class Reservation(TimestampMixin, ORMBase, OtherModels):
     )
 
     target_type = Column(
-        types.Enum(u'group', u'allocation', name='reservation_target_type'),
+        types.Enum(u'group', u'allocation', 'recurrence',
+                   name='reservation_target_type'),
         nullable=False
     )
 
@@ -80,11 +79,7 @@ class Reservation(TimestampMixin, ORMBase, OtherModels):
         nullable=False
     )
 
-    recurrence_id = Column(types.Integer(),
-                           ForeignKey('recurring_reservations.id',
-                                      onupdate='cascade',
-                                      ondelete='cascade'))
-    recurrence = relation('RecurringReservation', lazy='joined')
+    rrule = Column(types.String)
 
     __table_args__ = (
         Index('target_status_ix', 'status', 'target', 'id'),

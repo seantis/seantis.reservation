@@ -28,10 +28,6 @@ reservation_email = u'test@example.com'
 
 class TestScheduler(IntegrationTestCase):
 
-    def tearDown(self):
-        super(TestScheduler, self).tearDown()
-        Session.remove()  # kill the session between tests
-
     @serialized
     def test_reserve(self):
         sc = Scheduler(new_uuid())
