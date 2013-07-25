@@ -9,6 +9,7 @@ from seantis.reservation import Session
 from seantis.reservation.models import customtypes
 from seantis.reservation.models.other import OtherModels
 from seantis.reservation.models.timestamp import TimestampMixin
+from seantis.reservation.utils import get_date_range
 
 
 class Reservation(TimestampMixin, ORMBase, OtherModels):
@@ -136,6 +137,17 @@ class Reservation(TimestampMixin, ORMBase, OtherModels):
                 self.models.Allocation._start,
                 self.models.Allocation._end
             ).all()
+
+        if self.target_type == u'recurrence':
+            time_start = self.start.time()
+            time_end = self.end.time()
+
+            date_start = self.start.date()
+            from dateutil.rrule import rrulestr
+
+            rule = rrulestr(self.rrule, dtstart=date_start)
+            return [get_date_range(date, time_start, time_end)
+                    for date in rule]
 
         raise NotImplementedError
 

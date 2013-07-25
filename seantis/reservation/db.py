@@ -861,11 +861,44 @@ class Scheduler(object):
             reservation.email = email
             reservation.quota = quota
             Session.add(reservation)
+
+        # XXX i'm confused and/or unhappy about this code.
+        # - we iterate dates and could theoretically create more than one
+        #   reservation, but in the end it (approval) only works with one
+        #   it feels like there should be a better way
+        # - furthermore the code has become very ugly.
+
+        elif rrule:
+            target_type = u'recurrence'
+            assert len(dates) > 1
+            target_start, target_end = dates[0]
+            for allocation in self.allocations_in_range(target_start,
+                                                        target_end):
+
+                    if not allocation.overlaps(target_start, target_end):
+                        continue
+
+                    found += 1
+                    reservation = Reservation()
+                    reservation.token = token
+                    reservation.start, reservation.end = rasterize_span(
+                        target_start, target_end, allocation.raster
+                    )
+                    reservation.target = allocation.group
+                    reservation.status = u'pending'
+                    reservation.target_type = target_type
+                    reservation.resource = self.uuid
+                    reservation.data = data
+                    reservation.session_id = session_id
+                    reservation.email = email
+                    reservation.quota = quota
+                    reservation.rrule = rrule
+                    Session.add(reservation)
+
         else:
             groups = []
-            target_type = u'recurrence' if rrule else u'allocation'
+            target_type = u'allocation'
             for start, end in dates:
-
                 for allocation in self.allocations_in_range(start, end):
 
                     if not allocation.overlaps(start, end):
@@ -891,11 +924,11 @@ class Scheduler(object):
 
                     groups.append(allocation.group)
 
-            # check if no group reservation is made with this request.
-            # reserve by group in this case (or make this function
-            # do that automatically)
-            assert len(groups) == len(set(groups)), \
-                'wrongly trying to reserve a group'
+                # check if no group reservation is made with this request.
+                # reserve by group in this case (or make this function
+                # do that automatically)
+                assert len(groups) == len(set(groups)), \
+                    'wrongly trying to reserve a group'
 
         if found:
             notify(ReservationMadeEvent(reservation, self.language))
@@ -912,7 +945,6 @@ class Scheduler(object):
         Returns a list with the reserved slots.
 
         """
-
         reservation = self.reservation_by_token(token).one()
 
         # return these slots
