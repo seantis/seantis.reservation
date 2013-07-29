@@ -1080,6 +1080,16 @@ class TestScheduler(IntegrationTestCase):
         for s in siblings:
             self.assertEqual(s.siblings(), siblings)
 
+    @serialized
+    def test_change_quota_reorders(self):
+        sc = Scheduler(new_uuid())
+
+        start = datetime(2011, 1, 1, 15, 0)
+        end = datetime(2011, 1, 1, 16, 0)
+        daterange = (start, end)
+
+        master = sc.allocate(daterange, quota=5)[0]
+
         # let's do another round, adding 7 reservations and removing the three
         # in the middle, which should result in a reordering:
         # -> 1, 2, 3, 4, 5, 6, 7
