@@ -854,3 +854,7 @@ class IReservationsConfirmedEvent(Interface):
     """
     reservations = Attribute("The list of reservations the user confirmed")
     language = Attribute("language of the site or current request")
+
+
+class IReservationSlotsCreatedEvent(IReservationBaseEvent):
+    """Event triggered when all reservations slots have been created."""

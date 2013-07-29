@@ -164,4 +164,13 @@
         profile="seantis.reservation:default">
     </genericsetup:upgradeStep>
 
+    <genericsetup:upgradeStep
+        title="Add blocked_periods database table"
+        description=""
+        source="1018"
+        destination="1019"
+        handler=".upgrades.upgrade_1018_to_1019"
+        profile="seantis.reservation:default">
+    </genericsetup:upgradeStep>
+
 </configure>

@@ -1,10 +1,13 @@
 from allocation import Allocation
-from reserved_slot import ReservedSlot
-from reservation import Reservation
+from blocked_period import BlockedPeriod
 from recurrence import Recurrence
+from reservation import Reservation
+from reserved_slot import ReservedSlot
+
 
 # Pyflakes
 Allocation
+BlockedPeriod
 ReservedSlot
 Reservation
 Recurrence

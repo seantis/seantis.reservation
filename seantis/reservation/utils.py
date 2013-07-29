@@ -1042,11 +1042,22 @@ def align_range_to_day(start, end):
     return align_date_to_day(start, 'down'), align_date_to_day(end, 'up')
 
 
-def display_date(start, end):
-    """ Formates the date range given for display. """
+def as_machine_date(start, end):
+    """ Returns start as is and the end set to the last microsecond before
+    the actual end-date. This ensures that overlap-checks don't fail.
+
+    """
 
     if end.microsecond != 999999:
         end -= timedelta(microseconds=1)
+
+    return start, end
+
+
+def display_date(start, end):
+    """ Formates the date range given for display. """
+
+    start, end = as_machine_date(start, end)
 
     if (start, end) == align_range_to_day(start, end):
         if start.date() == end.date():

@@ -9,6 +9,7 @@ from seantis.reservation import Session
 from seantis.reservation.models import customtypes
 from seantis.reservation.models.other import OtherModels
 from seantis.reservation.models.timestamp import TimestampMixin
+from seantis.reservation import utils
 
 
 class Reservation(TimestampMixin, ORMBase, OtherModels):
@@ -103,19 +104,38 @@ class Reservation(TimestampMixin, ORMBase, OtherModels):
 
         return query
 
-    def timespans(self, start=None, end=None):
+    def timespans(self):
+        """ Same as target_dates but with an additional microsecond at the
+        end to make the end date readable.
 
+        """
+
+        return [
+            (s, e + timedelta(microseconds=1)) for s, e in self.target_dates()
+        ]
+
+    def target_dates(self):
+        """ Returns the dates this reservation targets. Those should not be
+        confused with the dates this reservation actually reserved.
+
+        The reason for this difference is the fact that after the reservation
+        is created, certain dates might be removed through removing reserved
+        slots.
+
+        This function only returns dates the reservation was originally
+        targeted at.
+
+        """
         if self.target_type == u'allocation':
-            return [(self.start, self.end + timedelta(microseconds=1))]
-        elif self.target_type == u'group':
-            return [
-                (
-                    a.display_start, a.display_end
-                )
-                for a in self._target_allocations()
-            ]
-        else:
-            raise NotImplementedError
+            return ((self.start, self.end),)
+
+        if self.target_type == u'group':
+            return self._target_allocations().with_entities(
+                self.models.Allocation._start,
+                self.models.Allocation._end
+            ).all()
+
+        raise NotImplementedError
 
     @property
     def title(self):
@@ -130,3 +150,9 @@ class Reservation(TimestampMixin, ORMBase, OtherModels):
         # requires explicit approval
 
         return query.first() is None
+
+    def get_resource_brain(self):
+        return utils.get_resource_by_uuid(self.resource)
+
+    def get_resource(self):
+        return self.get_resource_brain().getObject()
