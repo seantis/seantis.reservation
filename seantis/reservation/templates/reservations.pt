@@ -65,21 +65,38 @@
                        class="reservation-data-update" i18n:translate="">
                        &raquo; Edit Formdata
                     </a>
-                  
+
                   </div>
 
                   <div class="reservation-timespans" metal:define-macro="reservation_timespans">
 
                     <div class="block-title" i18n:translate="">Concerned Dates</div>
                     <div class="limitedList" style="max-height: 450px; min-width: 100%;">
-
-                    <tal:block tal:repeat="timespan python: sorted(reservation.timespans())">
-                        <tal:block tal:define="
-                        start python: timespan[0];
-                        end python: timespan[1];
-                        display python: view.display_date(start, end);
-                        ">
-                          <div tal:content="display"></div>
+                    <tal:block tal:define="timespans python: sorted(reservation.timespan_entries(start=view.timespan_start, end=view.timespan_end))">
+                        <tal:block tal:repeat="timespan timespans">
+                            <tal:block tal:define="
+                            start python: timespan.start;
+                            end python: timespan.end;
+                            display python: view.display_date(start, end);
+                            ">
+                              <div>
+                                  <tal:inline tal:content="display"></tal:inline>
+                                  <tal:removal_links tal:condition="python: view.show_links">
+                                  <a tal:condition="python: len(timespans) > 1"
+                                     class="link-overlay"
+                                     tal:attributes="href python: view.remove_reserved_slots_url(token, timespan.allocation_id)"
+                                     i18n:translate="">
+                                     Remove reservation
+                                  </a>
+                                  <a tal:condition="not: repeat/timespan/start"
+                                     class="link-overlay"
+                                     tal:attributes="href python: view.remove_all_reserved_slots_url(token, timespan.allocation_id)"
+                                     i18n:translate="">
+                                     Remove future reservations
+                                  </a>
+                                  </tal:removal_links>
+                              </div>
+                            </tal:block>
                         </tal:block>
                     </tal:block>
 

@@ -1013,6 +1013,20 @@ class Scheduler(object):
         self.reservation_by_token(token).delete()
 
     @serialized
+    def remove_reservation_slots(self, token, start, end):
+        """ Removes all reserved slots of the given reservation token
+        between start and end.
+
+        Note that removing a reservation does not let the reservee know that
+        his reservation has been removed.
+
+        """
+        query = self.reserved_slots_by_reservation(token)
+        query = query.filter(ReservedSlot.start >= start)\
+                     .filter(ReservedSlot.end <= end)
+        query.delete('fetch')
+
+    @serialized
     def update_reservation_data(self, token, data):
 
         reservation = self.reservation_by_token(token).one()

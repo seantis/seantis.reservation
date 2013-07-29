@@ -244,6 +244,14 @@ class GroupView(grok.View, AllocationGroupView):
     def title(self):
         return self.group
 
+    @property
+    def timespan_start(self):
+        return None
+
+    @property
+    def timespan_end(self):
+        return None
+
 
 class Listing(grok.View):
     permission = 'zope2.View'

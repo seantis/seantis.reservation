@@ -1,3 +1,4 @@
+from collections import namedtuple
 from datetime import timedelta
 
 from sqlalchemy import types
@@ -10,6 +11,9 @@ from seantis.reservation.models import customtypes
 from seantis.reservation.models.other import OtherModels
 from seantis.reservation.models.timestamp import TimestampMixin
 from seantis.reservation.utils import get_date_range
+
+
+Timespan = namedtuple('Timespan', ['start', 'end', 'allocation_id', 'token'])
 
 
 class Reservation(TimestampMixin, ORMBase, OtherModels):
@@ -131,15 +135,60 @@ class Reservation(TimestampMixin, ORMBase, OtherModels):
 
         return query
 
+    def timespan_entries(self, start=None, end=None):
+        if self.status == 'pending':
+            return self._pending_timespans(start, end)
+        else:
+            return self._approved_timespans(start, end)
+
+    def _pending_timespans(self, start_time, end_time):
+        result = []
+        for start, end in self.target_dates():
+            if start_time and not start >= start_time:
+                continue
+            if end_time and not end <= end_time:
+                continue
+            # build tuple containing necessary info for deletion links
+            timespan = Timespan(start=start,
+                                end=end + timedelta(microseconds=1),
+                                allocation_id=None,
+                                token=self.token)
+            result.append(timespan)
+        return result
+
+    def _approved_timespans(self, start, end):
+        ReservedSlot = self.models.ReservedSlot
+        query = Session.query(ReservedSlot)\
+                .filter_by(reservation_token=self.token)
+        if start:
+            query = query.filter(ReservedSlot.start >= start)
+        if end:
+            query = query.filter(ReservedSlot.end <= end)
+
+        # find the slots that are still reserved
+        result = []
+        for start, end in self.target_dates():
+            reserved_slot = query.filter(ReservedSlot.start <= end)\
+                            .filter(ReservedSlot.end >= start)\
+                            .first()
+            if not reserved_slot:
+                continue
+            # build tuple containing necessary info for deletion links
+            timespan = Timespan(start=start,
+                                end=end + timedelta(microseconds=1),
+                                allocation_id=reserved_slot.allocation_id,
+                                token=self.token)
+            result.append(timespan)
+        return result
+
     def timespans(self):
-        """ Same as target_dates but with an additional microsecond at the
-        end to make the end date readable.
+        """ Return all target_dates that still point to a valid reservation.
+
+        Display an additional microsecond at the end to make the end date
+        readable.
 
         """
-
-        return [
-            (s, e + timedelta(microseconds=1)) for s, e in self.target_dates()
-        ]
+        return [(each.start, each.end) for each in self.timespan_entries()]
 
     def target_dates(self):
         """ Returns the dates this reservation targets. Those should not be

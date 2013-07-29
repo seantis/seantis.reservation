@@ -21,6 +21,7 @@ from seantis.reservation.models import Recurrence
 
 from seantis.reservation import db
 from seantis.reservation.error import ReservationOutOfBounds
+from seantis.reservation.models.reserved_slot import ReservedSlot
 Scheduler = db.Scheduler
 
 reservation_email = u'test@example.com'
@@ -99,6 +100,29 @@ class TestScheduler(IntegrationTestCase):
 
         remaining = allocation.free_slots()
         self.assertEqual(len(remaining), 2)
+
+    @serialized
+    def test_remove_reservation_slots(self):
+        sc = Scheduler(new_uuid())
+
+        start = datetime(2011, 1, 1, 15)
+        end = datetime(2011, 1, 1, 16)
+        sc.allocate(
+            (start, end), raster=15, partly_available=True
+        )
+        token = sc.reserve(reservation_email, (start, end))
+        sc.approve_reservation(token)
+
+        query = Session.query(ReservedSlot)\
+                .filter_by(reservation_token=token)\
+                .filter(ReservedSlot.start >= start)\
+                .filter(ReservedSlot.end <= end)
+        self.assertGreater(query.count(), 0,
+                           msg='no reserved slots have been generated')
+
+        sc.remove_reservation_slots(token, start, end)
+        self.assertEqual(0, query.count(),
+                    msg='the reserved slots have not been deleted properly')
 
     @serialized
     def test_recurring_reservation_generated(self):

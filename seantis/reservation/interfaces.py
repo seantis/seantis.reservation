@@ -772,6 +772,14 @@ class IReservationIdForm(Interface):
     )
 
 
+class IAllocationIdForm(IReservationIdForm):
+    """ Describes a form with a hidden reservation-id and allocation-id field.
+    Use with seantis.reservation.reserve.ReservationRemovalForm. """
+
+    allocation_id = schema.Int(title=_("Allocation Id"),
+                               required=False)
+
+
 class IGroupReservation(Interface):
     """ A reservation of an allocation group. """
 
