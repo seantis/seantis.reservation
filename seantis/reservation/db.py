@@ -37,7 +37,10 @@ from seantis.reservation.error import (
     InvalidQuota,
     QuotaImpossible,
     InvalidAllocationError,
-    ReservationOutOfBounds
+    ReservationOutOfBounds,
+    NoRecurringReservationError,
+    NoReservedSlotsLeftError,
+
 )
 from seantis.reservation.session import serialized
 from seantis.reservation.raster import rasterize_span, MIN_RASTER_VALUE
@@ -1021,10 +1024,19 @@ class Scheduler(object):
         his reservation has been removed.
 
         """
+        reservation = self.reservation_by_token(token).one()
+        if not reservation.is_recurrence:
+            raise NoRecurringReservationError
+
         query = self.reserved_slots_by_reservation(token)
-        query = query.filter(ReservedSlot.start >= start)\
-                     .filter(ReservedSlot.end <= end)
-        query.delete('fetch')
+        query_slots_left = query.filter(or_(ReservedSlot.end > end,
+                                            ReservedSlot.start < start))
+        if query_slots_left.first() is None:
+            raise NoReservedSlotsLeftError
+
+        query_remove = query.filter(ReservedSlot.start >= start)\
+                            .filter(ReservedSlot.end <= end)
+        query_remove.delete('fetch')
 
     @serialized
     def update_reservation_data(self, token, data):

@@ -114,6 +114,18 @@ class Reservation(TimestampMixin, ORMBase, OtherModels):
         reservation.target = group
         return reservation
 
+    @property
+    def is_recurrence(self):
+        return self.target_type == 'recurrence'
+
+    @property
+    def is_group(self):
+        return self.target_type == 'group'
+
+    @property
+    def is_allocation(self):
+        return self.target_type == 'allocation'
+
     def _target_allocations(self):
         """ Returns the allocations this reservation is targeting. This should
         NOT be confused with db.allocations_by_reservation. The method in

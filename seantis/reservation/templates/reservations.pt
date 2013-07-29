@@ -82,7 +82,7 @@
                               <div>
                                   <tal:inline tal:content="display"></tal:inline>
                                   <tal:removal_links tal:condition="python: view.show_links">
-                                  <a tal:condition="python: len(timespans) > 1"
+                                  <a tal:condition="python: reservation.is_recurrence and len(timespans) > 1"
                                      class="link-overlay"
                                      tal:attributes="href python: view.remove_reserved_slots_url(token, timespan.allocation_id)"
                                      i18n:translate="">

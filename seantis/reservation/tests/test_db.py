@@ -22,9 +22,68 @@ from seantis.reservation.models import Recurrence
 from seantis.reservation import db
 from seantis.reservation.error import ReservationOutOfBounds
 from seantis.reservation.models.reserved_slot import ReservedSlot
+from seantis.reservation.error import NoRecurringReservationError
+from seantis.reservation.error import NoReservedSlotsLeftError
 Scheduler = db.Scheduler
 
 reservation_email = u'test@example.com'
+
+
+class TestRemoveReservationSlots(IntegrationTestCase):
+
+    def setUp(self):
+        super(TestRemoveReservationSlots, self).setUp()
+        self.sc = Scheduler(new_uuid())
+
+    def _setup_allocations(self, dates=None, rrule=None):
+        if dates is None:
+            dates = [(datetime(2011, 1, 1, 15), datetime(2011, 1, 1, 16)),
+                     (datetime(2011, 1, 2, 15), datetime(2011, 1, 2, 16))]
+        if rrule is None:
+            rrule = 'RRULE:FREQ=DAILY;COUNT=2'
+        self.sc.allocate(
+            dates, raster=15, partly_available=True, rrule=rrule
+        )
+        self.token = self.sc.reserve(reservation_email, dates, rrule=rrule)
+        self.sc.approve_reservation(self.token)
+
+    @serialized
+    def test_remove_reservation_slots_working(self):
+        self._setup_allocations()
+        query = Session.query(ReservedSlot)\
+                .filter_by(reservation_token=self.token)\
+                .filter(ReservedSlot.start >= datetime(2011, 1, 1, 15))\
+                .filter(ReservedSlot.end <= datetime(2011, 1, 1, 16))
+        self.assertGreater(query.count(), 0,
+                           msg='no reserved slots have been generated')
+
+        self.sc.remove_reservation_slots(self.token,
+                                         datetime(2011, 1, 1, 15),
+                                         datetime(2011, 1, 1, 16))
+        self.assertEqual(0, query.count(),
+                    msg='the reserved slots have not been deleted properly')
+
+    @serialized
+    def test_remove_reservation_slots_fails_when_all_slots_removed(self):
+        self._setup_allocations()
+
+        def remove_all_slots():
+            self.sc.remove_reservation_slots(self.token,
+                                             datetime(2011, 1, 1, 15),
+                                             datetime(2011, 1, 2, 16))
+        self.assertRaises(NoReservedSlotsLeftError, remove_all_slots)
+
+    @serialized
+    def test_remove_reservation_slots_fails_when_not_recurring(self):
+        self._setup_allocations(dates=[datetime(2011, 1, 1, 15),
+                                       datetime(2011, 1, 1, 16)],
+                                rrule='')
+
+        def remove_not_recurring():
+            self.sc.remove_reservation_slots(self.token,
+                                             datetime(2011, 1, 1, 15),
+                                             datetime(2011, 1, 1, 16))
+        self.assertRaises(NoRecurringReservationError, remove_not_recurring)
 
 
 class TestScheduler(IntegrationTestCase):
@@ -100,29 +159,6 @@ class TestScheduler(IntegrationTestCase):
 
         remaining = allocation.free_slots()
         self.assertEqual(len(remaining), 2)
-
-    @serialized
-    def test_remove_reservation_slots(self):
-        sc = Scheduler(new_uuid())
-
-        start = datetime(2011, 1, 1, 15)
-        end = datetime(2011, 1, 1, 16)
-        sc.allocate(
-            (start, end), raster=15, partly_available=True
-        )
-        token = sc.reserve(reservation_email, (start, end))
-        sc.approve_reservation(token)
-
-        query = Session.query(ReservedSlot)\
-                .filter_by(reservation_token=token)\
-                .filter(ReservedSlot.start >= start)\
-                .filter(ReservedSlot.end <= end)
-        self.assertGreater(query.count(), 0,
-                           msg='no reserved slots have been generated')
-
-        sc.remove_reservation_slots(token, start, end)
-        self.assertEqual(0, query.count(),
-                    msg='the reserved slots have not been deleted properly')
 
     @serialized
     def test_recurring_reservation_generated(self):

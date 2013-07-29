@@ -90,6 +90,14 @@ class InvalidAllocationError(ReservationError):
     pass
 
 
+class NoRecurringReservationError(ReservationError):
+    pass
+
+
+class NoReservedSlotsLeftError(ReservationError):
+    pass
+
+
 errormap = {
 
     OverlappingAllocationError:
@@ -145,6 +153,12 @@ errormap = {
 
     InvalidAllocationError:
     _(u'The resulting allocation would be invalid'),
+
+    NoRecurringReservationError:
+    _('This is not a recurring reservation'),
+
+    NoReservedSlotsLeftError:
+    _('No reserved slots would be left after this operation')
 }
 
 if HAS_PSYCOPG2:
