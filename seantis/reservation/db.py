@@ -732,7 +732,8 @@ class Scheduler(object):
         if recurrence_id:
             allocations = self.allocations_by_recurrence(recurrence_id).all()
         elif group:
-            allocations = self.allocations_by_group(group, masters_only=False)
+            allocations = self.allocations_by_group(group, masters_only=False)\
+                              .all()
         elif id:
             master = self.allocation_by_id(id)
             allocations = [master]
