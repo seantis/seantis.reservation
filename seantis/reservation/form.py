@@ -425,8 +425,8 @@ class ReservationListView(ReservationDataView):
     The property reservation can be implemented if it is desired to only show
     one reservation.
 
-    The property start and end can be implemented if it is desired to only
-    show a subset of the reserved slots
+    The property timespan_start and timespan_end can be implemented if it is
+    desired to only show a subset of the reserved slots
 
     Use the following macro to display:
 
@@ -602,5 +602,12 @@ class ReservationListView(ReservationDataView):
     @utils.memoize
     def approved_reservations(self):
         """ Returns a dictionary of reservations, keyed by reservation uid. """
-
         return self.reservations(status=u'approved')
+
+    @property
+    def timespan_start(self):
+        return None
+
+    @property
+    def timespan_end(self):
+        return None

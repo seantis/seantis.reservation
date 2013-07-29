@@ -54,6 +54,10 @@ class ReservationTooLong(ReservationError):
     pass
 
 
+class ReservationOutOfBounds(ReservationError):
+    pass
+
+
 class ThrottleBlock(ReservationError):
     pass
 
@@ -87,6 +91,14 @@ class InvalidAllocationError(ReservationError):
 
 
 class UnblockableAlreadyReservedError(ReservationError):
+    pass
+
+
+class NoRecurringReservationError(ReservationError):
+    pass
+
+
+class NoReservedSlotsLeftError(ReservationError):
     pass
 
 
@@ -124,6 +136,9 @@ errormap = {
     ReservationParametersInvalid:
     _(u'The given reservation paramters are invalid.'),
 
+    ReservationOutOfBounds:
+    _(u'Reservation out of bounds'),
+
     InvalidReservationToken:
     _(u'The given reservation token is invalid.'),
 
@@ -145,6 +160,12 @@ errormap = {
 
     UnblockableAlreadyReservedError:
     _(u"Can't block period because a reservation already exists."),
+
+    NoRecurringReservationError:
+    _('This is not a recurring reservation'),
+
+    NoReservedSlotsLeftError:
+    _('No reserved slots would be left after this operation')
 }
 
 if HAS_PSYCOPG2:

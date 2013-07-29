@@ -37,6 +37,7 @@ from Products.CMFPlone.interfaces import IPloneSiteRoot
 from seantis.reservation import error
 from seantis.reservation import _
 from Products.CMFPlone.utils import safe_unicode
+from dateutil.rrule import rrulestr
 
 
 try:
@@ -889,6 +890,29 @@ class EventUrls(object):
             return
 
         self.move = url
+
+
+def get_dates(data, is_whole_day=False):
+    """ Return a list with date tuples depending on the data entered by the
+    user, using rrule if requested.
+
+    """
+
+    start, end = get_date_range(
+        data['day'], data['start_time'], data['end_time']
+    )
+    if is_whole_day:
+        start, end = align_range_to_day(start, end)
+
+    if not data['recurrence']:
+        return ((start, end))
+
+    rule = rrulestr(data['recurrence'], dtstart=start)
+
+    event = lambda d: \
+        get_date_range(d, data['start_time'], data['end_time'])
+
+    return [event(d) for d in rule]
 
 
 def get_date_range(day, start_time, end_time):
