@@ -377,7 +377,15 @@ class Slots(grok.View, CalendarRequest):
 
         group_add = lambda n, v, p, t: \
             items.menu_add(_('Recurrences'), n, v, p, t)
-        if allocation.in_group:
+        if allocation.in_recurrence:
+            params = dict(recurrence_id=allocation.recurrence_id)
+            group_add(
+                _(u'List'), 'group', params, 'overlay'
+            )
+            group_add(
+                _(u'Remove'), 'remove-allocation', params, 'overlay'
+            )
+        elif allocation.in_group:
         # menu entries for group items
 
             group_add(
@@ -388,15 +396,6 @@ class Slots(grok.View, CalendarRequest):
                 _(u'Remove'), 'remove-allocation',
                 dict(group=allocation.group),
                 'overlay'
-            )
-
-        if allocation.in_recurrence:
-            params = dict(recurrence_id=allocation.recurrence_id)
-            group_add(
-                _(u'List'), 'group', params, 'overlay'
-            )
-            group_add(
-                _(u'Remove'), 'remove-allocation', params, 'overlay'
             )
 
         return items

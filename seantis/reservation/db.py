@@ -406,7 +406,7 @@ class Scheduler(object):
             allocation.approve_manually = approve_manually
             allocation.reservation_quota_limit = reservation_quota_limit
             allocation.recurrence = recurrence
-            if grouped:
+            if grouped or recurrence:
                 allocation.group = group
             else:
                 allocation.group = new_uuid()
