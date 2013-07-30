@@ -447,7 +447,10 @@ class ReservationListView(ReservationDataView):
         can be returned.
 
         """
-        return hasattr(self, 'group') and utils.string_uuid(self.group) or u''
+        if hasattr(self, 'group'):
+            if utils.is_uuid(self.group):
+                return utils.string_uuid(self.group)
+        return u''
 
     @property
     def hide_waitinglist(self):
@@ -457,7 +460,6 @@ class ReservationListView(ReservationDataView):
         of switching).
 
         """
-
         all_allocations = self.all_allocations()
         manual_allocations = all_allocations.filter(
             Allocation.approve_manually == True

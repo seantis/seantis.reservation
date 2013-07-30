@@ -431,7 +431,7 @@ class Scheduler(object):
             allocation.approve_manually = approve_manually
             allocation.reservation_quota_limit = reservation_quota_limit
             allocation.recurrence = recurrence
-            if grouped or recurrence:
+            if grouped:
                 allocation.group = group
             else:
                 allocation.group = new_uuid()
@@ -1245,6 +1245,21 @@ class Scheduler(object):
         query = query.filter(Reservation.target == group)
 
         return query
+
+    def reservations_by_recurring_allocation(self, allocation_id):
+        """Find reservations that target an allocation thats part of a
+        recurrence.
+
+        """
+        query = self.managed_allocations()
+        query = query.filter_by(id=allocation_id)
+
+        allocation = query.one()
+        reservation_tokens = [each.reservation_token for each
+                              in allocation.reserved_slots]
+
+        query = self.managed_reservations()
+        return query.filter(Reservation.token.in_(reservation_tokens))
 
     def reservations_by_allocation(self, allocation_id):
         master = self.allocation_by_id(allocation_id)

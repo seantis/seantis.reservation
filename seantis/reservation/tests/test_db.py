@@ -27,6 +27,7 @@ from seantis.reservation.error import ReservationOutOfBounds
 from seantis.reservation.models.reserved_slot import ReservedSlot
 from seantis.reservation.error import NoRecurringReservationError
 from seantis.reservation.error import NoReservedSlotsLeftError
+from seantis.reservation.models.reservation import Reservation
 Scheduler = db.Scheduler
 
 reservation_email = u'test@example.com'
@@ -162,6 +163,33 @@ class TestScheduler(IntegrationTestCase):
 
         remaining = allocation.free_slots()
         self.assertEqual(len(remaining), 2)
+
+    @serialized
+    def test_reservations_by_recurring_allocation(self):
+        sc = Scheduler(new_uuid())
+
+        dates = [datetime(2011, 1, 1, 15), datetime(2011, 1, 1, 16),
+                 datetime(2011, 1, 2, 15), datetime(2011, 1, 2, 16)]
+        dates_allocate = dates + [datetime(2011, 1, 3, 15),
+                                  datetime(2011, 1, 3, 16)]
+
+        three_days = 'RRULE:FREQ=DAILY;COUNT=3'
+        two_days = 'RRULE:FREQ=DAILY;COUNT=2'
+        allocations = sc.allocate(utils.pairs(dates_allocate), raster=15,
+                                  partly_available=True, grouped=False,
+                                  rrule=three_days)
+        Session.flush()
+
+        token = sc.reserve(u'foo@example.com', dates=dates, rrule=two_days)
+        sc.approve_reservation(token)
+        reservation = Session.query(Reservation).filter_by(token=token).one()
+
+        self.assertListEqual([reservation],
+              sc.reservations_by_recurring_allocation(allocations[0].id).all())
+        self.assertListEqual([reservation],
+              sc.reservations_by_recurring_allocation(allocations[1].id).all())
+        self.assertListEqual([],
+              sc.reservations_by_recurring_allocation(allocations[2].id).all())
 
     @serialized
     def test_recurring_reservation_generated(self):
