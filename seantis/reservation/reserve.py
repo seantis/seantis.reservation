@@ -4,6 +4,7 @@ from logging import getLogger
 from zope.component.hooks import getSite
 from plone.formwidget.recurrence.z3cform.widget import RecurrenceFieldWidget
 from plone.memoize import instance
+from seantis.reservation.models.reservation import Reservation
 
 log = getLogger('seantis.reservation')
 
@@ -854,6 +855,49 @@ class ReservationList(grok.View, ReservationListView, ReservationUrls):
     grok.context(IResourceBase)
 
     template = grok.PageTemplateFile('templates/reservations.pt')
+
+    #XXX maybe move to ReservationList
+    def all_reservations(self):
+        query = super(ReservationList, self).all_reservations()
+        if query:
+            return query
+
+        if self.recurring_allocation_id:
+            scheduler = self.context.scheduler()
+            return scheduler.reservations_by_recurring_allocation(
+                                                  self.recurring_allocation_id)
+
+        return None
+
+    def all_allocations(self):
+        query = super(ReservationList, self).all_allocations()
+        if query:
+            return query
+
+        if self.recurring_allocation_id:
+            return Session.query(Allocation).filter_by(
+                                               id=self.recurring_allocation_id)
+
+        return None
+
+    def reservations_by_recurring_allocation(self):
+        """Find reservations that target a recurring allocation
+        """
+
+        allocation_id = self.recurring_allocation_id
+        allocation = Session.query(Allocation).get(allocation_id)
+        if not allocation:
+            return None
+
+        reservation_tokens = [each.reservation_token for each
+                              in allocation.reserved_slots]
+        return Session.query(Reservation).filter(
+                                    Reservation.token.in_(reservation_tokens))
+
+    @property
+    def recurring_allocation_id(self):
+        allocation_id = self.request.get('recurring_allocation_id')
+        return utils.request_id_as_int(allocation_id)
 
     @property
     def id(self):
