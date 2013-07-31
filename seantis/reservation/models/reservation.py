@@ -11,6 +11,7 @@ from seantis.reservation.models import customtypes
 from seantis.reservation.models.other import OtherModels
 from seantis.reservation.models.timestamp import TimestampMixin
 from seantis.reservation.utils import get_date_range
+from seantis.reservation.utils import get_resource_by_uuid
 
 
 Timespan = namedtuple('Timespan', ['start', 'end', 'allocation_id', 'token'])
@@ -251,7 +252,7 @@ class Reservation(TimestampMixin, ORMBase, OtherModels):
         return query.first() is None
 
     def get_resource_brain(self):
-        return utils.get_resource_by_uuid(self.resource)
+        return get_resource_by_uuid(self.resource)
 
     def get_resource(self):
         return self.get_resource_brain().getObject()
