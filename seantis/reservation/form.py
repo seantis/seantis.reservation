@@ -186,7 +186,7 @@ class ResourceBaseForm(GroupForm, form.Form):
 
         other_defaults = self.defaults()
         for k, v in other_defaults.items():
-            assert self.set_widget(k, v), "invalid default field %s" % k
+            self.set_widget(k, v), "invalid default field %s" % k
 
     def redirect_to_context(self):
         """ Redirect to the url of the resource. """
