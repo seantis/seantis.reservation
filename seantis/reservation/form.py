@@ -3,10 +3,14 @@ from functools import wraps
 
 from five import grok
 from plone.directives import form
+from plone.memoize import view
+from plone.z3cform.fieldsets import utils as z3cutils
 from zope.component import getMultiAdapter
 from z3c.form import interfaces
 from z3c.form import field
 from z3c.form.group import GroupForm
+from z3c.form.interfaces import IDataConverter
+from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 
 from sqlalchemy import null
 
@@ -14,11 +18,6 @@ from seantis.reservation import _
 from seantis.reservation import utils
 from seantis.reservation.models import Allocation, Reservation
 from seantis.reservation.interfaces import IResourceBase
-
-from plone.memoize import view
-
-from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
-from plone.z3cform.fieldsets import utils as z3cutils
 
 
 def extract_action_data(fn):
@@ -158,7 +157,7 @@ class ResourceBaseForm(GroupForm, form.Form):
         if not w:
             return
 
-        converter = getMultiAdapter((f, w))
+        converter = getMultiAdapter((f, w), interface=IDataConverter)
 
         # z3c forms will work with all the widgets except radio and checkboxes
         # the docs hint at differences, but I can for the
@@ -243,7 +242,8 @@ class ResourceBaseForm(GroupForm, form.Form):
         elif self.widgets and 'id' in self.widgets:
             field = self.get_field('id')
             widget = self.get_widget('id')
-            converter = getMultiAdapter((field, widget))
+            converter = getMultiAdapter((field, widget),
+                                        interface=IDataConverter)
             value = converter.toFieldValue(widget.value)
 
         return utils.request_id_as_int(value)
