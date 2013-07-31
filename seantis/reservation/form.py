@@ -23,6 +23,7 @@ from zope.component.hooks import getSite
 from zope.i18n import translate
 from plone.memoize import instance
 from Products.CMFPlone.utils import safe_unicode
+from z3c.form.interfaces import IDataConverter
 
 
 def extract_action_data(fn):
@@ -147,7 +148,7 @@ class ResourceBaseForm(GroupForm, form.Form):
         if not w:
             return
 
-        converter = getMultiAdapter((f, w))
+        converter = getMultiAdapter((f, w), interface=IDataConverter)
 
         # z3c forms will work with all the widgets except radio and checkboxes
         # the docs hint at differences, but I can for the
@@ -232,7 +233,8 @@ class ResourceBaseForm(GroupForm, form.Form):
         elif self.widgets and 'id' in self.widgets:
             field = self.get_field('id')
             widget = self.get_widget('id')
-            converter = getMultiAdapter((field, widget))
+            converter = getMultiAdapter((field, widget),
+                                        interface=IDataConverter)
             value = converter.toFieldValue(widget.value)
 
         return utils.request_id_as_int(value)
