@@ -5,6 +5,7 @@ import collections
 import functools
 import isodate
 import base64
+import sys
 
 from datetime import datetime, timedelta, date, time as datetime_time
 from urlparse import urljoin
@@ -414,7 +415,9 @@ def handle_exception(ex, message_handler=None):
     msg = error.errormap.get(type(ex))
 
     if not msg:
-        raise ex
+        # preserve stack trace when raising
+        exc_info = sys.exc_info()
+        raise exc_info[0], exc_info[1], exc_info[2]
 
     if message_handler:
         message_handler(msg)
