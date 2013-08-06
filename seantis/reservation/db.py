@@ -1251,15 +1251,15 @@ class Scheduler(object):
         recurrence.
 
         """
-        query = self.managed_allocations()
-        query = query.filter_by(id=allocation_id)
+        master = self.allocation_by_id(allocation_id)
 
-        allocation = query.one()
         reservation_tokens = [each.reservation_token for each
-                              in allocation.reserved_slots]
+                              in master.reserved_slots]
 
         query = self.managed_reservations()
-        return query.filter(Reservation.token.in_(reservation_tokens))
+        return query.filter(or_(Reservation.token.in_(reservation_tokens),
+                                Reservation.target == master.group)
+                            )
 
     def reservations_by_allocation(self, allocation_id):
         master = self.allocation_by_id(allocation_id)

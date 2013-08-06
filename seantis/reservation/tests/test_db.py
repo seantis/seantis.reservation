@@ -192,6 +192,24 @@ class TestScheduler(IntegrationTestCase):
               sc.reservations_by_recurring_allocation(allocations[2].id).all())
 
     @serialized
+    def test_reservations_by_recurring_allocation_includes_pending(self):
+        sc = Scheduler(new_uuid())
+
+        dates = [datetime(2011, 1, 1, 15), datetime(2011, 1, 1, 16),
+                 datetime(2011, 1, 2, 15), datetime(2011, 1, 2, 16)]
+
+        two_days = 'RRULE:FREQ=DAILY;COUNT=2'
+        allocations = sc.allocate(utils.pairs(dates), raster=15,
+                                  partly_available=True, grouped=False,
+                                  rrule=two_days)
+        Session.flush()
+        token = sc.reserve(u'foo@example.com', dates=dates, rrule=two_days)
+
+        reservation = Session.query(Reservation).filter_by(token=token).one()
+        self.assertListEqual([reservation],
+              sc.reservations_by_recurring_allocation(allocations[0].id).all())
+
+    @serialized
     def test_recurring_reservation_generated(self):
         sc = Scheduler(new_uuid())
 
