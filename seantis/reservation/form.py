@@ -1,29 +1,31 @@
+from Products.CMFPlone.utils import safe_unicode
 from datetime import datetime
-from functools import wraps
-
 from five import grok
+from functools import wraps
+from plone import api
 from plone.directives import form
-from zope.component import getMultiAdapter
-from z3c.form import interfaces
-from z3c.form import field
-from z3c.form.group import GroupForm
-
-from sqlalchemy import null
-
+from plone.memoize import instance
+from plone.memoize import view
+from plone.z3cform.fieldsets import utils as z3cutils
 from seantis.reservation import _
 from seantis.reservation import utils
-from seantis.reservation.models import Allocation, Reservation
 from seantis.reservation.interfaces import IResourceBase
-
-from plone.memoize import view
-
+from seantis.reservation.models import Allocation, Reservation
+from sqlalchemy import null
+from tamedia.reservation.data import ReservationUserData
+from z3c.form import field
+from z3c.form import interfaces
+from z3c.form.group import GroupForm
+from z3c.form.interfaces import IDataConverter
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
-from plone.z3cform.fieldsets import utils as z3cutils
+from zope.component import getMultiAdapter
 from zope.component.hooks import getSite
 from zope.i18n import translate
-from plone.memoize import instance
-from Products.CMFPlone.utils import safe_unicode
-from z3c.form.interfaces import IDataConverter
+
+
+
+
+
 
 
 def extract_action_data(fn):
@@ -478,6 +480,19 @@ class ReservationListView(ReservationDataView):
                 return False
 
         return True
+
+    def can_revoke(self, token):
+        scheduler = self.context.scheduler()
+        reservation = scheduler.reservation_by_token(token).one()
+        user_data = ReservationUserData.from_dict(reservation.data)
+        current_user_id = api.user.get_current().id
+
+        permissions = api.user.get_permissions(username=current_user_id)
+        is_reservation_manager = permissions.get(
+                            'seantis.reservation: Approve Reservations', False)
+        is_users_reservation = user_data.user_id == current_user_id
+
+        return is_reservation_manager or is_users_reservation
 
     def reservation_by_token(self, token):
         if token in self.pending_reservations():

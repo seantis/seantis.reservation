@@ -805,7 +805,7 @@ class ReservationRevocationForm(
     ReservationUrls
 ):
 
-    permission = 'seantis.reservation.ApproveReservations'
+    permission = 'seantis.reservation.ViewReservations'
 
     grok.name('revoke-reservation')
     grok.require(permission)
@@ -985,7 +985,6 @@ class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
     @button.buttonAndHandler(_(u'Save'))
     @extract_action_data
     def save(self, data):
-
         self.additional_data = utils.additional_data_dictionary(data, self.fti)
 
         def save():
