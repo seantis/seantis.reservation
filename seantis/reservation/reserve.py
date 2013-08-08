@@ -805,7 +805,7 @@ class ReservationRevocationForm(
     ReservationUrls
 ):
 
-    permission = 'seantis.reservation.ViewReservations'
+    permission = 'seantis.reservation.ApproveReservations'
 
     grok.name('revoke-reservation')
     grok.require(permission)
