@@ -1041,9 +1041,19 @@ class Scheduler(object):
 
     @serialized
     def update_reservation_data(self, token, data):
-
         reservation = self.reservation_by_token(token).one()
-        reservation.data = data
+
+        # make sure data not coming from a form is preserved. Use new instance
+        # to make sure sqlalchemy detects the modification.
+        # somehow setting instance_state(reservation).modified = True does not
+        # work, thus we need this workaround.
+        old_data = reservation.data
+        new_data = dict()
+        if old_data:
+            new_data.update(old_data)
+        new_data.update(data)
+
+        reservation.data = new_data
 
     @serialized
     def confirm_reservations_for_session(self, session_id, token=None):
