@@ -481,7 +481,7 @@ msgstr "Monatsreport"
 
 #: ./report.py:132
 msgid "Monthly Report for ${month} ${year}"
-msgstr "Monatesreport ${month} ${year}"
+msgstr "Monatsreport ${month} ${year}"
 
 #: ./interfaces.py:50
 msgid "Monthly View"
