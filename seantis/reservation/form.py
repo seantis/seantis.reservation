@@ -487,9 +487,8 @@ class ReservationListView(ReservationDataView):
         user_data = ReservationUserData.from_dict(reservation.data)
         current_user_id = api.user.get_current().id
 
-        permissions = api.user.get_permissions(username=current_user_id)
-        is_reservation_manager = permissions.get(
-                            'seantis.reservation: Approve Reservations', False)
+        is_reservation_manager = 'Reservation-Manager' in\
+                                           api.user.get_roles(obj=self.context)
         is_users_reservation = user_data.user_id == current_user_id
 
         return is_reservation_manager or is_users_reservation
