@@ -2,6 +2,8 @@ import logging
 from sqlalchemy.schema import ForeignKey
 from sqlalchemy.engine.reflection import Inspector
 from sqlalchemy.exc import IntegrityError
+from plone.registry.interfaces import IRegistry
+from seantis.reservation.settings import ISeantisReservationSettings
 log = logging.getLogger('seantis.reservation')
 
 from functools import wraps
@@ -425,3 +427,18 @@ def upgrade_1019_to_1020(context):
     add_rrule_column(context)
     # XXX maybe add migration for non-postgres infrastructure
     alter_postgres_enum_type(context)
+
+
+def upgrade_1020_to_1021(context):
+
+    setup = getToolByName(context, 'portal_setup')
+    setup.runAllImportStepsFromProfile(
+        'profile-seantis.reservation.upgrades:1021'
+    )
+
+    registry = getUtility(IRegistry)
+    settings = registry.forInterface(ISeantisReservationSettings)
+
+    # preserve old value
+    value = settings.send_email_to_managers
+    settings.send_approval_email_to_managers = value
