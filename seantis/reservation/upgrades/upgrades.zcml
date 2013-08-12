@@ -164,4 +164,31 @@
         profile="seantis.reservation:default">
     </genericsetup:upgradeStep>
 
+    <genericsetup:upgradeStep
+        title="Add blocked_periods database table"
+        description=""
+        source="1018"
+        destination="1019"
+        handler=".upgrades.upgrade_1018_to_1019"
+        profile="seantis.reservation:default">
+    </genericsetup:upgradeStep>
+
+    <genericsetup:upgradeStep
+        title="Add recurring-reservation support"
+        description=""
+        source="1019"
+        destination="1020"
+        handler=".upgrades.upgrade_1019_to_1020"
+        profile="seantis.reservation:default">
+    </genericsetup:upgradeStep>
+
+    <genericsetup:upgradeStep
+        title="Add separate setting for approval emails"
+        description=""
+        source="1020"
+        destination="1021"
+        handler=".upgrades.upgrade_1020_to_1021"
+        profile="seantis.reservation:default">
+    </genericsetup:upgradeStep>
+
 </configure>

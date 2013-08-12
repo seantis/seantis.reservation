@@ -92,7 +92,7 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
 />
 
 <!-- Upgrades -->
-<include file="upgrades.zcml" />
+<include package=".upgrades" />
 
 <!-- Controlpanel View -->
 <browser:page

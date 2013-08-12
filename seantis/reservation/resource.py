@@ -244,6 +244,14 @@ class GroupView(grok.View, AllocationGroupView):
     def title(self):
         return self.group
 
+    @property
+    def timespan_start(self):
+        return None
+
+    @property
+    def timespan_end(self):
+        return None
+
 
 class Listing(grok.View):
     permission = 'zope2.View'
@@ -346,10 +354,12 @@ class Slots(grok.View, CalendarRequest):
                 'reserve', dict(group=allocation.group)
             )
 
-        res_add(
-            _(u'Manage'), 'reservations', dict(group=allocation.group),
-            'inpage'
-        )
+        if allocation.in_recurrence:
+            manage_params = dict(recurring_allocation_id=allocation.id)
+        else:
+            manage_params = dict(group=allocation.group)
+
+        res_add(_(u'Manage'), 'reservations', manage_params, 'inpage')
 
         # menu entries for single items
         entry_add = lambda n, v, p, t: \
