@@ -48,7 +48,7 @@ def on_reservations_confirmed(event):
                     reservation,
                     'reservation_made', event.language, to_managers=True
                 )
-            elif send_approval:
+            elif not reservation.autoapprovable and send_approval:
                 send_reservation_mail(
                     reservation,
                     'reservation_pending', event.language, to_managers=True
