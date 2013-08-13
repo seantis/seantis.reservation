@@ -15,6 +15,7 @@ from plone.memoize import view
 from Products.CMFCore.interfaces import IFolderish
 from Products.CMFCore.utils import getToolByName
 from z3c.form import button
+from zope.i18n import translate
 
 from seantis.reservation.form import ReservationDataView
 from seantis.reservation.reserve import ReservationUrls
@@ -313,15 +314,19 @@ class ReservationMail(ReservationDataView, ReservationUrls):
         if is_needed('data'):
             data = reservation.data
             lines = []
+
             for key in self.sorted_info_keys(data):
                 interface = data[key]
 
                 lines.append(interface['desc'])
                 for value in self.sorted_values(interface['values']):
+                    description = translate(value['desc'],
+                                            context=resource.REQUEST,
+                                            domain='seantis.reservation')
                     lines.append(
-                        '\t' + value['desc'] + ': ' +
+                        '\t' + description + ': ' +
                         unicode(self.display_info(value['value']))
-                    )
+                )
 
             p['data'] = '\n'.join(lines)
 
