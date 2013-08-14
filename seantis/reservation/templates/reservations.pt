@@ -35,7 +35,7 @@
 
                     <h3 tal:content="python: view.reservation_info(token)"></h3>
 
-                    <a tal:condition="python: view.show_links and view.can_revoke(token)"
+                    <a tal:condition="view/show_links"
                        tal:attributes="href python: view.revoke_all_url(token)"
                        class="reservation-delete" i18n:translate="">
                        Revoke
