@@ -844,7 +844,7 @@ class Scheduler(object):
                 raise ReservationOutOfBounds
 
     def _create_reservation(self, email, dates, group, data, session_id,
-                            quota, rrule, token):
+                            quota, rrule, token, description):
         reservation = None
         # groups are reserved by group-identifier - so all members of a group
         # or none of them. As such there's no start / end date which is defined
@@ -904,11 +904,12 @@ class Scheduler(object):
             reservation.session_id = session_id
             reservation.data = data
             reservation.resource = self.uuid
+            reservation.description = description
         return reservation
 
     @serialized
     def reserve(self, email, dates=None, group=None, data=None,
-                session_id=None, quota=1, rrule=None):
+                session_id=None, quota=1, rrule=None, description=None):
         """ First step of the reservation.
 
         Seantis.reservation uses a two-step reservation process. The first
@@ -935,7 +936,8 @@ class Scheduler(object):
 
         self._reserve_sanity_check(dates, quota)
         reservation = self._create_reservation(email, dates, group, data,
-                                               session_id, quota, rrule, token)
+                                               session_id, quota, rrule, token,
+                                               description)
         if reservation:
             Session.add(reservation)
             notify(ReservationMadeEvent(reservation, self.language))

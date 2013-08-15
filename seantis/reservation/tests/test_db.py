@@ -838,7 +838,7 @@ class TestScheduler(IntegrationTestCase):
         )
 
         allocation = allocations[0]
-        partitions = allocation.availability_partitions()
+        partitions = allocation.availability_partitions(sc)
         self.assertEqual(len(partitions), 1)
         self.assertEqual(partitions[0][0], 100.0)
         self.assertEqual(partitions[0][1], None)
@@ -859,13 +859,14 @@ class TestScheduler(IntegrationTestCase):
         start, end = datetime(2011, 1, 1, 8, 30), datetime(2011, 1, 1, 9, 00)
         token = sc.reserve(reservation_email, (start, end))
         sc.approve_reservation(token)
+        reservation = sc.reservation_by_token(token).one()
 
-        partitions = allocation.availability_partitions()
+        partitions = allocation.availability_partitions(sc)
         self.assertEqual(len(partitions), 3)
         self.assertEqual(partitions[0][0], 25.00)
         self.assertEqual(partitions[0][1], None)
         self.assertEqual(partitions[1][0], 25.00)
-        self.assertEqual(partitions[1][1], 'reserved')
+        self.assertEqual(partitions[1][1], ('reserved', None, reservation.id))
         self.assertEqual(partitions[2][0], 50.00)
         self.assertEqual(partitions[2][1], None)
 
@@ -887,15 +888,16 @@ class TestScheduler(IntegrationTestCase):
         sc.approve_reservation(token)
         start, end = datetime(2011, 1, 1, 9, 00), datetime(2011, 1, 1, 10, 00)
         sc.block_period(start, end, token)
+        reservation = sc.reservation_by_token(token).one()
 
-        partitions = allocation.availability_partitions()
+        partitions = allocation.availability_partitions(sc)
         self.assertEqual(len(partitions), 3)
         self.assertEqual(partitions[0][0], 25.00)
         self.assertEqual(partitions[0][1], None)
         self.assertEqual(partitions[1][0], 25.00)
-        self.assertEqual(partitions[1][1], 'reserved')
+        self.assertEqual(partitions[1][1], ('reserved', None, reservation.id))
         self.assertEqual(partitions[2][0], 50.00)
-        self.assertEqual(partitions[2][1], 'blocked')
+        self.assertEqual(partitions[2][1], ('blocked', None))
 
     def test_partly(self):
         sc = Scheduler(new_uuid())

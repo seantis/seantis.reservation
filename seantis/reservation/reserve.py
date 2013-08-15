@@ -307,7 +307,7 @@ class ReservationBaseForm(ResourceBaseForm):
 
     def run_reserve(
             self, data, approve_manually, dates=None, group=None, quota=1,
-            rrule=None
+            rrule=None, description=None
     ):
 
         assert dates or group
@@ -321,12 +321,14 @@ class ReservationBaseForm(ResourceBaseForm):
         if dates:
             token = self.scheduler.reserve(
                 email, dates, data=additional_data,
-                session_id=session_id, quota=quota, rrule=rrule
+                session_id=session_id, quota=quota, rrule=rrule,
+                description=description
             )
         else:
             token = self.scheduler.reserve(
                 email, group=group,
-                data=additional_data, session_id=session_id, quota=quota
+                data=additional_data, session_id=session_id, quota=quota,
+                description=description
             )
 
         if approve_manually:
@@ -437,12 +439,14 @@ class ReservationForm(
 
         dates = utils.get_dates(data, is_whole_day=allocation.whole_day)
         quota = int(data.get('quota', 1))
+        description = data.get('description')
 
         def reserve():
             self.run_reserve(
                 data=data, approve_manually=approve_manually,
                 dates=dates, quota=quota,
-                rrule=data['recurrence']
+                rrule=data['recurrence'],
+                description=description,
             )
 
         action = throttled(reserve, self.context, 'reserve')

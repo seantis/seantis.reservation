@@ -308,7 +308,7 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
 
         return True
 
-    def availability_partitions(self):
+    def availability_partitions(self, scheduler):
         """Partitions the space between start and end into blocks of either
         free, blocked or reserved time. Each block has a percentage
         representing the space the block occupies compared to the size of the
@@ -334,7 +334,7 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
 
         """
 
-        reserved = set(r.start for r in self.reserved_slots)
+        reserved = dict((r.start, r) for r in self.reserved_slots)
         blocked = set()
         for blocked_period in self._query_blocked_periods():
             blocked.update(start for start, end in
@@ -354,9 +354,12 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
         for slot in slots:
             piece = None
             if slot[0] in reserved:
-                piece = 'reserved'
+                reserved_slot = reserved[slot[0]]
+                token = reserved_slot.reservation_token
+                reservation = scheduler.reservation_by_token(token).one()
+                piece = ('reserved', reservation.description, reservation.id)
             elif slot[0] in blocked:
-                piece = 'blocked'
+                piece = ('blocked', None)
             pieces.append(piece)
 
         # Group by the None/'reserved'/'blocked' values in the pieces and sum
