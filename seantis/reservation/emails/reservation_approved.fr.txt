@@ -1,0 +1,8 @@
+La réservation pour %(resource)s a été acceptée
+===============================================
+Nous avons le plaisir de vous confirmer que %(resource)s est maintenant disponible et sera réservée pour vous.
+
+Données:
+%(dates)s
+
+Si un changement devait avoir lieu, vous en serez informé par email.
