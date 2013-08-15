@@ -1,0 +1,18 @@
+Nouvelle réservation pour %(resource)s
+======================================
+Nouvelle réservation pour %(resource)s a été saisie dans le système:
+
+Données:
+%(dates)s
+
+Adresse courriel:
+%(reservation_mail)s
+
+Données du formulaire:
+%(data)s
+
+Afin d'accepter la réservation, cliquez sur le lien suivant:
+%(approval_link)s
+
+Afin de refuser la réservation:
+%(denial_link)s

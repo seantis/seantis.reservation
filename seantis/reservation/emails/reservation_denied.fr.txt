@@ -1,0 +1,6 @@
+La réservation pour %(resource)s a été refusée
+==============================================
+Nous sommes désolés de devoir vous informer que la réservation pour %(resource)s a été annulée. Merci de bien vouloir prendre contact avec la réception pour toute question.
+
+Données:
+%(dates)s
