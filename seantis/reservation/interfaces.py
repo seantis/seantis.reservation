@@ -758,7 +758,7 @@ class IReservation(Interface):
 
     description = schema.TextLine(
          title=_(u'Description'),
-         description=_('The description is visible on the calendar'),
+         description=_('Visible on the calendar'),
          required=False,
     )
 
