@@ -197,20 +197,25 @@ var CalendarGroups = function() {
             }
 
             var free = _.template('<div style="height:<%= height %>%;"></div>');
-            var reserved = _.template('<div style="height:<%= height %>%;" class="calendar-occupied"></div>');
+            var reserved = _.template('<div style="height:<%= height %>%;" class="calendar-occupied"><%= name %></div>');
             var blocked = _.template('<div style="height:<%= height %>%;" class="calendar-blocked"></div>');
             var partition_block = _.template('<div style="height:<%= height %>px;"><%= partitions %></div>');
 
             // build the individual partitions
             var partitions = '';
+
             _.each(event.partitions, function(partition) {
                 var partition_type = partition[1];
-                if (partition_type === 'reserved') {
-                    partitions += reserved({height: partition[0]});
-                } else if (partition_type === 'blocked') {
-                    partitions += blocked({height: partition[0]});
-                } else {
-                    partitions += free({height: partition[0]});
+                var height = partition[0];
+                var name;
+                if (partition_type === null) {
+                    partitions += free({height: height});
+                } else if (partition_type[0] === 'reserved') {
+                    name = partition_type[1] ? partition_type[1] : '';
+                    partitions += reserved({height: height,
+                                            name: name});
+                } else if (partition_type[0] === 'blocked') {
+                    partitions += blocked({height: height});
                 }
             });
 
