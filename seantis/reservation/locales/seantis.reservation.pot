@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-08-15 11:54+0000\n"
+"POT-Creation-Date: 2013-08-15 16:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -822,10 +822,6 @@ msgstr ""
 msgid "The allocation spans the whole day."
 msgstr ""
 
-#: seantis.reservation/seantis/reservation/interfaces.py:761
-msgid "The description is visible on the calendar"
-msgstr ""
-
 #: seantis.reservation/seantis/reservation/error.py:137
 msgid "The given reservation paramters are invalid."
 msgstr ""
@@ -933,6 +929,10 @@ msgstr ""
 
 #: seantis.reservation/seantis/reservation/interfaces.py:386
 msgid "Views available to the user on the calendar."
+msgstr ""
+
+#: seantis.reservation/seantis/reservation/interfaces.py:761
+msgid "Visible on the calendar"
 msgstr ""
 
 #: seantis.reservation/seantis/reservation/templates/reservations.pt:120

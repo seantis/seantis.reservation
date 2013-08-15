@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-08-15 11:54+0000\n"
+"POT-Creation-Date: 2013-08-15 16:18+0000\n"
 "PO-Revision-Date: 2012-09-06 11:33+0100\n"
 "Last-Translator: Fabian Reinhard <fabian.reinhard@seantis.ch>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -147,7 +147,7 @@ msgstr "Das Datum das beim Öffnen des Kalenders angezeigt wird."
 
 #: seantis.reservation/seantis/reservation/error.py:162
 msgid "Can't block period because a reservation already exists."
-msgstr "Die Periode kann nicht blockiert werden weil schon eine Reservation existiert"
+msgstr "Die Zeitspanne kann nicht blockiert werden weil schon eine Reservation existiert"
 
 #: seantis.reservation/seantis/reservation/allocate.py:151
 #: seantis.reservation/seantis/reservation/reserve.py:457
@@ -602,7 +602,7 @@ msgstr "Reservation entfernen"
 
 #: seantis.reservation/seantis/reservation/reserve.py:719
 msgid "Remove reservations"
-msgstr "Supprimer les réservations"
+msgstr "Reservationen entfernen"
 
 #: seantis.reservation/seantis/reservation/interfaces.py:776
 msgid "Reservation"
@@ -819,10 +819,6 @@ msgstr "Die Einteilung muss mindestens 5 minuten lang sein"
 msgid "The allocation spans the whole day."
 msgstr "Die Einteilung ist für den ganzen Tag gültig."
 
-#: seantis.reservation/seantis/reservation/interfaces.py:761
-msgid "The description is visible on the calendar"
-msgstr "Die Beschreibung ist im Kaleder sichtbar"
-
 #: seantis.reservation/seantis/reservation/error.py:137
 msgid "The given reservation paramters are invalid."
 msgstr "Die Reservations-Parameter sind ungültig."
@@ -931,6 +927,10 @@ msgstr "Hilfsmittel"
 #: seantis.reservation/seantis/reservation/interfaces.py:386
 msgid "Views available to the user on the calendar."
 msgstr "Ansichten die den Benutzern auf dem Kalender zur verfügung stehen."
+
+#: seantis.reservation/seantis/reservation/interfaces.py:761
+msgid "Visible on the calendar"
+msgstr "Wird in der Kalenderansicht angezeigt"
 
 #: seantis.reservation/seantis/reservation/templates/reservations.pt:120
 msgid "Waitinglist"

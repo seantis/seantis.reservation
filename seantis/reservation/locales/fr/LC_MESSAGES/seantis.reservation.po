@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-08-15 11:54+0000\n"
+"POT-Creation-Date: 2013-08-15 16:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -819,10 +819,6 @@ msgstr "La salle doit être au moins réservée pour 5 minutes"
 msgid "The allocation spans the whole day."
 msgstr "La classe est valable pour la journée"
 
-#: seantis.reservation/seantis/reservation/interfaces.py:761
-msgid "The description is visible on the calendar"
-msgstr ""
-
 #: seantis.reservation/seantis/reservation/error.py:137
 msgid "The given reservation paramters are invalid."
 msgstr "Les paramètres de réservations ne sont pas valables"
@@ -931,6 +927,10 @@ msgstr "Moyens"
 #: seantis.reservation/seantis/reservation/interfaces.py:386
 msgid "Views available to the user on the calendar."
 msgstr "Options de vue disponibles pour l'utilisateur"
+
+#: seantis.reservation/seantis/reservation/interfaces.py:761
+msgid "Visible on the calendar"
+msgstr "Sera affiché dans le calendrier"
 
 #: seantis.reservation/seantis/reservation/templates/reservations.pt:120
 msgid "Waitinglist"
