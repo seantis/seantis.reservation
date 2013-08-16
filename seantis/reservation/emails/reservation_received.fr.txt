@@ -8,5 +8,5 @@ Les réservations munies d'une étoile (*) sont actuellement contrôlées. Elles
 seront soit acceptées, soit refusées. Vous recevrez prochainement un email de
 confirmation.
 
-Les réservations sans aucune étoile (*) sont automatiquement validées. Si une
+Les réservations sans aucune étoile sont automatiquement validées. Si une
 réservation devait être malgré tout modifiée, vous en serez informé par email.
