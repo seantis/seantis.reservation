@@ -1067,7 +1067,8 @@ class Scheduler(object):
                             .filter(ReservedSlot.end <= end)
 
         dates = []
-        for day, group in groupby(query_remove, lambda slot: slot.start.day):
+        for date, group in groupby(query_remove.order_by(ReservedSlot.start),
+                                   lambda slot: slot.start.date()):
             entries = list(group)  # iterators are empty after one iteration
             start = min(each.start for each in entries)
             end = max(each.end for each in entries)
