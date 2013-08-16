@@ -877,3 +877,9 @@ class IReservationsConfirmedEvent(Interface):
 
 class IReservationSlotsCreatedEvent(IReservationBaseEvent):
     """Event triggered when all reservations slots have been created."""
+
+
+class IReservationSlotsRemovedEvent(IReservationBaseEvent):
+    """Event triggered when reservation slots are removed."""
+
+    dates = Attribute("The concerned dates")

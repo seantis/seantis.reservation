@@ -18,7 +18,8 @@ from seantis.reservation.events import (
     ReservationDeniedEvent,
     ReservationRevokedEvent,
     ReservationsConfirmedEvent,
-    ReservationSlotsCreatedEvent
+    ReservationSlotsCreatedEvent,
+    ReservationSlotsRemovedEvent,
 )
 
 from seantis.reservation.models import (
@@ -1064,6 +1065,16 @@ class Scheduler(object):
 
         query_remove = query.filter(ReservedSlot.start >= start)\
                             .filter(ReservedSlot.end <= end)
+
+        dates = []
+        for day, group in groupby(query_remove, lambda slot: slot.start.day):
+            entries = list(group)  # iterators are empty after one iteration
+            start = min(each.start for each in entries)
+            end = max(each.end for each in entries)
+            dates.append((start, end))
+
+        notify(ReservationSlotsRemovedEvent(reservation, self.language, dates))
+
         query_remove.delete('fetch')
 
     @serialized
