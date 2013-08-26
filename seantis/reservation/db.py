@@ -948,16 +948,7 @@ class Scheduler(object):
         return token
 
     @serialized
-    def approve_reservation(self, token):
-        """ This function approves an existing reservation and writes the
-        reserved slots accordingly.
-
-        Returns a list with the reserved slots.
-
-        """
-        reservation = self.reservation_by_token(token).one()
-
-        # return these slots
+    def generate_reserved_slots(self, token, reservation):
         slots_to_reserve = []
 
         # the reservation quota is simply implemented by multiplying the
@@ -984,6 +975,20 @@ class Scheduler(object):
                 # must make it realz yo
                 if allocation.is_transient:
                     Session.add(allocation)
+            return slots_to_reserve
+
+    @serialized
+    def approve_reservation(self, token):
+        """ This function approves an existing reservation and writes the
+        reserved slots accordingly.
+
+        Returns a list with the reserved slots.
+
+        """
+        reservation = self.reservation_by_token(token).one()
+
+        # return these slots
+        slots_to_reserve = self.generate_reserved_slots(token, reservation)
 
         reservation.status = u'approved'
 
@@ -1079,7 +1084,23 @@ class Scheduler(object):
         query_remove.delete('fetch')
 
     @serialized
-    def update_reservation_data(self, token, data):
+    def update_reservation(self, token, start, end, email, description,
+                           data):
+        self.update_reservation_data(token, data)
+        reservation = self.reservation_by_token(token).one()
+        reservation.emal = email
+        reservation.description = description
+        # re-generate reserved slots.
+        # we could detect the diff and only update the changes, but this is
+        # way too complicated at the moment :-s
+        start, end = utils.as_machine_date(start, end)
+        if reservation.start != start or reservation.end != end:
+            query = self.managed_reserved_slots()
+            query.delete('fetch')
+            self.generate_reserved_slots(token, reservation)
+
+    @serialized
+    def update_reservation_data(self, token, data, **kwargs):
         reservation = self.reservation_by_token(token).one()
 
         # make sure data not coming from a form is preserved. Use new instance
@@ -1093,6 +1114,8 @@ class Scheduler(object):
         new_data.update(data)
 
         reservation.data = new_data
+        for key, value in kwargs.items():
+            setattr(reservation, key, value)
 
     @serialized
     def confirm_reservations_for_session(self, session_id, token=None):

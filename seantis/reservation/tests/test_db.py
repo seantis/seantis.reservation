@@ -22,7 +22,6 @@ from seantis.reservation.models import Recurrence
 from seantis.reservation import db
 from seantis.reservation.db import unblock_periods
 
-from seantis.reservation import db
 from seantis.reservation.error import ReservationOutOfBounds
 from seantis.reservation.models.reserved_slot import ReservedSlot
 from seantis.reservation.error import NoRecurringReservationError
@@ -33,10 +32,10 @@ Scheduler = db.Scheduler
 reservation_email = u'test@example.com'
 
 
-class TestRemoveReservationSlots(IntegrationTestCase):
+class BaseTestDB(IntegrationTestCase):
 
     def setUp(self):
-        super(TestRemoveReservationSlots, self).setUp()
+        super(BaseTestDB, self).setUp()
         self.sc = Scheduler(new_uuid())
 
     def _setup_allocations(self, dates=None, rrule=None):
@@ -50,6 +49,19 @@ class TestRemoveReservationSlots(IntegrationTestCase):
         )
         self.token = self.sc.reserve(reservation_email, dates, rrule=rrule)
         self.sc.approve_reservation(self.token)
+
+
+class TestUpdateReservation(BaseTestDB):
+
+    def test_reserved_slots_are_updated_when_updating_reservation(self):
+        start, end = (datetime(2011, 1, 1, 15), datetime(2011, 1, 1, 16))
+        self._setup_allocations(dates=(start, end), rrule='')
+
+        self.sc.update_reservation(self.token, start, end + timedelta(hours=1),
+                                   'foo@example.com', 'foo', {})
+
+
+class TestRemoveReservationSlots(BaseTestDB):
 
     @serialized
     def test_remove_reservation_slots_working(self):
