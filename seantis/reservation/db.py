@@ -1,4 +1,8 @@
 from logging import getLogger
+from seantis.reservation.utils import as_machine_date
+from seantis.reservation.error import ReservationError
+import transaction
+from seantis.reservation.utils import get_date_range
 log = getLogger('seantis.reservation')
 
 from uuid import UUID
@@ -948,15 +952,16 @@ class Scheduler(object):
         return token
 
     @serialized
-    def generate_reserved_slots(self, token, reservation):
+    def generate_reserved_slots(self, token, reservation, dates=None):
         slots_to_reserve = []
 
+        if dates is None:
+            dates = reservation.target_dates()
         # the reservation quota is simply implemented by multiplying the
         # dates which are approved
-        dates = reservation.target_dates() * reservation.quota
+        dates = dates * reservation.quota
 
         for start, end in dates:
-
             for allocation in self.reservation_targets(start, end):
 
                 for slot_start, slot_end in \
@@ -975,7 +980,7 @@ class Scheduler(object):
                 # must make it realz yo
                 if allocation.is_transient:
                     Session.add(allocation)
-            return slots_to_reserve
+        return slots_to_reserve
 
     @serialized
     def approve_reservation(self, token):
@@ -1083,24 +1088,61 @@ class Scheduler(object):
 
         query_remove.delete('fetch')
 
-    @serialized
-    def update_reservation(self, token, start, end, email, description,
-                           data):
-        self.update_reservation_data(token, data)
-        reservation = self.reservation_by_token(token).one()
-        reservation.emal = email
-        reservation.description = description
-        # re-generate reserved slots.
-        # we could detect the diff and only update the changes, but this is
-        # way too complicated at the moment :-s
-        start, end = utils.as_machine_date(start, end)
-        if reservation.start != start or reservation.end != end:
+    def _update_reserved_slots(self, start, end, reservation):
+        """re-generate reserved slots.
+
+        we could detect the diff and only update the changes, but this is
+        way too complicated at the moment.
+
+        """
+        token = reservation.token
+        new_start, new_end = utils.as_machine_date(start, end)
+        if reservation.start != new_start or reservation.end != new_end:
             query = self.managed_reserved_slots()
-            query.delete('fetch')
-            self.generate_reserved_slots(token, reservation)
+            query = query.filter_by(reservation_token=token)
+            assert reservation.autoapprovable, "can't change start/end-time "\
+                                 "for reservations that are not autoapprovable"
+            assert not reservation.is_group, "can't change start/end-time "\
+                                         "for reservations that target a group"
+            if reservation.is_recurrence:
+                start_time = new_start.time()
+                end_time = new_end.time()
+                current_reservations = reservation.timespans()
+
+                for old_start, old_end in current_reservations:
+                    old_start, old_end = as_machine_date(old_start, old_end)
+                    query_del = query.filter(ReservedSlot.start >= old_start)\
+                                     .filter(ReservedSlot.end <= old_end)
+                    query_del.delete('fetch')
+
+                    date = old_start.date()
+                    dates = [get_date_range(date, start_time, end_time)]
+                    self._reserve_sanity_check(dates, reservation.quota)
+                    self.generate_reserved_slots(token, reservation, dates)
+                reservation.start = new_start
+                reservation.end = new_end
+            elif reservation.is_allocation:
+                query.delete('fetch')
+                reservation.start = start
+                reservation.end = end
+                self._reserve_sanity_check([(start, end)], reservation.quota)
+                self.generate_reserved_slots(token, reservation)
 
     @serialized
-    def update_reservation_data(self, token, data, **kwargs):
+    def update_reservation(self, token, start, end, email, description, data):
+        self.update_reservation_data(token, data)
+        reservation = self.reservation_by_token(token).one()
+        reservation.email = email
+        reservation.description = description
+
+        try:
+            self._update_reserved_slots(start, end, reservation)
+        except ReservationError:
+            transaction.abort()
+            raise
+
+    @serialized
+    def update_reservation_data(self, token, data):
         reservation = self.reservation_by_token(token).one()
 
         # make sure data not coming from a form is preserved. Use new instance
@@ -1114,8 +1156,6 @@ class Scheduler(object):
         new_data.update(data)
 
         reservation.data = new_data
-        for key, value in kwargs.items():
-            setattr(reservation, key, value)
 
     @serialized
     def confirm_reservations_for_session(self, session_id, token=None):
@@ -1352,5 +1392,3 @@ class Scheduler(object):
             end=end
         )
         Session.add(blocked_period)
-
-

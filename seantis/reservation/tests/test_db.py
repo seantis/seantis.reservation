@@ -38,27 +38,188 @@ class BaseTestDB(IntegrationTestCase):
         super(BaseTestDB, self).setUp()
         self.sc = Scheduler(new_uuid())
 
-    def _setup_allocations(self, dates=None, rrule=None):
+    def _get_dates(self, dates=None):
         if dates is None:
             dates = [(datetime(2011, 1, 1, 15), datetime(2011, 1, 1, 16)),
                      (datetime(2011, 1, 2, 15), datetime(2011, 1, 2, 16))]
+        return dates
+
+    def _get_rrule(self, rrule):
         if rrule is None:
             rrule = 'RRULE:FREQ=DAILY;COUNT=2'
-        self.sc.allocate(
-            dates, raster=15, partly_available=True, rrule=rrule
-        )
-        self.token = self.sc.reserve(reservation_email, dates, rrule=rrule)
+        return rrule
+
+    def _allocate(self, dates=None, rrule=None, approve_manually=False,
+                  grouped=False):
+        dates = self._get_dates(dates)
+        rrule = self._get_rrule(rrule)
+        self.allocations = self.sc.allocate(
+                        dates, raster=15, partly_available=True, rrule=rrule,
+                        approve_manually=approve_manually,
+                        grouped=grouped)
+
+    def _reserve(self, dates=None, rrule=None, group=None):
+        dates = self._get_dates(dates) if not group else None
+        rrule = self._get_rrule(rrule)
+        self.token = self.sc.reserve(reservation_email, dates=dates,
+                                     group=group, rrule=rrule)
         self.sc.approve_reservation(self.token)
+
+    def _setup_allocations(self, dates=None, rrule=None):
+        self._allocate(dates=dates, rrule=rrule)
+        self._reserve(dates=dates, rrule=rrule)
 
 
 class TestUpdateReservation(BaseTestDB):
 
-    def test_reserved_slots_are_updated_when_updating_reservation(self):
-        start, end = (datetime(2011, 1, 1, 15), datetime(2011, 1, 1, 16))
-        self._setup_allocations(dates=(start, end), rrule='')
+    @serialized
+    def test_data_is_updated(self):
+        start = datetime(2011, 1, 1, 15)
+        end = datetime(2011, 1, 1, 16)
+        dates = (start, end)
 
-        self.sc.update_reservation(self.token, start, end + timedelta(hours=1),
-                                   'foo@example.com', 'foo', {})
+        self._setup_allocations(dates=dates, rrule='')
+        self.sc.update_reservation(self.token, start, end, 'bar@example.com',
+                                   'description', {})
+        reservation = self.sc.reservation_by_token(self.token).one()
+        self.assertEqual('bar@example.com', reservation.email)
+        self.assertEqual('description', reservation.description)
+
+    @serialized
+    def test_reserved_slots_are_updated_for_allocation(self):
+        start = datetime(2011, 1, 1, 15)
+        end_early = datetime(2011, 1, 1, 16)
+        end = datetime(2011, 1, 1, 17)
+
+        self._allocate((start, end), rrule='')
+        self._reserve((start, end_early), rrule='')
+
+        self.assertEqual(4, self.sc.managed_reserved_slots().count())
+        self.sc.update_reservation(self.token, start, end, reservation_email,
+                                   'foo', {})
+        self.assertEqual(8, self.sc.managed_reserved_slots().count())
+
+    @serialized
+    def test_reserved_slots_are_updated_for_recurrence(self):
+        start1 = datetime(2011, 1, 1, 15, 0)
+        end1_allocation = datetime(2011, 1, 1, 18)
+        end1_reservation = datetime(2011, 1, 1, 15, 30)
+        start2 = datetime(2011, 1, 2, 15, 0)
+        end2_allocation = datetime(2011, 1, 2, 18)
+        end2_reservation = datetime(2011, 1, 2, 15, 30)
+
+        rrule = 'RRULE:FREQ=DAILY;COUNT=2'
+        dates_allocation = (start1, end1_allocation, start2, end2_allocation)
+        self._allocate(dates_allocation, rrule)
+        dates_reservation = (start1, end1_reservation,
+                             start2, end2_reservation)
+        self._reserve(dates_reservation, rrule)
+
+        new_end = datetime(2011, 1, 1, 16, 0)
+        self.assertEqual(4, self.sc.managed_reserved_slots().count())
+        self.sc.update_reservation(self.token, start1, new_end,
+                                   reservation_email, 'foo', {})
+        self.assertEqual(8, self.sc.managed_reserved_slots().count())
+
+    def test_reserved_slots_not_updated_for_overlapping_recurrence(self):
+        start1 = datetime(2011, 1, 1, 15, 0)
+        end1_allocation = datetime(2011, 1, 1, 18)
+        end1_reservation = datetime(2011, 1, 1, 15, 30)
+        start2 = datetime(2011, 1, 2, 15, 0)
+        end2_allocation = datetime(2011, 1, 2, 18)
+        end2_reservation = datetime(2011, 1, 2, 15, 30)
+
+        start_blocking = datetime(2011, 1, 2, 16)
+        end_blocking = datetime(2011, 1, 2, 17)
+
+        rrule = 'RRULE:FREQ=DAILY;COUNT=2'
+        dates_allocation = (start1, end1_allocation, start2, end2_allocation)
+        self._allocate(dates_allocation, rrule)
+        dates_reservation = (start1, end1_reservation,
+                             start2, end2_reservation)
+        self._reserve(dates_reservation, rrule)
+        dates_blocking = (start_blocking, end_blocking)
+        self._reserve(dates_blocking, rrule='')
+
+        def fail_already_reserved():
+            new_end = datetime(2011, 1, 1, 17)
+            self.sc.update_reservation(self.token, start1, new_end,
+                                       reservation_email, 'foo', {})
+        self.assertRaises(AlreadyReservedError, fail_already_reserved)
+
+    @serialized
+    def test_reserved_slots_are_not_updated_for_overlaps(self):
+        start = datetime(2011, 1, 1, 15)
+        end_early = datetime(2011, 1, 1, 16)
+        end_late = datetime(2011, 1, 1, 17)
+
+        self._allocate((start, end_late), rrule='')
+        self._reserve((start, end_early), rrule='')
+        token_early_reservation = self.token
+        self._reserve((end_early, end_late), rrule='')
+
+        def fail_overlaps():
+            self.sc.update_reservation(token_early_reservation, start,
+                                       end_late, reservation_email, 'foo', {})
+        self.assertRaises(AlreadyReservedError, fail_overlaps)
+
+    @serialized
+    def test_reserved_slots_are_not_updated_for_blocks(self):
+        start = datetime(2011, 1, 1, 15)
+        end_early = datetime(2011, 1, 1, 16)
+        end_late = datetime(2011, 1, 1, 17)
+
+        self._allocate((start, end_late), rrule='')
+        self._reserve((start, end_early), rrule='')
+        self.sc.block_period(end_early, end_late, self.token)
+
+        def fail_blocked():
+            self.sc.update_reservation(self.token, start,
+                                       end_late, reservation_email, 'foo', {})
+        self.assertRaises(AlreadyReservedError, fail_blocked)
+
+    @serialized
+    def test_reserved_slots_are_not_updated_when_out_of_bounds(self):
+        start = datetime(2011, 1, 1, 15)
+        end = datetime(2011, 1, 1, 16)
+        end_out_of_bounds = datetime(2011, 1, 1, 17)
+
+        self._allocate((start, end), rrule='')
+        self._reserve((start, end), rrule='')
+        self.assertEqual(4, self.sc.managed_reserved_slots().count())
+
+        def fail_out_of_bounds():
+            self.sc.update_reservation(self.token, start, end_out_of_bounds,
+                                       reservation_email, 'foo', {})
+        self.assertRaises(ReservationOutOfBounds, fail_out_of_bounds)
+
+    @serialized
+    def test_no_slot_update_for_manually_approved_reservations(self):
+        start = datetime(2011, 1, 1, 15)
+        end_early = datetime(2011, 1, 1, 16)
+        end = datetime(2011, 1, 1, 17)
+
+        self._allocate((start, end), rrule='', approve_manually=True)
+        self._reserve((start, end_early), rrule='')
+
+        def fail():
+            self.sc.update_reservation(self.token, start, end,
+                                       reservation_email, 'foo', {})
+        self.assertRaises(AssertionError, fail)
+
+    @serialized
+    def test_no_slot_update_for_grouped_reservations(self):
+        start = datetime(2011, 1, 1, 15)
+        end_early = datetime(2011, 1, 1, 16)
+        end = datetime(2011, 1, 1, 17)
+
+        self._allocate((start, end), rrule='', grouped=True)
+        self._reserve(group=self.allocations[0].group, rrule='')
+
+        def fail():
+            self.sc.update_reservation(self.token, start, end,
+                                       reservation_email, 'foo', {})
+        self.assertRaises(AssertionError, fail)
 
 
 class TestRemoveReservationSlots(BaseTestDB):

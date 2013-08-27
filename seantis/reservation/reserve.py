@@ -2,6 +2,7 @@
 
 from DateTime import DateTime
 from datetime import time
+from datetime import timedelta
 from five import grok
 from logging import getLogger
 from plone.dexterity.interfaces import IDexterityFTI
@@ -952,13 +953,45 @@ class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
         widget.show_repeat_forever = False
 
     @property
-    def hidden_fields(self):
-        hidden = ['day', 'id', 'recurrence', 'reservation', 'quota']
+    def disabled_fields(self):
+        disabled = []
+        reservation = self.get_reservation()
+        if reservation.is_group:
+            disabled.append('start_time')
+            disabled.append('end_time')
+        else:
+            try:
+                allocations = self.scheduler.allocations_by_reservation(
+                                                              self.reservation)
+                if not any(each.partly_available for each in allocations):
+                    disabled.append('start_time')
+                    disabled.append('end_time')
 
-        if self.get_reservation().is_group:
+            except DirtyReadOnlySession:
+                pass
+        return disabled
+
+    @property
+    def hidden_fields(self):
+        hidden = ['day', 'id', 'recurrence', 'reservation']
+        reservation = self.get_reservation()
+        if not reservation.autoapprovable or reservation.is_group:
+            hidden.append('quota')
             hidden.append('start_time')
             hidden.append('end_time')
-            hidden.append('quota')
+        else:
+            try:
+                allocations = self.scheduler.allocations_by_reservation(
+                                                              self.reservation)
+                if any(each.reservation_quota_limit == 1
+                       for each in allocations):
+                    hidden.append('quota')
+                if any(each.whole_day for each in allocations):
+                    hidden.append('start_time')
+                    hidden.append('end_time')
+
+            except DirtyReadOnlySession:
+                pass
 
         return hidden
 
@@ -978,7 +1011,10 @@ class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
         defaults = super(ReservationDataEditForm, self).defaults()
         reservation = self.get_reservation()
         defaults['start_time'] = reservation.start
-        defaults['end_time'] = reservation.end
+        end = reservation.end
+        if end:
+            end += timedelta(microseconds=1)
+        defaults['end_time'] = end
         defaults['description'] = reservation.description
         defaults['email'] = reservation.email
 
@@ -1021,13 +1057,17 @@ class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
     @button.buttonAndHandler(_(u'Save'))
     @extract_action_data
     def save(self, data):
+        query = self.scheduler.reservation_by_token(self.reservation)
         self.additional_data = utils.additional_data_dictionary(data, self.fti)
+        start, end = utils.get_date_range(query.one().start.date(),
+                                          data.get('start_time'),
+                                          data.get('end_time'))
 
         def save():
-            self.scheduler.update_reservation_data(
+            self.scheduler.update_reservation(
                 self.reservation,
-                data.get('start_time'),
-                data.get('end_time'),
+                start,
+                end,
                 data.get('email'),
                 data.get('description'),
                 self.additional_data,
