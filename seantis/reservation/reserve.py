@@ -929,7 +929,7 @@ class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
     context_buttons = ('save', )
     extracted_errors = []
 
-    fields = field.Fields(IReservation) + field.Fields(IReservationIdForm)
+    fields = field.Fields(IReservation, IReservationIdForm)
 
     fields['day'].widgetFactory = DateFieldWidget
     fields['recurrence'].widgetFactory = RecurrenceFieldWidget
