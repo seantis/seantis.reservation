@@ -1054,11 +1054,14 @@ class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
             elif field_type is Choice:
                 field.widgetFactory = RadioFieldWidget
 
+    def get_additional_data(self, data):
+        return utils.additional_data_dictionary(data, self.fti)
+
     @button.buttonAndHandler(_(u'Save'))
     @extract_action_data
     def save(self, data):
         query = self.scheduler.reservation_by_token(self.reservation)
-        self.additional_data = utils.additional_data_dictionary(data, self.fti)
+        self.additional_data = self.get_additional_data(data)
         start, end = utils.get_date_range(query.one().start.date(),
                                           data.get('start_time'),
                                           data.get('end_time'))
