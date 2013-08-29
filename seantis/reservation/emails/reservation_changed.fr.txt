@@ -1,0 +1,14 @@
+La réservation pour %(resource)s a été actualisé
+================================================
+La réservation pour %(resource)s a été actualisé:
+
+Données:
+%(dates)s
+
+Adresse courriel:
+%(reservation_mail)s
+
+Données du formulaire:
+%(data)s
+
+Nous vous prions de nous contacter pour toute question.
