@@ -225,11 +225,14 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
     def is_blocked(self, start=None, end=None):
         if not (start and end):
             start, end = self.start, self.end
+        else:
+            start, end = utils.as_machine_date(start, end)
 
         BlockedPeriod = self.models.BlockedPeriod
         query = self._query_blocked_periods()
         query = query.filter(BlockedPeriod.start <= end)
         query = query.filter(BlockedPeriod.end >= start)
+
         return query.first() is not None
 
     def _query_blocked_periods(self):
