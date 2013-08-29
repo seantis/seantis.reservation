@@ -2,6 +2,7 @@ from itertools import groupby
 
 import logging
 from Products.CMFPlone.utils import safe_unicode
+from seantis.reservation.interfaces import IReservationUpdatedEvent
 log = logging.getLogger('seantis.reservation')
 
 from five import grok
@@ -86,6 +87,21 @@ def on_reservation_revoked(event):
         event.reservation, 'reservation_revoked', event.language,
         to_managers=False, revocation_reason=event.reason
     )
+
+
+@grok.subscribe(IReservationUpdatedEvent)
+def on_reservation_updated(event):
+    if settings.get('send_email_to_reservees', True):
+        send_reservation_mail(
+            event.reservation, 'reservation_changed', event.language,
+            to_managers=False
+        )
+
+    if settings.get('send_email_to_managers', True):
+        send_reservation_mail(
+            event.reservation, 'reservation_updated', event.language,
+            to_managers=True
+        )
 
 
 class EmailTemplate(Item):

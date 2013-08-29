@@ -1,0 +1,14 @@
+Reservation for %(resource)s changed
+====================================
+Your reservation for %(resource)s has been changed:
+
+Dates:
+%(dates)s
+
+Email:
+%(reservation_mail)s
+
+Form data:
+%(data)s
+
+Please let us know if you have any questions.
