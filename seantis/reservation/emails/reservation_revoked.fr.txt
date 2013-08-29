@@ -1,6 +1,6 @@
 La réservation pour %(resource)s sera annulée
 =============================================
-Nous sommes au regret de vous informer que nous avons dû annuler les réservations pour %(resource)s suivantes:
+Nous vous confirmons l'annulation de la réservation suivante pour %(resource)s suivantes:
 
 Données:
 %(dates)s
