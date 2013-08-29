@@ -91,6 +91,9 @@ def on_reservation_revoked(event):
 
 @grok.subscribe(IReservationUpdatedEvent)
 def on_reservation_updated(event):
+    if not event.time_changed and event.old_data == event.reservation.data:
+        return
+
     if settings.get('send_email_to_reservees', True):
         send_reservation_mail(
             event.reservation, 'reservation_changed', event.language,
