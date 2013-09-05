@@ -1,6 +1,5 @@
 Reservation für %(resource)s abgelehnt
 ======================================
-
 Wir müssen Ihnen leider mitteilen, dass die folgenden Termine für %(resource)s abgelehnt wurden. Bei Fragen nehmen Sie bitte Kontakt mit uns auf.
 
 Termine:
