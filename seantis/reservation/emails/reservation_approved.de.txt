@@ -1,8 +1,8 @@
-Reservation für %(resource)s Zugelassen
+Reservation für %(resource)s zugelassen
 =======================================
-Es freut uns Ihnen mitzuteilen dass die folgenden Daten für %(resource)s zugelassen und für Sie reserviert wurden.
+Es freut uns Ihnen mitzuteilen, dass die folgenden Termine für %(resource)s zugelassen und für Sie reserviert wurden.
 
-Daten:
+Termine:
 %(dates)s
 
-Sollte sich an dieser Reservation etwas ändern werden Sie über E-Mail informiert.
+Sollte sich an dieser Reservation etwas ändern, werden Sie über E-Mail informiert.
