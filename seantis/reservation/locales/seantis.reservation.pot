@@ -545,7 +545,7 @@ msgid "Quota"
 msgstr ""
 
 #: ./interfaces.py:309
-msgid "Quota must be between 1 and 100"
+msgid "Quota must be between 1 and 1000"
 msgstr ""
 
 #: ./interfaces.py:295

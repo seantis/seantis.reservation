@@ -5,7 +5,11 @@ Changelog
 1.0.8 (unreleased)
 ------------------
 
+- Increases the maximum allocation quota from 100 to 1000
+
 - Fixes typo in English text.
+
+- Improves German texts.
 
 1.0.7
 -----

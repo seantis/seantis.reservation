@@ -305,8 +305,8 @@ class IResourceAllocationDefaults(form.Schema):
 
     @invariant
     def isValidQuota(Allocation):
-        if not (1 <= Allocation.quota and Allocation.quota <= 100):
-            raise Invalid(_(u'Quota must be between 1 and 100'))
+        if not (1 <= Allocation.quota and Allocation.quota <= 1000):
+            raise Invalid(_(u'Quota must be between 1 and 1000'))
 
     @invariant
     def isValidQuotaLimit(Allocation):

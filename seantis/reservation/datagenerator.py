@@ -93,7 +93,7 @@ class DataGeneratorView(grok.View):
 
             for timespan in self.random_timespans(resource, day):
 
-                quota = random.randrange(1, 100)
+                quota = random.randrange(1, 1000)
 
                 print 'a @', timespan[0], timespan[1]
 
