@@ -1,10 +1,10 @@
 Reservation für %(resource)s abgesagt
 =====================================
-Es tut uns leid Ihnen mitteilen zu müssen das wir die folgenden Daten für %(resource)s absagen müssen:
+Leider müssen wir Ihnen mitteilen, dass wir Ihre Reservation für die folgenden Termine für %(resource)s absagen müssen:
 
-Daten:
+Termine:
 %(dates)s
 
 %(reason)s
 
-Wir bitten Sie, sich bei allfälligen Fragen zu melden.
+Bei allfälligen Fragen bitten wir Sie sich bei uns zu melden.
