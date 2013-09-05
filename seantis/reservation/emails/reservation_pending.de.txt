@@ -2,7 +2,7 @@ Neue Reservation für %(resource)s
 =================================
 Eine neue Reservation für %(resource)s wurde erfasst:
 
-Daten:
+Termine:
 %(dates)s
 
 Email:
