@@ -268,8 +268,9 @@ class ReservationBaseForm(ResourceBaseForm):
             return defaults
 
         for form in data:
-            for field in data[form]['values']:
-                defaults["%s.%s" % (form, field['key'])] = field['value']
+            if form in self.context.formsets:
+                for field in data[form]['values']:
+                    defaults["%s.%s" % (form, field['key'])] = field['value']
 
         return defaults
 
