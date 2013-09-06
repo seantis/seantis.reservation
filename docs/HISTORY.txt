@@ -5,6 +5,9 @@ Changelog
 1.0.8 (unreleased)
 ------------------
 
+- Having different resources with different formsets no longer leads to errors
+  when trying to do multiple reservations.
+
 - Increases the maximum allocation quota from 100 to 1000
 
 - Fixes typo in English text.
