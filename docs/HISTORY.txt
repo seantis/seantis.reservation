@@ -2,8 +2,8 @@
 Changelog
 =========
 
-1.0.8 (unreleased)
-------------------
+1.0.8
+-----
 
 - Adds a new view for exports which initially offers the existing reservations
   export and a new 'compact' export.
