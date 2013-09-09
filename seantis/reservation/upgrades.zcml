@@ -146,4 +146,13 @@
         profile="seantis.reservation:default">
     </genericsetup:upgradeStep>
 
+    <genericsetup:upgradeStep
+        title="Update resource actions list"
+        description=""
+        source="1016"
+        destination="1017"
+        handler=".upgrades.upgrade_1016_to_1017"
+        profile="seantis.reservation:default">
+    </genericsetup:upgradeStep>
+
 </configure>

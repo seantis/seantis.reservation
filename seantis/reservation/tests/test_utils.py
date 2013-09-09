@@ -112,3 +112,78 @@ class UtilsTestCase(IntegrationTestCase):
                 datetime(2012, 1, 3) - timedelta(seconds=2)
             )
         )
+
+    def test_unite(self):
+        self.assertEqual(
+            utils.unite([1, 1, 1, 2, 2], lambda last, current: last == current),
+            [[1,1,1], [2, 2]]
+        )
+        
+        united = utils.United(lambda last, current: last == current)
+    
+        united.append(1)
+        self.assertEqual(united.groups, [[1]])
+
+        united.append(1)
+        self.assertEqual(united.groups, [[1, 1]])
+
+        united.append(2)
+        self.assertEqual(united.groups, [[1, 1], [2]])
+
+        united.append(1)
+        self.assertEqual(united.groups, [[1, 1], [2], [1]])
+
+    def test_unite_dates(self):
+        self.assertEqual(
+            list(utils.unite_dates([
+                (datetime(2012, 1, 1), datetime(2012, 1, 2))
+            ])),
+            [
+                (datetime(2012, 1, 1), datetime(2012, 1, 2))
+            ]
+        )
+        self.assertEqual(
+            list(utils.unite_dates([
+                (datetime(2012, 1, 1), datetime(2012, 1, 2)),
+                (datetime(2012, 1, 3), datetime(2012, 1, 4))
+            ])),
+            [
+                (datetime(2012, 1, 1), datetime(2012, 1, 2)),
+                (datetime(2012, 1, 3), datetime(2012, 1, 4))
+            ]
+        )
+        self.assertEqual(
+            list(utils.unite_dates([
+                (datetime(2012, 1, 1), datetime(2012, 1, 2)),
+                (datetime(2012, 1, 2), datetime(2012, 1, 3)),
+                (datetime(2012, 1, 4), datetime(2012, 1, 5)),
+            ])),
+            [
+                (datetime(2012, 1, 1), datetime(2012, 1, 3)),
+                (datetime(2012, 1, 4), datetime(2012, 1, 5)),
+            ]
+        )
+        self.assertEqual(
+            list(utils.unite_dates([
+                (datetime(2012, 1, 1), datetime(2012, 1, 2)),
+                (datetime(2012, 1, 3), datetime(2012, 1, 4)),
+                (datetime(2012, 1, 4), datetime(2012, 1, 5)),
+            ])),
+            [
+                (datetime(2012, 1, 1), datetime(2012, 1, 2)),
+                (datetime(2012, 1, 3), datetime(2012, 1, 5)),
+            ]
+        )
+        self.assertEqual(
+            list(utils.unite_dates([
+                (datetime(2012, 1, 1), datetime(2012, 1, 2)),
+                (datetime(2012, 1, 2), datetime(2012, 1, 3)),
+                (datetime(2012, 1, 10), datetime(2012, 1, 11)),
+                (datetime(2012, 1, 3), datetime(2012, 1, 4)),
+                (datetime(2012, 1, 11), datetime(2012, 1, 12)),
+            ])),
+            [
+                (datetime(2012, 1, 1), datetime(2012, 1, 4)),
+                (datetime(2012, 1, 10), datetime(2012, 1, 12)),
+            ]
+        )

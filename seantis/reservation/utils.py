@@ -262,26 +262,25 @@ def compare_link(resources):
     return link.rstrip('&')
 
 
-def export_link(source, extension, context, request, resources):
+def export_link(context, request, resources):
     """Builds the reservations excel export link for the
     given list of resources.
 
     """
 
-    # ensure that the view may be called
-    viewname = 'resource_export.' + extension
-    if not _exposure().for_views(context, request)(viewname):
+    if not resources:
         return ''
 
-    uuids = map(string_uuid, resources)
+    if not _exposure().for_views(context, request)('reservation-exports'):
+        return ''
 
-    url = context.absolute_url()
-    url += '/resource_export.' + extension + '?source=' + source
-    url += '&uuid=' + '&uuid='.join(uuids)
-    url += '&lang=' + get_current_site_language()
-
-    return url
-
+    return ''.join((
+        context.absolute_url(),
+        '/reservation-exports?uuid=',
+        '&uuid='.join(
+            map(string_uuid, resources)
+        )
+    ))
 
 def monthly_report_link(context, request, resources):
     """Builds the monthly report link given the list of the resources
@@ -687,7 +686,7 @@ def pairs(l):
 
 
 def pairwise(iterable):
-    """Almost like paris, but not quite:
+    """Almost like pairs, but not quite:
     "s -> (s0,s1), (s1,s2), (s2, s3), ..."
     """
     a, b = tee(iterable)
@@ -1027,6 +1026,101 @@ def display_date(start, end):
     else:
         return start.strftime('%d.%m.%Y %H:%M - ') \
             + end.strftime('%d.%m.%Y %H:%M')
+
+
+class United(object):
+    """ Puts items added through 'append' into the same group as the last
+    item which was appended, as long as the matchfn which is passed the last
+    and the current item returns true.
+
+    e.g.
+
+    united = United(lambda last, current: last == current)
+
+    united.append(1)
+    -> united.groups => [[1]]
+
+    united.append(1)
+    -> united.groups => [[1, 1]]
+
+    united.append(2)
+    -> united.groups => [[1, 1], [2]]
+
+    united.append(1)
+    -> united.groups => [[1, 1], [2], [1]]
+
+    """
+
+    def __init__(self, matchfn):
+        self.matchfn = matchfn
+        self.groups = []
+        self.new_group()
+
+    def new_group(self):
+        self.groups.append([])
+
+    @property
+    def current_group(self):
+        return self.groups[-1]
+
+    def append(self, item):
+        if not self.current_group:
+            self.current_group.append(item)
+        else:
+            if not self.matchfn(self.current_group[-1], item):
+                self.new_group()
+
+            self.current_group.append(item)
+
+
+def unite(iterator, matchfn):
+    """ Iterates through the given records and groups the records if two
+    records passed to the match function result in True.
+
+    e.g.
+
+    unite([1, 1, 1, 2, 2], lambda last, current: last == current)
+
+    -> [[1, 1, 1], [2, 2]]
+
+    Note that for this to work the records need to be sorted, not unlike
+    when using the collection's group function. See 'United' doc above to
+    learn why.
+    """
+
+    united = United(matchfn)
+
+    for item in iterator:
+        united.append(item)
+
+    return united.groups
+
+
+def unite_dates(dates):
+    """ Takes a list of start / end date tuples and compacts it by merging
+    dates which can be considered an unbroken range.
+
+    So given a list like this:
+
+        [
+            (01.01.2012 00:00, 02.01.2012 00:00),
+            (02.01.2012 00:00, 03.01.2012 00:00),
+            (05.01.2012 00:00, 06.01.2012 00:00)
+        ]
+
+    (Where the dates are actually datetime instances)
+
+    We should get this result:
+
+        [
+            (01.01.2012 00:00, 03.01.2012 00:00),
+            (05.01.2012 00:00, 06.01.2012 00:00)
+        ]
+
+    """
+    sorted_dates = sorted(dates, key=lambda pair: pair[0])
+    for group in unite(sorted_dates, lambda this, next: this[1] == next[0]):
+        yield group[0][0], group[-1][1]
 
 
 class cached_property(object):

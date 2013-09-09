@@ -5,6 +5,9 @@ Changelog
 1.0.8 (unreleased)
 ------------------
 
+- Adds a new view for exports which initially offers the existing reservations
+  export and a new 'compact' export.
+
 - Having different resources with different formsets no longer leads to errors
   when trying to do multiple reservations.
 

@@ -437,3 +437,13 @@ label .required {
     float:left;
     text-align: center;
 }
+
+/* reservation exports */
+.reservation-exports ul li {
+    list-style: none;
+}
+
+.reservation-exports ul ul {
+    margin-left: 0;   
+    margin-top: 0.5em;
+}

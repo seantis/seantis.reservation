@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 
+from Acquisition import aq_base
+
 from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation import utils
 from seantis.reservation.session import serialized
@@ -66,3 +68,39 @@ class TestExports(IntegrationTestCase):
         dataset.xls
         dataset.json
         dataset.csv
+
+    @serialized
+    def test_reservations_export_title(self):
+        self.login_manager()
+
+        resource = self.create_resource()
+        sc = resource.scheduler()
+
+        start = datetime(2012, 2, 1, 12, 0)
+        end = datetime(2012, 2, 1, 16, 0)
+        dates = (start, end)
+
+        reservation_email = u'test@example.com'
+        sc.allocate(dates, approve_manually=False, quota=2)[0]
+
+        sc.reserve(reservation_email, dates)
+
+        # with title
+        resource.aq_inner.aq_parent.title = 'testtitel'
+
+        dataset = exports.reservations.dataset(
+            {resource.uuid(): resource}, 'en'
+        )
+
+        self.assertEqual(len(dataset), 1)
+        self.assertEqual(dataset[0][0], 'testtitel')
+
+        # without title
+        resource = aq_base(resource)
+
+        dataset = exports.reservations.dataset(
+            {resource.uuid(): resource}, 'en'
+        )
+
+        self.assertEqual(len(dataset), 1)
+        self.assertEqual(dataset[0][0], None)

@@ -15,19 +15,9 @@
                     <tal:block i18n:translate="">Compare Resources</tal:block>
                 </a>
             </li>
-            <li tal:condition="python: viewlet.reservations_export_link('xls')">
-                <a target="_blank" tal:attributes="href python: viewlet.reservations_export_link('xls')">
-                    <tal:block i18n:translate="">Export Reservations (Excel)</tal:block>
-                </a>
-            </li>
-            <li tal:condition="python: viewlet.reservations_export_link('csv')">
-                <a target="_blank" tal:attributes="href python: viewlet.reservations_export_link('csv')">
-                    <tal:block i18n:translate="">Export Reservations (Csv)</tal:block>
-                </a>
-            </li>
-            <li tal:condition="python: viewlet.reservations_export_link('json')">
-                <a target="_blank" tal:attributes="href python: viewlet.reservations_export_link('json')">
-                    <tal:block i18n:translate="">Export Reservations (Json)</tal:block>
+            <li tal:condition="viewlet/export_link">
+                <a tal:attributes="href viewlet/export_link">
+                    <tal:block i18n:translate="">Export Reservations</tal:block>
                 </a>
             </li>
         </ul>

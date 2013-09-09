@@ -10,40 +10,62 @@ from seantis.reservation.form import ReservationDataView
 from seantis.reservation.models import Reservation
 
 
-def translator(language):
-    """ Returns a function which will return the translation for a given text
-    in the once defined language.
+class Translator(object):
 
-    """
-    def curried(text):
+    def __init__(self, language):
+        self.language = language
+
+    def translate(self, obj):
+        if isinstance(obj, Message):
+            return self.translate_text(obj)
+
+        if isinstance(obj, list):
+            return self.translate_list(obj)
+
+        raise NotImplementedError
+
+    def translate_text(self, text):
         assert isinstance(text, Message)
-        return i18n.translate(text, target_language=language)
+        return i18n.translate(text, target_language=self.language)
 
-    return curried
+    def translate_list(self, _list):
+        # translate the values in the record
+        for i, item in enumerate(_list):
+            if isinstance(item, Message):
+                _list[i] = self.translate_text(item)
+
+        return _list
 
 
-def dataset(resources, language):
+def basic_headers():
+    return [
+        _(u'Parent'),
+        _(u'Resource'),
+        _(u'Token'),
+        _(u'Email'),
+        _(u'Start'),
+        _(u'End'),
+        _(u'Whole Day'),
+        _(u'Status'),
+        _(u'Quota')
+    ]
+
+
+def dataset(resources, language, compact=False):
     """ Takes a list of resources and returns a tablib dataset filled with
     all reservations of these resources. The json data of the reservations
     is filled using a single column for each type (form + field).
 
+    If compact is True, whole day group reservations spanning multiple days
+    are merged into one using utils.unite_dates.
+
     """
 
-    text = translator(language)
+    translator = Translator(language)
     reservations = fetch_records(resources)
 
     # create the headers
-    headers = [
-        text(_(u'Parent')),
-        text(_(u'Resource')),
-        text(_(u'Token')),
-        text(_(u'Email')),
-        text(_(u'Start')),
-        text(_(u'End')),
-        text(_(u'Whole Day')),
-        text(_(u'Status')),
-        text(_(u'Quota')),
-    ]
+    headers = translator.translate(basic_headers())
     dataheaders = additional_headers(reservations)
     headers.extend(dataheaders)
 
@@ -59,15 +81,14 @@ def dataset(resources, language):
         token = utils.string_uuid(r.token)
         resource = resources[utils.string_uuid(r.resource)]
 
-        # a parent will almost always be present, but it isn't a requirement
-        if hasattr(resource, 'parent'):
-            parent_title = resource.parent().title
+        if compact:
+            timespans = utils.unite_dates(r.timespans())
         else:
-            parent_title = None
+            timespans = r.timespans()
 
-        for start, end in r.timespans():
+        for start, end in timespans:
             record = [
-                parent_title,
+                get_parent_title(resource),
                 resource.title,
                 token,
                 r.email,
@@ -81,20 +102,11 @@ def dataset(resources, language):
                 additional_columns(r, dataheaders, dataview.display_info)
             )
 
-            # translate the values in the record
-            for i, col in enumerate(record):
-                if isinstance(col, Message):
-                    record[i] = text(col)
-
+            translator.translate(record)
             records.append(record)
 
     # put the results in a tablib dataset
-    ds = tablib.Dataset()
-    ds.headers = headers
-    for r in records:
-        ds.append(r)
-
-    return ds
+    return generate_dataset(headers, records)
 
 
 def fetch_records(resources):
@@ -121,7 +133,8 @@ def additional_headers(reservations):
     """ Go through all reservations and build a list of all possible headers.
 
     """
-    formdata = [r.data.values() for r in reservations]
+
+    formdata = [r.data.values() for r in reservations if r.data]
 
     headers = []
     for forms in formdata:
@@ -145,7 +158,7 @@ def additional_columns(reservation, headers, display_info=lambda x: x):
     list.
 
     """
-    forms = reservation.data.values()
+    forms = reservation.data and reservation.data.values() or []
 
     columns = [None] * len(headers)
     for form in forms:
@@ -156,3 +169,21 @@ def additional_columns(reservation, headers, display_info=lambda x: x):
             columns[idx] = display_info(field["value"])
 
     return columns
+
+
+def generate_dataset(headers, records):
+    ds = tablib.Dataset()
+    ds.headers = headers
+
+    for r in records:
+        ds.append(r)
+
+    return ds
+
+
+def get_parent_title(resource):
+    # a parent will almost always be present, but it isn't a requirement
+    try:
+        return resource.aq_inner.aq_parent.title
+    except AttributeError:
+        return None

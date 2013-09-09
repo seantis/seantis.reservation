@@ -12,6 +12,7 @@ from sqlalchemy import MetaData
 from sqlalchemy import Table
 from sqlalchemy.schema import Column
 
+from plone.dexterity.interfaces import IDexterityFTI
 from Products.CMFCore.utils import getToolByName
 from zope.component import getUtility
 
@@ -287,3 +288,21 @@ def upgrade_1014_to_1015(context):
 @db_upgrade
 def upgrade_1015_to_1016(operations, metadata):
     operations.alter_column('allocations', 'mirror_of', nullable=False)
+
+
+def upgrade_1016_to_1017(context):
+    fti = getUtility(IDexterityFTI, name='seantis.reservation.resource')
+
+    # keep the behaviors, only change the actions
+    behaviors = fti.behaviors
+
+    setup = getToolByName(context, 'portal_setup')
+    setup.runImportStepFromProfile(
+        'profile-seantis.reservation:default', 'typeinfo'
+    )
+
+    fti.behaviors = behaviors
+
+
+
+

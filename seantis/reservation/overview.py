@@ -135,8 +135,8 @@ class Utilsviewlet(grok.Viewlet):
             self.context, self.request, self.manager.resource_uuids
         )
 
-    def reservations_export_link(self, extension):
+    @property
+    def export_link(self):
         return utils.export_link(
-            'reservations', extension, self.context, self.request,
-            self.manager.resource_uuids
+            self.context, self.request, self.manager.resource_uuids
         )
