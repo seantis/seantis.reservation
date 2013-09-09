@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-09-09 13:07+0000\n"
+"POT-Creation-Date: 2013-09-09 13:54+0000\n"
 "PO-Revision-Date: 2012-09-06 11:33+0100\n"
 "Last-Translator: Fabian Reinhard <fabian.reinhard@seantis.ch>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -165,6 +165,10 @@ msgstr "Betroffene Daten"
 #: ./templates/your_reservations_viewlet.pt:24
 msgid "Confirm Reservations"
 msgstr "Reservationen abschliessen"
+
+#: ./exports/reservations.py:51
+msgid "Created"
+msgstr "Erstellung"
 
 #: ./interfaces.py:320
 msgid "DEPRECATED: Approve reservation requests"
@@ -471,6 +475,10 @@ msgstr "Kann die folgenden Vorlagen-Variabeln enthalten:<br>%(resource)s - Titel
 #: ./interfaces.py:31
 msgid "Mo"
 msgstr "Mo"
+
+#: ./exports/reservations.py:52
+msgid "Modified"
+msgstr "Letzte Änderung"
 
 #: ./templates/utils.pt:10
 msgid "Monthly Report"

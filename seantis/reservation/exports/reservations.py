@@ -47,7 +47,9 @@ def basic_headers():
         _(u'End'),
         _(u'Whole Day'),
         _(u'Status'),
-        _(u'Quota')
+        _(u'Quota'),
+        _(u'Created'),
+        _(u'Modified')
     ]
 
 
@@ -86,17 +88,21 @@ def dataset(resources, language, compact=False):
         else:
             timespans = r.timespans()
 
+        datetime_format = '%Y-%m-%d %H:%M'
+
         for start, end in timespans:
             record = [
                 get_parent_title(resource),
                 resource.title,
                 token,
                 r.email,
-                start.strftime('%Y-%m-%d %H:%M'),
-                end.strftime('%Y-%m-%d %H:%M'),
+                start.strftime(datetime_format),
+                end.strftime(datetime_format),
                 dataview.display_info(utils.whole_day(start, end)),
                 _(r.status.capitalize()),
-                r.quota
+                r.quota,
+                r.created.strftime(datetime_format),
+                r.modified and r.modified.strftime(datetime_format) or None,
             ]
             record.extend(
                 additional_columns(r, dataheaders, dataview.display_info)

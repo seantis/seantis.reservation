@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-09-09 13:07+0000\n"
+"POT-Creation-Date: 2013-09-09 13:54+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -167,6 +167,10 @@ msgstr ""
 
 #: ./templates/your_reservations_viewlet.pt:24
 msgid "Confirm Reservations"
+msgstr ""
+
+#: ./exports/reservations.py:51
+msgid "Created"
 msgstr ""
 
 #: ./interfaces.py:320
@@ -473,6 +477,10 @@ msgstr ""
 
 #: ./interfaces.py:31
 msgid "Mo"
+msgstr ""
+
+#: ./exports/reservations.py:52
+msgid "Modified"
 msgstr ""
 
 #: ./templates/utils.pt:10

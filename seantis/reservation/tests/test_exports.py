@@ -50,7 +50,7 @@ class TestExports(IntegrationTestCase):
         )
 
         self.assertEqual(len(dataset), 2)
-        self.assertEqual(len(dataset.headers), 9 + 4)
+        self.assertEqual(len(dataset.headers), 11 + 4)
 
         self.assertEqual(dataset.dict[0]['Token'], utils.string_uuid(token1))
         self.assertEqual(dataset.dict[0]['Mocktest.stop'], u'hammertime!')
