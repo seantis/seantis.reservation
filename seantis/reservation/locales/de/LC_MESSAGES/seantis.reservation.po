@@ -121,7 +121,7 @@ msgstr "Eine bestehende Reservation wäre durch die Änderung betroffen"
 
 #: seantis.reservation/seantis/reservation/settings.py:39
 msgid "Approval Email Notifications for Managers"
-msgstr "Bestätigungs E-Mail für Manager"
+msgstr "E-Mail Benachrichtigung für Manager bei Reservationen, die bestätigt werden müssen"
 
 #: seantis.reservation/seantis/reservation/report.py:283
 #: seantis.reservation/seantis/reservation/reserve.py:652
