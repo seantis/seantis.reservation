@@ -39,6 +39,11 @@ Build Status
 
 |Build Status|
 
+Test Coverage
+-------------
+
+|Test Coverage|
+
 Latest PyPI Release
 -------------------
 
@@ -393,6 +398,8 @@ people in the waitinglist is shown on the allcation itself.
 .. |confirm example| image:: https://github.com/seantis/seantis.reservation/raw/master/screenshots/milliways-confirm.png
 .. |Build Status| image:: https://secure.travis-ci.org/seantis/seantis.reservation.png
    :target: http://travis-ci.org/seantis/seantis.reservation
+.. |Test Coverage| image:: https://coveralls.io/repos/seantis/seantis.reservation/badge.png?branch=master
+   :target: https://coveralls.io/r/seantis/seantis.reservation?branch=master
 .. |PyPI Release| image:: https://pypip.in/v/seantis.reservation/badge.png
     :target: https://crate.io/packages/seantis.reservation
     :alt: Latest PyPI version
