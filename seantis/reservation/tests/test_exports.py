@@ -7,6 +7,7 @@ from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation import utils
 from seantis.reservation.session import serialized
 from seantis.reservation import exports
+from seantis.reservation.export import ExportView
 
 
 class TestExports(IntegrationTestCase):
@@ -104,3 +105,40 @@ class TestExports(IntegrationTestCase):
 
         self.assertEqual(len(dataset), 1)
         self.assertEqual(dataset[0][0], None)
+
+    def test_export_view(self):
+        
+        class MyExportView(ExportView):
+            pass
+
+        view = MyExportView(self.portal, self.request())
+
+        self.assertRaises(NotImplementedError, lambda: view.content_type)
+        self.assertRaises(NotImplementedError, lambda: view.file_extension)
+
+        view.request['source'] = 'reservations'
+        self.assertTrue(hasattr(view.source, '__call__'))
+
+        view.request['source'] = 'united-reservations'
+        self.assertTrue(hasattr(view.source, '__call__'))
+
+        view.request['source'] = 'nonexistant'
+        self.assertRaises(NotImplementedError, lambda: view.source)
+
+        class MyJsonExportView(ExportView):
+            content_type = 'application/json'
+            file_extension = 'json'
+
+        view = MyJsonExportView(self.portal, self.request())
+        
+        view.request['source'] = 'reservations'
+        self.assertEqual('[]', view.render())
+
+        response = view.request.RESPONSE
+        self.assertEqual(response.headers['content-length'], '2')
+        self.assertEqual(response.headers['content-disposition'],
+            'filename="Plone site.json"'
+        )
+        self.assertEqual(
+            response.headers['content-type'], 'application/json;charset=utf-8'
+        )
