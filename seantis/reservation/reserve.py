@@ -160,7 +160,6 @@ class SessionFormdataMixin(ReservationSchemata):
         return ftis
 
     def additional_data(self, form_data=None, add_manager_defaults=False):
-
         if not form_data:
             data = plone_session.get_additional_data(self.context)
         else:
