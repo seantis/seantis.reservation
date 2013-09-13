@@ -180,6 +180,69 @@ def reservations_by_session(session_id):
     return query
 
 
+@serialized
+def confirm_reservations_for_session(session_id, token=None, language=None):
+    """ Confirms all reservations of the given session id. Optionally
+    confirms only the reservations with the given token. All if None.
+
+    The langauge given is the language used for the confirmation event (which
+    leads to an email sent in this language). Default is the site language.
+
+    """
+
+    assert session_id
+
+    if not language:
+        language = utils.get_current_site_language()
+
+    reservations = reservations_by_session(session_id)
+
+    if token:
+        reservations = reservations.filter(Reservation.token == token)
+
+    reservations = reservations.all()
+
+    for reservation in reservations:
+        reservation.session_id = None
+
+    notify(ReservationsConfirmedEvent(reservations, language))
+
+
+@serialized
+def remove_reservation_from_session(session_id, token):
+    """ Removes the reservation with the given session_id and token. """
+
+    assert token and session_id
+
+    query = reservations_by_session(session_id)
+    query = query.filter(Reservation.token == token)
+
+    reservation = query.one()
+    Session.delete(reservation)
+
+    # if we get here the token must be valid, we should then check if the
+    # token is used in the reserved slots, because with autoapproval these
+    # slots may be created straight away.
+
+    slots = Session.query(ReservedSlot).filter(
+        ReservedSlot.reservation_token == token
+    )
+
+    slots.delete('fetch')
+
+    # we also update the timestamp of existing reservations within
+    # the same session to ensure that we account for the user's activity
+    # properly during the session expiration cronjob. Otherwise it is
+    # possible that a user removes the latest reservations only to see
+    # the rest of them vanish because his older reservations were
+    # already old enough to be counted as expired.
+
+    query = Session.query(Reservation)
+    query = query.filter(Reservation.session_id == session_id)
+
+    query.update({"modified": utils.utcnow()})
+
+
 def find_expired_reservation_sessions(expiration_date):
     """ Goes through all reservations and returns the session ids of the
     unconfirmed ones which are older than the given expiration date.
@@ -979,61 +1042,6 @@ class Scheduler(object):
 
         reservation = self.reservation_by_token(token).one()
         reservation.data = data
-
-    @serialized
-    def confirm_reservations_for_session(self, session_id, token=None):
-        """ Confirms all reservations of the given session id. Optionally
-        confirms only the reservations with the given token. All if None.
-
-        """
-
-        assert session_id
-
-        reservations = reservations_by_session(session_id)
-
-        if token:
-            reservations = reservations.filter(Reservation.token == token)
-
-        reservations = reservations.all()
-
-        for reservation in reservations:
-            reservation.session_id = None
-
-        notify(ReservationsConfirmedEvent(reservations, self.language))
-
-    @serialized
-    def remove_reservation_from_session(self, session_id, token):
-        """ Removes the reservation with the given session_id and token. """
-
-        assert token and session_id
-
-        query = reservations_by_session(session_id)
-        query = query.filter(Reservation.token == token)
-
-        reservation = query.one()
-        Session.delete(reservation)
-
-        # if we get here the token must be valid, we should then check if the
-        # token is used in the reserved slots, because with autoapproval these
-        # slots may be created straight away.
-
-        slots = Session.query(ReservedSlot).filter(
-            ReservedSlot.reservation_token == token
-        )
-
-        slots.delete('fetch')
-
-        # we also update the timestamp of existing reservations within
-        # the same session to ensure that we account for the user's activity
-        # properly during the session expiration cronjob. Otherwise it is
-        # possible that a user removes the latest reservations only to see
-        # the rest of them vanish because his older reservations were
-        # already old enough to be counted as expired.
-
-        query = Session.query(Reservation)
-        query = query.filter(Reservation.session_id == session_id)
-
-        query.update({"modified": utils.utcnow()})
 
     def find_spot(self, master_allocation, start, end):
         """ Returns the first free allocation spot amongst the master and the

@@ -365,6 +365,36 @@ class TestBrowser(FunctionalTestCase):
         self.assertFalse('limitedList' in browser.contents)
         self.assertFalse('your-reservation-quota' in browser.contents)
 
+    def test_your_reservations_context_regression(self):
+
+        # calling the 'your-reservations' view did not work outside of
+        # the resource context, even though that view should work independently
+        # of context
+
+        browser = self.new_browser()
+        browser.login_admin()
+
+        start = datetime(2013, 9, 13, 11, 0)
+        end = datetime(2013, 9, 13, 12, 0)
+
+        self.add_resource('yours')
+        allocation = ('yours', start, end)
+        self.add_allocation(*allocation, quota=2)
+
+        # it works on the resource context
+        browser.open(self.allocation_menu(*allocation)['reserve'])
+        browser.getControl('Email').value = 'test@example.com'
+        browser.getControl('Reserve').click()
+        browser.getControl('Submit Reservations').click()
+
+        # but it should also work somewhere else
+        browser.open(self.allocation_menu(*allocation)['reserve'])
+        browser.getControl('Email').value = 'test@example.com'
+        browser.getControl('Reserve').click()
+
+        browser.open(self.infolder('/your-reservations'))
+        browser.getControl('Submit Reservations').click()
+
     def test_reservation_approval(self):
 
         browser = self.new_browser()

@@ -986,7 +986,7 @@ class TestScheduler(IntegrationTestCase):
             reservation_email,
             dates, data=data, session_id=session_id
         )
-        sc.confirm_reservations_for_session(session_id)
+        db.confirm_reservations_for_session(session_id)
 
         self.assertEqual(len(mail.messages), 1)
         self.assertTrue('Your Reservations' in mail.messages[0])
@@ -1027,7 +1027,7 @@ class TestScheduler(IntegrationTestCase):
                 dates, data=data, session_id=session_id
             )
         )
-        sc.confirm_reservations_for_session(session_id)
+        db.confirm_reservations_for_session(session_id)
         map(sc.deny_reservation, tokens)
 
         self.assertEqual(len(mail.messages), 2)
@@ -1045,7 +1045,7 @@ class TestScheduler(IntegrationTestCase):
             reservation_email,
             dates, data=data, session_id=session_id
         )
-        sc.confirm_reservations_for_session(session_id)
+        db.confirm_reservations_for_session(session_id)
 
         # no manager is defined, so we expect to have one email to the reservee
         self.assertEqual(len(mail.messages), 1)
@@ -1070,7 +1070,7 @@ class TestScheduler(IntegrationTestCase):
             reservation_email,
             dates, data=data, session_id=session_id
         )
-        sc.confirm_reservations_for_session(session_id)
+        db.confirm_reservations_for_session(session_id)
         self.assertEqual(len(mail.messages), 2)
 
         # the first email is the one sent to the reservee
@@ -1104,7 +1104,7 @@ class TestScheduler(IntegrationTestCase):
             reservation_email,
             dates, data=data, session_id=session_id
         )
-        sc.confirm_reservations_for_session(session_id)
+        db.confirm_reservations_for_session(session_id)
 
         self.assertEqual(len(mail.messages), 2)
 
