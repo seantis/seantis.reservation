@@ -395,6 +395,29 @@ class TestBrowser(FunctionalTestCase):
         browser.open(self.infolder('/your-reservations'))
         browser.getControl('Submit Reservations').click()
 
+    def test_your_reservations_removal(self):
+        browser = self.new_browser()
+        browser.login_admin()
+
+        start = datetime(2013, 9, 13, 11, 0)
+        end = datetime(2013, 9, 13, 12, 0)
+
+        self.add_resource('removal')
+        allocation = ('removal', start, end)
+        self.add_allocation(*allocation, quota=2)
+
+        browser.open(self.allocation_menu(*allocation)['reserve'])
+        browser.getControl('Email').value = 'test@example.com'
+        browser.getControl('Reserve').click()
+
+        browser.open(self.infolder('/removal'))
+        self.assertTrue('13.09.2013 11:00 - 12:00' in browser.contents)
+
+        browser.getLink('Remove').click()
+        browser.open(self.infolder('/removal'))
+
+        self.assertFalse('13.09.2013 11:00 - 12:00' in browser.contents)
+
     def test_reservation_approval(self):
 
         browser = self.new_browser()
