@@ -580,13 +580,29 @@ def userformdata_decode(s):
 
 def decode_for_display(s):
 
-    decoded = userformdata_decode(s)
+    if isinstance(s, basestring):
+        decoded = userformdata_decode(s)
+    else:
+        decoded = s
+
+    # don't use strftime here because users may end up entering year '3' and
+    # strftime does not suppport years before 1900
 
     if isinstance(decoded, datetime):
-        return decoded.strftime('%d.%m.%Y %H:%M')
+        return '%02d.%02d.%04d %02d:%02d' % (
+            decoded.day,
+            decoded.month,
+            decoded.year,
+            decoded.hour,
+            decoded.minute
+        )
 
     if isinstance(decoded, date):
-        return decoded.strftime('%d.%m.%Y')
+        return '%02d.%02d.%04d' % (
+            decoded.day,
+            decoded.month,
+            decoded.year
+        )
 
     if isinstance(decoded, RichTextValue):
         return decoded.output

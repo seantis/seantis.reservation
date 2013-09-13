@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 from seantis.reservation import utils
 from seantis.reservation.tests import IntegrationTestCase
@@ -11,6 +11,37 @@ class UtilsTestCase(IntegrationTestCase):
         two = (('aa', 'bb'), ('cc', 'dd'))
 
         self.assertEqual(utils.pairs(one), utils.pairs(two))
+
+    def test_decoded_for_displays(self):
+        self.assertEqual(
+            utils.decode_for_display(datetime(year=2012, month=1, day=12)),
+            '12.01.2012 00:00'
+        )
+
+        self.assertEqual(
+            utils.decode_for_display(datetime(1889, 5, 12, 12)),
+            '12.05.1889 12:00'
+        )
+
+        self.assertEqual(
+            utils.decode_for_display(datetime(3, 5, 12, 13, 3)),
+            '12.05.0003 13:03'
+        )
+
+        self.assertEqual(
+            utils.decode_for_display(date(2012, 1, 12)),
+            '12.01.2012'
+        )
+
+        self.assertEqual(
+            utils.decode_for_display(date(1889, 5, 12)),
+            '12.05.1889'
+        )
+
+        self.assertEqual(
+            utils.decode_for_display(date(3, 5, 12)),
+            '12.05.0003'
+        )
 
     def test_align_dates(self):
         self.assertEqual(

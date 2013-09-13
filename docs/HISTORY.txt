@@ -2,6 +2,11 @@
 Changelog
 =========
 
+1.0.10 (unreleased)
+-------------------
+
+- Fixes 'your-reservations' from bugging out if a date before 1900 is entered
+
 1.0.9
 -----
 
