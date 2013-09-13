@@ -9,8 +9,6 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0\n"
-"Language-Code: en\n"
-"Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: DOMAIN\n"
 
@@ -41,7 +39,7 @@ msgstr "&lt;&lt; Mois précédent"
 #: seantis.reservation/seantis/reservation/report.py:271
 #: seantis.reservation/seantis/reservation/templates/reservations.pt:63
 msgid "&raquo; Edit Formdata"
-msgstr ""
+msgstr "&raquo; Modifier dates form"
 
 #: seantis.reservation/seantis/reservation/utils.py:540
 msgid "<b>${quota}</b> reservations"
@@ -53,75 +51,75 @@ msgstr "<b>1</b> Réservation"
 
 #: seantis.reservation/seantis/reservation/error.py:108
 msgid "A conflicting allocation exists for the requested time period."
-msgstr "Conflit existant"
+msgstr "Il existe déjà une périodisation pour le temps choisi"
 
 #: seantis.reservation/seantis/reservation/error.py:114
 msgid "A pending reservation would be affected by the requested change"
-msgstr "Réservation actuellement ouverte"
+msgstr "Une réservation actuellement ouverte serait impliquée par ce changement"
 
 #: seantis.reservation/seantis/reservation/mail.py:491
 msgid "Add email template"
-msgstr "Template Email à ajouter"
+msgstr "Template courriel à ajouter"
 
 #: seantis.reservation/seantis/reservation/timeframe.py:169
 msgid "Add timeframe"
-msgstr "Ajouter  planning"
+msgstr "Période d'occupation à ajouter"
 
 #: seantis.reservation/seantis/reservation/reserve.py:335
 msgid "Added to waitinglist"
-msgstr "Sur liste d'attente"
+msgstr "Couché sur la liste d'attente"
 
 #: seantis.reservation/seantis/reservation/allocate.py:65
 msgid "Advanced Settings"
-msgstr "Mises en place"
+msgstr "Mise en page, ajustage supplémentaire"
 
 #: seantis.reservation/seantis/reservation/allocate.py:113
 msgid "Allocate"
-msgstr "Attribuer"
+msgstr "Périodiser"
 
 #: seantis.reservation/seantis/reservation/allocate.py:50
 msgid "Allocation"
-msgstr "Attribution"
+msgstr "Périodisation"
 
 #: seantis.reservation/seantis/reservation/interfaces.py:785
 msgid "Allocation Id"
-msgstr ""
+msgstr "Allocations ID"
 
 #: seantis.reservation/seantis/reservation/allocate.py:132
 msgid "Allocation added"
-msgstr "Attribution ajoutée"
+msgstr "Périodisation ajoutée"
 
 #: seantis.reservation/seantis/reservation/allocate.py:294
 msgid "Allocation removed"
-msgstr "Attribution supprimée"
+msgstr "Périodisation supprimée"
 
 #: seantis.reservation/seantis/reservation/allocate.py:251
 msgid "Allocation saved"
-msgstr "Attribution sauvée"
+msgstr "Périodisation enregistrée"
 
 #: seantis.reservation/seantis/reservation/interfaces.py:520
 msgid "Allocations may end every 5 minutes if the allocation is not partly available. If it is partly available the start time may be every x minute where x equals the given raster. The minimum length of an allocation is also either 5 minutes or whatever the value of the raster is."
-msgstr "L'attribution peut se terminer toutes les cinq minutes (horaire). Si l'option choisie est \"partiellement disponible\", l’option retenue sera de x"
+msgstr "Périodisation peut se faire toutes les cinq minutes (horaire). Si l'option choisie est \"partiellement disponible\", l’option retenue sera de x"
 
 #: seantis.reservation/seantis/reservation/interfaces.py:511
 msgid "Allocations may start every 5 minutes if the allocation is not partly available. If it is partly available the start time may be every x minute where x equals the given raster."
-msgstr "L'attribution peut commencer toutes les cinq minutes (horaire). Si l'option choisie est \"partiellement disponible\", l’option retenue sera de x"
+msgstr "Périodisation peut commencer toutes les cinq minutes (horaire). Si l'option choisie est \"partiellement disponible\", l’option retenue sera de x"
 
 #: seantis.reservation/seantis/reservation/interfaces.py:79
 msgid "Always show a specific date"
-msgstr "Montrer toujours une date précise"
+msgstr "Afficher toujours une date particulière"
 
 #: seantis.reservation/seantis/reservation/interfaces.py:78
 msgid "Always show the current date"
-msgstr "Montrer toujours la date actuelle"
+msgstr "Afficher toujours la date actuelle"
 
 #: seantis.reservation/seantis/reservation/error.py:111
 msgid "An existing reservation would be affected by the requested change"
-msgstr "Une réservation en cours sera pénalisée par ce changement"
+msgstr "Une réservation en cours sera impliqués par ce changement"
 
 #: seantis.reservation/seantis/reservation/settings.py:39
 msgid "Approval Email Notifications for Managers"
-msgstr ""
+msgstr "Notification par courriel aux responsables des réservations pour des réservations à confirmer"
 
 #: seantis.reservation/seantis/reservation/report.py:283
 #: seantis.reservation/seantis/reservation/reserve.py:652
@@ -147,7 +145,7 @@ msgstr "Les disponibilités sont présentées dès l'ouverture du calendrier"
 
 #: seantis.reservation/seantis/reservation/error.py:162
 msgid "Can't block period because a reservation already exists."
-msgstr ""
+msgstr "Cette période ne peut pas être bloqué comme une réservation existe déjà"
 
 #: seantis.reservation/seantis/reservation/allocate.py:151
 #: seantis.reservation/seantis/reservation/reserve.py:457
@@ -156,11 +154,11 @@ msgstr "Annuler"
 
 #: seantis.reservation/seantis/reservation/templates/resource.pt:110
 msgid "Click on a calendar block to reserve it."
-msgstr "Cliquer sur le calendrier pour réserver vos dates"
+msgstr "Cliquer sur le calendrier pour réserver vos dates préférées"
 
 #: seantis.reservation/seantis/reservation/templates/listing.pt:25
 msgid "Click to reserve / register"
-msgstr "Cliquer pour réserver"
+msgstr "Réservation"
 
 #: seantis.reservation/seantis/reservation/templates/utils.pt:15
 msgid "Compare Resources"
@@ -172,15 +170,15 @@ msgstr "Dates demandées"
 
 #: seantis.reservation/seantis/reservation/templates/your_reservations_viewlet.pt:24
 msgid "Confirm Reservations"
-msgstr "Réservations confirmées"
+msgstr "Terminer les réservations"
 
 #: seantis.reservation/seantis/reservation/interfaces.py:341
 msgid "DEPRECATED: Approve reservation requests"
-msgstr "Valider la demande de réservation"
+msgstr "DEPRECATED: Valider la demande de réservation"
 
 #: seantis.reservation/seantis/reservation/interfaces.py:61
 msgid "Daily"
-msgstr "Quotidien"
+msgstr "Quotidiennement"
 
 #: seantis.reservation/seantis/reservation/interfaces.py:69
 msgid "Daily View"
@@ -200,11 +198,11 @@ msgstr "Jours"
 
 #: seantis.reservation/seantis/reservation/interfaces.py:424
 msgid "Default Allocation Values"
-msgstr "Classification standand"
+msgstr "Classification standard"
 
 #: seantis.reservation/seantis/reservation/interfaces.py:317
 msgid "Defines the minimum length of any given reservation as well as the alignment of the start / end of the allocation. E.g. a raster of 30 minutes means that the allocation can only start at xx:00 and xx:30 respectively"
-msgstr "Définir la durée minimum de chaque réservation ainsi que le début/ la fin de la période de la réservation, par ex. une durée de 30 minutes signifie que la réservation peut seulement commencer à xx:00 ou à xx:30 "
+msgstr "Définir la durée minimum de chaque réservation ainsi que le début / la fin de la période de la réservation, par ex. une durée de 30 minutes signifie que la réservation peut seulement commencer à xx:00 ou à xx:30 "
 
 #: seantis.reservation/seantis/reservation/allocate.py:278
 #: seantis.reservation/seantis/reservation/mail.py:500
@@ -220,7 +218,7 @@ msgstr "Refuser"
 
 #: seantis.reservation/seantis/reservation/reserve.py:676
 msgid "Deny reservation"
-msgstr "Refuser réservation"
+msgstr "Refuser la réservation"
 
 #: seantis.reservation/seantis/reservation/interfaces.py:355
 msgid "Description"
@@ -228,11 +226,11 @@ msgstr "Description"
 
 #: seantis.reservation/seantis/reservation/templates/monthly_report.pt:26
 msgid "Details"
-msgstr "Details"
+msgstr "Détails"
 
 #: seantis.reservation/seantis/reservation/reserve.py:650
 msgid "Do you really want to approve the following reservations?"
-msgstr "Voulez-vous vraiment faire cette réservation?"
+msgstr "Voulez-vous vraiment effectuer cette réservation?"
 
 #: seantis.reservation/seantis/reservation/reserve.py:683
 msgid "Do you really want to deny the following reservations?"
@@ -240,11 +238,11 @@ msgstr "Voulez-vous vraiment annuler cette réservation?"
 
 #: seantis.reservation/seantis/reservation/templates/remove_allocation.pt:14
 msgid "Do you really want to remove the following allocations?"
-msgstr "Voulez-vous vraiment supprimer cette salle?"
+msgstr "Voulez-vous vraiment supprimer ces périodisations?"
 
 #: seantis.reservation/seantis/reservation/reserve.py:759
 msgid "Do you really want to remove the following reservations?"
-msgstr "Voulez-vous vraiment supprimer cette réservation?"
+msgstr "Voulez-vous vraiment supprimer ces réservations?"
 
 #: seantis.reservation/seantis/reservation/reserve.py:831
 msgid "Do you really want to revoke the following reservations?"
@@ -252,7 +250,7 @@ msgstr "Voulez-vous vraiment supprimer cette réservation?"
 
 #: seantis.reservation/seantis/reservation/templates/reserve_group.pt:14
 msgid "Do you want to reserve the following allocations?"
-msgstr "Voulez-vous réserver cette salle?"
+msgstr "Voulez-vous vraiment réserver comme indiqué?"
 
 #: seantis.reservation/seantis/reservation/allocate.py:223
 #: seantis.reservation/seantis/reservation/mail.py:499
@@ -262,11 +260,11 @@ msgstr "Modifier"
 
 #: seantis.reservation/seantis/reservation/reserve.py:933
 msgid "Edit Formdata"
-msgstr ""
+msgstr "Modifier données du formulaire"
 
 #: seantis.reservation/seantis/reservation/allocate.py:173
 msgid "Edit allocation"
-msgstr "Modifier la salle/ la classe"
+msgstr "Modifier la périodisation"
 
 #: seantis.reservation/seantis/reservation/exports/reservations.py:40
 #: seantis.reservation/seantis/reservation/interfaces.py:145
@@ -316,27 +314,27 @@ msgstr "Courriel des présentations"
 
 #: seantis.reservation/seantis/reservation/interfaces.py:684
 msgid "Email Text for Approved Reservations"
-msgstr "Texte Email pour la confirmation de la réservation"
+msgstr "Texte courriel pour la confirmation de la réservation"
 
 #: seantis.reservation/seantis/reservation/interfaces.py:697
 msgid "Email Text for Denied Reservations"
-msgstr "Texte Email pour l'annulation de la réservation/ l'annulation des réservations"
+msgstr "Texte courriel pour l'annulation de la réservation / l'annulation des réservations"
 
 #: seantis.reservation/seantis/reservation/interfaces.py:671
 msgid "Email Text for Received Reservations"
-msgstr "Texte Email pour la réservation reçue"
+msgstr "Texte courriel pour la réservation reçue"
 
 #: seantis.reservation/seantis/reservation/interfaces.py:641
 msgid "Email Text for Reservation Autoapproved"
-msgstr "Texte Email automatique pour la confirmation de réservation"
+msgstr "Texte courriel automatique pour la confirmation de réservation"
 
 #: seantis.reservation/seantis/reservation/interfaces.py:656
 msgid "Email Text for Reservation Pending"
-msgstr "Texte Email de réservation en attente"
+msgstr "Texte courriel de réservation en attente"
 
 #: seantis.reservation/seantis/reservation/interfaces.py:710
 msgid "Email Text for Revoked Reservations"
-msgstr "Texte Email pour l'annulation de la réservation/ l'annulation des réservations"
+msgstr "Texte courriel pour l'annulation de la réservation/ l'annulation des réservations"
 
 #: seantis.reservation/seantis/reservation/exports/reservations.py:42
 #: seantis.reservation/seantis/reservation/interfaces.py:519
@@ -381,11 +379,11 @@ msgstr "Première heure pleine"
 
 #: seantis.reservation/seantis/reservation/reserve.py:998
 msgid "Formdata updated"
-msgstr ""
+msgstr "Données du formulaire actualisées"
 
 #: seantis.reservation/seantis/reservation/interfaces.py:433
 msgid "Formsets"
-msgstr "Formulaire/ Sous-formulaire"
+msgstr "Formulaire / Sous-formulaire"
 
 #: seantis.reservation/seantis/reservation/interfaces.py:52
 msgid "Fr"
@@ -401,7 +399,7 @@ msgstr "En général"
 
 #: seantis.reservation/seantis/reservation/templates/resource.pt:70
 msgid "Has a waitinglist"
-msgstr "Sur liste d'attente"
+msgstr "Il existe une liste d'attente"
 
 #: seantis.reservation/seantis/reservation/templates/monthly_report.pt:28
 msgid "Hide"
@@ -413,7 +411,7 @@ msgstr "ld"
 
 #: seantis.reservation/seantis/reservation/interfaces.py:295
 msgid "If checked a reservation manager must decide if a reservation can be approved. Until then users are added to a waitinglist. Reservations are automatically approved if this is not checked. "
-msgstr "Le gestionnaire des réservations doit définir si une réservation peut être approuvée. Jusqu'à la validation de la réservation, les utilisateurs sont sur une liste d'attente. Les réservations sont automatiquement approuvées si ce n'est pas contrôlé. "
+msgstr "La gestion immobilière doit définir si une réservation peut être approuvée. Jusqu'à la validation de la réservation, les utilisateurs sont sur une liste d'attente. Les réservations sont automatiquement approuvées si ce n'est pas contrôlé. "
 
 #: seantis.reservation/seantis/reservation/interfaces.py:555
 msgid "If checked parts of the recurrance may be reserved. If not checkd the recurrance must be reserved as a whole."
@@ -425,7 +423,7 @@ msgstr "Si les ressources demandées sont partiellement disponibles, les utilisa
 
 #: seantis.reservation/seantis/reservation/error.py:123
 msgid "Invalid change. Your request may have already been processed earlier."
-msgstr "Modification impossible. Votre demande sera traitée aussi rapidement que possible"
+msgstr "Modification impossible. Votre demande sera traitée aussi rapidement que possible."
 
 #: seantis.reservation/seantis/reservation/interfaces.py:130
 msgid "Invalid email address"
@@ -501,11 +499,11 @@ msgstr "Non"
 
 #: seantis.reservation/seantis/reservation/reserve.py:935
 msgid "No Formdata to edit"
-msgstr ""
+msgstr "Aucune données du formulaire à modifier"
 
 #: seantis.reservation/seantis/reservation/error.py:127
 msgid "No reservable slot found."
-msgstr "La période de réservation désirée est actuellement déjà occupée"
+msgstr "La période de réservation désirée est actuellement déjà occupée."
 
 #: seantis.reservation/seantis/reservation/error.py:168
 msgid "No reserved slots would be left after this operation"
@@ -533,7 +531,7 @@ msgstr "Mentionner la raison de l'annulation - optionnel  "
 
 #: seantis.reservation/seantis/reservation/exports/reservations.py:37
 msgid "Parent"
-msgstr "Elément structuré"
+msgstr "Elément du niveau supérieur"
 
 #: seantis.reservation/seantis/reservation/interfaces.py:305
 #: seantis.reservation/seantis/reservation/templates/resource.pt:60
@@ -543,7 +541,7 @@ msgstr "Partiellement disponible"
 #: seantis.reservation/seantis/reservation/allocate.py:146
 #: seantis.reservation/seantis/reservation/interfaces.py:577
 msgid "Partly available allocations can only be reserved separately"
-msgstr "Partiellement disponible. La salle peut être seulement réservée de manière séparée"
+msgstr "Partiellement disponible. La salle peut être seulement réservée de manière séparée."
 
 #: seantis.reservation/seantis/reservation/report.py:55
 msgid "Pending"
@@ -552,7 +550,7 @@ msgstr "Liste d'attente"
 #: seantis.reservation/seantis/reservation/exports/reservations.py:45
 #: seantis.reservation/seantis/reservation/interfaces.py:273
 msgid "Quota"
-msgstr "Contingent/ Nombre de personnes"
+msgstr "Contingent / Nombre de personnes"
 
 #: seantis.reservation/seantis/reservation/interfaces.py:330
 msgid "Quota must be between 1 and 100"
@@ -568,15 +566,15 @@ msgstr "Raison"
 
 #: seantis.reservation/seantis/reservation/reserve.py:495
 msgid "Recurrance reservation"
-msgstr "Répétition/ récapitulatif de la réservation"
+msgstr "Répétition de la réservation"
 
 #: seantis.reservation/seantis/reservation/interfaces.py:498
 msgid "Recurrence"
-msgstr "Répétition/"
+msgstr "Répétition"
 
 #: seantis.reservation/seantis/reservation/templates/group.pt:17
 msgid "Recurrence View"
-msgstr "Répétition de l'inscription"
+msgstr "Affichage de la répétition"
 
 #: seantis.reservation/seantis/reservation/resource.py:381
 msgid "Recurrences"
@@ -590,7 +588,7 @@ msgstr "Supprimer"
 
 #: seantis.reservation/seantis/reservation/allocate.py:273
 msgid "Remove allocations"
-msgstr "Supprimer les modèles non compatibles"
+msgstr "Supprimer les périodisations non compatibles"
 
 #: seantis.reservation/seantis/reservation/templates/reservations.pt:91
 msgid "Remove future reservations"
@@ -618,11 +616,11 @@ msgstr "Limiter le nombre de réservations"
 
 #: seantis.reservation/seantis/reservation/settings.py:21
 msgid "Reservation Throttling"
-msgstr "Diminution de la réservation"
+msgstr "Restriction de la réservation"
 
 #: seantis.reservation/seantis/reservation/reserve.py:658
 msgid "Reservation confirmed"
-msgstr "Confirmation de la réservation"
+msgstr "Réservation confirmée"
 
 #: seantis.reservation/seantis/reservation/reserve.py:691
 msgid "Reservation denied"
@@ -638,7 +636,7 @@ msgstr "Le nombre de réservations doit être au moins de 0 ou plus"
 
 #: seantis.reservation/seantis/reservation/reserve.py:770
 msgid "Reservation removed"
-msgstr ""
+msgstr "Réservation supprimée"
 
 #: seantis.reservation/seantis/reservation/reserve.py:843
 msgid "Reservation revoked"
@@ -646,7 +644,7 @@ msgstr "Réservation annulée"
 
 #: seantis.reservation/seantis/reservation/reserve.py:338
 msgid "Reservation successful"
-msgstr "Réservation effective"
+msgstr "Réservation effectuée"
 
 #: seantis.reservation/seantis/reservation/resource.py:339
 #: seantis.reservation/seantis/reservation/templates/reservations.pt:21
@@ -655,7 +653,7 @@ msgstr "Réservations"
 
 #: seantis.reservation/seantis/reservation/reserve.py:567
 msgid "Reservations Successfully Submitted"
-msgstr "Réservation a été faite avec succès"
+msgstr "Réservation a été effectuée avec succès"
 
 #: seantis.reservation/seantis/reservation/error.py:130
 msgid "Reservations can't be made for more than 24 hours at a time"
@@ -690,7 +688,7 @@ msgstr "Annuler"
 
 #: seantis.reservation/seantis/reservation/reserve.py:822
 msgid "Revoke reservation"
-msgstr "Annuler"
+msgstr "Annuler la réservation"
 
 #: seantis.reservation/seantis/reservation/interfaces.py:53
 msgid "Sa"
@@ -700,7 +698,7 @@ msgstr "Sa"
 #: seantis.reservation/seantis/reservation/reserve.py:989
 #: seantis.reservation/seantis/reservation/timeframe.py:83
 msgid "Save"
-msgstr "Sauver/ Enregistrer"
+msgstr "Enregistrer"
 
 #: seantis.reservation/seantis/reservation/settings.py:65
 msgid "Seantis Reservation Control Panel"
@@ -716,11 +714,11 @@ msgstr "Choisir au moins un valeur"
 
 #: seantis.reservation/seantis/reservation/interfaces.py:408
 msgid "Selected Date"
-msgstr "Date définie"
+msgstr "Date choisie"
 
 #: seantis.reservation/seantis/reservation/interfaces.py:398
 msgid "Selected View"
-msgstr "Vue définie"
+msgstr "Vue choisie"
 
 #: seantis.reservation/seantis/reservation/interfaces.py:399
 msgid "Selected view when opening the calendar."
@@ -728,15 +726,15 @@ msgstr "Affichage lors de l'ouverture du calendrier"
 
 #: seantis.reservation/seantis/reservation/settings.py:48
 msgid "Send emails about made, approved and denied reservations to the user that made the reservation."
-msgstr "Confirmation par email auprès de l'utilisateur des réservations faites, approuvées et refusées"
+msgstr "Confirmation par courriel auprès de l'utilisateur des réservations faites, approuvées et refusées"
 
 #: seantis.reservation/seantis/reservation/settings.py:40
 msgid "Send emails about new pending reservations to the first reservation managers found in the path."
-msgstr "Envoyer un email auprès des managers concernant les réservations en attente "
+msgstr "Envoyer un courriel auprès des managers concernant les réservations en attente "
 
 #: seantis.reservation/seantis/reservation/settings.py:32
 msgid "Send emails about newly made reservations to the first reservation managers found in the path."
-msgstr ""
+msgstr "Envoyer un courriel pour une nouvelle réservation au premier manager des réservation au système."
 
 #: seantis.reservation/seantis/reservation/interfaces.py:648
 msgid "Sent to <b>managers</b> when a new pending reservation is made. May contain the template variables listed below."
@@ -772,7 +770,7 @@ msgstr "Vues"
 
 #: seantis.reservation/seantis/reservation/templates/monthly_report.pt:27
 msgid "Show"
-msgstr "Annonces"
+msgstr "Afficher"
 
 #: seantis.reservation/seantis/reservation/interfaces.py:418
 msgid "Specific Date"
@@ -809,31 +807,31 @@ msgstr "Je"
 
 #: seantis.reservation/seantis/reservation/error.py:155
 msgid "The allocation does not have enough spots to possibly satisfy the requested reservation quota."
-msgstr "La salle n'a pas les capacités pour répondre à la demande de réservation"
+msgstr "La salle n'a pas les capacités pour répondre à la demande de réservation."
 
 #: seantis.reservation/seantis/reservation/interfaces.py:571
 msgid "The allocation must be at least 5 minutes long"
-msgstr "La salle doit être au moins réservée pour 5 minutes"
+msgstr "La salle doit être au moins réservée pour 5 minutes."
 
 #: seantis.reservation/seantis/reservation/interfaces.py:531
 msgid "The allocation spans the whole day."
-msgstr "La classe est valable pour la journée"
+msgstr "La périodisation est valable pour toute la journée."
 
 #: seantis.reservation/seantis/reservation/error.py:137
 msgid "The given reservation paramters are invalid."
-msgstr "Les paramètres de réservations ne sont pas valables"
+msgstr "Les paramètres de réservations ne sont pas valables."
 
 #: seantis.reservation/seantis/reservation/error.py:143
 msgid "The given reservation token is invalid."
-msgstr "Le token de réservation n'est pas valable"
+msgstr "Le token de réservation n'est pas valable."
 
 #: seantis.reservation/seantis/reservation/error.py:117
 msgid "The item does no longer exist."
-msgstr "La saisie effectuée n'existe plus"
+msgstr "La saisie effectuée n'existe plus."
 
 #: seantis.reservation/seantis/reservation/interfaces.py:285
 msgid "The maximum quota a single reservation may occupy at once. There is no limit if set to zero."
-msgstr "Le quota maximum d'une seule réservation peut être utilisé de suite"
+msgstr "Le quota maximum d'une seule réservation peut être utilisé de suite."
 
 #: seantis.reservation/seantis/reservation/settings.py:22
 msgid "The number of minutes a user needs to wait between reservations, use 0 if no throttling should occur. Users with the 'Unthrottled Reservations' permission are excempt from this rule (Reservation-Managers by default)."
@@ -841,23 +839,23 @@ msgstr "Le temps requis entre différentes réservation. Si rien ne se passe, ut
 
 #: seantis.reservation/seantis/reservation/templates/remove_allocation.pt:18
 msgid "The requested allocations could not be found"
-msgstr "Les données spécifiques demandées ne sont pas disponibles"
+msgstr "Les données spécifiques demandées ne sont pas disponibles."
 
 #: seantis.reservation/seantis/reservation/error.py:120
 msgid "The requested period is no longer available."
-msgstr "La période prolongée n'est plus disponible"
+msgstr "La période prolongée n'est plus disponible."
 
 #: seantis.reservation/seantis/reservation/error.py:152
 msgid "The requested quota is invalid (must be at least one)."
-msgstr "La réservation demandée n'est pas valable (au moins l'une d'entre elles)"
+msgstr "La réservation demandée n'est pas valable (au moins l'une d'entre elles)."
 
 #: seantis.reservation/seantis/reservation/templates/reserve_group.pt:18
 msgid "The requested recurrence could not be found"
-msgstr "La réservation à nouveau demandée n'a pas pu être trouvée"
+msgstr "La réservation en série demandée n'a pas pu être trouvée."
 
 #: seantis.reservation/seantis/reservation/error.py:149
 msgid "The requested reservation quota is higher than allowed."
-msgstr "Le nombre de réservations demandé est supérieur au nombre autorisé"
+msgstr "Le nombre de réservations demandé est supérieur au nombre autorisé."
 
 #: seantis.reservation/seantis/reservation/error.py:172
 msgid "The resource is being edited by someone else. Please try again."
@@ -865,31 +863,31 @@ msgstr "La salle demandée est actuellement utilisée. Veuillez à nouveau essay
 
 #: seantis.reservation/seantis/reservation/error.py:159
 msgid "The resulting allocation would be invalid"
-msgstr "Les données saisies ne sont pas valables"
+msgstr "Les données saisies ne sont pas valables."
 
 #: seantis.reservation/seantis/reservation/interfaces.py:474
 msgid "The selected view must be one of the available views."
-msgstr "Le choix de la présentation/ agenda/ timeframe doit être disponible"
+msgstr "Le choix de l'affichage doit être disponible."
 
 #: seantis.reservation/seantis/reservation/form.py:592
 msgid "There are ${nb} reservations being entered for this resource."
-msgstr "${nb} des réservations sont déjà dans le système"
+msgstr "${nb} Des réservations sont saisies momentanément."
 
 #: seantis.reservation/seantis/reservation/form.py:588
 msgid "There is one reservation being entered for this resource."
-msgstr "Une réservation est déjà faite "
+msgstr "Une réservation est saisie momentanément."
 
 #: seantis.reservation/seantis/reservation/mail.py:428
 msgid "There's already an Email template in the same folder for the same language"
-msgstr "Il existe déjà un autre email dans le dossier  avec les mêmes données "
+msgstr "Il existe déjà un autre courriel dans le dossier avec les mêmes données."
 
 #: seantis.reservation/seantis/reservation/error.py:165
 msgid "This is not a recurring reservation"
-msgstr ""
+msgstr "Ceci n'est pas une réservation en série."
 
 #: seantis.reservation/seantis/reservation/profiles/default/types/seantis.reservation.timeframe.xml
 msgid "Timeframe"
-msgstr "Périodes d'occupation"
+msgstr "Période d'occupation"
 
 #: seantis.reservation/seantis/reservation/timeframe.py:37
 msgid "Timeframe overlaps with '${overlap}' in the current folder"
@@ -902,7 +900,7 @@ msgstr "Périodes d'occupation"
 
 #: seantis.reservation/seantis/reservation/templates/monthly_report.pt:31
 msgid "Timetable"
-msgstr ""
+msgstr "Horaire"
 
 #: seantis.reservation/seantis/reservation/exports/reservations.py:39
 msgid "Token"
@@ -922,11 +920,11 @@ msgstr "Pas disponible"
 
 #: seantis.reservation/seantis/reservation/templates/utils.pt:4
 msgid "Utils"
-msgstr "Moyens"
+msgstr "Outil"
 
 #: seantis.reservation/seantis/reservation/interfaces.py:386
 msgid "Views available to the user on the calendar."
-msgstr "Options de vue disponibles pour l'utilisateur"
+msgstr "Mode d'affichage disponibles pour l'utilisateur"
 
 #: seantis.reservation/seantis/reservation/interfaces.py:761
 msgid "Visible on the calendar"
@@ -966,4 +964,5 @@ msgstr "Vous avez choisi l'option de 'Toujours montrer une date précise' mais v
 #: seantis.reservation/seantis/reservation/templates/your_reservations_viewlet.pt:10
 msgid "Your reservations"
 msgstr "Vos réservations"
+
 
