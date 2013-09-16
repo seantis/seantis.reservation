@@ -1000,7 +1000,8 @@ class TestScheduler(IntegrationTestCase):
 
     @serialized
     def test_allocation_partition_completely_available(self):
-        sc = Scheduler(new_uuid())
+        self.login_admin()
+        sc = Scheduler(self.create_resource().uuid())
 
         allocations = sc.allocate(
             (
@@ -1018,7 +1019,8 @@ class TestScheduler(IntegrationTestCase):
 
     @serialized
     def test_allocation_partition_reserved_partitions(self):
-        sc = Scheduler(new_uuid())
+        self.login_admin()
+        sc = Scheduler(self.create_resource().uuid())
 
         allocations = sc.allocate(
             (
@@ -1045,7 +1047,8 @@ class TestScheduler(IntegrationTestCase):
 
     @serialized
     def test_allocation_partition_reserved_and_blocked_partitions(self):
-        sc = Scheduler(new_uuid())
+        self.login_admin()
+        sc = Scheduler(self.create_resource().uuid())
 
         allocations = sc.allocate(
             (
