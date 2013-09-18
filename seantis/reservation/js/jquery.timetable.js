@@ -70,7 +70,7 @@ if (!this.seantis.tablecache) this.seantis.tablecache = {};
             table = this.render();
             seantis.tablecache[key] = table;
         } else {
-            table = seantis.tablecache[key].clone();
+            table = seantis.tablecache[key];
         }
 
         this.$.append(table);
@@ -184,36 +184,35 @@ if (!this.seantis.tablecache) this.seantis.tablecache = {};
 
     Plugin.prototype.render = function() {
 
-        var table = $('<table />').addClass('timetable hidden');
+        markup = '<table class="timetable hidden">';
+
+        //var table = $('<table />').addClass('timetable hidden');
         var colcount = (this.options.max_hour - this.options.min_hour + 1);
         var hwidth = 100 / colcount;
 
         // render the table header
         if (this.options.show_header) {
-            var thead = $('<thead />');
-            var th_row = $('<tr />');
-
-            thead.appendTo(table);
-            th_row.appendTo(thead);
+            markup += '<thead><tr>';
 
             for (var h=this.options.min_hour; h <= this.options.max_hour; h++) {
                 var hour = this.pad(h, 2) + ':00';
-                th_row.append($('<th />').width(hwidth + '%').text(hour));
+                markup += '<th style="width: ' + hwidth + '%;">' + hour + '</th>';
             }
+            markup += '</tr></thead>';
 
         }
 
         // render the table
-        var tbody = $('<tbody />');
-        tbody.appendTo(table);
+        markup += '<tbody>';
 
         // empoty rows are added between the timespans for easier styling
         var add_empty_row = function() {
+            markup += '<tr class="empty_row">';
             var empty_row = $('<tr />').addClass('empty_row');
             for (var i=0; i<colcount; i++) {
-                empty_row.append($('<td />').width(hwidth + '%'));
+                markup += '<td style="width: ' + hwidth + '%;"></td>';
             }
-            tbody.append(empty_row);
+            markup += '</tr>';
         };
 
         if (this.options.timespans.length > 0)
@@ -223,40 +222,42 @@ if (!this.seantis.tablecache) this.seantis.tablecache = {};
         var plugin = this;
         $.each(this.options.timespans, function(index, timerow) {
 
-            var row = $('<tr />');
+            markup += '<tr>';
 
             // add the columns
             $.each(plugin.merged_divisions(timerow.start, timerow.end), function(index, cell) {
 
                 // ie 9+ does not understand colspan if added dynamically, only colSpan
-                var td = $('<td />').attr('colSpan', cell.span);
-                td.appendTo(row);
-
-                var wrapper = $('<div />').addClass('timespan');
-                wrapper.appendTo(td);
+                markup += '<td colSpan="' + cell.span + '">';
+                markup += '<div class="timespan">';
 
                 var left = cell.left + '%';
                 var middle = (100 - cell.left - cell.right) + '%';
                 var right = cell.right + '%';
 
-                var occupied = $('<div />').addClass(cell.state).width(middle).css({
-                    "margin-left": left,
-                    "margin-right": right
-                });
+                markup += '<div class="' + cell.state + '"';
+                markup += 'style="width: ' + middle;
+                markup += '; margin-left: ' + left;
+                markup += '; margin-right: ' + right;
+                markup += '">';
 
                 if (plugin.options.show_text && cell.text) {
-                    occupied.append($('<span />').text(cell.text));
+                    markup += '<span>' + cell.text + '</span>';
                 }
 
-                wrapper.append(occupied);
+                markup += '</div>';
+                markup += '</div>';
+                markup += '</td>';
             });
 
-            tbody.append(row);
+            markup += '</tr>';
 
             add_empty_row();
         });
+        markup += '</tbody>';
+        markup += '</table>';
 
-        return table;
+        return markup;
     };
 
     // Pads the given number
