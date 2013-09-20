@@ -13,7 +13,7 @@ teamraum_require = [
     'plonetheme.teamraum'
 ]
 tests_require = [
-    'collective.betterbrowser',
+    'collective.betterbrowser[pyquery]',
     'collective.testcaselayer',
     'plone.app.testing',
 ]

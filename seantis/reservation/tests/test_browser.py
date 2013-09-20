@@ -1,5 +1,6 @@
 import json
 import transaction
+from itertools import chain
 
 from zope.component import queryUtility
 from Products.CMFCore.interfaces import IPropertiesTool
@@ -271,6 +272,53 @@ class TestBrowser(FunctionalTestCase):
         self.assertTrue('"maxTime": 12' in browser.contents)
         self.assertTrue('"right": "month, agendaWeek"' in browser.contents)
         self.assertTrue('"defaultView": "month"' in browser.contents)
+
+    def test_render_disabled_dates(self):
+
+        # ensure that the disabled date/time is rendered again after
+        # submitting a form
+
+        browser = self.new_browser()
+        browser.login_admin()
+
+        start = datetime(2013, 9, 20, 15, 0)
+        end = datetime(2013, 9, 20, 16, 0)
+
+        self.add_resource('render')
+
+        allocation = ('render', start, end)
+        self.add_allocation(*allocation, partly_available=True)
+
+        browser.open(self.allocation_menu(*allocation)['reserve'])
+
+        unchanging_values = [
+            ('#form-widgets-day-day', '20'),
+            ('#form-widgets-day-month option[selected="selected"]', '9'),
+            ('#form-widgets-day-year', '2013'),
+        ]
+
+        changing_values = [
+            ('#form-widgets-start_time', '3:00 PM'),
+            ('#form-widgets-end_time', '4:00 PM')
+        ]
+
+        for selector, value in chain(unchanging_values, changing_values):
+            self.assertEqual(browser.query(selector).val(), value)
+
+        browser.getControl('Start').value = '3:15 PM'
+        browser.getControl('End').value = '3:45 PM'
+        
+        # not entering anything should lead to the form again with the still
+        # filled out controls
+        browser.getControl('Reserve').click()
+
+        changing_values = [
+            ('#form-widgets-start_time', '3:15 PM'),
+            ('#form-widgets-end_time', '3:45 PM')
+        ]
+
+        for selector, value in chain(unchanging_values, changing_values):
+            self.assertEqual(browser.query(selector).val(), value)
 
     def test_invalid_allocation_missing_email_regression(self):
 

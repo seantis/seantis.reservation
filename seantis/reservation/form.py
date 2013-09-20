@@ -98,6 +98,12 @@ class ResourceBaseForm(GroupForm, form.Form):
             self.widgets.hasRequiredFields = False
 
     def disable_fields(self):
+        """ Disables the fields in self.disabled_fields (by name). Be careful
+        using this, as disabled fields are not submitted back from the form.
+
+        It's more of a read-only/info fields kind of thing.
+
+        """
 
         # Disable fields
         for f in self.disabled_fields:
