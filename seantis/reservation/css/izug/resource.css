@@ -447,3 +447,7 @@ label .required {
     margin-left: 0;   
     margin-top: 0.5em;
 }
+
+.seantis-reservation-form input[readonly="readonly"] {
+    background-color: #efefef;
+}
