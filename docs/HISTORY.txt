@@ -9,6 +9,8 @@ Changelog
 
 - Fixes radio-buttons and check-boxes not showing up on group forms
 
+- Fixes a minor style issue in the teamraum theme
+
 1.0.10
 ------
 
