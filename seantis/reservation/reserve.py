@@ -459,7 +459,7 @@ class ReservationForm(
 
 
 class GroupReservationForm(
-        ReservationBaseForm,
+        ReservationForm,
         AllocationGroupView,
         SessionFormdataMixin,
         YourReservationsData

@@ -2,6 +2,13 @@
 Changelog
 =========
 
+1.0.11 (unreleased)
+-------------------
+
+- Fixes 'continue' button not working on group forms
+
+- Fixes radio-buttons and check-boxes not showing up on group forms
+
 1.0.10
 ------
 
