@@ -581,9 +581,11 @@ class YourReservations(ResourceBaseForm, YourReservationsData):
 
     @button.buttonAndHandler(_(u'Submit Reservations'), name="finish")
     def finish(self, data):
-        self.confirm_reservations()
-        self.request.response.redirect(self.context.absolute_url())
-        self.flash(_(u'Reservations Successfully Submitted'))
+        def on_success():
+            self.request.response.redirect(self.context.absolute_url())
+            self.flash(_(u'Reservations Successfully Submitted'))
+        
+        utils.handle_action(self.confirm_reservations, success=on_success)
 
     @button.buttonAndHandler(_(u'Reserve More'), name="proceed")
     def proceed(self, data):
