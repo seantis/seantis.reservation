@@ -5,6 +5,9 @@ Changelog
 1.0.11 (unreleased)
 -------------------
 
+- The date and start-/end-time are now properly disabled on the form if they
+  may not be edited.
+
 - Fixes 'continue' button not working on group forms
 
 - Fixes radio-buttons and check-boxes not showing up on group forms
