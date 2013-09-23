@@ -101,7 +101,14 @@ class ResourceBaseForm(GroupForm, form.Form):
         """ Disables the fields in self.disabled_fields (by name). Be careful
         using this, as disabled fields are not submitted back from the form.
 
-        It's more of a read-only/info fields kind of thing.
+        It's the job of the individual form to deal with those unsbumitted
+        values.
+
+        See ReservationForm.inject_missing_data
+
+        If this feature is used more extensively, it would make sense
+        to provide a callback-mechanism on this baseform to abstract away
+        the inject_missing_data stuff and make it more fool-proof.
 
         """
 

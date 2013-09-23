@@ -273,7 +273,7 @@ class TestBrowser(FunctionalTestCase):
         self.assertTrue('"right": "month, agendaWeek"' in browser.contents)
         self.assertTrue('"defaultView": "month"' in browser.contents)
 
-    def test_render_disabled_dates(self):
+    def test_render_disabled_dates_partly(self):
 
         # ensure that the disabled date/time is rendered again after
         # submitting a form
@@ -318,6 +318,42 @@ class TestBrowser(FunctionalTestCase):
         ]
 
         for selector, value in chain(unchanging_values, changing_values):
+            self.assertEqual(browser.query(selector).val(), value)
+
+    def test_render_disabled_dates_non_partly(self):
+
+        # ensure that the disabled date/time is rendered again after
+        # submitting a form (on not partly_available allocations)
+
+        browser = self.new_browser()
+        browser.login_admin()
+
+        start = datetime(2013, 9, 20, 15, 0)
+        end = datetime(2013, 9, 20, 16, 0)
+
+        self.add_resource('render')
+
+        allocation = ('render', start, end)
+        self.add_allocation(*allocation, partly_available=False)
+
+        browser.open(self.allocation_menu(*allocation)['reserve'])
+
+        unchanging_values = [
+            ('#form-widgets-day-day', '20'),
+            ('#form-widgets-day-month option[selected="selected"]', '9'),
+            ('#form-widgets-day-year', '2013'),
+            ('#form-widgets-start_time', '3:00 PM'),
+            ('#form-widgets-end_time', '4:00 PM')
+        ]
+
+        for selector, value in unchanging_values:
+            self.assertEqual(browser.query(selector).val(), value)
+        
+        # not entering anything should lead to the form again with the still
+        # filled out controls
+        browser.getControl('Reserve').click()
+
+        for selector, value in unchanging_values:
             self.assertEqual(browser.query(selector).val(), value)
 
     def test_invalid_allocation_missing_email_regression(self):
@@ -373,6 +409,7 @@ class TestBrowser(FunctionalTestCase):
 
         browser.getControl('Email').value = 'test@example.com'
         browser.getControl('Quota', index=0).value = '3'
+
         browser.getControl('Reserve').click()
 
         self.assertTrue('quota is higher than allowed' in browser.contents)

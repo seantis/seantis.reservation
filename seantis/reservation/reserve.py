@@ -377,7 +377,10 @@ class ReservationForm(
         return disabled
 
     def defaults(self, **kwargs):
-        return self.your_reservation_defaults(dict(id=self.id))
+        defaults = self.your_reservation_defaults(dict(id=self.id))
+        self.inject_missing_data(defaults)
+
+        return defaults
 
     def allocation(self, id):
         if not id:
@@ -407,12 +410,48 @@ class ReservationForm(
         except (NoResultFound, TypeError):
             utils.form_error(_(u'Invalid reservation request'))
 
+    def inject_missing_data(self, data, allocation=None):
+        """ Adds the date and start-/end-time to the data if they are missing,
+        which happens because those fields may be disabled and therefore are
+        not transferred when submitting the form.
+
+        The fields are injected into the passed dictionary, which may be
+        the reservations defaults or the submitted form data.
+
+        """
+        extracted, errors = self.extractData(setErrors=False)
+
+        # the extracted fields may contain field values which need to be
+        # injected so the defaults are filled - otherwise no value is updated
+        # on the disabled field
+        for field in ('day', 'start_time', 'end_time'):
+            if extracted.get(field) is not None:
+                data[field] = extracted[field]
+
+        # if the extracted data was not of any help the id of the allocation
+        # is our last resort.
+        try:
+            allocation = allocation or self.allocation(data['id'])
+        except DirtyReadOnlySession:
+            return
+
+        if data.get('day') is None:
+            data['day'] = allocation.display_start.date()
+
+        if data.get('start_time') is None:
+            data['start_time'] = allocation.display_start.time()
+
+        if data.get('end_time') is None:
+            data['end_time'] = allocation.display_end.time()
+
     @button.buttonAndHandler(_(u'Reserve'))
     @extract_action_data
     def reserve(self, data):
 
         allocation = self.allocation(data['id'])
         approve_manually = allocation.approve_manually
+
+        self.inject_missing_data(data, allocation)
 
         start, end = self.validate(data)
         quota = int(data.get('quota', 1))
