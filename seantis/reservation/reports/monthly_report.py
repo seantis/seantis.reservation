@@ -11,15 +11,16 @@ from seantis.reservation import _
 from seantis.reservation import Session
 from seantis.reservation import db
 from seantis.reservation import utils
-from seantis.reservation import form
 from seantis.reservation.models import Allocation, Reservation
 from seantis.reservation.reserve import ReservationUrls
+from seantis.reservation.reports import GeneralReportParametersMixin
 
 calendar = Calendar()
 
 
-class MonthlyReportView(grok.View, form.ReservationDataView,
-                        form.ResourceParameterView):
+class MonthlyReportView(
+    grok.View, GeneralReportParametersMixin
+):
 
     permission = 'seantis.reservation.ViewReservations'
 
@@ -31,34 +32,24 @@ class MonthlyReportView(grok.View, form.ReservationDataView,
     template = grok.PageTemplateFile('../templates/monthly_report.pt')
 
     @property
+    def title(self):
+        return _(
+            u'Monthly Report for ${month} ${year}',
+            mapping={
+                'month': utils.month_name(
+                    self.context, self.request, self.month
+                ),
+                'year': self.year
+            }
+        )
+
+    @property
     def year(self):
         return int(self.request.get('year', date.today().year))
 
     @property
     def month(self):
         return int(self.request.get('month', date.today().month))
-
-    @property
-    def reservations(self):
-        return utils.pack(self.request.get('reservations', []))
-
-    @property
-    def sorted_resources(self):
-        objs = self.resources
-
-        sortkey = lambda item: self.resource_title(item[0])
-        return utils.OrderedDict(sorted(objs.items(), key=sortkey))
-
-    @property
-    def statuses(self):
-        return (
-            ('pending', _(u'Pending')),
-            ('approved', _(u'Approved')),
-        )
-
-    @view.memoize
-    def resource_title(self, uuid):
-        return utils.get_resource_title(self.resources[uuid])
 
     @property
     @view.memoize
@@ -83,26 +74,23 @@ class MonthlyReportView(grok.View, form.ReservationDataView,
             self.year, self.month, self.resources, self.reservations or '*'
         )
 
+    @property
+    def show_timetable(self):
+        # hide_timetable is the query parameter as showing is the default
+        return False if self.request.get('hide_timetable') else True
+
     def build_url(self, year, month):
-        url = self.context.absolute_url()
-        url += '/'
-        url += self.__name__
-        url += '?'
-        url += 'year=' + str(year)
-        url += '&month=' + str(month)
-        url += self.show_details and '&show_details=1' or ''
-        url += not self.show_timetable and '&hide_timetable=1' or ''
+        params = [
+            ('year', str(year)),
+            ('month', str(month))
+        ]
 
-        for status in self.hidden_statuses:
-            url += '&hide_status=' + status
+        if not self.show_timetable:
+            params.append(('hide_timetable', '1'))
 
-        for uuid in self.hidden_resources:
-            url += '&hide_resource=' + uuid
-
-        for uuid in self.uuids:
-            url += '&uuid=' + uuid
-
-        return url
+        return super(MonthlyReportView, self).build_url(
+            extra_parameters=params
+        )
 
     @property
     def forward_url(self):
@@ -116,6 +104,7 @@ class MonthlyReportView(grok.View, form.ReservationDataView,
 
         return self.build_url(year, month)
 
+    @property
     def backward_url(self):
         year, month = self.year, self.month
 
@@ -126,18 +115,6 @@ class MonthlyReportView(grok.View, form.ReservationDataView,
             month -= 1
 
         return self.build_url(year, month)
-
-    @property
-    def title(self):
-        return _(
-            u'Monthly Report for ${month} ${year}',
-            mapping={
-                'month': utils.month_name(
-                    self.context, self.request, self.month
-                ),
-                'year': self.year
-            }
-        )
 
     def format_day(self, day):
         daydate = date(self.year, self.month, day)
@@ -152,39 +129,6 @@ class MonthlyReportView(grok.View, form.ReservationDataView,
                 return True
 
         return False
-
-    @property
-    def show_details(self):
-        # show_details is the query parameter as hiding is the default
-        return True if self.request.get('show_details') else False
-
-    @property
-    def show_timetable(self):
-        # hide_timetable is the query parameter as showing is the default
-        return False if self.request.get('hide_timetable') else True
-
-    @property
-    def hidden_statuses(self):
-        return utils.pack(self.request.get('hide_status', []))
-
-    def show_status(self, status):
-        return status not in self.hidden_statuses
-
-    @property
-    def hidden_resources(self):
-        return utils.pack(self.request.get('hide_resource', []))
-
-    def show_resource(self, uuid):
-        return uuid not in self.hidden_resources
-
-    @property
-    @view.memoize
-    def data_macro_path(self):
-        resource = self.resources[self.uuids[0]]
-        url = resource.absolute_url() + \
-            '/@@reservations/macros/reservation_data'
-
-        return url.replace(self.context.absolute_url(), 'context')
 
 
 def monthly_report(year, month, resources, reservations='*'):
