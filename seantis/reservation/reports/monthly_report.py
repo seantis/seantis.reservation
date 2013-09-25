@@ -234,6 +234,10 @@ def monthly_report(year, month, resources, reservations='*'):
 
     allocations = query.all()
 
+    # quit if there are no allocations at this point
+    if not allocations:
+        return {}
+
     # store by group as it will be needed multiple times over later
     groups = dict()
     for allocation in allocations:
