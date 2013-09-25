@@ -1,0 +1,99 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="seantis.reservation"
+      tal:omit-tag="">
+  <head>
+  </head>
+
+  <body>
+
+    <tal:comment replace="nothing">
+    Common report controlbox. 
+
+    Requires the presence of seantis.reservation.reports.GeneralReportParametersMixin
+    in the view object.
+    </tal:comment>
+
+    <metal:define define-macro="controlbox">
+      <div class="controlbox">
+          <div class="monthly-report-navigation">
+              <tal:comment replace="nothing">
+                Report specific nav-block entries
+              </tal:comment>
+              <metal:report-specific-nav-blocks define-slot="report-specific-nav-blocks">
+              </metal:report-specific-nav-blocks>
+
+              <tal:comment replace="nothing">
+                Common nav-block entries
+              </tal:comment>
+              <div class="nav-block">
+                  <h2 i18n:translate="">Details</h2>
+                  <label><input type="radio" name="details" value="show" tal:attributes="checked view/show_details | nothing" /><span i18n:translate="">Show</span></label>
+                  <label><input type="radio" name="details" value="hide" tal:attributes="checked not: view/show_details | nothing" /><span i18n:translate="">Hide</span></label>
+              </div>
+              <div class="nav-block">
+                  <h2 i18n:translate="">Resources</h2>
+                  <tal:block repeat="uuid view/sorted_resources">
+                      <label><input type="checkbox" class="resource-checkbox" tal:attributes="value uuid; checked python: view.show_resource(uuid) or None"><span tal:content="python: view.resource_title(uuid)"></span></label>
+                  </tal:block>
+              </div>
+              <div class="nav-block">
+                  <h2 i18n:translate="">Statuses</h2>
+                  <tal:block repeat="status view/statuses">
+                      <label><input type="checkbox" class="status-checkbox" tal:attributes="value python: status[0]; checked python: view.show_status(status[0]) or None"><span tal:content="python: status[1]"></span></label>
+                  </tal:block>
+              </div>
+
+              <div style="clear: both;"></div>
+          </div>
+        </div>
+    </metal:define>
+
+    <metal:define define-macro="map">
+      <tal:block tal:condition="view/show_map">
+        <div id="directoryResultMap">
+          <tal:omit tal:repeat="cgmap view/@@collectivegeo-maps/mapwidgets" tal:omit-tag="">
+            <metal:use use-macro="context/@@collectivegeo-macros/map-widget" />
+          </tal:omit>
+        </div>
+      </tal:block>
+    </metal:define>
+
+    <metal:define define-macro="map-marker">
+      <div class="directoryMarker" tal:condition="view/show_map">
+        <img tal:define="item python: item if 'item' in locals() else brain.getObject()" tal:condition="python: view.has_mapdata(item)" tal:attributes="src python: view.marker_image(item)" width="23" height="23"/>
+      </div>
+    </metal:define>
+
+    <metal:define define-macro="result-list-entry">
+        <a tal:attributes="href brain/getURL">
+            <div class="result-title" tal:content="brain/Title"/>
+            <div class="result-description" tal:content="brain/Description"/>
+        </a>
+    </metal:define>
+
+    <metal:define define-macro="resultlist">
+      <div id="directoryResultList">
+        <div class="directoryResult" tal:repeat="brain brains" tal:attributes="id brain/id">
+
+          <metal:use use-macro="context/@@seantis-dir-macros/map-marker" />
+
+          <metal:result-list-entry define-slot="result-list-entry">
+            <metal:use use-macro="context/@@seantis-dir-macros/result-list-entry" />
+          </metal:result-list-entry>
+
+        </div>
+        <div class="directoryResult" tal:condition="python: len(brains) == 0" i18n:translate="">No Results</div>
+      </div>
+    </metal:define>
+
+    <metal:define define-macro="directory-info">
+      <div class="directory-info">
+        <div class="directory-subtitle" tal:content="context/subtitle"></div>
+        <div class="directory-description" tal:content="structure context/html_description"></div>
+      </div>
+    </metal:define>
+  </body>
+</html>

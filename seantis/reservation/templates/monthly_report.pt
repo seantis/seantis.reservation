@@ -16,38 +16,19 @@
                 
         <div tal:replace="structure provider:plone.abovecontentbody" />
 
-        <div class="controlbox">
-            <div class="monthly-report-navigation">
+        <metal:use use-macro="context/@@seantis-reservation-macros/controlbox">
+            <metal:fill-slot fill-slot="report-specific-nav-blocks">
                 <div class="nav-block">
                     <h2 i18n:translate="">Navigation</h2>
                     <a tal:attributes="href view/backward_url" i18n:translate="" class="previous-month">&lt;&lt; Previous Month</a> | <a tal:attributes="href view/forward_url" i18n:translate="" class="next-month">Next Month &gt;&gt;</a>
-                </div>
-                <div class="nav-block">
-                    <h2 i18n:translate="">Details</h2>
-                    <label><input type="radio" name="details" value="show" tal:attributes="checked view/show_details | nothing" /><span i18n:translate="">Show</span></label>
-                    <label><input type="radio" name="details" value="hide" tal:attributes="checked not: view/show_details | nothing" /><span i18n:translate="">Hide</span></label>
                 </div>
                 <div class="nav-block">
                     <h2 i18n:translate="">Timetable</h2>
                     <label><input type="radio" name="timetable" value="show" tal:attributes="checked view/show_timetable | nothing" /><span i18n:translate="">Show</span></label>
                     <label><input type="radio" name="timetable" value="hide" tal:attributes="checked not: view/show_timetable | nothing" /><span i18n:translate="">Hide</span></label>
                 </div>
-                <div class="nav-block">
-                    <h2 i18n:translate="">Resources</h2>
-                    <tal:block repeat="uuid view/sorted_resources">
-                        <label><input type="checkbox" class="resource-checkbox" tal:attributes="value uuid; checked python: view.show_resource(uuid) or None"><span tal:content="python: view.resource_title(uuid)"></span></label>
-                    </tal:block>
-                </div>
-                <div class="nav-block">
-                    <h2 i18n:translate="">Statuses</h2>
-                    <tal:block repeat="status view/statuses">
-                        <label><input type="checkbox" class="status-checkbox" tal:attributes="value python: status[0]; checked python: view.show_status(status[0]) or None"><span tal:content="python: status[1]"></span></label>
-                    </tal:block>
-                </div>
-
-                <div style="clear: both;"></div>
-            </div>
-        </div>
+            </metal:fill-slot>
+        </metal:use>
 
         <div class="monthly-report" tal:define="results view/results">
             <div class="day" tal:repeat="day results">
