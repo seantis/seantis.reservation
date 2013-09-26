@@ -10,7 +10,7 @@
   <body>
 
     <tal:comment replace="nothing">
-    Common report controlbox. 
+    Common report controlbox.
 
     Requires the presence of seantis.reservation.reports.GeneralReportParametersMixin
     in the view object.
@@ -52,6 +52,60 @@
     </metal:define>
 
     <tal:comment replace="nothing">
+    Reservation block. Combines title, data and timespans block.
+    Needs the following variables:
+
+    token         -> token of the reservation
+    reservations  -> list of reservations with the same token
+    show_actions  -> display links leading to different actions (default False)
+
+    only required if show_actions is true:
+      context      -> the resource the reservation belongs to
+      token        -> token of the reservation
+      status       -> 'approved' or 'pending'
+    </tal:comment>
+
+    <metal:define define-macro="reservation-block"
+       tal:define="macro python: context.unrestrictedTraverse('@@seantis-reservation-macros')">
+
+      <tal:block define="
+        first_reservation python: reservations[0];
+        last_reservation python: reservations[-1];
+      ">
+        <div class="reservation">
+          <tal:block define="
+            title python: first_reservation.title;
+            status python: first_reservation.status;
+          ">
+            <metal:use use-macro="context/@@seantis-reservation-macros/reservation-title" />
+          </tal:block>
+
+          <div tal:repeat="reservation reservations" class="reservation-list">
+            <tal:block define="
+                data python: reservation.data;
+                timespans python: reservation.timespans();
+              ">
+                <metal:use use-macro="context/@@seantis-reservation-macros/reservation-data" />
+                <metal:use use-macro="context/@@seantis-reservation-macros/reservation-timespans" />
+
+                <div style="clear: both;"></div>
+            </tal:block>
+          </div>
+        </div>
+        <tal:block define="quota python: last_reservation.quota">
+          <div class="reservation-quota" 
+            tal:attributes="data-reservation-quota quota"
+            tal:condition="python: quota > 1"
+          >
+            <tal:block
+              content="structure python: macro.utils.get_reservation_quota_statement(quota)"
+            />
+          </div>
+        </tal:block>
+      </tal:block>
+    </metal:define>
+
+    <tal:comment replace="nothing">
     Reservation title block. Needs the following variables:
 
     title        -> title to display
@@ -60,30 +114,32 @@
     only required if show_actions is true:
       context      -> the resource the reservation belongs to
       token        -> token of the reservation
-      type         -> 'approved' or 'pending'
+      status       -> 'approved' or 'pending'
     </tal:comment>
 
     <metal:define define-macro="reservation-title" tal:define="macro python: context.unrestrictedTraverse('@@seantis-reservation-macros')">
       <div class="reservation-title">
-          
+
           <h3 tal:content="title"></h3>
 
-          <tal:block condition="python: show_actions and type == 'approved'">
-            <a tal:attributes="href python: macro.revoke_all_url(token, context)"
-              class="reservation-delete" i18n:translate="">
-              Revoke
-            </a>
-          </tal:block>
+          <tal:block condition="show_actions | nothing">
+            <tal:block condition="python: show_actions and status == 'approved'">
+              <a tal:attributes="href python: macro.revoke_all_url(token, context)"
+                class="reservation-delete" i18n:translate="">
+                Revoke
+              </a>
+            </tal:block>
 
-          <tal:block condition="python: show_actions and type == 'pending'">
-            <a tal:attributes="href python: view.deny_all_url(token, context)"
-              class="reservation-delete" i18n:translate="">
-              Deny
-            </a>
-            <a tal:attributes="href python: view.approve_all_url(token, context)"
-              class="reservation-delete" i18n:translate="">
-              Approve
-            </a>
+            <tal:block condition="python: show_actions and status == 'pending'">
+              <a tal:attributes="href python: view.deny_all_url(token, context)"
+                class="reservation-delete" i18n:translate="">
+                Deny
+              </a>
+              <a tal:attributes="href python: view.approve_all_url(token, context)"
+                class="reservation-delete" i18n:translate="">
+                Approve
+              </a>
+            </tal:block>
           </tal:block>
 
       </div>
@@ -105,12 +161,12 @@
         <tal:block tal:condition="data" tal:repeat="key python: macro.sort_reservation_data(data)">
           <tal:block tal:define="interface python: data[key]">
             <div class="block-title" tal:content="python: interface['desc']"></div>
-            
+
             <div tal:repeat="value python: macro.sort_reservation_data_values(interface['values'])">
               <span class="label" tal:content="python: value['desc']"></span>
               <span tal:content="python: macro.display_reservation_data(value['value'])"></span>
             </div>
-          
+
           </tal:block>
         </tal:block>
 
@@ -131,7 +187,7 @@
       <div class="reservation-timespans" >
         <div class="block-title" i18n:translate="">Concerned Dates</div>
           <div class="limitedList" style="max-height: 450px; min-width: 100%;">
-                    
+
           <tal:block tal:repeat="timespan python: sorted(timespans)">
               <tal:block tal:define="
                 start python: timespan[0];
@@ -145,6 +201,6 @@
           </div>
         </div>
     </metal:define>
-    
+
   </body>
 </html>
