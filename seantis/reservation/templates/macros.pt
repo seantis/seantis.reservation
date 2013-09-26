@@ -52,6 +52,44 @@
     </metal:define>
 
     <tal:comment replace="nothing">
+    Reservation title block. Needs the following variables:
+
+    title        -> title to display
+    show_actions -> displays links leading to different actions (default False)
+
+    only required if show_actions is true:
+      context      -> the resource the reservation belongs to
+      token        -> token of the reservation
+      type         -> 'approved' or 'pending'
+    </tal:comment>
+
+    <metal:define define-macro="reservation-title" tal:define="macro python: context.unrestrictedTraverse('@@seantis-reservation-macros')">
+      <div class="reservation-title">
+          
+          <h3 tal:content="title"></h3>
+
+          <tal:block condition="python: show_actions and type == 'approved'">
+            <a tal:attributes="href python: macro.revoke_all_url(token, context)"
+              class="reservation-delete" i18n:translate="">
+              Revoke
+            </a>
+          </tal:block>
+
+          <tal:block condition="python: show_actions and type == 'pending'">
+            <a tal:attributes="href python: view.deny_all_url(token, context)"
+              class="reservation-delete" i18n:translate="">
+              Deny
+            </a>
+            <a tal:attributes="href python: view.approve_all_url(token, context)"
+              class="reservation-delete" i18n:translate="">
+              Approve
+            </a>
+          </tal:block>
+
+      </div>
+    </metal:define>
+
+    <tal:comment replace="nothing">
     Reservation data block. Needs the following variables:
 
     context -> the resource the reservation belongs to

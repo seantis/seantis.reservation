@@ -29,21 +29,17 @@
               token python: group[0];
               reservations python: group[1];
               data python: view.extended_info(token);
+              show_actions view/show_links;
             ">
 
             <div class="reservation">
 
-                <div class="reservation-title">
-                    
-                    <h3 tal:content="python: view.reservation_info(token)"></h3>
-
-                    <a tal:condition="view/show_links"
-                       tal:attributes="href python: view.revoke_all_url(token)"
-                       class="reservation-delete" i18n:translate="">
-                       Revoke
-                    </a>
-
-                </div>
+              <tal:block define="
+                title python: view.reservation_info(token);
+                type string:approved;
+              ">
+                <metal:use use-macro="context/@@seantis-reservation-macros/reservation-title" />
+              </tal:block>
 
                 <div tal:repeat="reservation reservations" class="reservation-list">
 
@@ -93,24 +89,12 @@
             ">
             <div class="reservation">
 
-                <div class="reservation-title">
-                    <h3>
-                      <b tal:condition="python: view.show_links"><tal:block content="repeat/group/number"></tal:block></b>&nbsp;
-                      <tal:block tal:content="python: view.reservation_info(token)"></tal:block>
-                    </h3>
-
-                    <a tal:condition="view/show_links"
-                      tal:attributes="href python: view.deny_all_url(token)"
-                      class="reservation-delete" i18n:translate="">
-                      Deny
-                    </a>
-
-                    <a tal:condition="view/show_links"
-                       tal:attributes="href python: view.approve_all_url(token)"
-                       class="reservation-delete" i18n:translate="">
-                       Approve
-                    </a>
-                </div>
+                <tal:block define="
+                  title python: view.reservation_info(token);
+                  type string:pending;
+                ">
+                  <metal:use use-macro="context/@@seantis-reservation-macros/reservation-title" />
+                </tal:block>
 
                 <div tal:repeat="reservation reservations" class="reservation-list">
                   
