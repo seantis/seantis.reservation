@@ -8,6 +8,7 @@ from sqlalchemy import desc
 from seantis.reservation import Session
 from seantis.reservation import db
 from seantis.reservation import _
+from seantis.reservation import utils
 from seantis.reservation.models import Reservation
 from seantis.reservation.reports import GeneralReportParametersMixin
 
@@ -31,10 +32,36 @@ class LatestReservationsReportView(grok.View, GeneralReportParametersMixin):
     def results(self):
         return latest_reservations(self.resources, self.reservations or '*')
 
+    def human_date(self, date):
+        # timezones are currently naive and implicity the the one used by
+        # the users - we don't have international reservations yet
+        date = date.replace(tzinfo=None)
+        now = datetime.now()
+
+        this_morning = datetime(now.year, now.month, now.day)
+        time = date.strftime('%H:%M')
+
+        if date > this_morning:
+            return _(u'Today, at ${time}', mapping={'time': time})
+
+        days = (now.date() - date.date()).days
+        
+        if days == 1:
+            return _(u'Yesterday, at ${time}', mapping={
+                'time': time
+            })
+        else:
+            return _(u'${days} days ago, at ${time}', mapping={
+                'days': days,
+                'time': time
+            })
+
     def reservation_title(self, reservation):
-        return '{:%d.%m.%Y %H:%M} - {}'.format(
-            reservation.created, reservation.title
+        human_date = utils.translate(
+            self.context, self.request, self.human_date(reservation.created)
         )
+        return '{} - {}'.format(human_date, reservation.title)
+
 
 def latest_reservations(resources, reservations='*', days=30):
     schedulers = {}
@@ -52,7 +79,7 @@ def latest_reservations(resources, reservations='*', days=30):
     if reservations != '*':
         query = query.filter(Reservation.token.in_(reservations))
 
-    result = {}
+    result = utils.OrderedDict()
     for reservation in query.all():
         if reservation.token in result:
             result.append(reservation)
