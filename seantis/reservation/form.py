@@ -474,32 +474,6 @@ class ReservationListView(object):
         reservation = self.reservation_by_token(token)
         return reservation and reservation.title or u''
 
-    def reservation_quota_text(self, token):
-        """ Returns the reservation quota information to be printed at
-        the bottom of the reservation.
-
-        """
-
-        reservation = self.reservation_by_token(token)
-        quota = reservation and reservation.quota or 0
-
-        if quota > 1:
-            return utils.get_reservation_quota_statement(quota)
-        else:
-            u''
-
-    def reservation_quota(self, token):
-        reservation = self.reservation_by_token(token)
-        return reservation and reservation.quota or 0
-
-    def extended_info(self, token):
-        """ Returns the extended info dictionary to be printed in the detail
-        view.
-        """
-
-        reservation = self.reservation_by_token(token)
-        return reservation and reservation.data or {}
-
     def all_reservations(self):
         scheduler = self.context.scheduler()
 
