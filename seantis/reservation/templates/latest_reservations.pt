@@ -1,0 +1,48 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="seantis.reservation"
+      lang="en">
+<body>
+
+<metal:main fill-slot="main">
+    <tal:main-macro metal:define-macro="main">
+
+        <div tal:replace="structure provider:plone.abovecontenttitle" />
+        
+        <h1 class="documentFirstHeading" tal:content="view/title"></h1>
+                
+        <div tal:replace="structure provider:plone.abovecontentbody" />
+
+        <metal:use use-macro="context/@@seantis-reservation-macros/controlbox">
+        </metal:use>
+
+        <div class="latest-reservations-report seantis-reservation-report" tal:define="results view/results">
+            <tal:block repeat="reservation python: results.items()">
+              <tal:block define="
+                token python: reservation[0];
+                reservations python: reservation[1];
+                first_reservation python: reservation[1][0];
+                show_actions python: True;
+              ">
+                <tal:block define="
+                  status python: first_reservation.status;
+                  title python: view.reservation_title(first_reservation);
+                  context python: view.resources[first_reservation.resource.hex];
+                ">
+                  <div tal:attributes="class python: 'reservation-{}'.format(status)">
+                    <metal:use use-macro="context/@@seantis-reservation-macros/reservation-block"></metal:use>
+                  </div>
+                </tal:block>
+              </tal:block>
+            </tal:block>
+        </div>
+
+        <div tal:replace="structure provider:plone.belowcontentbody" />
+    </tal:main-macro>
+</metal:main>
+
+</body>
+</html>

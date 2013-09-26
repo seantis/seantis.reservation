@@ -1,6 +1,6 @@
 (function($){
     $(document).ready(function() {
-        var report = $('.monthly-report');
+        var report = $('.seantis-reservation-report');
 
         if (report.length === 0) {
             return;
@@ -209,7 +209,7 @@
         };
 
         var reload_list = function() {
-            var target = '.monthly-report';
+            var target = '.seantis-reservation-report';
             var url = update_url(window.location.href);
             inplace_update(target, url);
         };

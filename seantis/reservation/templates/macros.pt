@@ -55,14 +55,15 @@
     Reservation block. Combines title, data and timespans block.
     Needs the following variables:
 
-    token         -> token of the reservation
     reservations  -> list of reservations with the same token
     show_actions  -> display links leading to different actions (default False)
 
     only required if show_actions is true:
       context      -> the resource the reservation belongs to
       token        -> token of the reservation
-      status       -> 'approved' or 'pending'
+
+    optional:
+      title        -> title of the block
     </tal:comment>
 
     <metal:define define-macro="reservation-block"
@@ -74,7 +75,7 @@
       ">
         <div class="reservation">
           <tal:block define="
-            title python: first_reservation.title;
+            title title | python: first_reservation.title;
             status python: first_reservation.status;
           ">
             <metal:use use-macro="context/@@seantis-reservation-macros/reservation-title" />
@@ -131,11 +132,11 @@
             </tal:block>
 
             <tal:block condition="python: show_actions and status == 'pending'">
-              <a tal:attributes="href python: view.deny_all_url(token, context)"
+              <a tal:attributes="href python: macro.deny_all_url(token, context)"
                 class="reservation-delete" i18n:translate="">
                 Deny
               </a>
-              <a tal:attributes="href python: view.approve_all_url(token, context)"
+              <a tal:attributes="href python: macro.approve_all_url(token, context)"
                 class="reservation-delete" i18n:translate="">
                 Approve
               </a>
