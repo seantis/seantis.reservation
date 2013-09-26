@@ -23,6 +23,11 @@
                     <a tal:attributes="href view/backward_url" i18n:translate="" class="previous-month">&lt;&lt; Previous Month</a> | <a tal:attributes="href view/forward_url" i18n:translate="" class="next-month">Next Month &gt;&gt;</a>
                 </div>
                 <div class="nav-block">
+                    <h2 i18n:translate="">Details</h2>
+                    <label><input type="radio" name="details" value="show" tal:attributes="checked view/show_details | nothing" /><span i18n:translate="">Show</span></label>
+                    <label><input type="radio" name="details" value="hide" tal:attributes="checked not: view/show_details | nothing" /><span i18n:translate="">Hide</span></label>
+                </div>
+                <div class="nav-block">
                     <h2 i18n:translate="">Timetable</h2>
                     <label><input type="radio" name="timetable" value="show" tal:attributes="checked view/show_timetable | nothing" /><span i18n:translate="">Show</span></label>
                     <label><input type="radio" name="timetable" value="hide" tal:attributes="checked not: view/show_timetable | nothing" /><span i18n:translate="">Hide</span></label>

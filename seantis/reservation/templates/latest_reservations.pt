@@ -32,8 +32,11 @@
                   title python: view.reservation_title(first_reservation);
                   context python: view.resources[first_reservation.resource.hex];
                 ">
-                  <div tal:attributes="class python: 'reservation-{}'.format(status)">
-                    <metal:use use-macro="context/@@seantis-reservation-macros/reservation-block"></metal:use>
+                  <div class="resource" tal:attributes="data-uuid python: context.uuid()">
+                    <h2 tal:content="python: view.resource_title(context.uuid())"></h2>
+                    <div tal:attributes="class python: 'reservation-type reservation-{0} {0}'.format(status)">
+                      <metal:use use-macro="context/@@seantis-reservation-macros/reservation-block"></metal:use>
+                    </div>
                   </div>
                 </tal:block>
               </tal:block>

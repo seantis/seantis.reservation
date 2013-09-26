@@ -29,11 +29,6 @@
                 Common nav-block entries
               </tal:comment>
               <div class="nav-block">
-                  <h2 i18n:translate="">Details</h2>
-                  <label><input type="radio" name="details" value="show" tal:attributes="checked view/show_details | nothing" /><span i18n:translate="">Show</span></label>
-                  <label><input type="radio" name="details" value="hide" tal:attributes="checked not: view/show_details | nothing" /><span i18n:translate="">Hide</span></label>
-              </div>
-              <div class="nav-block">
                   <h2 i18n:translate="">Resources</h2>
                   <tal:block repeat="uuid view/sorted_resources">
                       <label><input type="checkbox" class="resource-checkbox" tal:attributes="value uuid; checked python: view.show_resource(uuid) or None"><span tal:content="python: view.resource_title(uuid)"></span></label>
