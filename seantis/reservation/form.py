@@ -500,9 +500,6 @@ class ReservationListView(object):
         reservation = self.reservation_by_token(token)
         return reservation and reservation.data or {}
 
-    def display_date(self, start, end):
-        return utils.display_date(start, end)  # kept here for use in template
-
     def all_reservations(self):
         scheduler = self.context.scheduler()
 

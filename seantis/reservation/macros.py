@@ -3,6 +3,7 @@ from zope.interface import Interface
 
 from seantis.reservation.reserve import ReservationUrls
 from seantis.reservation.form import ReservationDataView
+from seantis.reservation import utils
 
 class View(grok.View, ReservationUrls, ReservationDataView):
     """A numer of macros for use with seantis.dir.base"""
@@ -15,3 +16,7 @@ class View(grok.View, ReservationUrls, ReservationDataView):
 
     def __getitem__(self, key):
         return self.template._template.macros[key]
+
+    @property
+    def utils(self):
+        return utils
