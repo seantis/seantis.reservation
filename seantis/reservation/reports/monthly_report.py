@@ -215,11 +215,6 @@ def monthly_report(year, month, resources, reservations='*'):
 
         context = resources[utils.string_uuid(reservation.resource)]
 
-        leftside_urls = [(
-            _(u'&raquo; Edit Formdata'),
-            reservation_urls.update_all_url(reservation.token, context)
-        )]
-
         if reservation.status == u'approved':
             rightside_urls = [(
                 _(u'Delete'),
@@ -252,9 +247,9 @@ def monthly_report(year, month, resources, reservations='*'):
                 data=reservation.data,
                 timespans=json_timespans(start, end),
                 rightside_urls=rightside_urls,
-                leftside_urls=leftside_urls,
                 token=reservation.token,
-                quota=utils.get_reservation_quota_statement(reservation.quota)
+                quota=utils.get_reservation_quota_statement(reservation.quota),
+                resource=context
             )
         )
 

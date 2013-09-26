@@ -98,14 +98,16 @@ def dataset(resources, language, compact=False):
                 r.email,
                 start.strftime(datetime_format),
                 end.strftime(datetime_format),
-                dataview.display_info(utils.whole_day(start, end)),
+                dataview.display_reservation_data(utils.whole_day(start, end)),
                 _(r.status.capitalize()),
                 r.quota,
                 r.created.strftime(datetime_format),
                 r.modified and r.modified.strftime(datetime_format) or None,
             ]
             record.extend(
-                additional_columns(r, dataheaders, dataview.display_info)
+                additional_columns(
+                    r, dataheaders, dataview.display_reservation_data
+                )
             )
 
             translator.translate(record)

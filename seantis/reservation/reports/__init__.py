@@ -11,8 +11,13 @@ class GeneralReportParametersMixin(
     form.ResourceParameterView
 ):
 
+    titles = {}
+
     def resource_title(self, uuid):
-        return utils.get_resource_title(self.resources[uuid])
+        if not uuid in self.titles:
+            self.titles[uuid] = utils.get_resource_title(self.resources[uuid])
+        
+        return self.titles[uuid]
     
     @property
     def statuses(self):

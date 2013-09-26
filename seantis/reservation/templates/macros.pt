@@ -51,48 +51,35 @@
         </div>
     </metal:define>
 
-    <metal:define define-macro="map">
-      <tal:block tal:condition="view/show_map">
-        <div id="directoryResultMap">
-          <tal:omit tal:repeat="cgmap view/@@collectivegeo-maps/mapwidgets" tal:omit-tag="">
-            <metal:use use-macro="context/@@collectivegeo-macros/map-widget" />
-          </tal:omit>
-        </div>
-      </tal:block>
-    </metal:define>
+    <tal:comment replace="nothing">
+    Reservation data block. Needs the following variables:
 
-    <metal:define define-macro="map-marker">
-      <div class="directoryMarker" tal:condition="view/show_map">
-        <img tal:define="item python: item if 'item' in locals() else brain.getObject()" tal:condition="python: view.has_mapdata(item)" tal:attributes="src python: view.marker_image(item)" width="23" height="23"/>
-      </div>
-    </metal:define>
+    context -> the resource the reservation belongs to
+    token -> token of the reservation
+    data -> reservation data to display
+    show_actions -> displays links leading to different actions (default False)
 
-    <metal:define define-macro="result-list-entry">
-        <a tal:attributes="href brain/getURL">
-            <div class="result-title" tal:content="brain/Title"/>
-            <div class="result-description" tal:content="brain/Description"/>
+    </tal:comment>
+
+    <metal:define define-macro="reservation-data" tal:define="macro python: context.unrestrictedTraverse('@@seantis-reservation-macros')">
+      <div class="reservation-data" tal:condition="data">
+
+        <tal:block tal:condition="data" tal:repeat="key python: macro.sort_reservation_data(data)">
+          <tal:block tal:define="interface python: data[key]">
+            <div class="block-title" tal:content="python: interface['desc']"></div>
+            
+            <div tal:repeat="value python: macro.sort_reservation_data_values(interface['values'])">
+              <span class="label" tal:content="python: value['desc']"></span>
+              <span tal:content="python: macro.display_reservation_data(value['value'])"></span>
+            </div>
+          
+          </tal:block>
+        </tal:block>
+
+        <a tal:condition="show_actions | nothing" tal:attributes="href python: macro.update_all_url(token, context)"
+           class="reservation-data-update" i18n:translate="">
+           &raquo; Edit Formdata
         </a>
-    </metal:define>
-
-    <metal:define define-macro="resultlist">
-      <div id="directoryResultList">
-        <div class="directoryResult" tal:repeat="brain brains" tal:attributes="id brain/id">
-
-          <metal:use use-macro="context/@@seantis-dir-macros/map-marker" />
-
-          <metal:result-list-entry define-slot="result-list-entry">
-            <metal:use use-macro="context/@@seantis-dir-macros/result-list-entry" />
-          </metal:result-list-entry>
-
-        </div>
-        <div class="directoryResult" tal:condition="python: len(brains) == 0" i18n:translate="">No Results</div>
-      </div>
-    </metal:define>
-
-    <metal:define define-macro="directory-info">
-      <div class="directory-info">
-        <div class="directory-subtitle" tal:content="context/subtitle"></div>
-        <div class="directory-description" tal:content="structure context/html_description"></div>
       </div>
     </metal:define>
   </body>

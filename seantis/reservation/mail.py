@@ -313,14 +313,18 @@ class ReservationMail(ReservationDataView, ReservationUrls):
         if is_needed('data'):
             data = reservation.data
             lines = []
-            for key in self.sorted_info_keys(data):
+            for key in self.sort_reservation_data(data):
                 interface = data[key]
 
                 lines.append(interface['desc'])
-                for value in self.sorted_values(interface['values']):
+                sorted_values = self.sort_reservation_data_values(
+                    interface['values']
+                )
+
+                for value in sorted_values:
                     lines.append(
                         '\t' + value['desc'] + ': ' +
-                        unicode(self.display_info(value['value']))
+                        unicode(self.display_reservation_data(value['value']))
                     )
 
             p['data'] = '\n'.join(lines)

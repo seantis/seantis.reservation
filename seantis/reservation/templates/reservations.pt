@@ -10,7 +10,9 @@
 <metal:main fill-slot="main">
 <tal:main-macro metal:define-macro="main">
 
-<div tal:attributes="data-group python: view.highlight_group; class python: view.hide_waitinglist and 'inline-reservations hide-waitinglist' or 'inline-reservations'">
+<div tal:attributes="data-group python: view.highlight_group; class python: view.hide_waitinglist and 'inline-reservations hide-waitinglist' or 'inline-reservations'" tal:define="
+    show_actions view/show_links;
+">
   
   <div class="uncommitted" i18n:translate="" tal:condition="view/uncommitted_reservations_count">
     <tal:block content="view/uncommitted_reservations"></tal:block>
@@ -45,27 +47,7 @@
 
                 <div tal:repeat="reservation reservations" class="reservation-list">
 
-                  <div class="reservation-data" metal:define-macro="reservation_data">
-                    
-                    <tal:block tal:condition="data" tal:repeat="key python: view.sorted_info_keys(data)">
-                      <tal:block tal:define="interface python: data[key]">
-                        
-                        <div class="block-title" tal:content="python: interface['desc']"></div>
-                        
-                        <div tal:repeat="value python: view.sorted_values(interface['values'])">
-                          <span class="label" tal:content="python: value['desc']"></span><span tal:content="python: view.display_info(value['value'])"></span>
-                        </div>
-                      
-                      </tal:block>
-                    </tal:block>
-
-                    <a tal:condition="view/show_links | nothing"
-                       tal:attributes="href python: view.update_all_url(token)"
-                       class="reservation-data-update" i18n:translate="">
-                       &raquo; Edit Formdata
-                    </a>
-                  
-                  </div>
+                  <metal:use use-macro="context/@@seantis-reservation-macros/reservation-data" />
 
                   <div class="reservation-timespans" metal:define-macro="reservation_timespans">
                     
@@ -132,7 +114,7 @@
 
                 <div tal:repeat="reservation reservations" class="reservation-list">
                   
-                  <metal:block use-macro="context/@@reservations/macros/reservation_data" />
+                  <metal:use use-macro="context/@@seantis-reservation-macros/reservation-data" />
                   <metal:block use-macro="context/@@reservations/macros/reservation_timespans" />
                   
                   <div style="clear: both;"></div>

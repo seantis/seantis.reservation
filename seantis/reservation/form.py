@@ -336,15 +336,15 @@ class AllocationGroupView(object):
 class ReservationDataView(object):
     """Mixin for reservation-data showing."""
 
-    def sorted_info_keys(self, data):
+    def sort_reservation_data(self, data):
         items = [(d[0], d[1]['values'][0]['sortkey']) for d in data.items()]
 
         return [i[0] for i in sorted(items, key=lambda k: k[1])]
 
-    def sorted_values(self, values):
+    def sort_reservation_data_values(self, values):
         return sorted(values, key=lambda v: v['sortkey'])
 
-    def display_info(self, value):
+    def display_reservation_data(self, value):
         """ Transforms json data values into a human readable format
         where appropriate.
 
@@ -396,7 +396,7 @@ class ResourceParameterView(object):
         return objs
 
 
-class ReservationListView(ReservationDataView):
+class ReservationListView(object):
     """Combines functionality of different views which show reservations.
 
     The class with which it is used needs to provide the resource as context.
