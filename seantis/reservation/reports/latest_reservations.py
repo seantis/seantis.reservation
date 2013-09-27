@@ -13,6 +13,33 @@ from seantis.reservation.models import Reservation
 from seantis.reservation.reports import GeneralReportParametersMixin
 
 
+def human_date(date):
+    # timezones are currently naive and implicity the the one used by
+    # the users - we don't have international reservations yet
+    now = utils.utcnow()
+
+    this_morning = datetime(
+        now.year, now.month, now.day
+    ).replace(tzinfo=now.tzinfo)
+
+    time = date.strftime('%H:%M')
+
+    if date >= this_morning:
+        return _(u'Today, at ${time}', mapping={'time': time})
+
+    days = (now.date() - date.date()).days
+
+    if days <= 1:
+        return _(u'Yesterday, at ${time}', mapping={
+            'time': time
+        })
+    else:
+        return _(u'${days} days ago, at ${time}', mapping={
+            'days': days,
+            'time': time
+        })
+
+
 class LatestReservationsReportView(grok.View, GeneralReportParametersMixin):
 
     permission = 'seantis.reservation.ViewReservations'
@@ -32,35 +59,11 @@ class LatestReservationsReportView(grok.View, GeneralReportParametersMixin):
     def results(self):
         return latest_reservations(self.resources, self.reservations or '*')
 
-    def human_date(self, date):
-        # timezones are currently naive and implicity the the one used by
-        # the users - we don't have international reservations yet
-        date = date.replace(tzinfo=None)
-        now = datetime.now()
-
-        this_morning = datetime(now.year, now.month, now.day)
-        time = date.strftime('%H:%M')
-
-        if date > this_morning:
-            return _(u'Today, at ${time}', mapping={'time': time})
-
-        days = (now.date() - date.date()).days
-        
-        if days == 1:
-            return _(u'Yesterday, at ${time}', mapping={
-                'time': time
-            })
-        else:
-            return _(u'${days} days ago, at ${time}', mapping={
-                'days': days,
-                'time': time
-            })
-
     def reservation_title(self, reservation):
-        human_date = utils.translate(
-            self.context, self.request, self.human_date(reservation.created)
+        human_date_text = utils.translate(
+            self.context, self.request, human_date(reservation.created)
         )
-        return '{} - {}'.format(human_date, reservation.title)
+        return '{} - {}'.format(human_date_text, reservation.title)
 
 
 def latest_reservations(resources, reservations='*', days=30):
@@ -69,7 +72,7 @@ def latest_reservations(resources, reservations='*', days=30):
     for uuid in resources.keys():
         schedulers[uuid] = db.Scheduler(uuid)
 
-    since = datetime.today() - timedelta(days=days)
+    since = utils.utcnow() - timedelta(days=days)
 
     query = Session.query(Reservation)
     query = query.filter(Reservation.resource.in_(resources.keys()))
