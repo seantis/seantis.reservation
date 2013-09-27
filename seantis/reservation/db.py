@@ -300,10 +300,20 @@ def remove_expired_reservation_sessions(expiration_date=None):
 
     # remove those session ids
     if expired_sessions:
-        query = Session.query(Reservation)
-        query = query.filter(Reservation.session_id.in_(expired_sessions))
+        reservations = Session.query(Reservation)
+        reservations = reservations.filter(
+            Reservation.session_id.in_(expired_sessions)
+        )
+        
+        slots = Session.query(ReservedSlot)
+        slots = slots.filter(
+            ReservedSlot.reservation_token.in_(
+                reservations.with_entities(Reservation.token).subquery()
+            )
+        )
 
-        query.delete('fetch')
+        slots.delete('fetch')
+        reservations.delete('fetch')
 
     return expired_sessions
 

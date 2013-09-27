@@ -5,6 +5,9 @@ Changelog
 1.0.12 (unreleased)
 -------------------
 
+- Removing expired sessions no longer results in orphan reserved slots. Existing
+  orphan reserved slots are removed by the upgrade step.
+
 - Exceptions in the 'your-reservations' form are now handled correctly,
   resulting in properly displayed errors.
 

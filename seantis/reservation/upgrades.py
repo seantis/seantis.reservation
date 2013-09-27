@@ -10,15 +10,21 @@ from sqlalchemy import types
 from sqlalchemy import create_engine
 from sqlalchemy import MetaData
 from sqlalchemy import Table
+from sqlalchemy import not_
 from sqlalchemy.schema import Column
 
 from plone.dexterity.interfaces import IDexterityFTI
 from Products.CMFCore.utils import getToolByName
 from zope.component import getUtility
 
+from seantis.reservation import Session
 from seantis.reservation import utils
+from seantis.reservation.models import Reservation, ReservedSlot
 from seantis.reservation.models import customtypes
-from seantis.reservation.session import ISessionUtility
+from seantis.reservation.session import (
+    ISessionUtility,
+    serialized
+)
 
 
 def db_upgrade(fn):
@@ -304,5 +310,32 @@ def upgrade_1016_to_1017(context):
     fti.behaviors = behaviors
 
 
+@serialized
+def upgrade_1017_to_1018(context):
+    
+    # seantis.reservation before 1.0.12 left behind reserved slots when
+    # removing reservations of expired sessions. These need to be cleaned for
+    # the allocation usage to be right.
 
+    # all slots need a connected reservation
+    all_reservations = Session.query(Reservation)
 
+    # orphan slots are therefore all slots..
+    orphan_slots = Session.query(ReservedSlot)
+
+    # ..with tokens not found in the reservations table
+    orphan_slots = orphan_slots.filter(
+        not_(  
+            ReservedSlot.reservation_token.in_(
+                all_reservations.with_entities(Reservation.token).subquery()
+            )
+        )
+    )
+
+    log.info(
+        'Removing {} reserved slots  with no linked reservations'.format(
+            orphan_slots.count()
+        )
+    )
+
+    orphan_slots.delete('fetch')

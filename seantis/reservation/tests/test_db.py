@@ -174,6 +174,36 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(len(expired), 1)
 
     @serialized
+    def test_session_removal_is_complete(self):
+        sc = Scheduler(new_uuid())
+
+        start, end = datetime(2013, 9, 27, 9, 0), datetime(2013, 9, 27, 10)
+        sc.allocate(dates=(start, end))
+
+        session_id = new_uuid()
+        token = sc.reserve(
+            reservation_email, (start, end), session_id=session_id
+        )
+
+        self.assertEqual(db.Session.query(db.Reservation).count(), 1)
+        self.assertEqual(db.Session.query(db.Allocation).count(), 1)
+        self.assertEqual(db.Session.query(db.ReservedSlot).count(), 0)
+
+        sc.approve_reservation(token)
+
+        self.assertEqual(db.Session.query(db.Reservation).count(), 1)
+        self.assertEqual(db.Session.query(db.Allocation).count(), 1)
+        self.assertEqual(db.Session.query(db.ReservedSlot).count(), 1)
+
+        db.remove_expired_reservation_sessions(
+            utils.utcnow() + timedelta(seconds=15*60)
+        )
+
+        self.assertEqual(db.Session.query(db.Reservation).count(), 0)
+        self.assertEqual(db.Session.query(db.Allocation).count(), 1)
+        self.assertEqual(db.Session.query(db.ReservedSlot).count(), 0)
+
+    @serialized
     def test_invalid_reservation(self):
         sc = Scheduler(new_uuid())
 
