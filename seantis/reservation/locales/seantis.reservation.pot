@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-09-26 15:36+0000\n"
+"POT-Creation-Date: 2013-09-27 08:57+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,19 +25,19 @@ msgstr ""
 msgid "%(reason)s - reason for revocation<br>"
 msgstr ""
 
-#: ./utils.py:663
+#: ./utils.py:678
 msgid "%i People Waiting"
 msgstr ""
 
-#: ./utils.py:644
+#: ./utils.py:659
 msgid "%i%% Free"
 msgstr ""
 
-#: ./utils.py:651
+#: ./utils.py:666
 msgid "%i/%i Spot Available"
 msgstr ""
 
-#: ./utils.py:647
+#: ./utils.py:662
 msgid "%i/%i Spots Available"
 msgstr ""
 
@@ -45,15 +45,15 @@ msgstr ""
 msgid "&lt;&lt; Previous Month"
 msgstr ""
 
-#: ./templates/macros.pt:169
+#: ./templates/macros.pt:170
 msgid "&raquo; Edit Formdata"
 msgstr ""
 
-#: ./utils.py:502
+#: ./utils.py:517
 msgid "<b>${quota}</b> reservations"
 msgstr ""
 
-#: ./utils.py:504
+#: ./utils.py:519
 msgid "<b>1</b> reservation"
 msgstr ""
 
@@ -161,11 +161,11 @@ msgstr ""
 msgid "Click to reserve / register"
 msgstr ""
 
-#: ./templates/utils.pt:15
+#: ./templates/utils.pt:20
 msgid "Compare Resources"
 msgstr ""
 
-#: ./templates/macros.pt:184
+#: ./templates/macros.pt:186
 msgid "Concerned Dates"
 msgstr ""
 
@@ -363,7 +363,7 @@ msgid "Excel Format"
 msgstr ""
 
 #: ./export.py:95
-#: ./templates/utils.pt:20
+#: ./templates/utils.pt:25
 msgid "Export Reservations"
 msgstr ""
 
@@ -455,6 +455,10 @@ msgstr ""
 msgid "Last hour of the day"
 msgstr ""
 
+#: ./templates/utils.pt:15
+msgid "Latest Reservations"
+msgstr ""
+
 #: ./export.py:26
 msgid "Like the normal reservations export, but with group-reservations spanning multiple days merged into single records."
 msgstr ""
@@ -535,7 +539,7 @@ msgstr ""
 msgid "Once"
 msgstr ""
 
-#: ./utils.py:661
+#: ./utils.py:676
 msgid "One Person Waiting"
 msgstr ""
 
@@ -943,7 +947,7 @@ msgstr ""
 msgid "Waitinglist"
 msgstr ""
 
-#: ./utils.py:659
+#: ./utils.py:674
 msgid "Waitinglist is Free"
 msgstr ""
 

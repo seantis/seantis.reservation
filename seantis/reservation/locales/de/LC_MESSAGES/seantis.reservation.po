@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-09-26 15:36+0000\n"
+"POT-Creation-Date: 2013-09-27 08:57+0000\n"
 "PO-Revision-Date: 2012-09-06 11:33+0100\n"
 "Last-Translator: Fabian Reinhard <fabian.reinhard@seantis.ch>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,19 +22,19 @@ msgstr "Vor ${days} Tagen, um ${time}"
 msgid "%(reason)s - reason for revocation<br>"
 msgstr "%(reason)s - Grund für die Absage<br>"
 
-#: ./utils.py:663
+#: ./utils.py:678
 msgid "%i People Waiting"
 msgstr "%i Personen warten"
 
-#: ./utils.py:644
+#: ./utils.py:659
 msgid "%i%% Free"
 msgstr "%i%% Frei"
 
-#: ./utils.py:651
+#: ./utils.py:666
 msgid "%i/%i Spot Available"
 msgstr "%i/%i Platz Verfügbar"
 
-#: ./utils.py:647
+#: ./utils.py:662
 msgid "%i/%i Spots Available"
 msgstr "%i/%i Plätze Verfügbar"
 
@@ -42,15 +42,15 @@ msgstr "%i/%i Plätze Verfügbar"
 msgid "&lt;&lt; Previous Month"
 msgstr "&lt;&lt; Vorheriger Monat"
 
-#: ./templates/macros.pt:169
+#: ./templates/macros.pt:170
 msgid "&raquo; Edit Formdata"
 msgstr "&raquo; Formdaten Bearbeiten"
 
-#: ./utils.py:502
+#: ./utils.py:517
 msgid "<b>${quota}</b> reservations"
 msgstr "<b>${quota}</b> Reservationen"
 
-#: ./utils.py:504
+#: ./utils.py:519
 msgid "<b>1</b> reservation"
 msgstr "<b>1</b> Reservation"
 
@@ -158,11 +158,11 @@ msgstr "Klicken Sie auf einen Block im Kalender um diesen zu reservieren."
 msgid "Click to reserve / register"
 msgstr "Zur Reservation / Anmeldung"
 
-#: ./templates/utils.pt:15
+#: ./templates/utils.pt:20
 msgid "Compare Resources"
 msgstr "Ressourcen vergleichen"
 
-#: ./templates/macros.pt:184
+#: ./templates/macros.pt:186
 msgid "Concerned Dates"
 msgstr "Betroffene Daten"
 
@@ -360,7 +360,7 @@ msgid "Excel Format"
 msgstr "Excel Format"
 
 #: ./export.py:95
-#: ./templates/utils.pt:20
+#: ./templates/utils.pt:25
 msgid "Export Reservations"
 msgstr "Reservationen exportieren"
 
@@ -452,6 +452,10 @@ msgstr "Sprache"
 msgid "Last hour of the day"
 msgstr "Letzte volle Stunde"
 
+#: ./templates/utils.pt:15
+msgid "Latest Reservations"
+msgstr "Neueste Reservationen"
+
 #: ./export.py:26
 msgid "Like the normal reservations export, but with group-reservations spanning multiple days merged into single records."
 msgstr "Wie der standartmässige Reservationen Export - mit dem Unterschied das mehrtägige Gruppen-Reservationen automatisch in einen einzelnen Eintrag fliessen."
@@ -532,7 +536,7 @@ msgstr "Legt das Kontingent der Einteilung fest. z.B. 3 Plätze in einer Kinderk
 msgid "Once"
 msgstr "Ohne"
 
-#: ./utils.py:661
+#: ./utils.py:676
 msgid "One Person Waiting"
 msgstr "Eine Person wartet"
 
@@ -940,7 +944,7 @@ msgstr "Ansichten die den Benutzern auf dem Kalender zur verfügung stehen."
 msgid "Waitinglist"
 msgstr "Warteliste"
 
-#: ./utils.py:659
+#: ./utils.py:674
 msgid "Waitinglist is Free"
 msgstr "Warteliste Frei"
 

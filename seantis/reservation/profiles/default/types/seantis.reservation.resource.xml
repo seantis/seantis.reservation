@@ -60,4 +60,8 @@
     url_expr="string:${object_url}/monthly_report" visible="True" i18n:attributes="title">
   <permission value="Modify portal content"/>
  </action>
+ <action i18n:domain="plone" title="Latest Reservations" action_id="latest_reservations" category="object" condition_expr=""
+    url_expr="string:${object_url}/latest_reservations" visible="True" i18n:attributes="title">
+  <permission value="Modify portal content"/>
+ </action>
 </object>

@@ -43,3 +43,6 @@ msgstr "Excel Export"
 
 msgid "Monthly Report"
 msgstr "Monatsreport"
+
+msgid "Latest Reservations"
+msgstr "Neueste Reservationen"

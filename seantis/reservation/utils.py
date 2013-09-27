@@ -308,6 +308,21 @@ def monthly_report_link(context, request, resources):
     return url
 
 
+def latest_reservations_link(context, request, resources):
+    """Builds the latest reservations report link. """
+    if not resources:
+        return ''
+
+    # ensure that the view may be called
+    if not _exposure().for_views(context, request)('latest_reservations'):
+        return ''
+
+    return '{}/{}?uuid={}'.format(
+        context.absolute_url(), 'latest_reservations',
+        '&uuid='.join(map(string_uuid, resources))
+    )
+
+
 def get_current_language(context, request):
     """Returns the current language of the request"""
     context = aq_inner(context)

@@ -136,6 +136,12 @@ class Utilsviewlet(grok.Viewlet):
         )
 
     @property
+    def latest_reservations_link(self):
+        return utils.latest_reservations_link(
+            self.context, self.request, self.manager.resource_uuids
+        )
+
+    @property
     def export_link(self):
         return utils.export_link(
             self.context, self.request, self.manager.resource_uuids

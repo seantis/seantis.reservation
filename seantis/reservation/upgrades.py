@@ -339,3 +339,17 @@ def upgrade_1017_to_1018(context):
     )
 
     orphan_slots.delete('fetch')
+
+
+def upgrade_1018_to_1019(context):
+    fti = getUtility(IDexterityFTI, name='seantis.reservation.resource')
+
+    # keep the behaviors, only change the actions
+    behaviors = fti.behaviors
+
+    setup = getToolByName(context, 'portal_setup')
+    setup.runImportStepFromProfile(
+        'profile-seantis.reservation:default', 'typeinfo'
+    )
+
+    fti.behaviors = behaviors

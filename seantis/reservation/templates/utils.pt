@@ -10,6 +10,11 @@
                     <tal:block i18n:translate="">Monthly Report</tal:block>
                 </a>
             </li>
+            <li tal:condition="viewlet/monthly_report_link">
+                <a tal:attributes="href viewlet/latest_reservations_link">
+                    <tal:block i18n:translate="">Latest Reservations</tal:block>
+                </a>
+            </li>
             <li tal:condition="viewlet/compare_link">
                 <a tal:attributes="href viewlet/compare_link">
                     <tal:block i18n:translate="">Compare Resources</tal:block>
