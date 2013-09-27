@@ -2,6 +2,12 @@
 Changelog
 =========
 
+1.0.13 (unreleased)
+-------------------
+
+- Adds a new 'latest reservations' report, showing reservations done in the last
+  30 days.
+
 1.0.12
 ------
 
