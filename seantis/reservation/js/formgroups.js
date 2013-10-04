@@ -271,6 +271,17 @@ seantis.formgroups.init = function(el) {
         }
     });
 
+    add({
+        name: "send_email",
+        trigger: find('#form-widgets-send_email-0'),
+        fields: [
+            find('#formfield-form-widgets-reason')
+        ],
+        on_is_enabled: function(trigger) {
+            return trigger.is(':checked');
+        }
+    })
+
     seantis.formgroups.add_utility_links();
     seantis.formgroups.add_recurrency_helper();
     seantis.formgroups.autoselect_days();

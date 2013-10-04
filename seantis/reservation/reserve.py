@@ -753,7 +753,7 @@ class ReservationRevocationForm(
 
         def revoke():
             self.scheduler.revoke_reservation(
-                data['reservation'], data['reason']
+                data['reservation'], data['reason'], data['send_email']
             )
             self.flash(_(u'Reservation revoked'))
 

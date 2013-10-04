@@ -1039,6 +1039,16 @@ class TestScheduler(IntegrationTestCase):
         self.assertTrue(u'no-reason' in mail.messages[0])
         mail.messages = []
 
+        # unless it should not be sent
+        token = sc.reserve(
+            reservation_email,
+            dates, data=data, session_id=session_id
+        )
+        sc.approve_reservation(token)
+        mail.messages = []
+        sc.revoke_reservation(token, u'', send_email=False)
+        self.assertEqual(len(mail.messages), 0)
+
         sc.remove_allocation(allocation.id)
 
         # make multiple reservations in one session to different email

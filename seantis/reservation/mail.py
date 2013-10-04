@@ -78,6 +78,9 @@ def on_reservation_revoked(event):
     if not settings.get('send_email_to_reservees', True):
         return
 
+    if not event.send_email:
+        return
+
     send_reservation_mail(
         event.reservation, 'reservation_revoked', event.language,
         to_managers=False, revocation_reason=event.reason

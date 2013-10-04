@@ -41,9 +41,10 @@ class ReservationDeniedEvent(ReservationBaseEvent):
 class ReservationRevokedEvent(ReservationBaseEvent):
     implements(IReservationRevokedEvent)
 
-    def __init__(self, reservation, language, reason):
+    def __init__(self, reservation, language, reason, send_email):
         super(ReservationRevokedEvent, self).__init__(reservation, language)
         self.reason = reason
+        self.send_email = send_email
 
 
 class ReservationsConfirmedEvent(object):

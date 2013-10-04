@@ -765,6 +765,14 @@ class IGroupReservation(Interface):
 class IRevokeReservation(IReservationIdForm):
     """ For the reservation revocation form. """
 
+    send_email = schema.Bool(
+        title=_(u"Send Email"),
+        description=_(
+            u"Send an email to the reservee informing him of the revocation"
+        ),
+        default=True
+    )
+
     reason = schema.Text(
         title=_(u'Reason'),
         description=_(

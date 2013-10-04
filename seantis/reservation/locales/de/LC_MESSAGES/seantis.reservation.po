@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-09-27 08:57+0000\n"
+"POT-Creation-Date: 2013-10-04 08:02+0000\n"
 "PO-Revision-Date: 2012-09-06 11:33+0100\n"
 "Last-Translator: Fabian Reinhard <fabian.reinhard@seantis.ch>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: DOMAIN\n"
 
-#: ./reports/latest_reservations.py:54
+#: ./reports/latest_reservations.py:37
 msgid "${days} days ago, at ${time}"
 msgstr "Vor ${days} Tagen, um ${time}"
 
@@ -62,7 +62,7 @@ msgstr "Es existiert bereits eine Einteilung für den gewählten Zeitraum"
 msgid "A pending reservation would be affected by the requested change"
 msgstr "Ein offene Reservierung wäre durch die Änderung betroffen"
 
-#: ./mail.py:486
+#: ./mail.py:489
 msgid "Add email template"
 msgstr "Email Vorlage hinzufügen"
 
@@ -207,7 +207,7 @@ msgid "Defines the minimum length of any given reservation as well as the alignm
 msgstr "Definiert die Mindestlänge der Reservationen für diese Einteilung, sowie die automatische Anpassung der Start- bzw. Endzeit. Ein Raster von 30 Minuten bedeuted beispielsweise, dass die Einteilung nur um xx:00 Uhr und xx:30 Uhr beginnen kann."
 
 #: ./allocate.py:297
-#: ./mail.py:495
+#: ./mail.py:498
 #: ./reports/monthly_report.py:220
 msgid "Delete"
 msgstr "Löschen"
@@ -251,7 +251,7 @@ msgid "Do you want to reserve the following allocations?"
 msgstr "Möchten Sie die folgenden Einteilungen reservieren?"
 
 #: ./allocate.py:244
-#: ./mail.py:494
+#: ./mail.py:497
 #: ./resource.py:342
 msgid "Edit"
 msgstr "Bearbeiten"
@@ -301,7 +301,7 @@ msgstr "Email Betreff für Reservationen in der Warteliste"
 msgid "Email Subject for Revoked Reservations"
 msgstr "Email Betreff für Abgesagte Reservationen"
 
-#: ./mail.py:89
+#: ./mail.py:92
 #: ./profiles/default/types/seantis.reservation.emailtemplate.xml
 msgid "Email Template"
 msgstr "Email Vorlage"
@@ -540,7 +540,7 @@ msgstr "Ohne"
 msgid "One Person Waiting"
 msgstr "Eine Person wartet"
 
-#: ./interfaces.py:770
+#: ./interfaces.py:778
 msgid "Optional reason for the revocation. Sent to the reservee. e.g. 'Your reservation has to be cancelled because the lecturer is ill'."
 msgstr "Optionaler Grund für die Absage. Wird an den Reservierenden gesendet. Z.B. 'Ihre Reservation muss abesagt werden weil der Dozent krank ist'."
 
@@ -575,7 +575,7 @@ msgstr "Kontingent muss zwischen 1 und 1000 liegen"
 msgid "Raster"
 msgstr "Raster"
 
-#: ./interfaces.py:769
+#: ./interfaces.py:777
 msgid "Reason"
 msgstr "Grund"
 
@@ -665,7 +665,7 @@ msgstr "Reservierung erfolgreich abgeschlossen"
 msgid "Reservations can't be made for more than 24 hours at a time"
 msgstr "Reservationen können nicht über mehr als 24 Stunden gemacht werden"
 
-#: ./reports/latest_reservations.py:29
+#: ./reports/latest_reservations.py:56
 msgid "Reservations in the last 30 days"
 msgstr "Reservationen in den letzten 30 Tagen"
 
@@ -704,7 +704,7 @@ msgstr "Reservation absagen"
 msgid "Sa"
 msgstr "Sa"
 
-#: ./mail.py:438
+#: ./mail.py:441
 #: ./reserve.py:861
 #: ./timeframe.py:83
 msgid "Save"
@@ -733,6 +733,14 @@ msgstr "Ausgewählte Ansicht"
 #: ./interfaces.py:374
 msgid "Selected view when opening the calendar."
 msgstr "Ansicht die beim Öffnen des Kalenders angezeigt wird."
+
+#: ./interfaces.py:769
+msgid "Send Email"
+msgstr "Email senden"
+
+#: ./interfaces.py:770
+msgid "Send an email to the reservee informing him of the revocation"
+msgstr "Informiere den Benutzer der die Reservation gemacht hat"
 
 #: ./settings.py:40
 msgid "Send emails about made, approved and denied reservations to the user that made the reservation."
@@ -887,7 +895,7 @@ msgstr "${nb} Reservationen werden gerade eingegeben."
 msgid "There is one reservation being entered for this resource."
 msgstr "Eine Reservation wird gerade eingegeben."
 
-#: ./mail.py:423
+#: ./mail.py:426
 msgid "There's already an Email template in the same folder for the same language"
 msgstr "Es besteht bereits eine Email Vorlage mit dieser Sprache in diesem Order"
 
@@ -908,7 +916,7 @@ msgstr "Belegungsperioden"
 msgid "Timetable"
 msgstr "Zeitachse"
 
-#: ./reports/latest_reservations.py:45
+#: ./reports/latest_reservations.py:28
 msgid "Today, at ${time}"
 msgstr "Heute, um ${time}"
 
@@ -966,7 +974,7 @@ msgstr "Ganztägig"
 msgid "Yes"
 msgstr "Ja"
 
-#: ./reports/latest_reservations.py:50
+#: ./reports/latest_reservations.py:33
 msgid "Yesterday, at ${time}"
 msgstr "Gestern, um ${time}"
 

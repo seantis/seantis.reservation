@@ -1016,7 +1016,7 @@ class Scheduler(object):
         notify(ReservationDeniedEvent(reservation, self.language))
 
     @serialized
-    def revoke_reservation(self, token, reason):
+    def revoke_reservation(self, token, reason, send_email=True):
         """ Revoke a reservation and inform the user of that."""
 
         reason = reason or u''
@@ -1024,7 +1024,9 @@ class Scheduler(object):
         # sending the email first is no problem as it won't work if
         # an exception triggers later in the request
         reservation = self.reservation_by_token(token).one()
-        notify(ReservationRevokedEvent(reservation, self.language, reason))
+        notify(ReservationRevokedEvent(
+            reservation, self.language, reason, send_email
+        ))
 
         self.remove_reservation(token)
 
