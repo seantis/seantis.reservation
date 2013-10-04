@@ -67,6 +67,11 @@ class ReservationUrls(object):
         base = context.absolute_url()
         return base + u'/update-reservation-data?reservation=%s' % token
 
+    def print_all_url(self, token, context):
+        context = context or self.context
+        base = context.absolute_url()
+        return base + u'/reservations?reservation={}&print=1'.format(token)
+
 
 class ReservationSchemata(object):
     """ Mixin to use with plone.autoform and IResourceBase which makes the
@@ -785,6 +790,16 @@ class ReservationList(grok.View, ReservationListView, ReservationUrls):
             return unicode(self.request['group'].decode('utf-8'))
         else:
             return u''
+
+    @property
+    def reservation(self):
+        """ Limits the list to the given reservation. """
+        return self.request.get('reservation', None)
+
+    @property
+    def print_site(self):
+        """ Returns true if the document should be printed when opening it. """
+        return self.request.get('print', None) is not None
 
 
 class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):

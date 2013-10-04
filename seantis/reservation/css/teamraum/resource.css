@@ -233,7 +233,7 @@ id selector we need quite the selectors to get a higher weight...*/
     margin-top: 10px;
 }
 
-a.reservation-delete {
+a.reservation-action {
     float: right;
 }
 

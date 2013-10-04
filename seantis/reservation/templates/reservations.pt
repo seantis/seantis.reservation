@@ -7,11 +7,20 @@
 >
 
 <body>
+
+<metal:javascript fill-slot="javascript_head_slot">
+  <tal:block condition="view/print_site">
+    <script>
+      window.print();
+    </script>
+  </tal:block>
+</metal:javascript>
+
 <metal:main fill-slot="main">
 <tal:main-macro metal:define-macro="main">
 
 <div tal:attributes="data-group python: view.highlight_group; class python: view.hide_waitinglist and 'inline-reservations hide-waitinglist' or 'inline-reservations'" tal:define="
-    show_actions view/show_links;
+    show_actions python: view.show_links and not view.print_site;
 ">
   
   <div class="uncommitted" i18n:translate="" tal:condition="view/uncommitted_reservations_count">
@@ -20,7 +29,7 @@
 
   <div class="splitscreen splitleft">
 
-    <h2 class="documentFirstHeading" i18n:translate="">Reservations</h2>
+    <h2 class="documentFirstHeading" i18n:translate="" tal:condition="not:view/print_site">Reservations</h2>
     
     <div class="reservation-info reservation-approved" metal:define-macro="approved_reservations">
       <tal:block tal:repeat="group python: view.approved_reservations().items()">
@@ -28,7 +37,6 @@
             token python: group[0];
             reservations python: group[1];
           ">
-
           <metal:use use-macro="context/@@seantis-reservation-macros/reservation-block" />
         </tal:block>
 
@@ -45,8 +53,7 @@
               token python: group[0];
               reservations python: group[1];
             ">
-
-            <metal:use use-macro="context/@@seantis-reservation-macros/reservation-block" />
+              <metal:use use-macro="context/@@seantis-reservation-macros/reservation-block" />
           </tal:block>
 
         </tal:block>

@@ -129,8 +129,9 @@ var CalendarGroups = function() {
                                window.seantis_inline = null;
                             });
 
-                            // setup all links with overlays
-                            $.each($('a', target), function(ix, link) {
+                            // setup all links with overlays (without the ones
+                            // that have their own onclick handler)
+                            $.each($('a:not([data-no-overlay])', target), function(ix, link) {
                                 calendar.overlay_init($(link));
                             });
 

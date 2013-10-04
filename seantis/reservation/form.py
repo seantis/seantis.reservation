@@ -428,7 +428,8 @@ class ReservationListView(object):
         can be returned.
 
         """
-        return hasattr(self, 'group') and utils.string_uuid(self.group) or u''
+        group = getattr(self, 'group', '')
+        return group and utils.string_uuid(self.group) or u''
 
     @property
     def hide_waitinglist(self):

@@ -224,7 +224,7 @@
             $parent.find('.reservation').click(function() {
                 show_details($(this));
             });
-            reservation_overlay_init($parent.find('.reservation-urls a'), options);
+            reservation_overlay_init($parent.find('.reservation-urls a:not([data-no-overlay])'), options);
 
             update_resource_status('resource');
             update_resource_status('status');

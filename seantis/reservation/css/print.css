@@ -1,3 +1,4 @@
+   
 #seantis-overview-calendar {
     page-break-before: always;
 }
@@ -24,18 +25,32 @@ div.splitscreen {
     border: none !important;
 }
 
+#content .reservation-list {
+    border: none;
+}
+
+.template-reservations h2 {
+    display: none;
+}
+
+.template-reservations .inline-reservations {
+    padding: 0 !important;
+}
+
 .reservation-title {
     border: 1px solid black !important;
-    border-width: 0 0 1px 0;
+    border-width: 0 0 1px 0 !important;
     background-color: white !important;
+    margin-top: 0 !important;
 }
 
 .reservation-title a {
     display: none !important;
 }
 
-.reservation-title h3 {
+#content .reservation-title h3 {
     color: black !important;
+    font-weight: bold !important;
 }
 
 .reservation-timespans {
@@ -109,7 +124,7 @@ div.fc > * {
 }
 
 .reservation {
-    font-size: 10px !important;
+    font-size: 12px !important;
     border: 1px solid black !important;   
     margin-bottom: 10px !important;
 }
