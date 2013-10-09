@@ -2,8 +2,8 @@
 Changelog
 =========
 
-1.0.14 (unreleased)
--------------------
+1.0.14
+------
 
 - Adds the ability to print single reservations.
 
