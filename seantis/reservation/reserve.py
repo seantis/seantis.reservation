@@ -302,16 +302,19 @@ class ReservationBaseForm(ResourceBaseForm):
 
         run_pre_reserve_script(self.context, start, end, additional_data)
 
-        if start and end:
-            token = self.scheduler.reserve(
-                email, (start, end),
-                data=additional_data, session_id=session_id, quota=quota
-            )
-        else:
-            token = self.scheduler.reserve(
-                email, group=group,
-                data=additional_data, session_id=session_id, quota=quota
-            )
+        def run():
+            if start and end:
+                return self.scheduler.reserve(
+                    email, (start, end),
+                    data=additional_data, session_id=session_id, quota=quota
+                )
+            else:
+                return self.scheduler.reserve(
+                    email, group=group,
+                    data=additional_data, session_id=session_id, quota=quota
+                )
+
+        token = throttled(run, 'reserve')()
 
         if approve_manually:
             self.flash(_(u'Added to waitinglist'))
@@ -476,9 +479,8 @@ class ReservationForm(
                 start=start, end=end, quota=quota
             )
 
-        action = throttled(reserve, self.context, 'reserve')
         utils.handle_action(
-            action=action, success=self.redirect_to_your_reservations
+            action=reserve, success=self.redirect_to_your_reservations
         )
 
     @button.buttonAndHandler(_(u'Cancel'))
@@ -562,9 +564,8 @@ class GroupReservationForm(
                 group=data['group'], quota=data['quota']
             )
 
-        action = throttled(reserve, self.context, 'reserve')
         utils.handle_action(
-            action=action, success=self.redirect_to_your_reservations
+            action=reserve, success=self.redirect_to_your_reservations
         )
 
     @button.buttonAndHandler(_(u'Cancel'))

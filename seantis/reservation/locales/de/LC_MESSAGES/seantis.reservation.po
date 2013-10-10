@@ -938,7 +938,7 @@ msgstr "Token"
 
 #: ./error.py:119
 msgid "Too many reservations in a short time. Wait for a moment before trying again."
-msgstr "Zu viele Reservationen in einer kurzen Zeit. Bitte warten Sie für Moment und versuchen Sie es dann noch einmal."
+msgstr "Zu viele Reservationen in einer kurzen Zeit. Bitte warten Sie für einen Moment und versuchen Sie es dann noch einmal."
 
 #: ./interfaces.py:32
 msgid "Tu"

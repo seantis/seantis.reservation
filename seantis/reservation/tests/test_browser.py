@@ -307,7 +307,7 @@ class TestBrowser(FunctionalTestCase):
 
         browser.getControl('Start').value = '3:15 PM'
         browser.getControl('End').value = '3:45 PM'
-        
+
         # not entering anything should lead to the form again with the still
         # filled out controls
         browser.getControl('Reserve').click()
@@ -348,7 +348,7 @@ class TestBrowser(FunctionalTestCase):
 
         for selector, value in unchanging_values:
             self.assertEqual(browser.query(selector).val(), value)
-        
+
         # not entering anything should lead to the form again with the still
         # filled out controls
         browser.getControl('Reserve').click()
@@ -440,8 +440,8 @@ class TestBrowser(FunctionalTestCase):
         browser.open(self.allocation_menu(*allocation)['reserve'])
         browser.getControl('Email').value = 'test@example.com'
         browser.getControl('Quota', index=0).value = '3'
-        browser.getControl('Reserve').click()
 
+        browser.getControl('Reserve').click()
         self.assertTrue(
             'The requested period is no longer available' in browser.contents
         )
@@ -449,6 +449,42 @@ class TestBrowser(FunctionalTestCase):
         browser.open(self.infolder('/overreserve/your-reservations'))
         self.assertFalse('limitedList' in browser.contents)
         self.assertFalse('your-reservation-quota' in browser.contents)
+
+    def test_throttling(self):
+
+        browser = self.new_browser()
+        browser.login_admin()
+
+        start = datetime(2013, 6, 2, 14, 0)
+        end = datetime(2013, 6, 2, 16, 0)
+
+        self.add_resource('throttled')
+        allocation = ('throttled', start, end)
+        self.add_allocation(*allocation, quota=5, quota_limit=5)
+
+        browser.open(self.infolder(
+            '/throttled/content_status_modify?workflow_action=publish'
+        ))
+
+        browser.logout()
+
+        # validation issues don't lead to throttling (missing email here)
+        browser.open(self.allocation_menu(*allocation)['reserve'])
+        browser.getControl('Quota', index=0).value = '1'
+        browser.getControl('Reserve').click()
+        browser.getControl('Reserve').click()
+        self.assertFalse('Too many reservations' in browser.contents)
+
+        # real reservations however do
+        browser.getControl('Email').value = 'test@example.com'
+        browser.getControl('Reserve').click()
+        self.assertFalse('Too many reservations' in browser.contents)
+
+        browser.open(self.allocation_menu(*allocation)['reserve'])
+        browser.getControl('Email').value = 'test@example.com'
+        browser.getControl('Quota', index=0).value = '1'
+        browser.getControl('Reserve').click()
+        self.assertTrue('Too many reservations' in browser.contents)
 
     def test_your_reservations_context_regression(self):
 
