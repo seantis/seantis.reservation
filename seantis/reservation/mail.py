@@ -34,11 +34,11 @@ from seantis.reservation import _
 def on_reservations_confirmed(event):
 
     # send one mail to the reservee
-    if settings.get('send_email_to_reservees', True):
+    if settings.get('send_email_to_reservees'):
         send_reservations_confirmed(event.reservations, event.language)
 
     # send many mails to the admins
-    if settings.get('send_email_to_managers', True):
+    if settings.get('send_email_to_managers'):
         for reservation in event.reservations:
 
             if reservation.autoapprovable:
@@ -55,7 +55,7 @@ def on_reservations_confirmed(event):
 
 @grok.subscribe(IReservationApprovedEvent)
 def on_reservation_approved(event):
-    if not settings.get('send_email_to_reservees', True):
+    if not settings.get('send_email_to_reservees'):
         return
     if not event.reservation.autoapprovable:
         send_reservation_mail(
@@ -65,7 +65,7 @@ def on_reservation_approved(event):
 
 @grok.subscribe(IReservationDeniedEvent)
 def on_reservation_denied(event):
-    if not settings.get('send_email_to_reservees', True):
+    if not settings.get('send_email_to_reservees'):
         return
     if not event.reservation.autoapprovable:
         send_reservation_mail(
@@ -75,7 +75,7 @@ def on_reservation_denied(event):
 
 @grok.subscribe(IReservationRevokedEvent)
 def on_reservation_revoked(event):
-    if not settings.get('send_email_to_reservees', True):
+    if not settings.get('send_email_to_reservees'):
         return
 
     if not event.send_email:

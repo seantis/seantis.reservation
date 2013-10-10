@@ -64,7 +64,7 @@ class ISeantisReservationSettings(Interface):
     )
 
 
-def get(name, default=None):
+def get(name):
     registry = getUtility(IRegistry)
     settings = registry.forInterface(ISeantisReservationSettings)
 
