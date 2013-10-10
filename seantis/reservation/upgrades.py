@@ -312,7 +312,7 @@ def upgrade_1016_to_1017(context):
 
 @serialized
 def upgrade_1017_to_1018(context):
-    
+
     # seantis.reservation before 1.0.12 left behind reserved slots when
     # removing reservations of expired sessions. These need to be cleaned for
     # the allocation usage to be right.
@@ -325,7 +325,7 @@ def upgrade_1017_to_1018(context):
 
     # ..with tokens not found in the reservations table
     orphan_slots = orphan_slots.filter(
-        not_(  
+        not_(
             ReservedSlot.reservation_token.in_(
                 all_reservations.with_entities(Reservation.token).subquery()
             )
@@ -353,3 +353,12 @@ def upgrade_1018_to_1019(context):
     )
 
     fti.behaviors = behaviors
+
+
+def upgrade_1019_to_1020(context):
+
+    # add new registry values
+    setup = getToolByName(context, 'portal_setup')
+    setup.runImportStepFromProfile(
+        'profile-seantis.reservation:default', 'plone.app.registry'
+    )

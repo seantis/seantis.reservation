@@ -23,6 +23,12 @@
     margin-top: 10px;
 }
 
+#formfield-form-widgets-pre_reservation_script .fieldErrorBox {
+    color: red;
+    font-weight: bold;
+    margin-bottom: 0.8em;    
+}
+
 /* wizard form tabs */
 
 .seantis-reservation-form .wizardSteps {

@@ -23,6 +23,12 @@ class AffectedReservationError(ReservationError):
         self.existing = existing
 
 
+class CustomReservationError(ReservationError):
+
+    def __init__(self, msg):
+        self.msg = msg
+
+
 class AffectedPendingReservationError(AffectedReservationError):
     pass
 
@@ -134,4 +140,5 @@ errormap = {
 
     InvalidAllocationError:
     _(u'The resulting allocation would be invalid'),
+
 }

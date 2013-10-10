@@ -2,7 +2,7 @@ import logging
 logger = logging.getLogger('seantis.reservation')
 
 from zope import schema
-from zope.interface import Interface
+from zope.interface import Interface, Invalid
 from zope.component import getUtility
 
 from plone.z3cform import layout
@@ -13,6 +13,15 @@ from plone.app.registry.browser.controlpanel import ControlPanelFormWrapper
 from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 
 from seantis.reservation import _
+from seantis.reservation.restricted_eval import validate_expression
+
+
+def valid_expression(expression):
+    try:
+        validate_expression(expression, mode='exec')
+    except Exception, e:
+        raise Invalid(str(e))
+    return True
 
 
 class ISeantisReservationSettings(Interface):
@@ -43,6 +52,17 @@ class ISeantisReservationSettings(Interface):
         )
     )
 
+    pre_reservation_script = schema.Text(
+        title=_(u"Pre-Reservation Script"),
+        description=_(
+            u'Run custom validation code for reservations. This is for '
+            u'advanced users only and may disable the reservations process. '
+            u'For documentation study the source code at Github.'
+        ),
+        required=False,
+        constraint=valid_expression
+    )
+
 
 def get(name, default=None):
     registry = getUtility(IRegistry)
@@ -50,6 +70,14 @@ def get(name, default=None):
 
     assert hasattr(settings, name), "Unknown setting: %s" % name
     return getattr(settings, name)
+
+
+def set(name, value):
+    registry = getUtility(IRegistry)
+    settings = registry.forInterface(ISeantisReservationSettings)
+
+    assert hasattr(settings, name), "Unknown setting: %s" % name
+    return setattr(settings, name, value)
 
 
 class SeantisReservationSettingsPanelForm(RegistryEditForm):

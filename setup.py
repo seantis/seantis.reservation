@@ -3,7 +3,7 @@ import os
 
 name = "seantis.reservation"
 description = "Plone addon to reserve stuff in a calendar."
-version = '1.0.14'
+version = '1.0.15'
 
 zug_require = [
     'ftw.contentmenu',
@@ -48,6 +48,7 @@ setup(name=name, version=version, description=description,
       zip_safe=False,
       install_requires=[
           'alembic>=0.5.0',
+          'byteplay',
           'collective.autopermission',
           'collective.js.fullcalendar>=1.6.1',
           'collective.js.jqueryui',
@@ -59,6 +60,7 @@ setup(name=name, version=version, description=description,
           'plone.app.referenceablebehavior',
           'plone.behavior',
           'plone.directives.form',
+          'plone.resourceeditor',
           'plone.uuid>=1.0.2',
           'Plone>=4.3',
           'profilehooks',

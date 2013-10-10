@@ -5,9 +5,36 @@
       xml:lang="en" lang="en"
       i18n:domain="seantis.reservation">
 
-
 <metal:form metal:define-macro="form">
-    <metal:block use-macro="context/@@ploneform-macros/titlelessform" />
+    <metal:block use-macro="context/@@ploneform-macros/titlelessform"></metal:block>
+
+    <tal:block define="portal_url python:here.portal_url()">
+    <!-- ACE editor -->
+    <script type="text/javascript" charset="utf-8" tal:attributes="src string:${portal_url}/++resource++plone.resourceeditor/ace/ace.js"></script>
+    </tal:block>
+    <script type="text/javascript">
+        jQuery(function($) {
+            $('#formfield-form-widgets-pre_reservation_script').append(
+                $("<div style='position:relative; height: 450px;'><div id='ace-editor' style='height: 450px; width: 100%;' /></div>")
+            );
+            
+            var editor = ace.edit('ace-editor');
+            editor.setTheme('ace/theme/textmate');
+
+            var session = editor.getSession();
+            session.setMode('ace/mode/python');
+            session.setTabSize(4);
+            session.setUseSoftTabs(true);
+            session.setUseWrapMode(true);
+
+            var textarea = $('#form-widgets-pre_reservation_script').hide();
+            session.setValue(textarea.val());
+            session.on('change', function() {
+                textarea.val(session.getValue());
+            });
+        });
+        
+    </script>
 </metal:form>
 
 

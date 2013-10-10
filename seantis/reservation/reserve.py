@@ -29,6 +29,7 @@ from seantis.reservation.interfaces import (
 )
 
 from seantis.reservation.error import DirtyReadOnlySession
+from seantis.reservation.restricted_eval import run_pre_reserve_script
 from seantis.reservation import _
 from seantis.reservation import db
 from seantis.reservation import utils
@@ -81,7 +82,7 @@ class ReservationSchemata(object):
     code which has the behavior IReservationFormset.
 
     """
-    
+
     @property
     def may_view_manager_sets(self):
         manager_permission = 'seantis.reservation.EditReservations'
@@ -206,7 +207,7 @@ class YourReservationsData(object):
     def confirm_reservations(self, token=None):
         # Remove session_id from all reservations in the current session.
         db.confirm_reservations_for_session(
-            plone_session.get_session_id(self.context), 
+            plone_session.get_session_id(self.context),
             token,
             utils.get_current_language(self.context, self.request)
         )
@@ -298,6 +299,8 @@ class ReservationBaseForm(ResourceBaseForm):
                 form, additional_data[form]
             ) for form in self.context.formsets if form in additional_data
         )
+
+        run_pre_reserve_script(self.context, start, end, additional_data)
 
         if start and end:
             token = self.scheduler.reserve(
@@ -589,7 +592,7 @@ class YourReservations(ResourceBaseForm, YourReservationsData):
         def on_success():
             self.request.response.redirect(self.context.absolute_url())
             self.flash(_(u'Reservations Successfully Submitted'))
-        
+
         utils.handle_action(self.confirm_reservations, success=on_success)
 
     @button.buttonAndHandler(_(u'Reserve More'), name="proceed")

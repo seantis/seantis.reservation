@@ -2,6 +2,12 @@
 Changelog
 =========
 
+1.0.15 (unreleased)
+-------------------
+
+- Adds the ability to define pre-reservation script which may trigger
+  validation errors on the reservation form.
+
 1.0.14
 ------
 

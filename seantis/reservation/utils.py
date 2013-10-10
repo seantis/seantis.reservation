@@ -127,6 +127,35 @@ def additional_data_dictionary(data, fti):
     return result
 
 
+def additional_data_objects(data):
+    """ Takes the additional data dictionary and returns a new dictionary
+    with the keys being the formsets, and the values being objects.
+
+    An 'address' formset with 'street' and 'town' will produce this:
+
+    {'address': obj}
+
+    Where obj can be acccessed like this:
+
+    obj.street
+    obj.town
+
+    """
+    result = {}
+
+    class DynamicObject(object):
+        pass
+
+    for formset in data:
+        obj = DynamicObject()
+        for item in data[formset]['values']:
+            setattr(obj, item['key'], item['value'])
+
+        result[formset] = obj
+
+    return result
+
+
 def zope_root():
     this = getSite()
 
@@ -282,6 +311,7 @@ def export_link(context, request, resources):
         )
     ))
 
+
 def monthly_report_link(context, request, resources):
     """Builds the monthly report link given the list of the resources
     using the current year and month."""
@@ -416,6 +446,9 @@ def form_error(msg):
 
 
 def handle_exception(ex, message_handler=None):
+    if isinstance(ex, error.CustomReservationError):
+        form_error(ex.msg)
+
     msg = error.errormap.get(type(ex))
 
     if not msg:
