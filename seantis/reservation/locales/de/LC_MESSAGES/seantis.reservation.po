@@ -542,7 +542,7 @@ msgstr "Eine Person wartet"
 
 #: ./interfaces.py:778
 msgid "Optional reason for the revocation. Sent to the reservee. e.g. 'Your reservation has to be cancelled because the lecturer is ill'."
-msgstr "Optionaler Grund für die Absage. Wird an den Reservierenden gesendet. Z.B. 'Ihre Reservation muss abesagt werden weil der Dozent krank ist'."
+msgstr "Optionaler Grund für die Absage. Wird an den Reservierenden gesendet. Z.B. 'Ihre Reservation muss abesagt werden, weil der Dozent krank ist'."
 
 #: ./exports/reservations.py:42
 msgid "Parent"
