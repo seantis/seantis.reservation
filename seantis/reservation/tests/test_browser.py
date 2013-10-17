@@ -89,6 +89,7 @@ class TestBrowser(FunctionalTestCase):
         partly_available=False,
         quota=1,
         quota_limit=1,
+        approve_manually=False,
         recurrence=None,
         separately=None,
     ):
@@ -116,6 +117,11 @@ class TestBrowser(FunctionalTestCase):
             browser.getControl('Recurrence').value = recurrence
         if separately is not None:
             browser.getControl('Separately reservable').selected = separately
+
+        browser.getControl(
+            'Manually approve reservation requests'
+        ).selected = approve_manually
+
         browser.getControl('Allocate').click()
 
     def add_formset(self, name, fields, for_managers=False):
@@ -190,14 +196,12 @@ class TestBrowser(FunctionalTestCase):
         separately when recurrence is set.
 
         """
-        url = self.build_folder_url
-
         browser = self.new_browser()
         browser.login_admin()
 
         self.add_resource('recurrence')
 
-        browser.open(url('/recurrence'))
+        browser.open(self.infolder('/recurrence'))
 
         start = datetime(2013, 3, 4, 15, 0)
         end = datetime(2013, 3, 4, 16, 0)
