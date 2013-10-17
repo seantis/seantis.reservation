@@ -7,6 +7,7 @@ from datetime import time
 from DateTime import DateTime
 from five import grok
 
+from collective.z3cform.datetimewidget.widget_date import DateFieldWidget
 from plone.dexterity.interfaces import IDexterityFTI
 from zope.component import queryUtility
 from zope.interface import Interface
@@ -337,6 +338,7 @@ class ReservationForm(
     context_buttons = ('reserve', )
 
     fields = field.Fields(IReservation)
+    fields['day'].widgetFactory = DateFieldWidget
     label = _(u'Resource reservation')
 
     fti = None
