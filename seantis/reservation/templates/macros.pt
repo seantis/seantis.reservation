@@ -89,7 +89,7 @@
           </div>
         </div>
         <tal:block define="quota python: last_reservation.quota">
-          <div class="reservation-quota" 
+          <div class="reservation-quota"
             tal:attributes="data-reservation-quota quota"
             tal:condition="python: quota > 1"
           >
@@ -161,10 +161,10 @@
 
         <tal:block tal:condition="data" tal:repeat="key python: macro.sort_reservation_data(data)">
           <tal:block tal:define="interface python: data[key]">
-            <div class="block-title" tal:content="python: interface['desc']"></div>
+            <div class="block-title" tal:content="python: macro.display_description(interface['desc'])"></div>
 
             <div tal:repeat="value python: macro.sort_reservation_data_values(interface['values'])">
-              <span class="label" tal:content="python: value['desc']"></span>
+              <span class="label" tal:content="python: macro.display_description(value['desc'])"></span>
               <span tal:content="python: macro.display_reservation_data(value['value'])"></span>
             </div>
 

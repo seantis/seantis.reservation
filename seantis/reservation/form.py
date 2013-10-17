@@ -355,6 +355,12 @@ class AllocationGroupView(object):
 class ReservationDataView(object):
     """Mixin for reservation-data showing."""
 
+    #XXX maybe this needs some cleanup after merging
+    def sort_reservation_data(self, data):
+        items = [(d[0], d[1]['values'][0]['sortkey']) for d in data.items()]
+
+        return [i[0] for i in sorted(items, key=lambda k: k[1])]
+
     @property
     @instance.memoize
     def _request(self):
@@ -372,7 +378,7 @@ class ReservationDataView(object):
         return translate(value, context=self._request,
                         domain='seantis.reservation')
 
-    def display_info(self, value):
+    def display_reservation_data(self, value):
         """ Transforms json data values into a human readable format
         where appropriate.
 
