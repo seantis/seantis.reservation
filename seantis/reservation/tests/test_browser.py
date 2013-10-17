@@ -376,14 +376,14 @@ class TestBrowser(FunctionalTestCase):
         ]
 
         for selector, value in unchanging_values:
-            self.assertEqual(browser.query(selector).val(), value)
+            self.assertEqual(browser.query(selector).val(), value, selector)
 
         # not entering anything should lead to the form again with the still
         # filled out controls
         browser.getControl('Reserve').click()
 
         for selector, value in unchanging_values:
-            self.assertEqual(browser.query(selector).val(), value)
+            self.assertEqual(browser.query(selector).val(), value, selector)
 
     def test_invalid_allocation_missing_email_regression(self):
 
