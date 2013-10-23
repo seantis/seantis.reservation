@@ -910,7 +910,7 @@ def get_dates(data, is_whole_day=False):
     if not data['recurrence']:
         return ((start, end))
 
-    rule = rrulestr(data['recurrence'], dtstart=start)
+    rule = rrulestr(data['recurrence'], dtstart=data['day'])
 
     event = lambda d: \
         get_date_range(d, data['start_time'], data['end_time'])
