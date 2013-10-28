@@ -1148,12 +1148,39 @@ class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
     def get_additional_data(self, data):
         return utils.additional_data_dictionary(data, self.fti)
 
+    def inject_missing_data(self, data, reservation):
+        """ Adds the date and start-/end-time to the data if they are missing,
+        which happens because those fields may be disabled and therefore are
+        not transferred when submitting the form.
+
+        The fields are injected into the passed dictionary, which may be
+        the reservations defaults or the submitted form data.
+
+        """
+        extracted, errors = self.extractData(setErrors=False)
+
+        # the extracted fields may contain field values which need to be
+        # injected so the defaults are filled - otherwise no value is updated
+        # on the disabled field
+        for field in ('start_time', 'end_time'):
+            if extracted.get(field) is not None:
+                data[field] = extracted[field]
+
+        if data.get('start_time') is None:
+            data['start_time'] = reservation.start.time()
+
+        if data.get('end_time') is None:
+            data['end_time'] = reservation.end.time()
+
     @button.buttonAndHandler(_(u'Save'))
     @extract_action_data
     def save(self, data):
         query = self.scheduler.reservation_by_token(self.reservation)
+        reservation = query.one()
+
         self.additional_data = self.get_additional_data(data)
-        start, end = utils.get_date_range(query.one().start.date(),
+        self.inject_missing_data(data, reservation)
+        start, end = utils.get_date_range(reservation.start.date(),
                                           data.get('start_time'),
                                           data.get('end_time'))
 
