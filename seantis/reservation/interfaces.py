@@ -891,3 +891,15 @@ class IReservationSlotsRemovedEvent(IReservationBaseEvent):
     """Event triggered when reservation slots are removed."""
 
     dates = Attribute("The concerned dates")
+
+
+class IReservationSlotsUpdatedEvent(IReservationBaseEvent):
+    """Triggered when reserved slots for a reservation are updated."""
+
+
+class IReservationUpdatedEvent(IReservationBaseEvent):
+    """Triggered when a reservation is updated."""
+
+    old_data = Attribute("Old reservation data")
+    time_changed = Attribute("Boolean indicating whether reservation time "
+                             "has changed")

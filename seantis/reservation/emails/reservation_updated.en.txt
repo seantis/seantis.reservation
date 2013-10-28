@@ -1,0 +1,12 @@
+Reservation for %(resource)s changed
+====================================
+The reservation for %(resource)s has been changed:
+
+Daten:
+%(dates)s
+
+Email:
+%(reservation_mail)s
+
+Formulardaten:
+%(data)s
