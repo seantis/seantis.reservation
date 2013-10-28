@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-10-28 15:44+0000\n"
+"POT-Creation-Date: 2013-10-28 16:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -260,7 +260,7 @@ msgstr "Voulez-vous vraiment supprimer cette salle?"
 
 #: ./reserve.py:841
 msgid "Do you really want to remove the following reservations?"
-msgstr ""
+msgstr "Voulez-vous vraiment supprimer cette réservation?"
 
 #: ./reserve.py:913
 msgid "Do you really want to revoke the following reservations?"
@@ -598,7 +598,7 @@ msgstr "Contingent/ Nombre de personnes"
 
 #: ./interfaces.py:330
 msgid "Quota must be between 1 and 1000"
-msgstr ""
+msgstr "Le nombre de personnes doit être situé entre 1 et 1000"
 
 #: ./interfaces.py:316
 msgid "Raster"
@@ -636,7 +636,7 @@ msgstr "Supprimer les modèles non compatibles"
 
 #: ./reserve.py:801
 msgid "Remove reservations"
-msgstr ""
+msgstr "Supprimer les réservations"
 
 #: ./interfaces.py:776
 msgid "Reservation"
@@ -997,7 +997,7 @@ msgstr "Options de vue disponibles pour l'utilisateur"
 
 #: ./interfaces.py:761
 msgid "Visible on the calendar"
-msgstr "Sera affiché dans le calendrier"
+msgstr ""
 
 #: ./templates/reservations.pt:48
 msgid "Waitinglist"
