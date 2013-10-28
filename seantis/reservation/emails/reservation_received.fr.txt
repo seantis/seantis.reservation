@@ -1,0 +1,12 @@
+Vos réservations
+==================
+Nous avons reçu des demandes pour les réservations suivantes:
+
+%(reservations)s
+
+Les réservations munies d'une étoile (*) sont actuellement contrôlées. Elles
+seront soit acceptées, soit refusées. Vous recevrez prochainement un email de
+confirmation.
+
+Les réservations sans aucune étoile sont automatiquement validées. Si une
+réservation devait être malgré tout modifiée, vous en serez informé par email.

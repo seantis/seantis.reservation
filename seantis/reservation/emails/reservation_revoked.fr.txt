@@ -1,0 +1,10 @@
+La réservation pour %(resource)s sera annulée
+=============================================
+Nous sommes au regret de vous informer que nous avons dû annuler les réservations pour %(resource)s suivantes:
+
+Données:
+%(dates)s
+
+%(reason)s
+
+Nous vous prions de nous contacter pour toute question.

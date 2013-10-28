@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-10-28 15:44+0000\n"
+"POT-Creation-Date: 2013-10-28 16:10+0000\n"
 "PO-Revision-Date: 2012-09-06 11:33+0100\n"
 "Last-Translator: Fabian Reinhard <fabian.reinhard@seantis.ch>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -92,7 +92,7 @@ msgstr "Einteilung"
 
 #: ./interfaces.py:785
 msgid "Allocation Id"
-msgstr ""
+msgstr "Allokations ID"
 
 #: ./allocate.py:132
 msgid "Allocation added"
@@ -128,7 +128,7 @@ msgstr "Eine bestehende Reservation wäre durch die Änderung betroffen"
 
 #: ./settings.py:48
 msgid "Approval Email Notifications for Managers"
-msgstr ""
+msgstr "Bestätigungs E-Mail für Manager"
 
 #: ./reports/monthly_report.py:226
 #: ./reserve.py:734
@@ -159,7 +159,7 @@ msgstr "Das Datum das beim Öffnen des Kalenders angezeigt wird."
 
 #: ./error.py:169
 msgid "Can't block period because a reservation already exists."
-msgstr ""
+msgstr "Die Periode kann nicht blockiert werden weil schon eine Reservation existiert"
 
 #: ./allocate.py:151
 #: ./reserve.py:538
@@ -260,7 +260,7 @@ msgstr "Möchten Sie die folgenden Einteilungen wirklich löschen?"
 
 #: ./reserve.py:841
 msgid "Do you really want to remove the following reservations?"
-msgstr ""
+msgstr "Wollen sie wirklich die folgenden Reservationen löschen?"
 
 #: ./reserve.py:913
 msgid "Do you really want to revoke the following reservations?"
@@ -430,7 +430,7 @@ msgstr "Falls gewählt muss ein Reservations-Manager entscheiden ob eine Reserva
 
 #: ./interfaces.py:555
 msgid "If checked parts of the recurrance may be reserved. If not checked the recurrance must be reserved as a whole."
-msgstr "Falls gewählt, ist eine teilweise separate Reservation der Wiederholung möglich. Ist die Option nicht gewählt, müssen alle Wiederholungen als Ganzes reserviert werden."
+msgstr ""
 
 #: ./interfaces.py:306
 msgid "If the allocation is partly available users may reserve only a part of it (e.g. half of it). If not the allocation Must be reserved as a whole or not at all"
@@ -636,7 +636,7 @@ msgstr "Einteilungen entfernen"
 
 #: ./reserve.py:801
 msgid "Remove reservations"
-msgstr ""
+msgstr "Supprimer les réservations"
 
 #: ./interfaces.py:776
 msgid "Reservation"
@@ -673,7 +673,7 @@ msgstr "Limit der Anzahl Reservationen muss Null oder grösser sein"
 
 #: ./reserve.py:852
 msgid "Reservation removed"
-msgstr ""
+msgstr "Reservation entfernt"
 
 #: ./reserve.py:925
 msgid "Reservation revoked"
@@ -690,11 +690,11 @@ msgstr "Reservationen"
 
 #: ./export.py:25
 msgid "Reservations (Compact)"
-msgstr "Reservationen (Kompakt)"
+msgstr ""
 
 #: ./export.py:15
 msgid "Reservations (Normal)"
-msgstr "Reservationen (Normal)"
+msgstr ""
 
 #: ./reserve.py:647
 msgid "Reservations Successfully Submitted"
@@ -779,11 +779,11 @@ msgstr "Ansicht die beim Öffnen des Kalenders angezeigt wird."
 
 #: ./interfaces.py:813
 msgid "Send Email"
-msgstr "Email senden"
+msgstr ""
 
 #: ./interfaces.py:814
 msgid "Send an email to the reservee informing him of the revocation"
-msgstr "Informiere den Benutzer der die Reservation gemacht hat"
+msgstr ""
 
 #: ./settings.py:57
 msgid "Send emails about made, approved and denied reservations to the user that made the reservation."
@@ -795,7 +795,7 @@ msgstr "Sende Emails zu neuen Reservationen in der Warteliste zum ersten Reserva
 
 #: ./settings.py:41
 msgid "Send emails about newly made reservations to the first reservation managers found in the path."
-msgstr ""
+msgstr "Sende Emails zu neuen Reservationen zum ersten Reservationsmanager der im Pfad gefunden werden kann."
 
 #: ./interfaces.py:648
 msgid "Sent to <b>managers</b> when a new pending reservation is made. May contain the template variables listed below."
@@ -880,7 +880,7 @@ msgstr "Die Einteilung ist für den ganzen Tag gültig."
 
 #: ./export.py:16
 msgid "The default reservations export with every date in the resource having a separate record."
-msgstr "Der standartmässige Reservationen Export bei dem jedes Datum einen eigenen Eintrag hat."
+msgstr ""
 
 #: ./error.py:144
 msgid "The given reservation paramters are invalid."
@@ -948,7 +948,7 @@ msgstr "Es besteht bereits eine Email Vorlage mit dieser Sprache in diesem Order
 
 #: ./error.py:172
 msgid "This is not a recurring reservation"
-msgstr ""
+msgstr "Dies ist keine wiederholende Reservation"
 
 #: ./profiles/default/types/seantis.reservation.timeframe.xml
 msgid "Timeframe"
@@ -969,7 +969,7 @@ msgstr "Zeitachse"
 
 #: ./reports/latest_reservations.py:28
 msgid "Today, at ${time}"
-msgstr "Heute, um ${time}"
+msgstr ""
 
 #: ./exports/reservations.py:44
 msgid "Token"
@@ -997,7 +997,7 @@ msgstr "Ansichten die den Benutzern auf dem Kalender zur verfügung stehen."
 
 #: ./interfaces.py:761
 msgid "Visible on the calendar"
-msgstr "Wird in der Kalenderansicht angezeigt"
+msgstr ""
 
 #: ./templates/reservations.pt:48
 msgid "Waitinglist"
