@@ -517,3 +517,12 @@ def upgrade_1023_to_1024(context):
     # preserve old value
     value = settings.send_email_to_managers
     settings.send_approval_email_to_managers = value
+
+
+@db_upgrade
+def upgrade_1024_to_1025(operations, metadata):
+
+    reservations_table = Table('reservations', metadata, autoload=True)
+    if 'description' not in reservations_table.columns:
+        operations.add_column('reservations',
+                              Column('description', types.Unicode(254)))
