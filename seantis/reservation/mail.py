@@ -37,8 +37,8 @@ def on_reservations_confirmed(event):
     if settings.get('send_email_to_reservees'):
         send_reservations_confirmed(event.reservations, event.language)
 
-    send_notification = settings.get('send_email_to_managers', True)
-    send_approval = settings.get('send_approval_email_to_managers', True)
+    send_notification = settings.get('send_email_to_managers')
+    send_approval = settings.get('send_approval_email_to_managers')
     # send many mails to the admins
     if send_notification or send_approval:
         for reservation in event.reservations:
