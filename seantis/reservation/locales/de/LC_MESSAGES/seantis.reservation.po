@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-10-28 16:10+0000\n"
+"POT-Creation-Date: 2013-10-28 16:18+0000\n"
 "PO-Revision-Date: 2012-09-06 11:33+0100\n"
 "Last-Translator: Fabian Reinhard <fabian.reinhard@seantis.ch>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -159,7 +159,7 @@ msgstr "Das Datum das beim Öffnen des Kalenders angezeigt wird."
 
 #: ./error.py:169
 msgid "Can't block period because a reservation already exists."
-msgstr "Die Periode kann nicht blockiert werden weil schon eine Reservation existiert"
+msgstr "Die Zeitspanne kann nicht blockiert werden weil schon eine Reservation existiert"
 
 #: ./allocate.py:151
 #: ./reserve.py:538
@@ -636,7 +636,7 @@ msgstr "Einteilungen entfernen"
 
 #: ./reserve.py:801
 msgid "Remove reservations"
-msgstr "Supprimer les réservations"
+msgstr "Reservationen entfernen"
 
 #: ./interfaces.py:776
 msgid "Reservation"
