@@ -250,8 +250,8 @@ def send_reservations_confirmed(reservations, language):
 
 def send_reservation_mail(reservation, email_type, language,
                           to_managers=False, revocation_reason=u'',
-                          bcc=tuple()):
-
+                          bcc=tuple(), mail_class=None):
+    mail_class = mail_class or ReservationMail
     resource = utils.get_resource_by_uuid(reservation.resource)
 
     # the resource doesn't currently exist in testing so we quietly
@@ -279,7 +279,7 @@ def send_reservation_mail(reservation, email_type, language,
     subject, body = get_email_content(resource, email_type, language)
 
     for recipient in recipients:
-        mail = ReservationMail(
+        mail = mail_class(
             resource, reservation,
             sender=sender,
             recipient=recipient,
@@ -330,12 +330,7 @@ class ReservationMail(ReservationDataView, ReservationUrls):
 
         # a list of dates
         if is_needed('dates'):
-            lines = []
-            dates = sorted(reservation.timespans(), key=lambda i: i[0])
-            for start, end in dates:
-                lines.append(utils.display_date(start, end))
-
-            p['dates'] = u'\n'.join(lines)
+            p['dates'] = self.get_date_parameters(reservation)
 
         # tabbed reservation data
         if is_needed('data'):
@@ -377,6 +372,14 @@ class ReservationMail(ReservationDataView, ReservationUrls):
             p['reason'] = self.revocation_reason
 
         self.parameters = p
+
+    def get_date_parameters(self, reservation):
+        lines = []
+        dates = sorted(reservation.timespans(), key=lambda i: i[0])
+        for start, end in dates:
+            lines.append(utils.display_date(start, end))
+
+        return u'\n'.join(lines)
 
     def as_string(self):
 
