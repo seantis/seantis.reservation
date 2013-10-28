@@ -165,14 +165,14 @@ errormap = {
     InvalidAllocationError:
     _(u'The resulting allocation would be invalid'),
 
+    UnblockableAlreadyReservedError:
+    _(u"Can't block period because a reservation already exists."),
+
     NoRecurringReservationError:
     _('This is not a recurring reservation'),
 
     NoReservedSlotsLeftError:
-    _('No reserved slots would be left after this operation'),
-
-    UnblockableAlreadyReservedError:
-    _(u"Can't block period because a reservation already exists."),
+    _('No reserved slots would be left after this operation')
 }
 
 if HAS_PSYCOPG2:

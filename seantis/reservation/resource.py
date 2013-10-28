@@ -427,7 +427,7 @@ class Slots(grok.View, CalendarRequest):
             )
 
             if alloc.partly_available:
-                partitions = alloc.availability_partitions()
+                partitions = alloc.availability_partitions(scheduler)
             else:
                 # if the allocation is not partly available there can only
                 # be one partition meant to be shown as empty unless the

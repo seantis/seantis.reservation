@@ -80,6 +80,10 @@ class Reservation(TimestampMixin, ORMBase, OtherModels):
         customtypes.GUID()
     )
 
+    description = Column(
+        types.Unicode(254),
+    )
+
     quota = Column(
         types.Integer(),
         nullable=False
