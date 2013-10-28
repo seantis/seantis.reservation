@@ -326,9 +326,9 @@ class TestBrowser(FunctionalTestCase):
         browser.open(self.allocation_menu(*allocation)['reserve'])
 
         unchanging_values = [
-            ('#form-widgets-day-day', '20'),
+            ('#form-widgets-day-day option[selected="selected"]', '20'),
             ('#form-widgets-day-month option[selected="selected"]', '9'),
-            ('#form-widgets-day-year', '2013'),
+            ('#form-widgets-day-year option[selected="selected"]', '2013'),
         ]
 
         changing_values = [
@@ -373,9 +373,9 @@ class TestBrowser(FunctionalTestCase):
         browser.open(self.allocation_menu(*allocation)['reserve'])
 
         unchanging_values = [
-            ('#form-widgets-day-day', '20'),
+            ('#form-widgets-day-day option[selected="selected"]', '20'),
             ('#form-widgets-day-month option[selected="selected"]', '9'),
-            ('#form-widgets-day-year', '2013'),
+            ('#form-widgets-day-year option[selected="selected"]', '2013'),
             ('#form-widgets-start_time', '3:00 PM'),
             ('#form-widgets-end_time', '4:00 PM')
         ]

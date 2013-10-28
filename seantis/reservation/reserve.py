@@ -5,6 +5,7 @@ from zope.component.hooks import getSite
 from plone.formwidget.recurrence.z3cform.widget import RecurrenceFieldWidget
 from plone.memoize import instance
 from seantis.reservation.models.reservation import Reservation
+from sqlalchemy.orm.exc import NoResultFound
 
 log = getLogger('seantis.reservation')
 
@@ -12,18 +13,17 @@ from datetime import time
 from DateTime import DateTime
 from five import grok
 
-from collective.z3cform.datetimewidget.widget_date import DateFieldWidget
-from plone.dexterity.interfaces import IDexterityFTI
 from plone.formwidget.datetime.z3cform.widget import DateFieldWidget
-from zope.component import queryUtility
-from zope.interface import Interface
-from zope.security import checkPermission
+from plone.dexterity.interfaces import IDexterityFTI
 
 from z3c.form import field
 from z3c.form import button
 from z3c.form.browser.radio import RadioFieldWidget
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
+from zope.component import queryUtility
+from zope.interface import Interface
+from zope.security import checkPermission
 from zope.i18n import translate
 from zope.schema import Choice, List, Set
 
@@ -335,16 +335,22 @@ class ReservationBaseForm(ResourceBaseForm):
             ) for form in self.context.formsets if form in additional_data
         )
 
-        run_pre_reserve_script(self.context, start, end, additional_data)
+        if dates:
+            for start, end in utils.pairs(dates):
+                run_pre_reserve_script(
+                    self.context, start, end, additional_data
+                )
+        else:
+            run_pre_reserve_script(self.context, None, None, additional_data)
 
         def run():
             if dates:
-                token = self.scheduler.reserve(
+                return self.scheduler.reserve(
                     email, dates, data=additional_data,
                     session_id=session_id, quota=quota, rrule=rrule
                 )
             else:
-                token = self.scheduler.reserve(
+                return self.scheduler.reserve(
                     email, group=group,
                     data=additional_data, session_id=session_id, quota=quota
                 )
@@ -511,14 +517,8 @@ class ReservationForm(
 
         self.inject_missing_data(data, allocation)
 
-        start, end = self.validate(data)
+        dates = utils.get_dates(data, is_whole_day=allocation.whole_day)
         quota = int(data.get('quota', 1))
-
-        # whole day allocations don't show the start / end time which is to
-        # say the data arrives with 00:00 - 00:00. we align that to the day
-        if allocation.whole_day:
-            assert start == end
-            start, end = utils.align_range_to_day(start, end)
 
         def reserve():
             self.run_reserve(

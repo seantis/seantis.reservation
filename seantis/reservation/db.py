@@ -28,15 +28,8 @@ from seantis.reservation.error import (
     AffectedPendingReservationError,
     AffectedReservationError,
     AlreadyReservedError,
-    InvalidAllocationError,
-    InvalidQuota,
-    InvalidReservationError,
-    InvalidReservationToken,
     NotReservableError,
     OverlappingAllocationError,
-    QuotaImpossible,
-    QuotaOverLimit,
-    ReservationParametersInvalid,
     ReservationTooLong,
     ReservationParametersInvalid,
     InvalidReservationToken,
@@ -48,7 +41,7 @@ from seantis.reservation.error import (
     ReservationOutOfBounds,
     NoRecurringReservationError,
     NoReservedSlotsLeftError,
-
+    UnblockableAlreadyReservedError,
 )
 from seantis.reservation.session import serialized
 from seantis.reservation.raster import rasterize_span, MIN_RASTER_VALUE

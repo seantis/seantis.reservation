@@ -169,7 +169,7 @@ errormap = {
     _('This is not a recurring reservation'),
 
     NoReservedSlotsLeftError:
-    _('No reserved slots would be left after this operation')
+    _('No reserved slots would be left after this operation'),
 
     UnblockableAlreadyReservedError:
     _(u"Can't block period because a reservation already exists."),
