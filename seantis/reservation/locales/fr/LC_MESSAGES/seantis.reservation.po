@@ -1,0 +1,940 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2013-05-14 08:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: DOMAIN\n"
+
+#: ./settings.py:168
+msgid "${count} Orphan Records Removed"
+msgstr "${count} Data incorrect à retirer"
+
+#: ./interfaces.py:580
+msgid "%(reason)s - reason for revocation<br>"
+msgstr "%(reason)s à justifier pour retirer l'info<br>"
+
+#: ./utils.py:641
+msgid "%i People Waiting"
+msgstr "%i En attente"
+
+#: ./utils.py:622
+msgid "%i%% Free"
+msgstr "%i%% Libre"
+
+#: ./utils.py:629
+msgid "%i/%i Spot Available"
+msgstr "%i/%i Place disponible"
+
+#: ./utils.py:625
+msgid "%i/%i Spots Available"
+msgstr "%i/%i Places disponibles"
+
+#: ./templates/monthly_report.pt:23
+msgid "&lt;&lt; Previous Month"
+msgstr "&lt;&lt; Mois précédent"
+
+#: ./utils.py:496
+msgid "<b>${quota}</b> reservations"
+msgstr "<b>${quota}</b> Réservations"
+
+#: ./utils.py:498
+msgid "<b>1</b> reservation"
+msgstr "<b>1</b> Réservation"
+
+#: ./error.py:85
+msgid "A conflicting allocation exists for the requested time period."
+msgstr "Conflit existant"
+
+#: ./error.py:91
+msgid "A pending reservation would be affected by the requested change"
+msgstr "Réservation actuellement ouverte"
+
+#: ./mail.py:479
+msgid "Add email template"
+msgstr "Template Email à ajouter"
+
+#: ./timeframe.py:169
+msgid "Add timeframe"
+msgstr "Ajouter  planning"
+
+#: ./reserve.py:250
+msgid "Added to waitinglist"
+msgstr "Sur liste d'attente"
+
+#: ./allocate.py:55
+msgid "Advanced Settings"
+msgstr "Mises en place"
+
+#: ./allocate.py:151
+msgid "Allocate"
+msgstr "Attribuer"
+
+#: ./allocate.py:46
+msgid "Allocation"
+msgstr "Attribution"
+
+#: ./allocate.py:168
+msgid "Allocation added"
+msgstr "Attribution ajoutée"
+
+#: ./allocate.py:308
+msgid "Allocation removed"
+msgstr "Attribution supprimée"
+
+#: ./allocate.py:272
+msgid "Allocation saved"
+msgstr "Attribution sauvée"
+
+#: ./interfaces.py:477
+msgid "Allocations may end every 5 minutes if the allocation is not partly available. If it is partly available the start time may be every x minute where x equals the given raster. The minimum length of an allocation is also either 5 minutes or whatever the value of the raster is."
+msgstr "L'attribution peut se terminer toutes les cinq minutes (horaire). Si l'option choisie est \"partiellement disponible\", l’option retenue sera de x"
+
+#: ./interfaces.py:468
+msgid "Allocations may start every 5 minutes if the allocation is not partly available. If it is partly available the start time may be every x minute where x equals the given raster."
+msgstr "L'attribution peut commencer toutes les cinq minutes (horaire). Si l'option choisie est \"partiellement disponible\", l’option retenue sera de x"
+
+#: ./interfaces.py:62
+msgid "Always show a specific date"
+msgstr "Montrer toujours une date précise"
+
+#: ./interfaces.py:61
+msgid "Always show the current date"
+msgstr "Montrer toujours la date actuelle"
+
+#: ./error.py:88
+msgid "An existing reservation would be affected by the requested change"
+msgstr "Une réservation en cours sera pénalisée par ce changement"
+
+#: ./report.py:240
+#: ./reserve.py:567
+#: ./templates/reservations.pt:120
+msgid "Approve"
+msgstr "Approuver"
+
+#: ./reserve.py:558
+msgid "Approve reservation"
+msgstr "Approuver la réservation"
+
+#: ./report.py:52
+msgid "Approved"
+msgstr "Approuvée"
+
+#: ./interfaces.py:352
+msgid "Available Views"
+msgstr "Vues disponibles"
+
+#: ./interfaces.py:374
+msgid "Calendar date shown when opening the calendar."
+msgstr "Les disponibilités sont présentées dès l'ouverture du calendrier"
+
+#: ./allocate.py:172
+#: ./reserve.py:378
+msgid "Cancel"
+msgstr "Annuler"
+
+#: ./templates/resource.pt:110
+msgid "Click on a calendar block to reserve it."
+msgstr "Cliquer sur le calendrier pour réserver vos dates"
+
+#: ./templates/listing.pt:25
+msgid "Click to reserve / register"
+msgstr "Cliquer pour réserver"
+
+#: ./templates/utils.pt:15
+msgid "Compare Resources"
+msgstr "Comparer les différentes options"
+
+#: ./templates/reservations.pt:66
+msgid "Concerned Dates"
+msgstr "Dates demandées"
+
+#: ./templates/your_reservations_viewlet.pt:24
+msgid "Confirm Reservations"
+msgstr "Réservations confirmées"
+
+#: ./interfaces.py:311
+msgid "DEPRECATED: Approve reservation requests"
+msgstr "Valider la demande de réservation"
+
+#: ./interfaces.py:44
+msgid "Daily"
+msgstr "Quotidien"
+
+#: ./interfaces.py:52
+msgid "Daily View"
+msgstr "Vue par jour"
+
+#: ./allocate.py:49
+msgid "Date"
+msgstr "Date"
+
+#: ./interfaces.py:502
+msgid "Day"
+msgstr "Jour"
+
+#: ./interfaces.py:514
+msgid "Days"
+msgstr "Jours"
+
+#: ./interfaces.py:388
+msgid "Default Allocation Values"
+msgstr "Classification standand"
+
+#: ./interfaces.py:287
+msgid "Defines the minimum length of any given reservation as well as the alignment of the start / end of the allocation. E.g. a raster of 30 minutes means that the allocation can only start at xx:00 and xx:30 respectively"
+msgstr "Définir la durée minimum de chaque réservation ainsi que le début/ la fin de la période de la réservation, par ex. une durée de 30 minutes signifie que la réservation peut seulement commencer à xx:00 ou à xx:30 "
+
+#: ./allocate.py:297
+#: ./mail.py:488
+#: ./report.py:234
+msgid "Delete"
+msgstr "Supprimer"
+
+#: ./report.py:246
+#: ./reserve.py:602
+#: ./templates/reservations.pt:114
+msgid "Deny"
+msgstr "Refuser"
+
+#: ./reserve.py:593
+msgid "Deny reservation"
+msgstr "Refuser réservation"
+
+#: ./interfaces.py:325
+msgid "Description"
+msgstr "Description"
+
+#: ./templates/monthly_report.pt:26
+msgid "Details"
+msgstr "Details"
+
+#: ./reserve.py:565
+msgid "Do you really want to approve the following reservations?"
+msgstr "Voulez-vous vraiment faire cette réservation?"
+
+#: ./reserve.py:600
+msgid "Do you really want to deny the following reservations?"
+msgstr "Voulez-vous vraiment annuler cette réservation?"
+
+#: ./templates/remove_allocation.pt:14
+msgid "Do you really want to remove the following allocations?"
+msgstr "Voulez-vous vraiment supprimer cette salle?"
+
+#: ./reserve.py:654
+msgid "Do you really want to revoke the following reservations?"
+msgstr "Voulez-vous vraiment supprimer cette réservation?"
+
+#: ./templates/reserve_group.pt:14
+msgid "Do you want to reserve the following allocations?"
+msgstr "Voulez-vous réserver cette salle?"
+
+#: ./allocate.py:244
+#: ./mail.py:487
+#: ./resource.py:306
+msgid "Edit"
+msgstr "Modifier"
+
+#: ./allocate.py:194
+msgid "Edit allocation"
+msgstr "Modifier la salle/ la classe"
+
+#: ./exports/reservations.py:40
+#: ./interfaces.py:124
+msgid "Email"
+msgstr "Courriel"
+
+#: ./settings.py:43
+msgid "Email Notifications for Managers"
+msgstr "Courriel pour le responsable"
+
+#: ./settings.py:51
+msgid "Email Notifications for Reservees"
+msgstr "Courriel pour la personne qui a réservé"
+
+#: ./interfaces.py:643
+msgid "Email Subject for Approved Reservations"
+msgstr "Courriel de confirmation de réservation"
+
+#: ./interfaces.py:656
+msgid "Email Subject for Denied Reservations"
+msgstr "Courriel d'annulation de réservation"
+
+#: ./interfaces.py:628
+msgid "Email Subject for Received Reservations"
+msgstr "Courriel de confirmation pour la réservation reçue"
+
+#: ./interfaces.py:599
+msgid "Email Subject for Reservation Autoapproved"
+msgstr "Courriel automatique de confirmation de réservation"
+
+#: ./interfaces.py:613
+msgid "Email Subject for Reservation Pending"
+msgstr "Courriel de réservation en attente"
+
+#: ./interfaces.py:669
+msgid "Email Subject for Revoked Reservations"
+msgstr "Courriel d'annulation de réservation"
+
+#: ./mail.py:86
+#: ./profiles/default/types/seantis.reservation.emailtemplate.xml
+msgid "Email Template"
+msgstr "Courriel présentation"
+
+#: ./templates/email_templates.pt:4
+msgid "Email Templates"
+msgstr "Courriel des présentations"
+
+#: ./interfaces.py:650
+msgid "Email Text for Approved Reservations"
+msgstr "Texte Email pour la confirmation de la réservation"
+
+#: ./interfaces.py:663
+msgid "Email Text for Denied Reservations"
+msgstr "Texte Email pour l'annulation de la réservation/ l'annulation des réservations"
+
+#: ./interfaces.py:637
+msgid "Email Text for Received Reservations"
+msgstr "Texte Email pour la réservation reçue"
+
+#: ./interfaces.py:607
+msgid "Email Text for Reservation Autoapproved"
+msgstr "Texte Email automatique pour la confirmation de réservation"
+
+#: ./interfaces.py:622
+msgid "Email Text for Reservation Pending"
+msgstr "Texte Email de réservation en attente"
+
+#: ./interfaces.py:676
+msgid "Email Text for Revoked Reservations"
+msgstr "Texte Email pour l'annulation de la réservation/ l'annulation des réservations"
+
+#: ./exports/reservations.py:42
+#: ./interfaces.py:476
+msgid "End"
+msgstr "Fin"
+
+#: ./interfaces.py:567
+msgid "End date before start date"
+msgstr "Fin avant début"
+
+#: ./resource.py:303
+msgid "Entry"
+msgstr "Donnée/ Demande"
+
+#: ./interfaces.py:342
+msgid "Everything after this hour is not shown in the calendar, making the calendar display more compact. Should be set to an hour after which there cannot be any reservations."
+msgstr "Tout ce qui figure après cette heure n'apparaît pas sur le calendrier. Choisir une option de présentation plus compact qui intègre la dernière heure après qu'il soit possible de réserver"
+
+#: ./interfaces.py:331
+msgid "Everything before this hour is not shown in the calendar, making the calendar display more compact. Should be set to an hour before which there cannot be any reservations."
+msgstr "Tout ce qui figure avant cette heure n'apparaît pas sur le calendrier. Choisir une option de présentation plus compact qui intègre la première heure avant qu'il soit possible de réserver"
+
+#: ./templates/utils.pt:25
+msgid "Export Reservations (Csv)"
+msgstr "Export de réservation (Csv)"
+
+#: ./templates/utils.pt:20
+msgid "Export Reservations (Excel)"
+msgstr "Export de réservation (Excel)"
+
+#: ./templates/utils.pt:30
+msgid "Export Reservations (Json)"
+msgstr "Export de réservation (Json)"
+
+#: ./interfaces.py:422
+msgid "First hour must be smaller than last hour"
+msgstr "La première heure pleine doit être plus courte que la dernière heure"
+
+#: ./interfaces.py:330
+msgid "First hour of the day"
+msgstr "Première heure pleine"
+
+#: ./interfaces.py:396
+msgid "Formsets"
+msgstr "Formulaire/ Sous-formulaire"
+
+#: ./interfaces.py:35
+msgid "Fr"
+msgstr "Ve"
+
+#: ./interfaces.py:506
+msgid "From"
+msgstr "De"
+
+#: ./templates/resource.pt:55
+msgid "Fully available"
+msgstr "Disponible"
+
+#: ./reserve.py:276
+msgid "General Information"
+msgstr "En général"
+
+#: ./templates/resource.pt:70
+msgid "Has a waitinglist"
+msgstr "Sur liste d'attente"
+
+#: ./templates/monthly_report.pt:28
+msgid "Hide"
+msgstr "Cacher"
+
+#: ./interfaces.py:449
+msgid "Id"
+msgstr "ld"
+
+#: ./interfaces.py:267
+msgid "If checked a reservation manager must decide if a reservation can be approved. Until then users are added to a waitinglist. Reservations are automatically approved if this is not checked. "
+msgstr "Le gestionnaire des réservations doit définir si une réservation peut être approuvée. Jusqu'à la validation de la réservation, les utilisateurs sont sur une liste d'attente. Les réservations sont automatiquement approuvées si ce n'est pas contrôlé. "
+
+#: ./interfaces.py:521
+msgid "If checked parts of the recurrance may be reserved. If not checkd the recurrance must be reserved as a whole."
+msgstr "Certaines parties de la réservation peuvent être faites de manière récurrente. Si ce n'est pas validé, la réservation faite de manière récurrente doit être répétée globalement."
+
+#: ./interfaces.py:277
+msgid "If the allocation is partly available users may reserve only a part of it (e.g. half of it). If not the allocation Must be reserved as a whole or not at all"
+msgstr "Si les ressources demandées sont partiellement disponibles, les utilisateurs peuvent en réserver seulement une partie. Si ce n'est pas possible, il faut réserver l'intégralité ou pas du tout"
+
+#: ./templates/controlpanel.pt:35
+msgid "If you do want to get rid of those records be adviced to do a backup of your current SQL database first, before cleaning up."
+msgstr "Si vous voulez supprimer les informations, faire un backup de la base SQL avant d'effacer les données."
+
+#: ./error.py:103
+msgid "Invalid change. Your request may have already been processed earlier."
+msgstr "Modification impossible. Votre demande sera traitée aussi rapidement que possible"
+
+#: ./interfaces.py:109
+msgid "Invalid email address"
+msgstr "Adresse courriel incorrecte"
+
+#: ./interfaces.py:415
+msgid "Invalid first hour"
+msgstr "Première heure de réservation incorrecte"
+
+#: ./interfaces.py:418
+msgid "Invalid last hour"
+msgstr "Dernière heure de réservation incorrecte"
+
+#: ./reserve.py:349
+msgid "Invalid reservation request"
+msgstr "Formulaire de réservation pas valable"
+
+#: ./interfaces.py:594
+msgid "Language"
+msgstr "Langue"
+
+#: ./interfaces.py:341
+msgid "Last hour of the day"
+msgstr "Dernière heure possible"
+
+#: ./resource.py:322
+msgid "List"
+msgstr "S'inscrire/ Inscription"
+
+#: ./templates/controlpanel.pt:19
+msgid "Maintenance"
+msgstr "Maintenance"
+
+#: ./resource.py:297
+msgid "Manage"
+msgstr "Conseiller"
+
+#: ./interfaces.py:266
+msgid "Manually approve reservation requests"
+msgstr "Les réservations doivent être confirmer manuellement"
+
+#: ./interfaces.py:584
+msgid "May contain the following template variable:<br>%(reservations)s - list of reservations"
+msgstr "Peut contenir les variables suivantes: <br>%(reservation)s - Liste des réservations"
+
+#: ./interfaces.py:569
+msgid "May contain the following template variables:<br>%(resource)s - title of the resource<br>%(dates)s - list of dates reserved<br>%(reservation_mail)s - email of reservee<br>%(data)s - formdata associated with the reservation<br>%(approval_link)s - link to the approval view<br>%(denial_link)s - link to the denial view<br>%(cancel_link)s - link to the cancel view"
+msgstr "Peut contenir les variables suivantes:<br>%(resource)s – Titre de la ressource<br>%(dates)s – dates de la réservation<br>%(reservation_mail)s – Adresse courriel de la personne qui réserve<br>%(data)s – Données du formulaire de la réservation<br>%(approval_link)s – Lien à l’affichage de la confirmation<br>%(denial_link)s - Lien à l’affichage du refus<br>%(cancel_link)s - Lien à l’affichage de la réponse négative"
+
+#: ./interfaces.py:31
+msgid "Mo"
+msgstr "Lu"
+
+#: ./templates/utils.pt:10
+msgid "Monthly Report"
+msgstr "Rapport mensuel"
+
+#: ./report.py:119
+msgid "Monthly Report for ${month} ${year}"
+msgstr "Rapport mensuel pour ${month} ${year}"
+
+#: ./interfaces.py:50
+msgid "Monthly View"
+msgstr "Vue mensuelle"
+
+#: ./interfaces.py:321
+msgid "Name"
+msgstr "Nom"
+
+#: ./templates/monthly_report.pt:22
+msgid "Navigation"
+msgstr "Navigation"
+
+#: ./templates/monthly_report.pt:23
+msgid "Next Month &gt;&gt;"
+msgstr "Mois suivant &gt;&gt;"
+
+#: ./form.py:332
+msgid "No"
+msgstr "Non"
+
+#: ./error.py:107
+msgid "No reservable slot found."
+msgstr "La période de réservation désirée est actuellement déjà occupée"
+
+#: ./reserve.py:563
+msgid "No such reservation"
+msgstr "Réservation inconnue"
+
+#: ./templates/controlpanel.pt:26
+msgid "Number of Orphan Records in Databse:"
+msgstr "Nombre de réservations orphelines dans le système"
+
+#: ./templates/controlpanel.pt:22
+msgid "Number of Records in Database:"
+msgstr "Nombre de réservations dans le système"
+
+#: ./interfaces.py:248
+msgid "Number of times an allocation may be reserved at the same time. e.g. 3 spots in a daycare center, 2 available cars, 1 meeting room. "
+msgstr "Le nombre de fois qu'une réservation peut être faite en même temps, par exemple…"
+
+#: ./interfaces.py:43
+msgid "Once"
+msgstr "Sans"
+
+#: ./utils.py:639
+msgid "One Person Waiting"
+msgstr "Personne en attente"
+
+#: ./interfaces.py:756
+msgid "Optional reason for the revocation. Sent to the reservee. e.g. 'Your reservation has to be cancelled because the lecturer is ill'."
+msgstr "Mentionner la raison de l'annulation - optionnel  "
+
+#: ./templates/controlpanel.pt:31
+msgid "Orphan Records are records in the database for which no corresponding plone resource object can be found. Those records exist because there is no reliable way to detect that a plone resource object is being deleted, hence no cleanup is ever done in this case."
+msgstr "Les datas orphelins sont des données qui peuvent être référées à des ressources plone (leave in English)"
+
+#: ./exports/reservations.py:37
+msgid "Parent"
+msgstr "Elément structuré"
+
+#: ./interfaces.py:276
+#: ./templates/resource.pt:60
+msgid "Partly available"
+msgstr "Partiellement disponible"
+
+#: ./interfaces.py:543
+msgid "Partly available allocations can only be reserved separately"
+msgstr "Partiellement disponible. La salle peut être seulement réservée de manière séparée"
+
+#: ./report.py:51
+msgid "Pending"
+msgstr "Liste d'attente"
+
+#: ./interfaces.py:247
+msgid "Quota"
+msgstr "Contingent/ Nombre de personnes"
+
+#: ./interfaces.py:300
+msgid "Quota must be between 1 and 100"
+msgstr "Le nombre de personnes doit être situé entre 1 et 100"
+
+#: ./interfaces.py:286
+msgid "Raster"
+msgstr "Grille"
+
+#: ./interfaces.py:755
+msgid "Reason"
+msgstr "Raison"
+
+#: ./reserve.py:415
+msgid "Recurrance reservation"
+msgstr "Répétition/ récapitulatif de la réservation"
+
+#: ./interfaces.py:455
+msgid "Recurrence"
+msgstr "Répétition/"
+
+#: ./templates/group.pt:17
+msgid "Recurrence View"
+msgstr "Répétition de l'inscription"
+
+#: ./resource.py:319
+msgid "Recurrences"
+msgstr "Répétitions/"
+
+#: ./resource.py:310
+#: ./templates/your_reservations_viewlet.pt:16
+msgid "Remove"
+msgstr "Supprimer"
+
+#: ./templates/controlpanel.pt:42
+msgid "Remove Orphan Records"
+msgstr "Ne pas tenir compte des propositions orphelines"
+
+#: ./allocate.py:292
+msgid "Remove allocations"
+msgstr "Supprimer les modèles non compatibles"
+
+#: ./interfaces.py:750
+msgid "Reservation"
+msgstr "Réservation"
+
+#: ./interfaces.py:715
+msgid "Reservation Quota"
+msgstr "Nombre de réservations"
+
+#: ./interfaces.py:257
+msgid "Reservation Quota Limit"
+msgstr "Limiter le nombre de réservations"
+
+#: ./settings.py:33
+msgid "Reservation Throttling"
+msgstr "Diminution de la réservation"
+
+#: ./reserve.py:575
+msgid "Reservation confirmed"
+msgstr "Confirmation de la réservation"
+
+#: ./reserve.py:610
+msgid "Reservation denied"
+msgstr "Réservation refusée"
+
+#: ./reserve.py:345
+msgid "Reservation out of bounds"
+msgstr "Réservation hors du périmètre défini"
+
+#: ./interfaces.py:306
+msgid "Reservation quota limit must zero or a positive number"
+msgstr "Le nombre de réservations doit être au moins de 0 ou plus"
+
+#: ./reserve.py:666
+msgid "Reservation revoked"
+msgstr "Réservation annulée"
+
+#: ./reserve.py:253
+msgid "Reservation successful"
+msgstr "Réservation effective"
+
+#: ./resource.py:278
+#: ./templates/reservations.pt:21
+msgid "Reservations"
+msgstr "Réservations"
+
+#: ./reserve.py:487
+msgid "Reservations Successfully Submitted"
+msgstr "Réservation a été faite avec succès"
+
+#: ./error.py:110
+msgid "Reservations can't be made for more than 24 hours at a time"
+msgstr "Les réservations ne peuvent pas être faites au-delà de 24 heures"
+
+#: ./reserve.py:351
+#: ./resource.py:281
+msgid "Reserve"
+msgstr "Réserver"
+
+#: ./reserve.py:489
+msgid "Reserve More"
+msgstr "Autres options de réservations"
+
+#: ./exports/reservations.py:38
+#: ./profiles/default/types/seantis.reservation.resource.xml
+msgid "Resource"
+msgstr "Ressource"
+
+#: ./reserve.py:270
+msgid "Resource reservation"
+msgstr "Réservation"
+
+#: ./templates/monthly_report.pt:31
+msgid "Resources"
+msgstr "Ressources"
+
+#: ./reserve.py:658
+#: ./templates/reservations.pt:38
+msgid "Revoke"
+msgstr "Annuler"
+
+#: ./reserve.py:635
+msgid "Revoke reservation"
+msgstr "Annuler"
+
+#: ./interfaces.py:36
+msgid "Sa"
+msgstr "Sa"
+
+#: ./mail.py:431
+#: ./timeframe.py:83
+msgid "Save"
+msgstr "Sauver/ Enregistrer"
+
+#: ./settings.py:74
+msgid "Seantis Reservation Control Panel"
+msgstr "Seantis Centre de contrôle des réservations"
+
+#: ./profiles/default/controlpanel.xml
+msgid "Seantis Reservation Settings"
+msgstr "Seantis Réglage des réservations"
+
+#: ./interfaces.py:70
+msgid "Select at least one value"
+msgstr "Choisir au moins un valeur"
+
+#: ./interfaces.py:373
+msgid "Selected Date"
+msgstr "Date définie"
+
+#: ./interfaces.py:364
+msgid "Selected View"
+msgstr "Vue définie"
+
+#: ./interfaces.py:365
+msgid "Selected view when opening the calendar."
+msgstr "Affichage lors de l'ouverture du calendrier"
+
+#: ./settings.py:52
+msgid "Send emails about made, approved and denied reservations to the user that made the reservation."
+msgstr "Confirmation par email auprès de l'utilisateur des réservations faites, approuvées et refusées"
+
+#: ./settings.py:44
+msgid "Send emails about new pending reservations to the first reservation managers found in the path."
+msgstr "Envoyer un email auprès des managers concernant les réservations en attente "
+
+#: ./interfaces.py:614
+msgid "Sent to <b>managers</b> when a new pending reservation is made. May contain the template variables listed below."
+msgstr "Envoyer à <b>managers</b> quand une nouvelle réservation est faite. Peut contenir les données variables listées ci-dessous."
+
+#: ./interfaces.py:600
+msgid "Sent to <b>managers</b> when a reservation is automatically approved. May contain the template variables listed below."
+msgstr "Envoyer à  <b>managers</b> quand une réservation est approuvée. Peut contenir les données variables listées ci-dessous."
+
+#: ./interfaces.py:629
+msgid "Sent to <b>users</b> when a new pending reservation is made. May contain the template variables listed below."
+msgstr "Envoyer à <b>users</b> quand une réservation est en attente. Peut contenir les données variables listées ci-dessous."
+
+#: ./interfaces.py:644
+msgid "Sent to <b>users</b> when a reservation is approved. May contain the template variables listed below."
+msgstr "Envoyer à <b>users</b> quand une nouvelle réservation est en attente. Peut contenir les données variables listées ci-dessous."
+
+#: ./interfaces.py:657
+msgid "Sent to <b>users</b> when a reservation is denied. May contain the template variables listed below."
+msgstr "Envoyer à <b>users</b> quand une réservation est refusée. Peut contenir les données variables listées ci-dessous."
+
+#: ./interfaces.py:670
+msgid "Sent to <b>users</b> when a reservation is revoked. May contain the template variables listed below."
+msgstr "Envoyer à <b>users</b> quand une réservation est annulée. Peut contenir les données variables listées ci-dessous."
+
+#: ./interfaces.py:520
+msgid "Separately reservable"
+msgstr "Réserver séparément"
+
+#: ./allocate.py:205
+#: ./settings.py:68
+msgid "Settings"
+msgstr "Vues"
+
+#: ./templates/monthly_report.pt:27
+msgid "Show"
+msgstr "Annonces"
+
+#: ./interfaces.py:382
+msgid "Specific Date"
+msgstr "Date définie"
+
+#: ./exports/reservations.py:41
+#: ./interfaces.py:467
+msgid "Start"
+msgstr "Début"
+
+#: ./exports/reservations.py:43
+msgid "Status"
+msgstr "Statut"
+
+#: ./templates/monthly_report.pt:37
+msgid "Statuses"
+msgstr "Statuts"
+
+#: ./interfaces.py:37
+msgid "Su"
+msgstr "Di"
+
+#: ./interfaces.py:397
+msgid "Subforms that need to be filled out to make a reservation. Forms can currently only be created by a site-administrator."
+msgstr "Les formulaires doivent être remplis pour faire votre demande de réservations. Les formulaires disponibles sont à ce jour seulement disponibles via le gestionnaire du site."
+
+#: ./reserve.py:483
+msgid "Submit Reservations"
+msgstr "Confirmation et fermeture"
+
+#: ./interfaces.py:34
+msgid "Th"
+msgstr "Je"
+
+#: ./error.py:132
+msgid "The allocation does not have enough spots to possibly satisfy the requested reservation quota."
+msgstr "La salle n'a pas les capacités pour répondre à la demande de réservation"
+
+#: ./interfaces.py:537
+msgid "The allocation must be at least 5 minutes long"
+msgstr "La salle doit être au moins réservée pour 5 minutes"
+
+#: ./interfaces.py:488
+msgid "The allocation spans the whole day."
+msgstr "La classe est valable pour la journée"
+
+#: ./error.py:117
+msgid "The given reservation paramters are invalid."
+msgstr "Les paramètres de réservations ne sont pas valables"
+
+#: ./error.py:120
+msgid "The given reservation token is invalid."
+msgstr "Le token de réservation n'est pas valable"
+
+#: ./error.py:97
+msgid "The item does no longer exist."
+msgstr "La saisie effectuée n'existe plus"
+
+#: ./interfaces.py:258
+msgid "The maximum quota a single reservation may occupy at once. There is no limit if set to zero."
+msgstr "Le quota maximum d'une seule réservation peut être utilisé de suite"
+
+#: ./settings.py:34
+msgid "The number of minutes a user needs to wait between reservations, use 0 if no throttling should occur. Users with the 'Unthrottled Reservations' permission are excempt from this rule (Reservation-Managers by default)."
+msgstr "Le temps requis entre différentes réservation. Si rien ne se passe, utiliser la variable 0. Les réservations en étranglement sont excemptées de cette règle par défaut."
+
+#: ./templates/remove_allocation.pt:18
+msgid "The requested allocations could not be found"
+msgstr "Les données spécifiques demandées ne sont pas disponibles"
+
+#: ./error.py:100
+msgid "The requested period is no longer available."
+msgstr "La période prolongée n'est plus disponible"
+
+#: ./error.py:129
+msgid "The requested quota is invalid (must be at least one)."
+msgstr "La réservation demandée n'est pas valable (au moins l'une d'entre elles)"
+
+#: ./templates/reserve_group.pt:18
+msgid "The requested recurrence could not be found"
+msgstr "La réservation à nouveau demandée n'a pas pu être trouvée"
+
+#: ./error.py:126
+msgid "The requested reservation quota is higher than allowed."
+msgstr "Le nombre de réservations demandé est supérieur au nombre autorisé"
+
+#: ./error.py:94
+msgid "The resource is being edited by someone else. Please try again."
+msgstr "La salle demandée est actuellement utilisée. Veuillez à nouveau essayer."
+
+#: ./error.py:136
+msgid "The resulting allocation would be invalid"
+msgstr "Les données saisies ne sont pas valables"
+
+#: ./interfaces.py:437
+msgid "The selected view must be one of the available views."
+msgstr "Le choix de la présentation/ agenda/ timeframe doit être disponible"
+
+#: ./form.py:550
+msgid "There are ${nb} reservations being entered for this resource."
+msgstr "${nb} des réservations sont déjà dans le système"
+
+#: ./form.py:546
+msgid "There is one reservation being entered for this resource."
+msgstr "Une réservation est déjà faite "
+
+#: ./mail.py:416
+msgid "There's already an Email template in the same folder for the same language"
+msgstr "Il existe déjà un autre email dans le dossier  avec les mêmes données "
+
+#: ./profiles/default/types/seantis.reservation.timeframe.xml
+msgid "Timeframe"
+msgstr "Périodes d'occupation"
+
+#: ./timeframe.py:37
+msgid "Timeframe overlaps with '${overlap}' in the current folder"
+msgstr "La période d'occupation est en conflit avec '${overlap}'"
+
+#: ./interfaces.py:461
+#: ./templates/timeframes.pt:4
+msgid "Timeframes"
+msgstr "Périodes d'occupation"
+
+#: ./exports/reservations.py:39
+msgid "Token"
+msgstr "Token"
+
+#: ./error.py:113
+msgid "Too many reservations in a short time. Wait for a moment before trying again."
+msgstr "Trop de réservations en parallèle. Recommencer dans quelques minutes."
+
+#: ./interfaces.py:32
+msgid "Tu"
+msgstr "Ma"
+
+#: ./templates/resource.pt:65
+msgid "Unavailable"
+msgstr "Pas disponible"
+
+#: ./interfaces.py:510
+msgid "Until"
+msgstr "jusqu'à"
+
+#: ./templates/controlpanel.pt:33
+msgid "Usually there is no reason to clean these records until their number grows large."
+msgstr "Pas de raison particulière de nettoyer les données à ce moment (jusqu'à ce qu'elles deviennent plus conséquentes)"
+
+#: ./templates/utils.pt:4
+msgid "Utils"
+msgstr "Moyens"
+
+#: ./interfaces.py:353
+msgid "Views available to the user on the calendar."
+msgstr "Options de vue disponibles pour l'utilisateur"
+
+#: ./templates/reservations.pt:96
+msgid "Waitinglist"
+msgstr "Liste d'attente"
+
+#: ./utils.py:637
+msgid "Waitinglist is Free"
+msgstr "Pas de liste d'attente"
+
+#: ./interfaces.py:33
+msgid "We"
+msgstr "Me"
+
+#: ./interfaces.py:51
+msgid "Weekly View"
+msgstr "Vue hebdomadaire"
+
+#: ./interfaces.py:487
+#: ./resource.py:364
+#: ./templates/group.pt:40
+msgid "Whole Day"
+msgstr "Toute la journée"
+
+#: ./form.py:329
+msgid "Yes"
+msgstr "Oui"
+
+#: ./interfaces.py:429
+msgid "You chose to 'Always show a specific date' but you did not specify a specific date"
+msgstr "Vous avez choisi l'option de 'Toujours montrer une date précise' mais vous n'avez pas précisé de date"
+
+#: ./templates/your_reservations.pt:14
+#: ./templates/your_reservations_viewlet.pt:10
+msgid "Your reservations"
+msgstr "Vos réservations"
+
+
