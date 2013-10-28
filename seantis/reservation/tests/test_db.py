@@ -22,10 +22,72 @@ from seantis.reservation.models import Recurrence
 from seantis.reservation import db
 from seantis.reservation.db import unblock_periods
 
-
+from seantis.reservation import db
+from seantis.reservation.error import ReservationOutOfBounds
+from seantis.reservation.models.reserved_slot import ReservedSlot
+from seantis.reservation.error import NoRecurringReservationError
+from seantis.reservation.error import NoReservedSlotsLeftError
+from seantis.reservation.models.reservation import Reservation
 Scheduler = db.Scheduler
 
 reservation_email = u'test@example.com'
+
+
+class TestRemoveReservationSlots(IntegrationTestCase):
+
+    def setUp(self):
+        super(TestRemoveReservationSlots, self).setUp()
+        self.sc = Scheduler(new_uuid())
+
+    def _setup_allocations(self, dates=None, rrule=None):
+        if dates is None:
+            dates = [(datetime(2011, 1, 1, 15), datetime(2011, 1, 1, 16)),
+                     (datetime(2011, 1, 2, 15), datetime(2011, 1, 2, 16))]
+        if rrule is None:
+            rrule = 'RRULE:FREQ=DAILY;COUNT=2'
+        self.sc.allocate(
+            dates, raster=15, partly_available=True, rrule=rrule
+        )
+        self.token = self.sc.reserve(reservation_email, dates, rrule=rrule)
+        self.sc.approve_reservation(self.token)
+
+    @serialized
+    def test_remove_reservation_slots_working(self):
+        self._setup_allocations()
+        query = Session.query(ReservedSlot)\
+                .filter_by(reservation_token=self.token)\
+                .filter(ReservedSlot.start >= datetime(2011, 1, 1, 15))\
+                .filter(ReservedSlot.end <= datetime(2011, 1, 1, 16))
+        self.assertGreater(query.count(), 0,
+                           msg='no reserved slots have been generated')
+
+        self.sc.remove_reservation_slots(self.token,
+                                         datetime(2011, 1, 1, 15),
+                                         datetime(2011, 1, 1, 16))
+        self.assertEqual(0, query.count(),
+                    msg='the reserved slots have not been deleted properly')
+
+    @serialized
+    def test_remove_reservation_slots_fails_when_all_slots_removed(self):
+        self._setup_allocations()
+
+        def remove_all_slots():
+            self.sc.remove_reservation_slots(self.token,
+                                             datetime(2011, 1, 1, 15),
+                                             datetime(2011, 1, 2, 16))
+        self.assertRaises(NoReservedSlotsLeftError, remove_all_slots)
+
+    @serialized
+    def test_remove_reservation_slots_fails_when_not_recurring(self):
+        self._setup_allocations(dates=[datetime(2011, 1, 1, 15),
+                                       datetime(2011, 1, 1, 16)],
+                                rrule='')
+
+        def remove_not_recurring():
+            self.sc.remove_reservation_slots(self.token,
+                                             datetime(2011, 1, 1, 15),
+                                             datetime(2011, 1, 1, 16))
+        self.assertRaises(NoRecurringReservationError, remove_not_recurring)
 
 
 class TestScheduler(IntegrationTestCase):
@@ -101,6 +163,65 @@ class TestScheduler(IntegrationTestCase):
 
         remaining = allocation.free_slots()
         self.assertEqual(len(remaining), 2)
+
+    @serialized
+    def test_reservations_by_recurring_allocation(self):
+        sc = Scheduler(new_uuid())
+
+        dates = [datetime(2011, 1, 1, 15), datetime(2011, 1, 1, 16),
+                 datetime(2011, 1, 2, 15), datetime(2011, 1, 2, 16)]
+        dates_allocate = dates + [datetime(2011, 1, 3, 15),
+                                  datetime(2011, 1, 3, 16)]
+
+        three_days = 'RRULE:FREQ=DAILY;COUNT=3'
+        two_days = 'RRULE:FREQ=DAILY;COUNT=2'
+        allocations = sc.allocate(utils.pairs(dates_allocate), raster=15,
+                                  partly_available=True, grouped=False,
+                                  rrule=three_days)
+        Session.flush()
+
+        token = sc.reserve(u'foo@example.com', dates=dates, rrule=two_days)
+        sc.approve_reservation(token)
+        reservation = Session.query(Reservation).filter_by(token=token).one()
+
+        self.assertListEqual([reservation],
+              sc.reservations_by_recurring_allocation(allocations[0].id).all())
+        self.assertListEqual([reservation],
+              sc.reservations_by_recurring_allocation(allocations[1].id).all())
+        self.assertListEqual([],
+              sc.reservations_by_recurring_allocation(allocations[2].id).all())
+
+    @serialized
+    def test_reservations_by_recurring_allocation_includes_pending(self):
+        sc = Scheduler(new_uuid())
+
+        dates = [datetime(2011, 1, 1, 15), datetime(2011, 1, 1, 16),
+                 datetime(2011, 1, 2, 15), datetime(2011, 1, 2, 16)]
+
+        two_days = 'RRULE:FREQ=DAILY;COUNT=2'
+        allocations = sc.allocate(utils.pairs(dates), raster=15,
+                                  partly_available=True, grouped=False,
+                                  rrule=two_days)
+        Session.flush()
+        token = sc.reserve(u'foo@example.com', dates=dates, rrule=two_days)
+
+        reservation = Session.query(Reservation).filter_by(token=token).one()
+        self.assertListEqual([reservation],
+              sc.reservations_by_recurring_allocation(allocations[0].id).all())
+
+    @serialized
+    def test_recurring_reservation_generated(self):
+        sc = Scheduler(new_uuid())
+
+        dates = [datetime(2011, 1, 1, 15), datetime(2011, 1, 1, 16),
+                 datetime(2011, 1, 2, 15), datetime(2011, 1, 2, 16)]
+        rrule = 'RRULE:FREQ=DAILY;COUNT=10'
+
+        sc.allocate(utils.pairs(dates), raster=15, partly_available=True,
+                    grouped=False, rrule=rrule)
+        Session.flush()
+
+        sc.reserve(u'foo@example.com', dates=dates, rrule=rrule)
 
     @serialized
     def test_recurrence_reserve_single_allocation_no_recurrence(self):
@@ -306,7 +427,7 @@ class TestScheduler(IntegrationTestCase):
         sc.allocate(dates=adates, approve_manually=True)
 
         self.assertRaises(
-            InvalidReservationError, sc.reserve, reservation_email, rdates
+            ReservationOutOfBounds, sc.reserve, reservation_email, rdates
         )
 
     @serialized
@@ -1034,6 +1155,16 @@ class TestScheduler(IntegrationTestCase):
         siblings = master.siblings()
         for s in siblings:
             self.assertEqual(s.siblings(), siblings)
+
+    @serialized
+    def test_change_quota_reorders(self):
+        sc = Scheduler(new_uuid())
+
+        start = datetime(2011, 1, 1, 15, 0)
+        end = datetime(2011, 1, 1, 16, 0)
+        daterange = (start, end)
+
+        master = sc.allocate(daterange, quota=5)[0]
 
         # let's do another round, adding 7 reservations and removing the three
         # in the middle, which should result in a reordering:

@@ -60,6 +60,10 @@ class ReservationTooLong(ReservationError):
     pass
 
 
+class ReservationOutOfBounds(ReservationError):
+    pass
+
+
 class ThrottleBlock(ReservationError):
     pass
 
@@ -92,8 +96,17 @@ class InvalidAllocationError(ReservationError):
     pass
 
 
+class NoRecurringReservationError(ReservationError):
+    pass
+
+
+class NoReservedSlotsLeftError(ReservationError):
+    pass
+
+
 class UnblockableAlreadyReservedError(ReservationError):
     pass
+
 
 
 errormap = {
@@ -130,6 +143,9 @@ errormap = {
     ReservationParametersInvalid:
     _(u'The given reservation paramters are invalid.'),
 
+    ReservationOutOfBounds:
+    _(u'Reservation out of bounds'),
+
     InvalidReservationToken:
     _(u'The given reservation token is invalid.'),
 
@@ -148,6 +164,12 @@ errormap = {
 
     InvalidAllocationError:
     _(u'The resulting allocation would be invalid'),
+
+    NoRecurringReservationError:
+    _('This is not a recurring reservation'),
+
+    NoReservedSlotsLeftError:
+    _('No reserved slots would be left after this operation'),
 
     UnblockableAlreadyReservedError:
     _(u"Can't block period because a reservation already exists."),

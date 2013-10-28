@@ -26,6 +26,7 @@ from zope.component.hooks import getSite
 from zope.i18n import translate
 from plone.memoize import instance
 from Products.CMFPlone.utils import safe_unicode
+from z3c.form.interfaces import IDataConverter
 
 
 def extract_action_data(fn):
@@ -204,7 +205,7 @@ class ResourceBaseForm(GroupForm, form.Form):
 
         other_defaults = self.defaults()
         for k, v in other_defaults.items():
-            assert self.set_widget(k, v), "invalid default field %s" % k
+            self.set_widget(k, v), "invalid default field %s" % k
 
     def redirect_to_context(self):
         """ Redirect to the url of the resource. """
@@ -451,8 +452,8 @@ class ReservationListView(object):
     The property reservation can be implemented if it is desired to only show
     one reservation.
 
-    The property start and end can be implemented if it is desired to only
-    show a subset of the reserved slots
+    The property timespan_start and timespan_end can be implemented if it is
+    desired to only show a subset of the reserved slots
 
     Use the following macro to display:
 
@@ -473,8 +474,10 @@ class ReservationListView(object):
         can be returned.
 
         """
-        group = getattr(self, 'group', '')
-        return group and utils.string_uuid(self.group) or u''
+        if hasattr(self, 'group'):
+            if utils.is_uuid(self.group):
+                return utils.string_uuid(self.group)
+        return u''
 
     @property
     def hide_waitinglist(self):
@@ -484,7 +487,6 @@ class ReservationListView(object):
         of switching).
 
         """
-
         all_allocations = self.all_allocations()
         manual_allocations = all_allocations.filter(
             Allocation.approve_manually == True
@@ -600,5 +602,12 @@ class ReservationListView(object):
     @utils.memoize
     def approved_reservations(self):
         """ Returns a dictionary of reservations, keyed by reservation uid. """
-
         return self.reservations(status=u'approved')
+
+    @property
+    def timespan_start(self):
+        return None
+
+    @property
+    def timespan_end(self):
+        return None

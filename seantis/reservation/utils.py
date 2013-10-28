@@ -5,6 +5,7 @@ import collections
 import functools
 import isodate
 import base64
+import sys
 
 from datetime import datetime, timedelta, date, time as datetime_time
 from urlparse import urljoin
@@ -37,6 +38,7 @@ from Products.CMFPlone.interfaces import IPloneSiteRoot
 from seantis.reservation import error
 from seantis.reservation import _
 from Products.CMFPlone.utils import safe_unicode
+from dateutil.rrule import rrulestr
 
 
 try:
@@ -460,7 +462,9 @@ def handle_exception(ex, message_handler=None):
     msg = error.errormap.get(type(ex))
 
     if not msg:
-        raise ex
+        # preserve stack trace when raising
+        exc_info = sys.exc_info()
+        raise exc_info[0], exc_info[1], exc_info[2]
 
     if message_handler:
         message_handler(msg)
@@ -952,6 +956,29 @@ class EventUrls(object):
             return
 
         self.move = url
+
+
+def get_dates(data, is_whole_day=False):
+    """ Return a list with date tuples depending on the data entered by the
+    user, using rrule if requested.
+
+    """
+
+    start, end = get_date_range(
+        data['day'], data['start_time'], data['end_time']
+    )
+    if is_whole_day:
+        start, end = align_range_to_day(start, end)
+
+    if not data['recurrence']:
+        return ((start, end))
+
+    rule = rrulestr(data['recurrence'], dtstart=start)
+
+    event = lambda d: \
+        get_date_range(d, data['start_time'], data['end_time'])
+
+    return [event(d) for d in rule]
 
 
 def get_date_range(day, start_time, end_time):

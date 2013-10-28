@@ -70,6 +70,8 @@ class TestCase(unittest.TestCase):
         util = getUtility(ISessionUtility)
         util.sessionstore.readonly.rollback()
         util.sessionstore.serial.rollback()
+        util.sessionstore.readonly.remove()
+        util.sessionstore.serial.remove()
 
         maintenance.clear_clockservers()
 
