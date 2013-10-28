@@ -365,7 +365,7 @@ msgstr "Fin avant début"
 
 #: ./resource.py:366
 msgid "Entry"
-msgstr "Donnée/ Demande"
+msgstr "Entrée"
 
 #: ./interfaces.py:374
 msgid "Everything after this hour is not shown in the calendar, making the calendar display more compact. Should be set to an hour after which there cannot be any reservations."
@@ -478,11 +478,11 @@ msgstr ""
 
 #: ./resource.py:385
 msgid "List"
-msgstr "S'inscrire/ Inscription"
+msgstr "Afficher"
 
 #: ./resource.py:362
 msgid "Manage"
-msgstr "Conseiller"
+msgstr "Gérer"
 
 #: ./interfaces.py:294
 msgid "Manually approve reservation requests"
@@ -622,7 +622,7 @@ msgstr "Répétition de l'inscription"
 
 #: ./resource.py:381
 msgid "Recurrences"
-msgstr "Répétitions/"
+msgstr "Répétitions"
 
 #: ./reserve.py:845
 #: ./resource.py:373

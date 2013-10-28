@@ -128,7 +128,7 @@ msgstr "Eine bestehende Reservation wäre durch die Änderung betroffen"
 
 #: ./settings.py:48
 msgid "Approval Email Notifications for Managers"
-msgstr "Bestätigungs E-Mail für Manager"
+msgstr "E-Mail Benachrichtigung für Manager bei Reservationen, die bestätigt werden müssen"
 
 #: ./reports/monthly_report.py:226
 #: ./reserve.py:734
