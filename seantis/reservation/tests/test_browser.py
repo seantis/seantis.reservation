@@ -663,6 +663,7 @@ class TestBrowser(FunctionalTestCase):
         browser.getLink('Edit Formdata').click()
 
         browser.getControl('comment').value = 'no comment'
+
         browser.getControl('Save').click()
 
         browser.open(menu['manage'])

@@ -1,14 +1,29 @@
 # -*- coding: utf-8 -*-
-
-from DateTime import DateTime
 from datetime import time
 from datetime import timedelta
-from five import grok
 from logging import getLogger
+
+from DateTime import DateTime
+from sqlalchemy.orm.exc import NoResultFound
+
+from five import grok
 from plone.dexterity.interfaces import IDexterityFTI
 from plone.formwidget.datetime.z3cform.widget import DateFieldWidget
 from plone.formwidget.recurrence.z3cform.widget import RecurrenceFieldWidget
 from plone.memoize import instance
+
+from z3c.form import button
+from z3c.form import field
+from z3c.form.browser.checkbox import CheckBoxFieldWidget
+from z3c.form.browser.radio import RadioFieldWidget
+from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
+from zope.component import queryUtility
+from zope.component.hooks import getSite
+from zope.i18n import translate
+from zope.interface import Interface
+from zope.schema import Choice, List, Set
+from zope.security import checkPermission
+
 from seantis.reservation import _
 from seantis.reservation import db
 from seantis.reservation import plone_session
@@ -31,27 +46,13 @@ from seantis.reservation.interfaces import IAllocationIdForm
 from seantis.reservation.models.allocation import Allocation
 from seantis.reservation.models.reservation import Reservation
 from seantis.reservation.overview import OverviewletManager
+from seantis.reservation.restricted_eval import run_pre_reserve_script
 from seantis.reservation.session import Session
 from seantis.reservation.session import serialized
 from seantis.reservation.throttle import throttled
-from z3c.form import button
-from z3c.form import field
-from z3c.form.browser.checkbox import CheckBoxFieldWidget
-from z3c.form.browser.radio import RadioFieldWidget
-from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
-from zope.component import queryUtility
-from zope.component.hooks import getSite
-from zope.i18n import translate
-from zope.interface import Interface
-from zope.schema import Choice, List, Set
-from zope.security import checkPermission
+
 
 log = getLogger('seantis.reservation')
-
-
-
-
-
 
 
 class ReservationUrls(object):
@@ -347,7 +348,7 @@ class ReservationBaseForm(ResourceBaseForm):
             if dates:
                 return self.scheduler.reserve(
                     email, dates, data=additional_data,
-                    session_id=session_id, quota=quota, rrule=rrule, 
+                    session_id=session_id, quota=quota, rrule=rrule,
                     description=description
                 )
             else:
@@ -1024,7 +1025,7 @@ class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
     fields['day'].widgetFactory = DateFieldWidget
     fields['recurrence'].widgetFactory = RecurrenceFieldWidget
     default_fieldset_label = _(u'General Information')
-    label = _(u'Resource reservation')
+    label = _(u'Edit reservation')
 
     @property
     def reservation(self):

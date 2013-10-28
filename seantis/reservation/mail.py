@@ -97,13 +97,13 @@ def on_reservation_updated(event):
     if not event.time_changed and event.old_data == event.reservation.data:
         return
 
-    if settings.get('send_email_to_reservees', True):
+    if settings.get('send_email_to_reservees'):
         send_reservation_mail(
             event.reservation, 'reservation_changed', event.language,
             to_managers=False
         )
 
-    if settings.get('send_email_to_managers', True):
+    if settings.get('send_email_to_managers'):
         send_reservation_mail(
             event.reservation, 'reservation_updated', event.language,
             to_managers=True
