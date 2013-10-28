@@ -1,6 +1,7 @@
 import logging
 from sqlalchemy.schema import ForeignKey
 from sqlalchemy.engine.reflection import Inspector
+
 log = logging.getLogger('seantis.reservation')
 
 from functools import wraps
@@ -18,6 +19,7 @@ from sqlalchemy.schema import Column
 from plone.dexterity.interfaces import IDexterityFTI
 from Products.CMFCore.utils import getToolByName
 from zope.component import getUtility
+from zope.component.hooks import getSite
 
 from seantis.reservation import Session
 from seantis.reservation import utils
@@ -268,6 +270,7 @@ def upgrade_1011_to_1012(context):
         tpl.reservation_made_subject = template.get_subject(lang)
         tpl.reservation_made_content = template.get_body(lang)
 
+
 def upgrade_1012_to_1013(context):
     # rerun javascript step to import URI.js
     setup = getToolByName(context, 'portal_setup')
@@ -367,6 +370,12 @@ def upgrade_1019_to_1020(context):
 
 @db_upgrade
 def upgrade_1020_to_1021(operations, metadata):
+
+    # add new registry values
+    setup = getToolByName(getSite(), 'portal_setup')
+    setup.runAllImportStepsFromProfile(
+        'profile-plone.formwidget.recurrence:default'
+    )
 
     inspector = Inspector.from_engine(metadata.bind)
     if 'recurrences' not in inspector.get_table_names():
