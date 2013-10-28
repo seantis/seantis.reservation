@@ -1,0 +1,5 @@
+<registry>
+    <records interface="seantis.reservation.settings.ISeantisReservationSettings">
+        <value key="send_approval_email_to_managers">True</value>
+    </records>
+</registry>

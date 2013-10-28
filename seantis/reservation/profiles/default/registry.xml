@@ -4,5 +4,6 @@
         <value key="send_email_to_managers">True</value>
         <value key="send_email_to_reservees">True</value>
         <value key="pre_reservation_script"></value>
+        <value key="send_approval_email_to_managers">True</value>
     </records>
 </registry>

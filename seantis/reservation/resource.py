@@ -358,6 +358,7 @@ class Slots(grok.View, CalendarRequest):
             manage_params = dict(recurring_allocation_id=allocation.id)
         else:
             manage_params = dict(group=allocation.group)
+
         res_add(_(u'Manage'), 'reservations', manage_params, 'inpage')
 
         # menu entries for single items

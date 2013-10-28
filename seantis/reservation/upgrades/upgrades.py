@@ -17,6 +17,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.schema import Column
 from sqlalchemy.schema import ForeignKey
 
+from plone.registry.interfaces import IRegistry
 from plone.dexterity.interfaces import IDexterityFTI
 from Products.CMFCore.utils import getToolByName
 from zope.component import getUtility
@@ -30,6 +31,7 @@ from seantis.reservation.session import (
     ISessionUtility,
     serialized
 )
+from seantis.reservation.settings import ISeantisReservationSettings
 
 
 def db_upgrade(fn):
@@ -500,3 +502,18 @@ def upgrade_1022_to_1023(context):
     add_rrule_column(context)
     # XXX maybe add migration for non-postgres infrastructure
     alter_postgres_enum_type(context)
+
+
+def upgrade_1023_to_1024(context):
+
+    setup = getToolByName(context, 'portal_setup')
+    setup.runAllImportStepsFromProfile(
+        'profile-seantis.reservation.upgrades:1024'
+    )
+
+    registry = getUtility(IRegistry)
+    settings = registry.forInterface(ISeantisReservationSettings)
+
+    # preserve old value
+    value = settings.send_email_to_managers
+    settings.send_approval_email_to_managers = value

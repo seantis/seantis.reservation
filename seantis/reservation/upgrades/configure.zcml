@@ -1,0 +1,18 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    i18n_domain="seantis.reservation">
+
+    <!-- 1023 -> 1024 -->
+    <genericsetup:registerProfile
+        name="1024"
+        title="seantis.reservation.upgrades.1024: Update"
+        description=""
+        directory="profiles/1024"
+        for="Products.CMFPlone.interfaces.IMigratingPloneSiteRoot"
+        provides="Products.GenericSetup.interfaces.EXTENSION"
+        />
+
+    <include file="upgrades.zcml" />
+
+</configure>
