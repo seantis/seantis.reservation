@@ -1,3 +1,5 @@
+from datetime import datetime
+from datetime import time
 from datetime import timedelta
 from itertools import groupby
 
@@ -20,6 +22,7 @@ from seantis.reservation.raster import iterate_span
 from seantis.reservation import Session
 from seantis.reservation.models.other import OtherModels
 from seantis.reservation.models.timestamp import TimestampMixin
+from seantis.reservation.utils import get_resource_by_uuid
 
 
 class Allocation(TimestampMixin, ORMBase, OtherModels):
@@ -335,21 +338,36 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
         frontend, indicating to the user which parts of an allocation are
         available for reservation.
 
+        Makes sure to only display slots that are within it's resources
+        first_hour/last_hour timespan.
+
         """
 
-        reserved = dict((r.start, r) for r in self.reserved_slots)
+        resource = get_resource_by_uuid(scheduler.uuid).getObject()
+        min_start_resource = datetime.combine(self.start,
+                                              time(resource.first_hour))
+        max_end_resource = datetime.combine(self.end,
+                                            time(resource.last_hour))
+
+        display_start = max(min_start_resource, self.start)
+        display_end = min(max_end_resource, self.end)
+
+        reserved = dict((r.start, r) for r in self.reserved_slots if
+                        r.start >= display_start and r.end <= display_end)
         blocked = set()
         for blocked_period in self._query_blocked_periods():
             blocked.update(start for start, end in
-                           iterate_span(blocked_period.start,
-                                        blocked_period.end,
+                           iterate_span(max(blocked_period.start,
+                                            display_start),
+                                        min(blocked_period.end,
+                                            display_end),
                                         self.raster))
 
         if not (reserved or blocked):
             return [(100.0, None)]
 
         # Get the percentage one slot represents
-        slots = list(self.all_slots())
+        slots = list(self.all_slots(display_start, display_end))
         step = 100.0 / float(len(slots))
 
         # Create an entry for each slot with either True or False
