@@ -8,7 +8,8 @@ from seantis.reservation.interfaces import (
     IReservationRevokedEvent,
     IReservationSlotsCreatedEvent,
     IReservationsConfirmedEvent,
-    IResourceViewedEvent
+    IReservationSlotsRemovedEvent,
+    IResourceViewedEvent,
 )
 
 
@@ -58,3 +59,12 @@ class ReservationsConfirmedEvent(object):
 
 class ReservationSlotsCreatedEvent(ReservationBaseEvent):
     implements(IReservationSlotsCreatedEvent)
+
+
+class ReservationSlotsRemovedEvent(ReservationBaseEvent):
+    implements(IReservationSlotsRemovedEvent)
+
+    def __init__(self, reservation, language, dates):
+        super(ReservationSlotsRemovedEvent, self).__init__(reservation,
+                                                           language)
+        self.dates = dates
