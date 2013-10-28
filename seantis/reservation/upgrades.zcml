@@ -196,7 +196,7 @@
         description=""
         source="1021"
         destination="1022"
-        handler=".upgrades.upgrade_1018_to_1019"
+        handler=".upgrades.upgrade_1021_to_1022"
         profile="seantis.reservation:default">
     </genericsetup:upgradeStep>
 
