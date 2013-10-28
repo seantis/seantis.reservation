@@ -544,22 +544,24 @@ def has_resource_translations_enabled():
     return iface_name in fti.behaviors
 
 
-def get_resource_by_uuid(uuid,
-                        ensure_portal_type='seantis.reservation.resource'):
+def get_resource_by_uuid(
+    uuid, ensure_portal_type='seantis.reservation.resource'
+):
     """Returns the zodb object with the given uuid."""
 
     catalog = getToolByName(getSite(), 'portal_catalog')
-    params = {}
+    kwargs = {}
 
     if HAS_MULTILINGUAL and has_resource_translations_enabled():
-        params['TranslationGroup'] = uuid_query(uuid)
+        kwargs['TranslationGroup'] = uuid_query(uuid)
     else:
-        params['UID'] = uuid_query(uuid)
+        kwargs['UID'] = uuid_query(uuid)
 
     if ensure_portal_type:
-        params['portal_type'] = ensure_portal_type
+        kwargs['portal_type'] = ensure_portal_type
 
-    results = catalog(**params)
+    results = catalog(**kwargs)
+
     return len(results) == 1 and results[0] or None
 
 
@@ -1103,11 +1105,22 @@ def align_range_to_day(start, end):
     return align_date_to_day(start, 'down'), align_date_to_day(end, 'up')
 
 
-def display_date(start, end):
-    """ Formates the date range given for display. """
+def as_machine_date(start, end):
+    """ Returns start as is and the end set to the last microsecond before
+    the actual end-date. This ensures that overlap-checks don't fail.
+
+    """
 
     if end.microsecond != 999999:
         end -= timedelta(microseconds=1)
+
+    return start, end
+
+
+def display_date(start, end):
+    """ Formates the date range given for display. """
+
+    start, end = as_machine_date(start, end)
 
     if (start, end) == align_range_to_day(start, end):
         if start.date() == end.date():

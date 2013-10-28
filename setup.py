@@ -19,6 +19,12 @@ tests_require = [
     'collective.testcaselayer',
     'plone.app.testing',
 ]
+multilingual_require = [
+    'plone.app.multilingual [dexterity]',
+]
+postgres_require = [
+    'psycopg2',
+]
 
 multilingual_require = [
     'plone.app.multilingual [dexterity]',
@@ -57,6 +63,8 @@ setup(name=name, version=version, description=description,
       include_package_data=True,
       zip_safe=False,
       install_requires=[
+          'Plone>=4.3',
+          'SQLAlchemy>=0.7.3',
           'alembic>=0.5.0',
           'byteplay',
           'collective.autopermission',
@@ -65,7 +73,9 @@ setup(name=name, version=version, description=description,
           'collective.js.underscore',
           'collective.testcaselayer',
           'isodate',
+          'isodate',
           'lxml',
+          'mock',
           'mock',
           'ordereddict',
           'plone.app.dexterity [grok]',
@@ -77,21 +87,20 @@ setup(name=name, version=version, description=description,
           'plone.formwidget.recurrence [z3cform]',
           'plone.resourceeditor',
           'plone.uuid>=1.0.2',
-          'Plone>=4.3',
           'profilehooks',
           'pytz',
           'setuptools',
-          'SQLAlchemy>=0.7.3',
           'tablib',
           'xlwt',
           'zope.sqlalchemy',
       ],
-      extras_require=dict(zug=zug_require,
-                          tests=tests_require,
-                          multilingual=multilingual_require,
-                          postgres=postgres_require,
-                          teamraum=teamraum_require
-                          ),
+      extras_require=dict(
+          zug=zug_require,
+          tests=tests_require,
+          teamraum=teamraum_require,
+          multilingual=multilingual_require,
+          postgres=postgres_require
+      ),
       entry_points="""
       # -*- Entry points: -*-
 

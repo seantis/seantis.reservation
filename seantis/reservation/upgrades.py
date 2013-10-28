@@ -400,3 +400,30 @@ def upgrade_1020_to_1021(operations, metadata):
                                      ForeignKey('recurrences.id',
                                                 onupdate='cascade',
                                                 ondelete='cascade')))
+
+
+@db_upgrade
+def upgrade_1021_to_1022(operations, metadata):
+
+    inspector = Inspector.from_engine(metadata.bind)
+
+    if 'blocked_periods' not in inspector.get_table_names():
+        operations.create_table('blocked_periods',
+                                Column('id', types.Integer(),
+                                       primary_key=True,
+                                       autoincrement=True),
+                                Column('resource', customtypes.GUID(),
+                                       nullable=False),
+                                Column('token', customtypes.GUID(),
+                                       nullable=False),
+                                Column('start', types.DateTime(),
+                                       nullable=False),
+                                Column('end', types.DateTime(),
+                                       nullable=False),
+                                Column('created',
+                                       types.DateTime(timezone=True),
+                                       default=utils.utcnow),
+                                Column('modified',
+                                       types.DateTime(timezone=True),
+                                       onupdate=utils.utcnow),
+                                )

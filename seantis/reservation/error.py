@@ -92,6 +92,10 @@ class InvalidAllocationError(ReservationError):
     pass
 
 
+class UnblockableAlreadyReservedError(ReservationError):
+    pass
+
+
 errormap = {
 
     OverlappingAllocationError:
@@ -145,8 +149,11 @@ errormap = {
     InvalidAllocationError:
     _(u'The resulting allocation would be invalid'),
 
+    UnblockableAlreadyReservedError:
+    _(u"Can't block period because a reservation already exists."),
 }
 
 if HAS_PSYCOPG2:
-    errormap[TransactionRollbackError] =  _(u'The resource is being edited by '
-                                            'someone else. Please try again.')
+    errormap[TransactionRollbackError] = _(
+        u'The resource is being edited by someone else. Please try again.'
+    )

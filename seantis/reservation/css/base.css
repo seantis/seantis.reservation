@@ -152,6 +152,12 @@ body .event-unavailable .fc-event-time {
     border: solid #ccc 1px;
 }
 
+.calendar-blocked {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAOVBMVEXY2Nj////d7h7d7h7d7h7d7h7///////////////////////////////////////////////////+4yo5sAAAAQklEQVQoke3LqQ3AMADAQKP8b/cftjjAUgaI6cmEmHKprY+59seRSkAlopJQyagUVCoqDZWOykBlorJQ2aj48+Rafr0hD9knm0tJAAAAAElFTkSuQmCC);
+    background-repeat: repeat;
+    border: solid #ccc 1px;
+}
+
 .loading {
     background-image: url(/++resource++seantis.reservation.images/loading.gif);
     background-repeat: no-repeat;

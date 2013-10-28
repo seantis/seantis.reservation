@@ -17,26 +17,28 @@ from seantis.reservation.events import (
     ReservationApprovedEvent,
     ReservationDeniedEvent,
     ReservationRevokedEvent,
-    ReservationsConfirmedEvent
+    ReservationsConfirmedEvent,
+    ReservationSlotsCreatedEvent
 )
 
 from seantis.reservation.models import (
-    Allocation, ReservedSlot, Reservation, Recurrence
+    Allocation, BlockedPeriod, ReservedSlot, Reservation, Recurrence
 )
 from seantis.reservation.error import (
-    OverlappingAllocationError,
-    AffectedReservationError,
     AffectedPendingReservationError,
+    AffectedReservationError,
     AlreadyReservedError,
-    NotReservableError,
-    ReservationTooLong,
-    ReservationParametersInvalid,
-    InvalidReservationToken,
-    InvalidReservationError,
-    QuotaOverLimit,
+    InvalidAllocationError,
     InvalidQuota,
+    InvalidReservationError,
+    InvalidReservationToken,
+    NotReservableError,
+    OverlappingAllocationError,
     QuotaImpossible,
-    InvalidAllocationError
+    QuotaOverLimit,
+    ReservationParametersInvalid,
+    ReservationTooLong,
+    UnblockableAlreadyReservedError,
 )
 
 from seantis.reservation.session import serialized
@@ -60,6 +62,17 @@ def all_allocations_in_range(start, end):
             )
         )
     )
+
+
+@serialized
+def unblock_periods(reservation):
+    """Unblock periods for any resource based o a reservation.
+
+    """
+    if not utils.is_uuid(reservation):
+        reservation = reservation.token
+    query = Session.query(BlockedPeriod).filter_by(token=reservation)
+    query.delete('fetch')
 
 
 def grouped_reservation_view(query):
@@ -304,7 +317,7 @@ def remove_expired_reservation_sessions(expiration_date=None):
         reservations = reservations.filter(
             Reservation.session_id.in_(expired_sessions)
         )
-        
+
         slots = Session.query(ReservedSlot)
         slots = slots.filter(
             ReservedSlot.reservation_token.in_(
@@ -332,7 +345,7 @@ def extinguish_resource(resource_uuid):
     scheduler.managed_reservations().delete('fetch')
     scheduler.managed_reserved_slots().delete('fetch')
     scheduler.managed_allocations().delete('fetch')
-	#XXX reserved slots?
+    #XXX delete recurrences?
 
 
 class Scheduler(object):
@@ -400,6 +413,13 @@ class Scheduler(object):
 
         query = Session.query(ReservedSlot)
         query = query.filter(ReservedSlot.resource.in_(uuids))
+
+        return query
+
+    def managed_blocked_periods(self):
+        """" The block_periods managed by this scheduler / resource. """
+        query = Session.query(BlockedPeriod)
+        query = query.filter(BlockedPeriod.resource == self.uuid)
 
         return query
 
@@ -659,13 +679,8 @@ class Scheduler(object):
         return query
 
     def allocations_by_recurrence(self, recurrence_id):
-        query = Session.query(Allocation)
+        query = self.managed_allocations()
         query = query.filter_by(recurrence_id=recurrence_id)
-        return query
-
-    def allocations_in_range(self, start, end):
-        query = all_allocations_in_range(start, end)
-        query = query.filter(Allocation.resource == self.uuid)
         return query
 
     def allocations_in_range(self, start, end, masters_only=True):
@@ -985,18 +1000,12 @@ class Scheduler(object):
 
         reservation = self.reservation_by_token(token).one()
 
-        # write out the slots
+        # return these slots
         slots_to_reserve = []
-
-        if reservation.target_type == u'group':
-            dates = self.dates_by_group(reservation.target)
-        else:
-            dates = ((reservation.start, reservation.end),)
 
         # the reservation quota is simply implemented by multiplying the
         # dates which are approved
-
-        dates = dates * reservation.quota
+        dates = reservation.target_dates() * reservation.quota
 
         for start, end in dates:
 
@@ -1024,6 +1033,7 @@ class Scheduler(object):
         if not slots_to_reserve:
             raise NotReservableError
 
+        notify(ReservationSlotsCreatedEvent(reservation, self.language))
         notify(ReservationApprovedEvent(reservation, self.language))
 
         return slots_to_reserve
@@ -1062,6 +1072,8 @@ class Scheduler(object):
     def remove_reservation(self, token):
         """ Removes all reserved slots of the given reservation token.
 
+        Removes all blocked periods related to this reservation as well.
+
         Note that removing a reservation does not let the reservee know that
         his reservation has been removed.
 
@@ -1071,9 +1083,9 @@ class Scheduler(object):
         """
 
         slots = self.reserved_slots_by_reservation(token)
+        slots.delete('fetch')
 
-        for slot in slots:
-            Session.delete(slot)
+        unblock_periods(token)
 
         self.reservation_by_token(token).delete()
 
@@ -1082,6 +1094,66 @@ class Scheduler(object):
 
         reservation = self.reservation_by_token(token).one()
         reservation.data = data
+
+    @serialized
+    def confirm_reservations_for_session(self, session_id, token=None):
+        """ Confirms all reservations of the given session id. Optionally
+        confirms only the reservations with the given token. All if None.
+
+        """
+
+        assert session_id
+
+        reservations = reservations_by_session(session_id)
+
+        if token:
+            reservations = reservations.filter(Reservation.token == token)
+
+        reservations = reservations.all()
+
+        for reservation in reservations:
+            reservation.session_id = None
+
+        notify(ReservationsConfirmedEvent(reservations, self.language))
+
+    @serialized
+    def remove_reservation_from_session(self, session_id, token):
+        """ Removes the reservation with the given session_id and token. """
+
+        assert token and session_id
+
+        # XXX could we use self.remove_session for the middle part?
+        query = reservations_by_session(session_id)
+        query = query.filter(Reservation.token == token)
+
+        reservation = query.one()
+        Session.delete(reservation)
+
+        # if we get here the token must be valid, we should then check if the
+        # token is used in the reserved slots, because with autoapproval these
+        # slots may be created straight away.
+
+        slots = Session.query(ReservedSlot).filter(
+            ReservedSlot.reservation_token == token
+        )
+
+        slots.delete('fetch')
+
+        # the blocking periods for this reservation might have already been
+        # generated by some third party library. They must be removed as well.
+        unblock_periods(reservation)
+
+        # we also update the timestamp of existing reservations within
+        # the same session to ensure that we account for the user's activity
+        # properly during the session expiration cronjob. Otherwise it is
+        # possible that a user removes the latest reservations only to see
+        # the rest of them vanish because his older reservations were
+        # already old enough to be counted as expired.
+
+        query = Session.query(Reservation)
+        query = query.filter(Reservation.session_id == session_id)
+
+        query.update({"modified": utils.utcnow()})
 
     def find_spot(self, master_allocation, start, end):
         """ Returns the first free allocation spot amongst the master and the
@@ -1164,23 +1236,6 @@ class Scheduler(object):
 
         return query
 
-    def reserved_slots_by_range(self, reservation_token, start, end):
-        assert start and end
-
-        query = self.reserved_slots_by_reservation(reservation_token)
-        query = query.filter(start <= ReservedSlot.start)
-        query = query.filter(ReservedSlot.end <= end)
-
-        slots = []
-        for slot in query:
-            if not slot.allocation.overlaps(start, end):
-                # Might happen because start and end are not rasterized
-                continue
-
-            slots.append(slot)
-
-        return slots
-
     def reserved_slots_by_group(self, group):
         query = self.managed_reserved_slots()
         query = query.filter(Allocation.group == group)
@@ -1220,3 +1275,43 @@ class Scheduler(object):
         master = self.allocation_by_id(allocation_id)
 
         return self.reservations_by_group(master.group)
+
+    def has_reserved_slot_in_range(self, start, end):
+        assert start and end
+
+        query = self.managed_reserved_slots()
+        query = query.filter(start <= ReservedSlot.start)
+        query = query.filter(ReservedSlot.end <= end)
+
+        for slot in query:
+            if slot.allocation.overlaps(start, end):
+                return True
+
+        return False
+
+    @serialized
+    def block_periods(self, reservation):
+        """Block periods for the scheduler's resource based on another
+        reservation.
+
+        """
+        for start, end in reservation.target_dates():
+            self.block_period(start, end, reservation.token)
+
+    @serialized
+    def block_period(self, start, end, token):
+        """Block the period from start to end for the scheduler's resource.
+
+        """
+        start, end = utils.as_machine_date(start, end)
+
+        if self.has_reserved_slot_in_range(start, end):
+            raise UnblockableAlreadyReservedError
+
+        blocked_period = BlockedPeriod(
+            resource=self.uuid,
+            token=token,
+            start=start,
+            end=end
+        )
+        Session.add(blocked_period)
