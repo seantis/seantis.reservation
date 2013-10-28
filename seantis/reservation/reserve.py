@@ -166,7 +166,6 @@ class SessionFormdataMixin(ReservationSchemata):
         return ftis
 
     def additional_data(self, form_data=None, add_manager_defaults=False):
-
         if not form_data:
             data = plone_session.get_additional_data(self.context)
         else:
@@ -1020,7 +1019,7 @@ class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
     context_buttons = ('save', )
     extracted_errors = []
 
-    fields = field.Fields(IReservation) + field.Fields(IReservationIdForm)
+    fields = field.Fields(IReservation, IReservationIdForm)
 
     fields['day'].widgetFactory = DateFieldWidget
     fields['recurrence'].widgetFactory = RecurrenceFieldWidget

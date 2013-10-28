@@ -192,7 +192,6 @@ def get_email_content(context, email_type, language):
 
 
 def send_reservations_confirmed(reservations, language):
-
     sender = utils.get_site_email_sender()
 
     if not sender:
@@ -250,7 +249,8 @@ def send_reservations_confirmed(reservations, language):
 
 
 def send_reservation_mail(reservation, email_type, language,
-                          to_managers=False, revocation_reason=u''):
+                          to_managers=False, revocation_reason=u'',
+                          bcc=tuple()):
 
     resource = utils.get_resource_by_uuid(reservation.resource)
 
@@ -283,6 +283,7 @@ def send_reservation_mail(reservation, email_type, language,
             resource, reservation,
             sender=sender,
             recipient=recipient,
+            bcc=bcc,
             subject=subject,
             body=body,
             revocation_reason=revocation_reason
@@ -303,6 +304,7 @@ class ReservationMail(ReservationDataView, ReservationUrls):
     body = u''
     reservations = u''
     revocation_reason = u''
+    bcc = tuple()
 
     def __init__(self, resource, reservation, **kwargs):
         for k, v in kwargs.items():
@@ -380,11 +382,12 @@ class ReservationMail(ReservationDataView, ReservationUrls):
 
         subject = self.subject % self.parameters
         body = self.body % self.parameters
-        mail = create_email(self.sender, self.recipient, subject, body)
+        mail = create_email(self.sender, self.recipient, self.bcc,
+                            subject, body)
         return mail.as_string()
 
 
-def create_email(sender, recipient, subject, body):
+def create_email(sender, recipient, bcc, subject, body):
     """Create an email message.
 
     All arguments should be Unicode strings (plain ASCII works as well).
@@ -413,10 +416,20 @@ def create_email(sender, recipient, subject, body):
     sender_addr = sender_addr.encode('ascii')
     recipient_addr = recipient_addr.encode('ascii')
 
+    bcc_pairs = []
+    for bcc_mail in bcc:
+        bcc_name, bcc_addr = parseaddr(bcc_mail)
+        bcc_name = str(Header(unicode(bcc_name), header_charset))
+        bcc_addr = bcc_addr.encode('ascii')
+        bcc_pairs.append((bcc_name, bcc_addr))
+
     # Create the message ('plain' stands for Content-Type: text/plain)
     msg = MIMEText(body.encode(body_charset), 'plain', body_charset)
     msg['From'] = formataddr((sender_name, sender_addr))
     msg['To'] = formataddr((recipient_name, recipient_addr))
+    msg['Bcc'] = ', '.join(formataddr((bcc_name, bcc_addr))
+                                     for bcc_name, bcc_addr
+                                     in bcc_pairs)
     msg['Subject'] = Header(unicode(subject), header_charset)
 
     return msg
