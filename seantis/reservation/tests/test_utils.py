@@ -218,3 +218,11 @@ class UtilsTestCase(IntegrationTestCase):
                 (datetime(2012, 1, 10), datetime(2012, 1, 12)),
             ]
         )
+
+    def test_request_id_as_int(self):
+        self.assertEqual(-1, utils.request_id_as_int('-1'))
+        self.assertEqual(0, utils.request_id_as_int('not an int at all'))
+        self.assertEqual(0, utils.request_id_as_int(None))
+        self.assertEqual(0, utils.request_id_as_int('0'))
+        self.assertEqual(1, utils.request_id_as_int(1))
+        self.assertEqual(99, utils.request_id_as_int('99'))

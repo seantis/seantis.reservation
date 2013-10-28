@@ -1,4 +1,7 @@
 import logging
+from sqlalchemy.schema import ForeignKey
+from sqlalchemy.engine.reflection import Inspector
+
 log = logging.getLogger('seantis.reservation')
 
 from functools import wraps
@@ -16,6 +19,7 @@ from sqlalchemy.schema import Column
 from plone.dexterity.interfaces import IDexterityFTI
 from Products.CMFCore.utils import getToolByName
 from zope.component import getUtility
+from zope.component.hooks import getSite
 
 from seantis.reservation import Session
 from seantis.reservation import utils
@@ -362,3 +366,37 @@ def upgrade_1019_to_1020(context):
     setup.runImportStepFromProfile(
         'profile-seantis.reservation:default', 'plone.app.registry'
     )
+
+
+@db_upgrade
+def upgrade_1020_to_1021(operations, metadata):
+
+    # add new registry values
+    setup = getToolByName(getSite(), 'portal_setup')
+    setup.runAllImportStepsFromProfile(
+        'profile-plone.formwidget.recurrence:default'
+    )
+
+    inspector = Inspector.from_engine(metadata.bind)
+    if 'recurrences' not in inspector.get_table_names():
+        operations.create_table('recurrences',
+                                Column('id',
+                                       types.Integer,
+                                       primary_key=True,
+                                       autoincrement=True),
+                                Column('rrule', types.String()),
+                                Column('created',
+                                       types.DateTime(timezone=True),
+                                       default=utils.utcnow),
+                                Column('modified',
+                                       types.DateTime(timezone=True),
+                                       onupdate=utils.utcnow),
+                                )
+
+    allocations_table = Table('allocations', metadata, autoload=True)
+    if 'recurrence_id' not in allocations_table.columns:
+        operations.add_column('allocations',
+                              Column('recurrence_id', types.Integer(),
+                                     ForeignKey('recurrences.id',
+                                                onupdate='cascade',
+                                                ondelete='cascade')))

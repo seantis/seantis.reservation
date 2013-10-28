@@ -115,87 +115,16 @@ seantis.formgroups.add_utility_links = function() {
                 'recurrence_end', _.parse_date(frame.end)
             );
 
-            seantis.formgroups.autoselect_days();
+            // seantis.formgroups.autoselect_days();
 
             e.preventDefault();
         });
-        seantis.formgroups.groups.recurrent.fields.push(tool);
+        seantis.formgroups.groups.recurrence.fields.push(tool);
     });
 
     if (timeframes.length) {
         target.before($('<br />'));
     }
-
-    seantis.formgroups.groups.recurrent.refresh();
-};
-
-seantis.formgroups.autoselect_days = function() {
-    "use strict";
-
-    var find = seantis.formgroups.find;
-    var start = seantis.formgroups.get_date('recurrence_start');
-    var end = seantis.formgroups.get_date('recurrence_end');
-
-    if (_.contains([start, end], null)) {
-        return;
-    }
-
-    if (start > end) {
-        return;
-    }
-
-    var ids = _.map([6, 0, 1, 2, 3, 4, 5],
-        function(ix) {
-            return '#form-widgets-days-' + ix;
-        }
-    );
-
-    var days = _.map(ids, find);
-
-    var span = ((end - start) / 1000 / 60 / 60 / 24) + 1;
-    var first = start.getDay();
-    var last = end.getDay();
-
-    var checked = [];
-    var i = 0;
-
-    if (span >= 7) {
-        checked = [0, 1, 2, 3, 4, 5, 6];
-    } else if (first == last) {
-        checked = [first];
-    } else if (first < last) {
-        for (i=first; i<=last; i++) {
-            checked.push(i);
-        }
-    } else {
-        for (i=0; i<= last; i++) {
-            checked.push(i);
-        }
-        for (i=6; i>= first; i--) {
-            checked.push(i);
-        }
-    }
-
-    _.each(days, function(day) {
-        day.removeAttr('checked');
-    });
-
-    _.each(checked, function(ix) {
-        days[ix].attr('checked', 'checked');
-    });
-};
-
-seantis.formgroups.add_recurrency_helper = function() {
-    "use strict";
-
-    var ids = [
-        '#formfield-form-widgets-recurrence_start',
-        '#formfield-form-widgets-recurrence_end'
-    ];
-
-    $(ids.join(', ')).change(function() {
-        _.defer(seantis.formgroups.autoselect_days);
-    });
 };
 
 seantis.formgroups.init = function(el) {
@@ -210,35 +139,13 @@ seantis.formgroups.init = function(el) {
     var add = seantis.formgroups.add;
 
     add({
-        name: "once",
-        trigger: find('#form-widgets-recurring-0'),
+        name: "recurrence",
+        trigger: find("#formfield-form-widgets-recurrence input[name=richeckbox]"),
         fields: [
-            find('#formfield-form-widgets-day')
-        ],
-        on_is_enabled: function(trigger) {
-            return trigger.attr('checked');
-        },
-        on_show: function(show) {
-            if (groups.recurrent)
-                groups.recurrent.show_fields(!show, true);
-        }
-    });
-
-    add({
-        name: "recurrent",
-        trigger: find('#form-widgets-recurring-1'),
-        fields: [
-            find('#formfield-form-widgets-recurrence_start'),
-            find('#formfield-form-widgets-recurrence_end'),
-            find('#formfield-form-widgets-days'),
             find('#formfield-form-widgets-separately')
         ],
         on_is_enabled: function(trigger) {
             return trigger.attr('checked');
-        },
-        on_show: function(show) {
-            if (groups.once)
-                groups.once.show_fields(!show, true);
         }
     });
 
@@ -283,8 +190,6 @@ seantis.formgroups.init = function(el) {
     })
 
     seantis.formgroups.add_utility_links();
-    seantis.formgroups.add_recurrency_helper();
-    seantis.formgroups.autoselect_days();
 };
 
 (function($) {

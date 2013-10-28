@@ -13,7 +13,7 @@ teamraum_require = [
     'plonetheme.teamraum'
 ]
 tests_require = [
-    'collective.betterbrowser[pyquery]',
+    'collective.betterbrowser [pyquery]',
     'collective.testcaselayer',
     'plone.app.testing',
 ]
@@ -53,13 +53,18 @@ setup(name=name, version=version, description=description,
           'collective.js.fullcalendar>=1.6.1',
           'collective.js.jqueryui',
           'collective.js.underscore',
+          'collective.testcaselayer',
           'isodate',
+          'lxml',
           'mock',
           'ordereddict',
           'plone.app.dexterity [grok]',
           'plone.app.referenceablebehavior',
+          'plone.app.testing',
           'plone.behavior',
           'plone.directives.form',
+          'plone.formwidget.datetime [z3cform]',
+          'plone.formwidget.recurrence [z3cform]',
           'plone.resourceeditor',
           'plone.uuid>=1.0.2',
           'Plone>=4.3',

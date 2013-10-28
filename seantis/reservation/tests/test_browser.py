@@ -89,7 +89,9 @@ class TestBrowser(FunctionalTestCase):
         partly_available=False,
         quota=1,
         quota_limit=1,
-        approve_manually=False
+        approve_manually=False,
+        recurrence=None,
+        separately=None,
     ):
 
         browser = self.admin_browser
@@ -111,6 +113,10 @@ class TestBrowser(FunctionalTestCase):
         browser.getControl('Partly available').selected = partly_available
         browser.getControl('Quota', index=0).value = str(quota)
         browser.getControl('Reservation Quota Limit').value = str(quota_limit)
+        if recurrence:
+            browser.getControl('Recurrence').value = recurrence
+        if separately is not None:
+            browser.getControl('Separately reservable').selected = separately
 
         browser.getControl(
             'Manually approve reservation requests'
@@ -184,6 +190,29 @@ class TestBrowser(FunctionalTestCase):
                 menu[e['name'].lower()] = e['url'].replace('/plone', '')
 
         return menu
+
+    def test_regression_recurrence_invariant_not_working(self):
+        """Make sure that partly available allocations can only be reserved
+        separately when recurrence is set.
+
+        """
+        browser = self.new_browser()
+        browser.login_admin()
+
+        self.add_resource('recurrence')
+
+        browser.open(self.infolder('/recurrence'))
+
+        start = datetime(2013, 3, 4, 15, 0)
+        end = datetime(2013, 3, 4, 16, 0)
+
+        self.add_allocation('recurrence', start, end,
+                            partly_available=True,
+                            recurrence="RRULE:FREQ=DAILY;COUNT=2",
+                            separately=False)
+
+        self.assertIn('Partly available allocations can only be reserved',
+                      str(self.admin_browser.query("div.field.error .error")))
 
     def test_resource_listing(self):
 
@@ -347,14 +376,14 @@ class TestBrowser(FunctionalTestCase):
         ]
 
         for selector, value in unchanging_values:
-            self.assertEqual(browser.query(selector).val(), value)
+            self.assertEqual(browser.query(selector).val(), value, selector)
 
         # not entering anything should lead to the form again with the still
         # filled out controls
         browser.getControl('Reserve').click()
 
         for selector, value in unchanging_values:
-            self.assertEqual(browser.query(selector).val(), value)
+            self.assertEqual(browser.query(selector).val(), value, selector)
 
     def test_invalid_allocation_missing_email_regression(self):
 

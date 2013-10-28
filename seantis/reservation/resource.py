@@ -223,6 +223,8 @@ class GroupView(grok.View, AllocationGroupView):
 
     def update(self, **kwargs):
         self.group = self.request.get('name', u'').decode('utf-8')
+        self.recurrence_id = utils.request_id_as_int(
+                                             self.request.get('recurrence_id'))
 
     def title(self):
         return self.group
@@ -347,21 +349,32 @@ class Slots(grok.View, CalendarRequest):
             'overlay'
         )
 
-        if not allocation.in_group:
+        if not allocation.in_group and not allocation.in_recurrence:
             return items
 
-        # menu entries for group items
         group_add = lambda n, v, p, t: \
             items.menu_add(_('Recurrences'), n, v, p, t)
+        if allocation.in_group:
+        # menu entries for group items
 
-        group_add(
-            _(u'List'), 'group', dict(name=allocation.group), 'overlay'
-        )
+            group_add(
+                _(u'List'), 'group', dict(name=allocation.group), 'overlay'
+            )
 
-        group_add(
-            _(u'Remove'), 'remove-allocation', dict(group=allocation.group),
-            'overlay'
-        )
+            group_add(
+                _(u'Remove'), 'remove-allocation',
+                dict(group=allocation.group),
+                'overlay'
+            )
+
+        if allocation.in_recurrence:
+            params = dict(recurrence_id=allocation.recurrence_id)
+            group_add(
+                _(u'List'), 'group', params, 'overlay'
+            )
+            group_add(
+                _(u'Remove'), 'remove-allocation', params, 'overlay'
+            )
 
         return items
 

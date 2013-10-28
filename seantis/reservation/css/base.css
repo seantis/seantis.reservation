@@ -7,12 +7,12 @@
 /* the approve field is now called approve_manually, since the old one has to linger around for migration
 and there's no easy way to hide it, this hack helps: */
 #formfield-form-widgets-approve {
-    display: none;   
+    display: none;
 }
 
 /* without this the events in the month view are not clickable */
 .fc-view-month .fc-day-content {
-    visibility: hidden; 
+    visibility: hidden;
 }
 
 
@@ -203,17 +203,27 @@ body .event-unavailable .fc-event-time {
 /* hidden waitinglist in manage reservations */
 
 .hide-waitinglist .splitleft {
-    width: 75%;   
+    width: 75%;
 }
 
 .hide-waitinglist .splitright {
-    display: none;   
+    display: none;
+}
+
+.overlay.overlay-ajax {
+    z-index: 9999 !important;
 }
 
 /* to overlap the overlay */
-#calroot {
+.riform {
     z-index: 10000;
 }
+
+/* to overlap the overlay's overlay. please forgive me for !important.*/
+#calroot {
+    z-index: 10001 !important;
+}
+
 
 /* ensures that the plone menu is displayed above the calendar */
 .fc-view > div {
@@ -283,3 +293,4 @@ body .event-unavailable .fc-event-time {
         display: none !important;
     }
 }
+

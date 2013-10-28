@@ -3,10 +3,14 @@ from functools import wraps
 
 from five import grok
 from plone.directives import form
+from plone.memoize import view
+from plone.z3cform.fieldsets import utils as z3cutils
 from zope.component import getMultiAdapter
 from z3c.form import interfaces
 from z3c.form import field
 from z3c.form.group import GroupForm
+from z3c.form.interfaces import IDataConverter
+from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 
 from sqlalchemy import null
 
@@ -14,11 +18,6 @@ from seantis.reservation import _
 from seantis.reservation import utils
 from seantis.reservation.models import Allocation, Reservation
 from seantis.reservation.interfaces import IResourceBase
-
-from plone.memoize import view
-
-from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
-from plone.z3cform.fieldsets import utils as z3cutils
 
 
 def extract_action_data(fn):
@@ -158,7 +157,7 @@ class ResourceBaseForm(GroupForm, form.Form):
         if not w:
             return
 
-        converter = getMultiAdapter((f, w))
+        converter = getMultiAdapter((f, w), interface=IDataConverter)
 
         # z3c forms will work with all the widgets except radio and checkboxes
         # the docs hint at differences, but I can for the
@@ -236,17 +235,25 @@ class ResourceBaseForm(GroupForm, form.Form):
 
     @property
     def id(self):
+        value = None
+
         if 'id' in self.request:
             value = self.request['id']
         elif self.widgets and 'id' in self.widgets:
-            value = self.widgets['id'].value
-        else:
-            return 0
+            field = self.get_field('id')
+            widget = self.get_widget('id')
+            converter = getMultiAdapter((field, widget),
+                                        interface=IDataConverter)
+            value = converter.toFieldValue(widget.value)
 
-        if value in (None, u'', ''):
-            return 0
-        else:
-            return utils.request_id_as_int(value)
+        return utils.request_id_as_int(value)
+
+    @property
+    def recurrence_id(self):
+        if 'recurrence_id' in self.request:
+            return utils.request_id_as_int(self.request['recurrence_id'])
+        elif self.widgets and 'recurrence_id' in self.widgets:
+            return utils.request_id_as_int(self.widgets['recurrence_id'].value)
 
     @property
     def group(self):
@@ -307,6 +314,10 @@ class AllocationGroupView(object):
 
     @utils.memoize
     def allocations(self):
+        if self.recurrence_id:
+            query = self.context.scheduler().allocations_by_recurrence(
+                                                            self.recurrence_id)
+            return query.all()
         if self.group:
             query = self.context.scheduler().allocations_by_group(self.group)
             query = query.order_by(Allocation._start)

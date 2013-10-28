@@ -1,9 +1,10 @@
 <metadata>
-    <version>1020</version>
+    <version>1021</version>
     <dependencies>
         <dependency>profile-plone.app.dexterity:default</dependency>
         <dependency>profile-collective.js.jqueryui:default</dependency>
         <dependency>profile-collective.js.underscore:default</dependency>
         <dependency>profile-collective.js.fullcalendar:default</dependency>
+        <dependency>profile-plone.formwidget.recurrence:default</dependency>
     </dependencies>
 </metadata>

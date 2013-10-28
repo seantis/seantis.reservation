@@ -12,9 +12,12 @@ from seantis.reservation.error import (
     InvalidAllocationError
 )
 
-from seantis.reservation import utils
-from seantis.reservation.session import serialized
 from seantis.reservation import events
+from seantis.reservation import utils
+from seantis.reservation import Session
+from seantis.reservation.session import serialized
+from seantis.reservation.models import Allocation
+from seantis.reservation.models import Recurrence
 
 from seantis.reservation import db
 Scheduler = db.Scheduler
@@ -95,6 +98,87 @@ class TestScheduler(IntegrationTestCase):
 
         remaining = allocation.free_slots()
         self.assertEqual(len(remaining), 2)
+
+    @serialized
+    def test_recurrence_reserve_single_allocation_no_recurrence(self):
+        """Test that no recurrence is generated for a (separately reservable)
+        single-date allocation.
+
+        """
+
+        sc = Scheduler(new_uuid())
+
+        start = datetime(2011, 1, 1, 15)
+        end = datetime(2011, 1, 1, 16)
+
+        sc.allocate((start, end), raster=15,
+                    partly_available=True, grouped=False)
+
+        Session.flush()
+        self.assertEqual(1, Session.query(Allocation).count())
+        self.assertEqual(0, Session.query(Recurrence).count())
+
+    @serialized
+    def test_recurrence_reserve_allocations_recurrence(self):
+        """Test that a recurrence is generated for separately reservable
+        multi-date allocations.
+
+        """
+
+        sc = Scheduler(new_uuid())
+
+        dates = [(datetime(2011, 1, 1, 15), datetime(2011, 1, 1, 16)),
+                 (datetime(2011, 1, 2, 15), datetime(2011, 1, 2, 16))]
+
+        sc.allocate(dates, raster=15, partly_available=True, grouped=False,
+                    rrule='RRULE:FREQ=DAILY;COUNT=10')
+
+        Session.flush()
+        self.assertEqual(2, Session.query(Allocation).count())
+        self.assertEqual(1, Session.query(Recurrence).count())
+        recurrence = Session.query(Recurrence).one()
+        self.assertIsNotNone(recurrence.rrule)
+        self.assertEqual(2, len(recurrence.allocations))
+
+    @serialized
+    def test_recurrence_remove(self):
+        """Test that recurrences are removed correctly.
+
+        """
+        sc = Scheduler(new_uuid())
+        dates = [(datetime(2011, 1, 1, 15), datetime(2011, 1, 1, 16)),
+                 (datetime(2011, 1, 2, 15), datetime(2011, 1, 2, 16))]
+        sc.allocate(dates, partly_available=True, grouped=False)
+        Session.flush()
+
+        recurrence = Session.query(Recurrence).one()
+        sc.remove_allocation(recurrence_id=recurrence.id)
+        Session.flush()
+
+        self.assertEqual(0, Session.query(Allocation).count())
+        self.assertEqual(0, Session.query(Recurrence).count())
+
+    @serialized
+    def test_recurrence_removed_when_last_allocation_entry_deleted(self):
+        """Test that recurrences are removed when the last allocation entry
+        for that recurrence is deleted but not before.
+
+        """
+        sc = Scheduler(new_uuid())
+        dates = [(datetime(2011, 1, 1, 15), datetime(2011, 1, 1, 16)),
+                 (datetime(2011, 1, 2, 15), datetime(2011, 1, 2, 16))]
+        sc.allocate(dates, partly_available=True, grouped=False)
+        Session.flush()
+
+        sc.remove_allocation(id=Session.query(Allocation).first().id)
+        Session.flush()
+        self.assertEqual(1, Session.query(Allocation).count())
+        self.assertEqual(1, Session.query(Recurrence).count())
+
+        sc.remove_allocation(id=Session.query(Allocation).first().id)
+        Session.flush()
+        self.assertEqual(0, Session.query(Allocation).count())
+        self.assertEqual(0, Session.query(Recurrence).count())
 
     @serialized
     def test_group_reserve(self):
