@@ -30,6 +30,7 @@ from seantis.reservation import maintenance
 from Products.CMFCore.utils import getToolByName
 import lxml.html
 from lxml.cssselect import CSSSelector
+from seantis.reservation.session import Session
 
 
 class TestCase(unittest.TestCase):
@@ -75,8 +76,10 @@ class TestCase(unittest.TestCase):
         # since the testbrowser may create different records we need
         # to clear the database by hand each time
         outlaw = create_engine(util._dsn_cache['plone'])
+        outlaw.execute('DELETE FROM blocked_periods')
         outlaw.execute('DELETE FROM reservations')
         outlaw.execute('DELETE FROM reserved_slots')
+        outlaw.execute('DELETE FROM recurrences')
         outlaw.execute('DELETE FROM allocations')
         outlaw.dispose()
 
@@ -156,7 +159,6 @@ class TestEventSubscriber(object):
         self.event = None
 
 
-# to use with integration where security interactions need to be done manually
 class IntegrationTestCase(TestCase):
     layer = SQL_INTEGRATION_TESTING
 
@@ -168,6 +170,7 @@ class IntegrationTestCase(TestCase):
     def tearDown(self):
         endInteraction()
         super(IntegrationTestCase, self).tearDown()
+        Session.remove()
 
 
 # to use with the browser which does it's own security interactions

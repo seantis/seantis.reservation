@@ -250,8 +250,9 @@ class ResourceBaseForm(GroupForm, form.Form):
         elif self.widgets and 'id' in self.widgets:
             field = self.get_field('id')
             widget = self.get_widget('id')
-            converter = getMultiAdapter((field, widget),
-                                        interface=IDataConverter)
+            converter = getMultiAdapter(
+                (field, widget), interface=IDataConverter
+            )
             value = converter.toFieldValue(widget.value)
 
         return utils.request_id_as_int(value)

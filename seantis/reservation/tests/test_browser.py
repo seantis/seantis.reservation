@@ -91,7 +91,7 @@ class TestBrowser(FunctionalTestCase):
         quota_limit=1,
         approve_manually=False,
         recurrence=None,
-        separately=None,
+        separately=None
     ):
 
         browser = self.admin_browser
@@ -113,6 +113,11 @@ class TestBrowser(FunctionalTestCase):
         browser.getControl('Partly available').selected = partly_available
         browser.getControl('Quota', index=0).value = str(quota)
         browser.getControl('Reservation Quota Limit').value = str(quota_limit)
+        if recurrence:
+            browser.getControl('Recurrence').value = recurrence
+        if separately is not None:
+            browser.getControl('Separately reservable').selected = separately
+
         if recurrence:
             browser.getControl('Recurrence').value = recurrence
         if separately is not None:

@@ -100,8 +100,7 @@ def form_interfaces(context):
         'seantis.reservation.interfaces.IReservationManagerFormSet'
     ))
     ftis = [
-        fti for fti in getallutils(IDexterityFTI)
-        if behaviors & set(fti.behaviors)
+        fti for fti in getallutils(IDexterityFTI) if behaviors & set(fti.behaviors)
     ]
     site = getSite()
 
@@ -863,3 +862,7 @@ class IReservationsConfirmedEvent(Interface):
     """
     reservations = Attribute("The list of reservations the user confirmed")
     language = Attribute("language of the site or current request")
+
+
+class IReservationSlotsCreatedEvent(IReservationBaseEvent):
+    """Event triggered when all reservations slots have been created."""
