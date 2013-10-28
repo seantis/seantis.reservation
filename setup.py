@@ -24,6 +24,10 @@ multilingual_require = [
     'plone.app.multilingual [dexterity]',
 ]
 
+postgres_require = [
+    'psycopg2',
+]
+
 
 def get_long_description():
     readme = open('README.rst').read()
@@ -75,7 +79,6 @@ setup(name=name, version=version, description=description,
           'plone.uuid>=1.0.2',
           'Plone>=4.3',
           'profilehooks',
-          'psycopg2',
           'pytz',
           'setuptools',
           'SQLAlchemy>=0.7.3',
@@ -86,7 +89,9 @@ setup(name=name, version=version, description=description,
       extras_require=dict(zug=zug_require,
                           tests=tests_require,
                           multilingual=multilingual_require,
-                          teamraum=teamraum_require),
+                          postgres=postgres_require,
+                          teamraum=teamraum_require
+                          ),
       entry_points="""
       # -*- Entry points: -*-
 
