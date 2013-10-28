@@ -39,6 +39,14 @@ class ISeantisReservationSettings(Interface):
     send_email_to_managers = schema.Bool(
         title=_(u"Email Notifications for Managers"),
         description=_(
+            u'Send emails about newly made reservations to '
+            u'the first reservation managers found in the path.'
+        )
+    )
+
+    send_approval_email_to_managers = schema.Bool(
+        title=_(u"Approval Email Notifications for Managers"),
+        description=_(
             u'Send emails about new pending reservations to '
             u'the first reservation managers found in the path.'
         )

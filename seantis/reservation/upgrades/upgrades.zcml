@@ -209,4 +209,13 @@
         profile="seantis.reservation:default">
     </genericsetup:upgradeStep>
 
+    <genericsetup:upgradeStep
+        title="Add separate setting for approval emails"
+        description=""
+        source="1023"
+        destination="1024"
+        handler=".upgrades.upgrade_1020_to_1021"
+        profile="seantis.reservation:default">
+    </genericsetup:upgradeStep>
+
 </configure>
