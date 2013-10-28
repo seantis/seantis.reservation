@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from logging import getLogger
+from zope.component.hooks import getSite
 log = getLogger('seantis.reservation')
 
 from datetime import time
@@ -18,6 +19,7 @@ from z3c.form import button
 from z3c.form.browser.radio import RadioFieldWidget
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
+from zope.i18n import translate
 from zope.schema import Choice, List, Set
 
 from seantis.reservation.throttle import throttled
@@ -97,7 +99,7 @@ class ReservationSchemata(object):
     def additionalSchemata(self):
         scs = []
         self.fti = dict()
-
+        site = getSite()
         for ptype in self.context.formsets:
             fti = queryUtility(IDexterityFTI, name=ptype)
             if fti:
@@ -105,9 +107,10 @@ class ReservationSchemata(object):
                     continue  # do not show, but fill with defaults later
 
                 schema = fti.lookupSchema()
-                scs.append((ptype, fti.title, schema))
+                title = translate(fti.Title(), context=site.REQUEST)
+                scs.append((ptype, title, schema))
 
-                self.fti[ptype] = (fti.title, schema)
+                self.fti[ptype] = (title, schema)
 
         return scs
 

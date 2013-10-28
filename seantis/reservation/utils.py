@@ -13,13 +13,14 @@ from itertools import tee, izip
 from uuid import UUID
 from uuid import uuid5 as new_uuid_mirror
 from plone.uuid.interfaces import IUUID, IUUIDAware
+import pkg_resources
 
 import pytz
 
 from plone.dexterity.utils import SchemaNameEncoder
 
-from App.config import getConfiguration
 from Acquisition import aq_inner
+from App.config import getConfiguration
 from zope.component import getMultiAdapter
 from zope.component.hooks import getSite
 from zope import i18n
@@ -36,12 +37,20 @@ from Products.CMFPlone.interfaces import IPloneSiteRoot
 from seantis.reservation import error
 from seantis.reservation import _
 
+
 try:
     from collections import OrderedDict  # python >= 2.7
     OrderedDict  # Pyflakes
 except ImportError:
     from ordereddict import OrderedDict  # python < 2.7
     OrderedDict  # Pyflakes
+
+try:
+    pkg_resources.get_distribution('plone.multilingual')
+except pkg_resources.DistributionNotFound:
+    HAS_MULTILINGUAL = False
+else:
+    HAS_MULTILINGUAL = True
 
 from seantis.reservation.sortedcollection import SortedCollection
 
@@ -105,7 +114,7 @@ def additional_data_dictionary(data, fti):
             if not key.startswith(ifacekey + '.'):
                 continue
 
-            subkey = key.split('.')[1]
+            subkey = key.split('.')[-1]
             desc = iface.getDescriptionFor(subkey).title
             sortkey = iface.get(subkey).order
 
@@ -476,9 +485,12 @@ def string_uuid(obj):
     """ Returns the uuid as string without hyphens. Takes either UUIDs, strings
     with hyphens, objects which are IUUIDAware or objects which have a UID
     attribute. (The latter works for catalog brains). """
+    from seantis.reservation.interfaces import IResource
 
     if isinstance(obj, basestring):
         obj = str(obj)
+    if IResource.providedBy(obj):
+        obj = obj.uuid()
     elif hasattr(obj, 'UID'):
         if callable(obj.UID):
             obj = obj.UID()  # plone 4.3, because
@@ -518,17 +530,35 @@ def uuid_query(uuid):
         uuid[:8], uuid[8:12], uuid[12:16], uuid[16:20], uuid[20:]]))
 
 
-def get_resource_by_uuid(
-    uuid, ensure_portal_type='seantis.reservation.resource'
-):
+@memoize
+def has_resource_translations_enabled():
+    """Return whether plone.multilingual behavior is enabled for
+    seantis.reservation.resource.
+
+    """
+
+    ttool = getToolByName(getSite(), 'portal_types')
+    fti = ttool.getTypeInfo('seantis.reservation.resource')
+    iface_name = 'plone.multilingualbehavior.interfaces.IDexterityTranslatable'
+    return iface_name in fti.behaviors
+
+
+def get_resource_by_uuid(uuid,
+                        ensure_portal_type='seantis.reservation.resource'):
     """Returns the zodb object with the given uuid."""
+
     catalog = getToolByName(getSite(), 'portal_catalog')
+    params = {}
+
+    if HAS_MULTILINGUAL and has_resource_translations_enabled():
+        params['TranslationGroup'] = uuid_query(uuid)
+    else:
+        params['UID'] = uuid_query(uuid)
 
     if ensure_portal_type:
-        results = catalog(UID=uuid_query(uuid), portal_type=ensure_portal_type)
-    else:
-        results = catalog(UID=uuid_query(uuid))
+        params['portal_type'] = ensure_portal_type
 
+    results = catalog(**params)
     return len(results) == 1 and results[0] or None
 
 

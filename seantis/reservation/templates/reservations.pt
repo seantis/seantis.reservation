@@ -22,7 +22,7 @@
 <div tal:attributes="data-group python: view.highlight_group; class python: view.hide_waitinglist and 'inline-reservations hide-waitinglist' or 'inline-reservations'" tal:define="
     show_actions python: view.show_links and not view.print_site;
 ">
-  
+
   <div class="uncommitted" i18n:translate="" tal:condition="view/uncommitted_reservations_count">
     <tal:block content="view/uncommitted_reservations"></tal:block>
   </div>
@@ -30,7 +30,7 @@
   <div class="splitscreen splitleft">
 
     <h2 class="documentFirstHeading" i18n:translate="" tal:condition="not:view/print_site">Reservations</h2>
-    
+
     <div class="reservation-info reservation-approved" metal:define-macro="approved_reservations">
       <tal:block tal:repeat="group python: view.approved_reservations().items()">
         <tal:block define="
@@ -44,9 +44,9 @@
     </div>
   </div>
   <div class="splitscreen splitright">
-   
+
     <h2 class="documentFirstHeading" i18n:translate="">Waitinglist</h2>
-    
+
     <div class="reservation-info reservation-pending" metal:define-macro="pending_reservations">
       <tal:block tal:repeat="group python: view.pending_reservations().items()">
           <tal:block define="

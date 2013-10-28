@@ -3,6 +3,7 @@ log = getLogger('seantis.reservation')
 
 import json
 import pytz
+import pkg_resources
 
 from datetime import datetime
 
@@ -14,6 +15,7 @@ from plone.dexterity.content import Container
 from plone.uuid.interfaces import IUUID
 from plone.app.linkintegrity.interfaces import ILinkIntegrityInfo
 from plone.memoize import view
+from zope.component import queryAdapter
 from zope.event import notify
 from zope.interface import implements
 from zope.lifecycleevent.interfaces import IObjectRemovedEvent
@@ -28,6 +30,14 @@ from seantis.reservation.form import AllocationGroupView
 from seantis.reservation.interfaces import IResourceBase
 from seantis.reservation.interfaces import IOverview
 
+try:
+    pkg_resources.get_distribution('plone.multilingual')
+    from plone.multilingual.interfaces import ITranslationManager
+except pkg_resources.DistributionNotFound:
+    HAS_MULTILINGUAL = False
+else:
+    HAS_MULTILINGUAL = True
+
 
 class Resource(Container):
 
@@ -35,6 +45,11 @@ class Resource(Container):
     # Don't know why.. it worked for me in other cases.
 
     def uuid(self):
+        if HAS_MULTILINGUAL:
+            translation_manager = queryAdapter(self, ITranslationManager)
+            if translation_manager:
+                return translation_manager.query_canonical()
+
         return IUUID(self)
 
     def string_uuid(self):
@@ -244,7 +259,7 @@ class Listing(grok.View):
         return item.portal_type == 'seantis.reservation.resource'
 
     def resource_map(self):
-        return (r.UID for r in utils.portal_type_in_context(
+        return (r.getObject().uuid() for r in utils.portal_type_in_context(
             self.context, 'seantis.reservation.resource'
         ))
 
