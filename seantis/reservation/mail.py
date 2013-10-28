@@ -1,6 +1,7 @@
 from itertools import groupby
 
 import logging
+from Products.CMFPlone.utils import safe_unicode
 log = logging.getLogger('seantis.reservation')
 
 from five import grok
@@ -15,6 +16,7 @@ from plone.memoize import view
 from Products.CMFCore.interfaces import IFolderish
 from Products.CMFCore.utils import getToolByName
 from z3c.form import button
+from zope.i18n import translate
 
 from seantis.reservation.form import ReservationDataView
 from seantis.reservation.reserve import ReservationUrls
@@ -303,7 +305,7 @@ class ReservationMail(ReservationDataView, ReservationUrls):
 
         # a list of reservations
         if is_needed('reservations'):
-            p['reservations'] = '\n'.join(self.reservations)
+            p['reservations'] = u'\n'.join(self.reservations)
 
         # a list of dates
         if is_needed('dates'):
@@ -312,7 +314,7 @@ class ReservationMail(ReservationDataView, ReservationUrls):
             for start, end in dates:
                 lines.append(utils.display_date(start, end))
 
-            p['dates'] = '\n'.join(lines)
+            p['dates'] = u'\n'.join(lines)
 
         # tabbed reservation data
         if is_needed('data'):
@@ -321,18 +323,17 @@ class ReservationMail(ReservationDataView, ReservationUrls):
             for key in self.sort_reservation_data(data):
                 interface = data[key]
 
-                lines.append(interface['desc'])
-                sorted_values = self.sort_reservation_data_values(
-                    interface['values']
+                lines.append(safe_unicode(interface['desc']))
+                for value in self.sort_reservation_data_values(interface['values']):
+                    description = translate(value['desc'],
+                                            context=resource.REQUEST,
+                                            domain='seantis.reservation')
+                    description = safe_unicode(description)
+                    val = safe_unicode(self.display_info(value['value']))
+                    lines.append((u'\t{}: {}'.format(description, val))
                 )
 
-                for value in sorted_values:
-                    lines.append(
-                        '\t' + value['desc'] + ': ' +
-                        unicode(self.display_reservation_data(value['value']))
-                    )
-
-            p['data'] = '\n'.join(lines)
+            p['data'] = u'\n'.join(lines)
 
         # approval link
         if is_needed('approval_link'):
@@ -355,6 +356,7 @@ class ReservationMail(ReservationDataView, ReservationUrls):
         self.parameters = p
 
     def as_string(self):
+
         subject = self.subject % self.parameters
         body = self.body % self.parameters
         mail = create_email(self.sender, self.recipient, subject, body)
