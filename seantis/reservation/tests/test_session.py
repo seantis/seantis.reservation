@@ -94,10 +94,10 @@ class TestSession(IntegrationTestCase):
         t1.join()
         t2.join()
 
-        self.assertFalse(t1.serial_id == None)
-        self.assertFalse(t2.serial_id == None)
-        self.assertFalse(t1.serial_id == t2.serial_id)
-        self.assertFalse(t1.readonly_id == t2.readonly_id)
+        self.assertIsNotNone(t1.serial_id)
+        self.assertIsNotNone(t2.serial_id)
+        self.assertNotEqual(t1.serial_id, t2.serial_id)
+        self.assertNotEqual(t1.readonly_id, t2.readonly_id)
 
     def test_readonly_protection(self):
         add_something()

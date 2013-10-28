@@ -36,6 +36,7 @@ from Products.CMFPlone.interfaces import IPloneSiteRoot
 
 from seantis.reservation import error
 from seantis.reservation import _
+from Products.CMFPlone.utils import safe_unicode
 
 
 try:
@@ -563,14 +564,16 @@ def get_resource_by_uuid(uuid,
 
 
 def get_resource_title(resource):
+    resource_title = safe_unicode(resource.title)
     if hasattr(resource, '__parent__'):
         parent = resource.__parent__.title
     elif hasattr(resource, 'parent'):
         parent = resource.parent().title
     else:
-        return resource.title
+        return resource_title
 
-    return ' - '.join((parent, resource.title))
+    parent = safe_unicode(parent)
+    return u' - '.join((parent, resource_title))
 
 
 def get_reservation_quota_statement(quota):
