@@ -24,7 +24,8 @@ def generate_session_id(context):
 
     # logged in users get ids which are predictable for each plone site
     namespace = uuid.uuid5(root_namespace, str(getSite().id))
-    return uuid.uuid5(namespace, str(membership.getId()))
+    return uuid.uuid5(namespace,
+                      str(membership.getAuthenticatedMember().getId()))
 
 
 def get_session(context, key):
