@@ -329,7 +329,9 @@ class ReservationMail(ReservationDataView, ReservationUrls):
                                             context=resource.REQUEST,
                                             domain='seantis.reservation')
                     description = safe_unicode(description)
-                    val = safe_unicode(self.display_info(value['value']))
+                    val = safe_unicode(
+                        self.display_reservation_data(value['value'])
+                    )
                     lines.append((u'\t{}: {}'.format(description, val))
                 )
 
