@@ -1,32 +1,26 @@
 from datetime import datetime
-from functools import wraps
 
+from Products.CMFPlone.utils import safe_unicode
 from five import grok
+from functools import wraps
 from plone.directives import form
+from plone.memoize import instance
 from plone.memoize import view
 from plone.z3cform.fieldsets import utils as z3cutils
-from zope.component import getMultiAdapter
-from z3c.form import interfaces
+from sqlalchemy import null
 from z3c.form import field
+from z3c.form import interfaces
 from z3c.form.group import GroupForm
 from z3c.form.interfaces import IDataConverter
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
-
-from sqlalchemy import null
+from zope.component import getMultiAdapter
+from zope.component.hooks import getSite
+from zope.i18n import translate
 
 from seantis.reservation import _
 from seantis.reservation import utils
-from seantis.reservation.models import Allocation, Reservation
 from seantis.reservation.interfaces import IResourceBase
-
-
-from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
-from plone.z3cform.fieldsets import utils as z3cutils
-from zope.component.hooks import getSite
-from zope.i18n import translate
-from plone.memoize import instance
-from Products.CMFPlone.utils import safe_unicode
-from z3c.form.interfaces import IDataConverter
+from seantis.reservation.models import Allocation, Reservation
 
 
 def extract_action_data(fn):

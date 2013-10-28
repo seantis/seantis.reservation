@@ -756,6 +756,12 @@ class IReservation(Interface):
         required=True
     )
 
+    description = schema.TextLine(
+         title=_(u'Description'),
+         description=_('Visible on the calendar'),
+         required=False,
+    )
+
     recurrence = schema.Text(
             title=_(u'Recurrence'),
             required=False,
