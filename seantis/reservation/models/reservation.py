@@ -1,3 +1,4 @@
+from collections import namedtuple
 from datetime import timedelta
 
 from sqlalchemy import types
@@ -9,7 +10,11 @@ from seantis.reservation import Session
 from seantis.reservation.models import customtypes
 from seantis.reservation.models.other import OtherModels
 from seantis.reservation.models.timestamp import TimestampMixin
-from seantis.reservation import utils
+from seantis.reservation.utils import get_date_range
+from seantis.reservation.utils import get_resource_by_uuid
+
+
+Timespan = namedtuple('Timespan', ['start', 'end', 'allocation_id', 'token'])
 
 
 class Reservation(TimestampMixin, ORMBase, OtherModels):
@@ -36,7 +41,8 @@ class Reservation(TimestampMixin, ORMBase, OtherModels):
     )
 
     target_type = Column(
-        types.Enum(u'group', u'allocation', name='reservation_target_type'),
+        types.Enum(u'group', u'allocation', 'recurrence',
+                   name='reservation_target_type'),
         nullable=False
     )
 
@@ -79,9 +85,47 @@ class Reservation(TimestampMixin, ORMBase, OtherModels):
         nullable=False
     )
 
+    rrule = Column(types.String)
+
     __table_args__ = (
         Index('target_status_ix', 'status', 'target', 'id'),
     )
+
+    @classmethod
+    def for_allocation(cls, allocation, **args):
+        reservation = cls(**args)
+        reservation.target_type = u'allocation'
+        reservation.status = u'pending'
+        reservation.target = allocation.group
+        return reservation
+
+    @classmethod
+    def for_recurrence(cls, rrule, **args):
+        reservation = cls(**args)
+        reservation.target_type = u'recurrence'
+        reservation.status = u'pending'
+        reservation.rrule = rrule
+        return reservation
+
+    @classmethod
+    def for_group(cls, group, **args):
+        reservation = cls(**args)
+        reservation.target_type = u'group'
+        reservation.status = u'pending'
+        reservation.target = group
+        return reservation
+
+    @property
+    def is_recurrence(self):
+        return self.target_type == 'recurrence'
+
+    @property
+    def is_group(self):
+        return self.target_type == 'group'
+
+    @property
+    def is_allocation(self):
+        return self.target_type == 'allocation'
 
     def _target_allocations(self):
         """ Returns the allocations this reservation is targeting. This should
@@ -104,15 +148,60 @@ class Reservation(TimestampMixin, ORMBase, OtherModels):
 
         return query
 
+    def timespan_entries(self, start=None, end=None):
+        if self.status == 'pending':
+            return self._pending_timespans(start, end)
+        else:
+            return self._approved_timespans(start, end)
+
+    def _pending_timespans(self, start_time, end_time):
+        result = []
+        for start, end in self.target_dates():
+            if start_time and not start >= start_time:
+                continue
+            if end_time and not end <= end_time:
+                continue
+            # build tuple containing necessary info for deletion links
+            timespan = Timespan(start=start,
+                                end=end + timedelta(microseconds=1),
+                                allocation_id=None,
+                                token=self.token)
+            result.append(timespan)
+        return result
+
+    def _approved_timespans(self, start, end):
+        ReservedSlot = self.models.ReservedSlot
+        query = Session.query(ReservedSlot)\
+                .filter_by(reservation_token=self.token)
+        if start:
+            query = query.filter(ReservedSlot.start >= start)
+        if end:
+            query = query.filter(ReservedSlot.end <= end)
+
+        # find the slots that are still reserved
+        result = []
+        for start, end in self.target_dates():
+            reserved_slot = query.filter(ReservedSlot.start <= end)\
+                            .filter(ReservedSlot.end >= start)\
+                            .first()
+            if not reserved_slot:
+                continue
+            # build tuple containing necessary info for deletion links
+            timespan = Timespan(start=start,
+                                end=end + timedelta(microseconds=1),
+                                allocation_id=reserved_slot.allocation_id,
+                                token=self.token)
+            result.append(timespan)
+        return result
+
     def timespans(self):
-        """ Same as target_dates but with an additional microsecond at the
-        end to make the end date readable.
+        """ Return all target_dates that still point to a valid reservation.
+
+        Display an additional microsecond at the end to make the end date
+        readable.
 
         """
-
-        return [
-            (s, e + timedelta(microseconds=1)) for s, e in self.target_dates()
-        ]
+        return [(each.start, each.end) for each in self.timespan_entries()]
 
     def target_dates(self):
         """ Returns the dates this reservation targets. Those should not be
@@ -135,6 +224,17 @@ class Reservation(TimestampMixin, ORMBase, OtherModels):
                 self.models.Allocation._end
             ).all()
 
+        if self.target_type == u'recurrence':
+            time_start = self.start.time()
+            time_end = self.end.time()
+
+            date_start = self.start.date()
+            from dateutil.rrule import rrulestr
+
+            rule = rrulestr(self.rrule, dtstart=date_start)
+            return [get_date_range(date, time_start, time_end)
+                    for date in rule]
+
         raise NotImplementedError
 
     @property
@@ -152,7 +252,7 @@ class Reservation(TimestampMixin, ORMBase, OtherModels):
         return query.first() is None
 
     def get_resource_brain(self):
-        return utils.get_resource_by_uuid(self.resource)
+        return get_resource_by_uuid(self.resource)
 
     def get_resource(self):
         return self.get_resource_brain().getObject()

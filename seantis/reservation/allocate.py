@@ -110,32 +110,11 @@ class AllocationAddForm(AllocationForm):
             obj.isoformat() if isinstance(obj, date) else None
         return unicode(json.dumps(results, default=dthandler))
 
-    def get_dates(self, data):
-        """ Return a list with date tuples depending on the data entered by the
-        user, using rrule if requested.
-
-        """
-
-        start, end = utils.get_date_range(
-            data['day'], data['start_time'], data['end_time']
-        )
-
-        if not data['recurrence']:
-            return ((start, end))
-
-        rule = rrule.rrulestr(data['recurrence'],
-                              dtstart=start)
-
-        event = lambda d: \
-            utils.get_date_range(d, data['start_time'], data['end_time'])
-
-        return [event(d) for d in rule]
-
     @button.buttonAndHandler(_(u'Allocate'))
     @extract_action_data
     def allocate(self, data):
         self._validate_recurrence_options(data)
-        dates = self.get_dates(data)
+        dates = utils.get_dates(data)
 
         def allocate():
             self.scheduler.allocate(

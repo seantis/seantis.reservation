@@ -756,6 +756,11 @@ class IReservation(Interface):
         required=True
     )
 
+    recurrence = schema.Text(
+            title=_(u'Recurrence'),
+            required=False,
+    )
+
 
 class IReservationIdForm(Interface):
     """ Describes a form with a hidden reservation-id field. Use with
@@ -765,6 +770,14 @@ class IReservationIdForm(Interface):
         title=_(u'Reservation'),
         required=False
     )
+
+
+class IAllocationIdForm(IReservationIdForm):
+    """ Describes a form with a hidden reservation-id and allocation-id field.
+    Use with seantis.reservation.reserve.ReservationRemovalForm. """
+
+    allocation_id = schema.Int(title=_("Allocation Id"),
+                               required=False)
 
 
 class IGroupReservation(Interface):
