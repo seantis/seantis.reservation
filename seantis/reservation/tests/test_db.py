@@ -8,7 +8,6 @@ from seantis.reservation.error import (
     AffectedReservationError,
     AlreadyReservedError,
     ReservationTooLong,
-    InvalidReservationError,
     InvalidAllocationError,
     UnblockableAlreadyReservedError
 )
@@ -54,9 +53,10 @@ class BaseTestDB(IntegrationTestCase):
         dates = self._get_dates(dates)
         rrule = self._get_rrule(rrule)
         self.allocations = self.sc.allocate(
-                        dates, raster=15, partly_available=True, rrule=rrule,
-                        approve_manually=approve_manually,
-                        grouped=grouped)
+            dates, raster=15, partly_available=True, rrule=rrule,
+            approve_manually=approve_manually,
+            grouped=grouped
+        )
 
     def _reserve(self, dates=None, rrule=None, group=None):
         dates = self._get_dates(dates) if not group else None
@@ -210,7 +210,6 @@ class TestUpdateReservation(BaseTestDB):
     @serialized
     def test_no_slot_update_for_grouped_reservations(self):
         start = datetime(2011, 1, 1, 15)
-        end_early = datetime(2011, 1, 1, 16)
         end = datetime(2011, 1, 1, 17)
 
         self._allocate((start, end), rrule='', grouped=True)
@@ -227,18 +226,23 @@ class TestRemoveReservationSlots(BaseTestDB):
     @serialized
     def test_remove_reservation_slots_working(self):
         self._setup_allocations()
-        query = Session.query(ReservedSlot)\
-                .filter_by(reservation_token=self.token)\
-                .filter(ReservedSlot.start >= datetime(2011, 1, 1, 15))\
-                .filter(ReservedSlot.end <= datetime(2011, 1, 1, 16))
-        self.assertGreater(query.count(), 0,
-                           msg='no reserved slots have been generated')
+        query = Session.query(ReservedSlot)
+        query = query.filter_by(reservation_token=self.token)
+        query = query.filter(ReservedSlot.start >= datetime(2011, 1, 1, 15))
+        query = query.filter(ReservedSlot.end <= datetime(2011, 1, 1, 16))
 
-        self.sc.remove_reservation_slots(self.token,
-                                         datetime(2011, 1, 1, 15),
-                                         datetime(2011, 1, 1, 16))
-        self.assertEqual(0, query.count(),
-                    msg='the reserved slots have not been deleted properly')
+        self.assertGreater(
+            query.count(), 0, msg='no reserved slots have been generated'
+        )
+
+        self.sc.remove_reservation_slots(
+            self.token, datetime(2011, 1, 1, 15), datetime(2011, 1, 1, 16)
+        )
+        self.assertEqual(
+            0,
+            query.count(),
+            msg='the reserved slots have not been deleted properly'
+        )
 
     @serialized
     def test_remove_reservation_slots_fails_when_all_slots_removed(self):
@@ -357,12 +361,18 @@ class TestScheduler(IntegrationTestCase):
         sc.approve_reservation(token)
         reservation = Session.query(Reservation).filter_by(token=token).one()
 
-        self.assertListEqual([reservation],
-              sc.reservations_by_recurring_allocation(allocations[0].id).all())
-        self.assertListEqual([reservation],
-              sc.reservations_by_recurring_allocation(allocations[1].id).all())
-        self.assertListEqual([],
-              sc.reservations_by_recurring_allocation(allocations[2].id).all())
+        self.assertListEqual(
+            [reservation],
+            sc.reservations_by_recurring_allocation(allocations[0].id).all()
+        )
+        self.assertListEqual(
+            [reservation],
+            sc.reservations_by_recurring_allocation(allocations[1].id).all()
+        )
+        self.assertListEqual(
+            [],
+            sc.reservations_by_recurring_allocation(allocations[2].id).all()
+        )
 
     @serialized
     def test_reservations_by_recurring_allocation_includes_pending(self):
@@ -379,8 +389,10 @@ class TestScheduler(IntegrationTestCase):
         token = sc.reserve(u'foo@example.com', dates=dates, rrule=two_days)
 
         reservation = Session.query(Reservation).filter_by(token=token).one()
-        self.assertListEqual([reservation],
-              sc.reservations_by_recurring_allocation(allocations[0].id).all())
+        self.assertListEqual(
+            [reservation],
+            sc.reservations_by_recurring_allocation(allocations[0].id).all()
+        )
 
     @serialized
     def test_recurring_reservation_generated(self):
