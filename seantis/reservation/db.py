@@ -37,8 +37,6 @@ from seantis.reservation.error import (
     AlreadyReservedError,
     InvalidAllocationError,
     InvalidQuota,
-    InvalidReservationError,
-    InvalidReservationToken,
     NoRecurringReservationError,
     NoReservedSlotsLeftError,
     NotReservableError,
@@ -48,14 +46,9 @@ from seantis.reservation.error import (
     InvalidReservationToken,
     InvalidReservationError,
     QuotaOverLimit,
-    InvalidQuota,
     QuotaImpossible,
-    QuotaOverLimit,
     ReservationOutOfBounds,
-    ReservationParametersInvalid,
-    ReservationTooLong,
     UnblockableAlreadyReservedError,
-
 )
 from seantis.reservation.session import serialized
 from seantis.reservation.raster import rasterize_span, MIN_RASTER_VALUE
@@ -942,8 +935,10 @@ class Scheduler(object):
         #   it feels like there should be a better way?
 
         elif rrule:
-            assert len(dates) > 1, 'recurrence only makes sense for '\
-                                                            'multiple dates?!?'
+            assert len(dates) > 1, """
+                recurrence only makes sense for multiple dates
+            """
+
             target_start, target_end = dates[0]
             for allocation in self.allocations_in_range(target_start,
                                                         target_end):
@@ -1183,10 +1178,17 @@ class Scheduler(object):
             changed = True
             query = self.managed_reserved_slots()
             query = query.filter_by(reservation_token=token)
-            assert reservation.autoapprovable, "can't change start/end-time "\
-                                 "for reservations that are not autoapprovable"
-            assert not reservation.is_group, "can't change start/end-time "\
-                                         "for reservations that target a group"
+
+            assert reservation.autoapprovable, """
+                can't change start/end-time for reservations
+                that are not autoapprovable
+            """
+
+            assert not reservation.is_group, """"
+                can't change start/end-time for reservations
+                that target a group
+            """
+
             if reservation.is_recurrence:
                 start_time = new_start.time()
                 end_time = new_end.time()
@@ -1228,8 +1230,9 @@ class Scheduler(object):
             data_changed = True
 
         try:
-            time_changed = self._update_reserved_slots(start, end,
-                                                        reservation)
+            time_changed = self._update_reserved_slots(
+                start, end, reservation
+            )
         except ReservationError:
             transaction.abort()
             raise

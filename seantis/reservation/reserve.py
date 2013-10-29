@@ -880,10 +880,8 @@ class RemoveSlotsForAllFutureAllocations(ReservedSlotsRemovalForm):
 
     @property
     def timespan_end(self):
-        reservation = self.scheduler.reservation_by_token(
-                                                        self.reservation).one()
-        dummy, end = reservation.target_dates()[-1]
-        return end
+        reservation = self.scheduler.reservation_by_token(self.reservation)
+        return reservation.one().target_dates()[-1][1]
 
 
 class ReservationRevocationForm(
@@ -952,7 +950,8 @@ class ReservationList(grok.View, ReservationListView, ReservationUrls):
         if self.recurring_allocation_id:
             scheduler = self.context.scheduler()
             return scheduler.reservations_by_recurring_allocation(
-                                                  self.recurring_allocation_id)
+                self.recurring_allocation_id
+            )
 
         return None
 
@@ -963,7 +962,8 @@ class ReservationList(grok.View, ReservationListView, ReservationUrls):
 
         if self.recurring_allocation_id:
             return Session.query(Allocation).filter_by(
-                                               id=self.recurring_allocation_id)
+                id=self.recurring_allocation_id
+            )
 
         return None
 
@@ -979,7 +979,8 @@ class ReservationList(grok.View, ReservationListView, ReservationUrls):
         reservation_tokens = [each.reservation_token for each
                               in allocation.reserved_slots]
         return Session.query(Reservation).filter(
-                                    Reservation.token.in_(reservation_tokens))
+            Reservation.token.in_(reservation_tokens)
+        )
 
     @property
     def recurring_allocation_id(self):
@@ -1053,7 +1054,8 @@ class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
         else:
             try:
                 allocations = self.scheduler.allocations_by_reservation(
-                                                              self.reservation)
+                    self.reservation
+                )
                 if not any(each.partly_available for each in allocations):
                     disabled.append('start_time')
                     disabled.append('end_time')
@@ -1073,7 +1075,8 @@ class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
         else:
             try:
                 allocations = self.scheduler.allocations_by_reservation(
-                                                              self.reservation)
+                    self.reservation
+                )
                 if any(each.reservation_quota_limit == 1
                        for each in allocations):
                     hidden.append('quota')
