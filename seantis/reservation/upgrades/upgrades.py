@@ -114,6 +114,26 @@ def remove_dead_resources(context):
                     registry.unregisterResource(resource.getId())
 
 
+def add_new_email_template(context, name):
+
+    # go through all email templates
+    from seantis.reservation.mail_templates import templates
+    template = templates[name]
+
+    brains = utils.portal_type_in_site('seantis.reservation.emailtemplate')
+
+    for tpl in (b.getObject() for b in brains):
+
+        # and add the new email template in the correct language if available
+        if template.is_translated(tpl.language):
+            lang = tpl.language
+        else:
+            lang = 'en'
+
+        setattr(tpl, '{}_subject'.format(name), template.get_subject(lang))
+        setattr(tpl, '{}_content'.format(name), template.get_body(lang))
+
+
 @db_upgrade
 def upgrade_to_1001(operations, metadata):
 
@@ -272,23 +292,7 @@ def upgrade_1010_to_1011(context):
 
 
 def upgrade_1011_to_1012(context):
-
-    # go through all email templates
-    from seantis.reservation.mail_templates import templates
-    template = templates['reservation_made']
-
-    brains = utils.portal_type_in_site('seantis.reservation.emailtemplate')
-
-    for tpl in (b.getObject() for b in brains):
-
-        # and add the new email template in the correct language if available
-        if template.is_translated(tpl.language):
-            lang = tpl.language
-        else:
-            lang = 'en'
-
-        tpl.reservation_made_subject = template.get_subject(lang)
-        tpl.reservation_made_content = template.get_body(lang)
+    add_new_email_template(context, 'reservation_made')
 
 
 def upgrade_1012_to_1013(context):
@@ -535,3 +539,9 @@ def upgrade_1103_to_1104(operations, metadata):
     if 'description' not in reservations_table.columns:
         operations.add_column('reservations',
                               Column('description', types.Unicode(254)))
+
+
+def upgrade_1104_to_1105(context):
+
+    add_new_email_template(context, 'reservation_changed')
+    add_new_email_template(context, 'reservation_updated')

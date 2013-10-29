@@ -227,4 +227,13 @@
         profile="seantis.reservation:default">
     </genericsetup:upgradeStep>
 
+    <genericsetup:upgradeStep
+        title="Update email templates with changed-email content"
+        description=""
+        source="1104"
+        destination="1105"
+        handler=".upgrades.upgrade_1104_to_1105"
+        profile="seantis.reservation:default">
+    </genericsetup:upgradeStep>
+
 </configure>
