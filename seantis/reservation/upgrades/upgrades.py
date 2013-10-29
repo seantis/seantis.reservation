@@ -490,18 +490,26 @@ def upgrade_1101_to_1102(context):
         SELECT enum.enum_add('reservation_target_type', 'recurrence');
 
         """
-        statement = "ALTER TYPE reservation_target_type ADD VALUE 'recurrence'"
         try:
-            # XXX this feels wrong ...
-            raw_connection = connection.connection.connection
-            raw_connection.set_isolation_level(0)
-            connection.execute(statement)
-        # raised when recurrence has already been added
+            from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+        except ImportError:
+            log.error('psycopg2 was expected but not found')
+            return
+
+        try:
+            # Seems to move the executed statements outside transactions
+            # which is required for the ALTER statement.
+            # This is some magic juju.
+            connection.connection.connection.set_isolation_level(
+                ISOLATION_LEVEL_AUTOCOMMIT
+            )
+            connection.execute(
+                "ALTER TYPE reservation_target_type ADD VALUE 'recurrence'"
+            )
         except IntegrityError:
-            pass
+            pass  # raised when recurrence has already been added
 
     add_rrule_column(context)
-    # XXX maybe add migration for non-postgres infrastructure
     alter_postgres_enum_type(context)
 
 
