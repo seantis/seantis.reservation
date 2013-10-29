@@ -75,7 +75,7 @@ def all_allocations_in_range(start, end):
 
 @serialized
 def unblock_periods(reservation):
-    """Unblock periods for any resource based o a reservation.
+    """Unblock periods for any resource based on a reservation.
 
     """
     if not utils.is_uuid(reservation):
