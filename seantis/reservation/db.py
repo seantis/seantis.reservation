@@ -1,14 +1,9 @@
-from logging import getLogger
-from seantis.reservation.utils import as_machine_date
-from seantis.reservation.error import ReservationError
 import transaction
-from seantis.reservation.utils import get_date_range
-from seantis.reservation.events import ReservationSlotsUpdatedEvent
-from seantis.reservation.events import ReservationUpdatedEvent
+
+from logging import getLogger
 log = getLogger('seantis.reservation')
 
-from uuid import UUID
-from uuid import uuid1 as new_uuid
+from uuid import UUID, uuid1 as new_uuid
 from datetime import datetime, timedelta, MINYEAR, MAXYEAR
 from itertools import groupby
 
@@ -19,37 +14,42 @@ from sqlalchemy.orm import joinedload, exc
 from sqlalchemy import func, null
 
 from seantis.reservation.events import (
-    ReservationMadeEvent,
     ReservationApprovedEvent,
     ReservationDeniedEvent,
+    ReservationMadeEvent,
     ReservationRevokedEvent,
     ReservationsConfirmedEvent,
     ReservationSlotsCreatedEvent,
     ReservationSlotsRemovedEvent,
+    ReservationSlotsUpdatedEvent,
+    ReservationUpdatedEvent,
 )
 
 from seantis.reservation.models import (
     Allocation, BlockedPeriod, ReservedSlot, Reservation, Recurrence
 )
+
 from seantis.reservation.error import (
     AffectedPendingReservationError,
     AffectedReservationError,
     AlreadyReservedError,
     InvalidAllocationError,
     InvalidQuota,
+    InvalidReservationError,
+    InvalidReservationToken,
     NoRecurringReservationError,
     NoReservedSlotsLeftError,
     NotReservableError,
     OverlappingAllocationError,
-    ReservationTooLong,
-    ReservationParametersInvalid,
-    InvalidReservationToken,
-    InvalidReservationError,
-    QuotaOverLimit,
     QuotaImpossible,
+    QuotaOverLimit,
+    ReservationError,
     ReservationOutOfBounds,
+    ReservationParametersInvalid,
+    ReservationTooLong,
     UnblockableAlreadyReservedError,
 )
+
 from seantis.reservation.session import serialized
 from seantis.reservation.raster import rasterize_span, MIN_RASTER_VALUE
 from seantis.reservation.interfaces import validate_email
@@ -1195,13 +1195,15 @@ class Scheduler(object):
                 current_reservations = reservation.timespans()
 
                 for old_start, old_end in current_reservations:
-                    old_start, old_end = as_machine_date(old_start, old_end)
+                    old_start, old_end = utils.as_machine_date(
+                        old_start, old_end
+                    )
                     query_del = query.filter(ReservedSlot.start >= old_start)\
                                      .filter(ReservedSlot.end <= old_end)
                     query_del.delete('fetch')
 
                     date = old_start.date()
-                    dates = [get_date_range(date, start_time, end_time)]
+                    dates = [utils.get_date_range(date, start_time, end_time)]
                     self._reserve_sanity_check(dates, reservation.quota)
                     self.generate_reserved_slots(token, reservation, dates)
                 reservation.start = new_start
