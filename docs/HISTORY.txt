@@ -2,6 +2,21 @@
 Changelog
 =========
 
+1.1 (unreleased)
+----------------
+
+- Enable recurrence widget for allocations and reservations
+
+- Adds the ability to add a description to reservations which may then be
+  displaye in the calendar.
+
+- Adds the ability to edit the reservation start/end time.
+
+- Fixes a critical security bug where logged in users would see each others
+  unsubmitted reservations.
+
+- Adds plone.app.multilingual support.
+
 1.0.16
 ------
 

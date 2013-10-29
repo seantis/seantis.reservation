@@ -389,7 +389,7 @@ def upgrade_1019_to_1020(context):
 
 
 @db_upgrade
-def upgrade_1020_to_1021(operations, metadata):
+def upgrade_to_1100(operations, metadata):
 
     # add new registry values
     setup = getToolByName(getSite(), 'portal_setup')
@@ -423,7 +423,7 @@ def upgrade_1020_to_1021(operations, metadata):
 
 
 @db_upgrade
-def upgrade_1021_to_1022(operations, metadata):
+def upgrade_1100_to_1101(operations, metadata):
 
     inspector = Inspector.from_engine(metadata.bind)
 
@@ -449,7 +449,7 @@ def upgrade_1021_to_1022(operations, metadata):
                                 )
 
 
-def upgrade_1022_to_1023(context):
+def upgrade_1101_to_1102(context):
 
     @db_upgrade
     def add_rrule_column(operations, metadata):
@@ -480,7 +480,8 @@ def upgrade_1022_to_1023(context):
         http://en.dklab.ru/lib/dklab_postgresql_enum/
 
         then maybe import the script and run it:
-        http://en.dklab.ru/lib/dklab_postgresql_enum/demo/dklab_postgresql_enum_2009-02-26.sql
+        http://en.dklab.ru/lib/dklab_postgresql_enum/demo/
+        dklab_postgresql_enum_2009-02-26.sql
 
         delete enums:
         SELECT enum.enum_del('reservation_target_type', 'recurrence');
@@ -504,11 +505,11 @@ def upgrade_1022_to_1023(context):
     alter_postgres_enum_type(context)
 
 
-def upgrade_1023_to_1024(context):
+def upgrade_1102_to_1103(context):
 
     setup = getToolByName(context, 'portal_setup')
     setup.runAllImportStepsFromProfile(
-        'profile-seantis.reservation.upgrades:1024'
+        'profile-seantis.reservation.upgrades:1103'
     )
 
     registry = getUtility(IRegistry)
@@ -520,7 +521,7 @@ def upgrade_1023_to_1024(context):
 
 
 @db_upgrade
-def upgrade_1024_to_1025(operations, metadata):
+def upgrade_1103_to_1104(operations, metadata):
 
     reservations_table = Table('reservations', metadata, autoload=True)
     if 'description' not in reservations_table.columns:

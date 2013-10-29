@@ -185,47 +185,46 @@
     <genericsetup:upgradeStep
         title="Add recurrence database table"
         description=""
-        source="1020"
-        destination="1021"
-        handler=".upgrades.upgrade_1020_to_1021"
+        source="*"
+        destination="1100"
+        handler=".upgrades.upgrade_to_1100"
         profile="seantis.reservation:default">
     </genericsetup:upgradeStep>
 
     <genericsetup:upgradeStep
         title="Add blocked_periods database table"
         description=""
-        source="1021"
-        destination="1022"
-        handler=".upgrades.upgrade_1021_to_1022"
+        source="1100"
+        destination="1101"
+        handler=".upgrades.upgrade_1100_to_1101"
         profile="seantis.reservation:default">
     </genericsetup:upgradeStep>
 
     <genericsetup:upgradeStep
         title="Add recurring-reservation support"
         description=""
-        source="1022"
-        destination="1023"
-        handler=".upgrades.upgrade_1022_to_1023"
+        source="1101"
+        destination="1102"
+        handler=".upgrades.upgrade_1101_to_1102"
         profile="seantis.reservation:default">
     </genericsetup:upgradeStep>
 
     <genericsetup:upgradeStep
         title="Add separate setting for approval emails"
         description=""
-        source="1023"
-        destination="1024"
-        handler=".upgrades.upgrade_1023_to_1024"
+        source="1102"
+        destination="1103"
+        handler=".upgrades.upgrade_1102_to_1103"
         profile="seantis.reservation:default">
     </genericsetup:upgradeStep>
 
     <genericsetup:upgradeStep
         title="Add column to reservtion for calendar description"
         description=""
-        source="1024"
-        destination="1025"
-        handler=".upgrades.upgrade_1024_to_1025"
+        source="1103"
+        destination="1104"
+        handler=".upgrades.upgrade_1103_to_1104"
         profile="seantis.reservation:default">
     </genericsetup:upgradeStep>
-
 
 </configure>

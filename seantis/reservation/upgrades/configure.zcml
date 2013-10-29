@@ -3,12 +3,12 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="seantis.reservation">
 
-    <!-- 1023 -> 1024 -->
+    <!-- 1102 -> 1103 -->
     <genericsetup:registerProfile
-        name="1024"
-        title="seantis.reservation.upgrades.1024: Update"
+        name="1103"
+        title="seantis.reservation.upgrades.1103: Update"
         description=""
-        directory="profiles/1024"
+        directory="profiles/1103"
         for="Products.CMFPlone.interfaces.IMigratingPloneSiteRoot"
         provides="Products.GenericSetup.interfaces.EXTENSION"
         />
