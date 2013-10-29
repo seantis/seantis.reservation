@@ -1,5 +1,3 @@
-import transaction
-
 from App.config import getConfiguration, setConfiguration
 from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import PLONE_FIXTURE
@@ -8,9 +6,7 @@ from plone.app.testing import FunctionalTesting
 from plone.app.testing import applyProfile
 from plone.app.testing import quickInstallProduct
 from plone.testing import z2
-from OFS.Folder import Folder
 from Testing import ZopeTestCase
-from zope.configuration import xmlconfig
 
 try:
     from seantis.reservation import test_database
@@ -54,6 +50,11 @@ class SqlLayer(PloneSandboxLayer):
 
         import seantis.reservation
         self.loadZCML(package=seantis.reservation)
+
+        # treat certain sql warnings as errors
+        import warnings
+        warnings.filterwarnings('error', 'The IN-predicate.*')
+        warnings.filterwarnings('error', 'Unicode type received non-unicode.*')
 
     def setUpPloneSite(self, portal):
 

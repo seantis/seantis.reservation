@@ -79,11 +79,11 @@ class TestUpdateReservation(BaseTestDB):
         dates = (start, end)
 
         self._setup_allocations(dates=dates, rrule='')
-        self.sc.update_reservation(self.token, start, end, 'bar@example.com',
-                                   'description', {})
+        self.sc.update_reservation(self.token, start, end, u'bar@example.com',
+                                   u'description', {})
         reservation = self.sc.reservation_by_token(self.token).one()
-        self.assertEqual('bar@example.com', reservation.email)
-        self.assertEqual('description', reservation.description)
+        self.assertEqual(u'bar@example.com', reservation.email)
+        self.assertEqual(u'description', reservation.description)
 
     @serialized
     def test_reserved_slots_are_updated_for_allocation(self):
@@ -96,7 +96,7 @@ class TestUpdateReservation(BaseTestDB):
 
         self.assertEqual(4, self.sc.managed_reserved_slots().count())
         self.sc.update_reservation(self.token, start, end, reservation_email,
-                                   'foo', {})
+                                   u'foo', {})
         self.assertEqual(8, self.sc.managed_reserved_slots().count())
 
     @serialized
@@ -118,7 +118,7 @@ class TestUpdateReservation(BaseTestDB):
         new_end = datetime(2011, 1, 1, 16, 0)
         self.assertEqual(4, self.sc.managed_reserved_slots().count())
         self.sc.update_reservation(self.token, start1, new_end,
-                                   reservation_email, 'foo', {})
+                                   reservation_email, u'foo', {})
         self.assertEqual(8, self.sc.managed_reserved_slots().count())
 
     def test_reserved_slots_not_updated_for_overlapping_recurrence(self):
@@ -144,7 +144,7 @@ class TestUpdateReservation(BaseTestDB):
         def fail_already_reserved():
             new_end = datetime(2011, 1, 1, 17)
             self.sc.update_reservation(self.token, start1, new_end,
-                                       reservation_email, 'foo', {})
+                                       reservation_email, u'foo', {})
         self.assertRaises(AlreadyReservedError, fail_already_reserved)
 
     @serialized
@@ -160,7 +160,7 @@ class TestUpdateReservation(BaseTestDB):
 
         def fail_overlaps():
             self.sc.update_reservation(token_early_reservation, start,
-                                       end_late, reservation_email, 'foo', {})
+                                       end_late, reservation_email, u'foo', {})
         self.assertRaises(AlreadyReservedError, fail_overlaps)
 
     @serialized
@@ -175,7 +175,7 @@ class TestUpdateReservation(BaseTestDB):
 
         def fail_blocked():
             self.sc.update_reservation(self.token, start,
-                                       end_late, reservation_email, 'foo', {})
+                                       end_late, reservation_email, u'foo', {})
         self.assertRaises(AlreadyReservedError, fail_blocked)
 
     @serialized
@@ -190,7 +190,7 @@ class TestUpdateReservation(BaseTestDB):
 
         def fail_out_of_bounds():
             self.sc.update_reservation(self.token, start, end_out_of_bounds,
-                                       reservation_email, 'foo', {})
+                                       reservation_email, u'foo', {})
         self.assertRaises(ReservationOutOfBounds, fail_out_of_bounds)
 
     @serialized
@@ -204,7 +204,7 @@ class TestUpdateReservation(BaseTestDB):
 
         def fail():
             self.sc.update_reservation(self.token, start, end,
-                                       reservation_email, 'foo', {})
+                                       reservation_email, u'foo', {})
         self.assertRaises(AssertionError, fail)
 
     @serialized
@@ -218,7 +218,7 @@ class TestUpdateReservation(BaseTestDB):
 
         def fail():
             self.sc.update_reservation(self.token, start, end,
-                                       reservation_email, 'foo', {})
+                                       reservation_email, u'foo', {})
         self.assertRaises(AssertionError, fail)
 
 

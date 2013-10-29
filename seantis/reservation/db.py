@@ -1444,14 +1444,19 @@ class Scheduler(object):
 
         """
         master = self.allocation_by_id(allocation_id)
-
-        reservation_tokens = [each.reservation_token for each
-                              in master.reserved_slots]
+        tokens = [slot.reservation_token for slot in master.reserved_slots]
 
         query = self.managed_reservations()
-        return query.filter(or_(Reservation.token.in_(reservation_tokens),
-                                Reservation.target == master.group)
-                            )
+
+        if not tokens:
+            return query.filter(Reservation.target == master.group)
+        else:
+            return query.filter(
+                or_(
+                    Reservation.token.in_(tokens),
+                    Reservation.target == master.group
+                )
+            )
 
     def reservations_by_allocation(self, allocation_id):
         master = self.allocation_by_id(allocation_id)
