@@ -1776,3 +1776,38 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(sc2.managed_blocked_periods().count(), 1)
         sc1.remove_reservation_from_session(session_id, token)
         self.assertEqual(sc2.managed_blocked_periods().count(), 0)
+
+    @serialized
+    def test_extinguish_resource(self):
+        sc = Scheduler(new_uuid())
+
+        dates = [
+            (datetime(2013, 10, 29, 8, 0), datetime(2013, 10, 29, 9, 0)),
+            (datetime(2013, 10, 30, 8, 0), datetime(2013, 10, 30, 9, 0))
+        ]
+
+        sc.allocate(dates, rrule='RRULE:FREQ=DAILY;COUNT=1')
+        sc.approve_reservation(sc.reserve(reservation_email, (
+            datetime(2013, 10, 29, 8, 30),
+            datetime(2013, 10, 29, 9, 0),
+
+        )))
+
+        block_token = new_uuid()
+        sc.block_period(
+            datetime(2013, 10, 29, 8, 0),
+            datetime(2013, 10, 29, 8, 30),
+            block_token
+        )
+
+        self.assertEqual(sc.managed_allocations().count(), 2)
+        self.assertEqual(sc.managed_reserved_slots().count(), 1)
+        self.assertEqual(sc.managed_blocked_periods().count(), 1)
+        self.assertEqual(Session.query(Recurrence).count(), 1)
+
+        db.extinguish_resource(sc.uuid)
+
+        self.assertEqual(sc.managed_allocations().count(), 0)
+        self.assertEqual(sc.managed_reserved_slots().count(), 0)
+        self.assertEqual(sc.managed_blocked_periods().count(), 0)
+        self.assertEqual(Session.query(Recurrence).count(), 0)

@@ -84,6 +84,12 @@ def unblock_periods(reservation):
     query.delete('fetch')
 
 
+@serialized
+def remove_orphan_recurrences():
+    orphans = Session.query(Recurrence).filter(~Recurrence.allocations.any())
+    orphans.delete(synchronize_session=False)
+
+
 def grouped_reservation_view(query):
     """Takes a query of reserved slots joined with allocations and uses it
     to return reservation uuid, allocation id and the start and end dates
@@ -354,7 +360,9 @@ def extinguish_resource(resource_uuid):
     scheduler.managed_reservations().delete('fetch')
     scheduler.managed_reserved_slots().delete('fetch')
     scheduler.managed_allocations().delete('fetch')
-    #XXX delete recurrences?
+    scheduler.managed_blocked_periods().delete('fetch')
+
+    remove_orphan_recurrences()
 
 
 class Scheduler(object):
@@ -426,7 +434,7 @@ class Scheduler(object):
         return query
 
     def managed_blocked_periods(self):
-        """" The block_periods managed by this scheduler / resource. """
+        """ The block_periods managed by this scheduler / resource. """
         query = Session.query(BlockedPeriod)
         query = query.filter(BlockedPeriod.resource == self.uuid)
 
@@ -855,18 +863,11 @@ class Scheduler(object):
                     allocation.pending_reservations[0]
                 )
 
-        # remove recurrence as well if this is the last allocation
-        if len(allocations) == 1 and allocations[0].recurrence:
-            allocation = allocations[0]
-            if len(allocation.recurrence.allocations) == 1:
-                recurrence_id = allocation.recurrence_id
-                assert recurrence_id
-
         for allocation in allocations:
             if not allocation.is_transient:
                 Session.delete(allocation)
-        if recurrence_id:
-            Session.delete(Session.query(Recurrence).get(recurrence_id))
+        
+        remove_orphan_recurrences()
 
     def _reserve_sanity_check(self, dates, quota):
         """Check the request for saneness. If any requested date cannot be
