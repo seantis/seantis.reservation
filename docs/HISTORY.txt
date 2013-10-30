@@ -2,6 +2,12 @@
 Changelog
 =========
 
+1.0.17 (unreleased)
+-------------------
+
+- Ensures that different logged in users don't see each others reservations.
+  [deiferni]
+
 1.0.16
 ------
 
