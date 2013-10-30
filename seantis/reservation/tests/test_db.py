@@ -1060,6 +1060,28 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(partitions[0][1], None)
 
     @serialized
+    def test_allocation_partition_with_24_as_last_hour(self):
+        self.login_admin()
+        resource = self.create_resource()
+        resource.first_hour = 0
+        resource.last_hour = 24
+        sc = Scheduler(resource.uuid())
+
+        allocations = sc.allocate(
+            (
+                datetime(2011, 1, 1, 8, 0),
+                datetime(2011, 1, 1, 10, 0)
+            ),
+            partly_available=True
+        )
+
+        allocation = allocations[0]
+        partitions = allocation.availability_partitions(sc)
+        self.assertEqual(len(partitions), 1)
+        self.assertEqual(partitions[0][0], 100.0)
+        self.assertEqual(partitions[0][1], None)
+
+    @serialized
     def test_allocation_partition_reserved_partitions(self):
         self.login_admin()
         sc = Scheduler(self.create_resource().uuid())
