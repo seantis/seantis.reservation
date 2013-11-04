@@ -1,9 +1,11 @@
-from seantis.reservation import _
+import re
+
 from z3c.form.converter import CalendarDataConverter
 from z3c.form.converter import FormatterValidationError
 from zope.i18n.format import DateTimeFormat
-import re
-import zope.i18n
+from zope.i18n.format import DateTimeParseError
+
+from seantis.reservation import _
 
 
 class FriendlyTimeDataConverter(CalendarDataConverter):
@@ -40,7 +42,7 @@ class FriendlyTimeDataConverter(CalendarDataConverter):
                     value = value.replace('24', '00', 1)
                 value = self.pattern_non_digits.sub('', value)
                 return self.friendly_formatter.parse(value)
-            except (zope.i18n.format.DateTimeParseError, ValueError):
+            except (DateTimeParseError, ValueError):
                 msg = _('msg_error_time_value',
                         default=u'Please specify a valid time, '
                                  'for example 09:00')

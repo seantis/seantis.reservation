@@ -1,11 +1,13 @@
 from datetime import time
-from seantis.reservation.converter import FriendlyTimeDataConverter
-from seantis.reservation.tests import IntegrationTestCase
+
 from z3c.form.browser.text import TextWidget
 from z3c.form.converter import FormatterValidationError
 from z3c.form.testing import TestRequest
 from zope import schema
 from zope.i18n.locales import locales
+
+from seantis.reservation.converter import FriendlyTimeDataConverter
+from seantis.reservation.tests import IntegrationTestCase
 
 
 class TestConverter(IntegrationTestCase):
