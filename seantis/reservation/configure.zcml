@@ -139,6 +139,10 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
 
 <adapter factory=".interfaces.DefaultLanguage" name="default" />
 
+
+<adapter factory=".converter.FriendlyTimeDataConverter"
+    for="zope.schema.interfaces.ITime z3c.form.interfaces.ITextWidget" />
+
 <!-- Resources -->
 <browser:resourceDirectory name="seantis.reservation.images" directory="images"/>
 <browser:resourceDirectory name="seantis.reservation.js" directory="js"/>
