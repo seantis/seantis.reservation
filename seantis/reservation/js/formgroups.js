@@ -187,7 +187,7 @@ seantis.formgroups.init = function(el) {
         on_is_enabled: function(trigger) {
             return trigger.is(':checked');
         }
-    })
+    });
 
     seantis.formgroups.add_utility_links();
 };
