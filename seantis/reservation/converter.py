@@ -1,5 +1,6 @@
 import re
 
+from z3c.form import interfaces
 from z3c.form.converter import CalendarDataConverter
 from z3c.form.converter import FormatterValidationError
 from zope.i18n.format import DateTimeFormat
@@ -47,3 +48,20 @@ class FriendlyTimeDataConverter(CalendarDataConverter):
                         default=u'Please specify a valid time, '
                                  'for example 09:00')
                 raise FormatterValidationError(msg, value)
+
+
+class AllocationTimeDataConverter(FriendlyTimeDataConverter):
+
+    def toFieldValue(self, value):
+        try:
+            return super(AllocationTimeDataConverter, self).toFieldValue(value)
+        except (FormatterValidationError, ValueError):
+            view = self.widget.form
+
+            widget = view.get_widget('whole_day')
+            if widget:
+                raw = widget.extract()
+                whole_day = interfaces.IDataConverter(widget).toFieldValue(raw)
+                if whole_day:
+                    return None
+            raise

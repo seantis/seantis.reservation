@@ -29,6 +29,8 @@ from seantis.reservation.utils import _languagelist
 from zope.interface.declarations import alsoProvides
 from zope.component.hooks import getSite
 from zope.i18n import translate
+from zope.schema.interfaces import ITime
+from zope.interface.declarations import classImplements
 
 try:
     pkg_resources.get_distribution('plone.multilingual')
@@ -485,6 +487,17 @@ class IResource(IResourceBase):
         """
 
 
+class IAllocationTime(ITime):
+    """Needed for validation."""
+
+
+class AllocationTime(schema.Time):
+    """An allocation time."""
+
+
+classImplements(AllocationTime, IAllocationTime)
+
+
 class IAllocation(IResourceAllocationDefaults):
     """ An reservable time-slot within a calendar. """
 
@@ -506,7 +519,7 @@ class IAllocation(IResourceAllocationDefaults):
         required=False
     )
 
-    start_time = schema.Time(
+    start_time = AllocationTime(
         title=_(u'Start'),
         description=_(
             u'Allocations may start every 5 minutes if the allocation '
@@ -515,7 +528,7 @@ class IAllocation(IResourceAllocationDefaults):
         )
     )
 
-    end_time = schema.Time(
+    end_time = AllocationTime(
         title=_(u'End'),
         description=_(
             u'Allocations may end every 5 minutes if the allocation '
@@ -562,12 +575,15 @@ class IAllocation(IResourceAllocationDefaults):
 
     @invariant
     def isValidRange(Allocation):
+        if Allocation.whole_day:
+            return
+
         start, end = utils.get_date_range(
             Allocation.day,
             Allocation.start_time, Allocation.end_time
         )
 
-        if not Allocation.whole_day and abs((end - start).seconds // 60) < 5:
+        if abs((end - start).seconds // 60) < 5:
             raise Invalid(_(u'The allocation must be at least 5 minutes long'))
 
     @invariant

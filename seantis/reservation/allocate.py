@@ -114,7 +114,8 @@ class AllocationAddForm(AllocationForm):
     @extract_action_data
     def allocate(self, data):
         self._validate_recurrence_options(data)
-        dates = utils.get_dates(data)
+        whole_day = data['whole_day']
+        dates = utils.get_dates(data, is_whole_day=whole_day)
 
         def allocate():
             self.scheduler.allocate(
@@ -125,7 +126,7 @@ class AllocationAddForm(AllocationForm):
                 grouped=not data['separately'],
                 approve_manually=data['approve_manually'],
                 reservation_quota_limit=data['reservation_quota_limit'],
-                whole_day=data['whole_day'],
+                whole_day=whole_day,
                 rrule=data['recurrence'],
 
             )
