@@ -342,12 +342,13 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
         first_hour/last_hour timespan.
 
         """
-
         resource = get_resource_by_uuid(scheduler.uuid).getObject()
-        min_start_resource = datetime.combine(self.start,
-                                              time(resource.first_hour))
-        max_end_resource = datetime.combine(self.end,
-                                            time(resource.last_hour))
+        first_hour, last_hour = utils.as_machine_time(
+            resource.first_hour,
+            resource.last_hour
+        )
+        min_start_resource = datetime.combine(self.start, first_hour)
+        max_end_resource = datetime.combine(self.end, last_hour)
 
         display_start = max(min_start_resource, self.start)
         display_end = min(max_end_resource, self.end)

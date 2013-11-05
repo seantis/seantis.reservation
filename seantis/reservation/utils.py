@@ -1,3 +1,4 @@
+
 import re
 import time
 import json
@@ -1130,6 +1131,16 @@ def align_range_to_day(start, end):
     assert start <= end, "{} - {} is an invalid range".format(start, end)
 
     return align_date_to_day(start, 'down'), align_date_to_day(end, 'up')
+
+
+def as_machine_time(start_hour, end_hour):
+    """Return start and end time from an int indicating the hour.
+    """
+    assert start_hour < end_hour
+    return (
+        datetime_time(start_hour),
+        datetime_time(end_hour - 1, 59, 59, 999999)
+    )
 
 
 def as_machine_date(start, end):

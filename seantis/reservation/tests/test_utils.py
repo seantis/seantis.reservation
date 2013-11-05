@@ -250,3 +250,16 @@ class UtilsTestCase(IntegrationTestCase):
                     (datetime(2014, 3, 18, 13), datetime(2014, 3, 18, 16, 30)),
                     (datetime(2014, 4, 1, 13), datetime(2014, 4, 1, 16, 30))]
         self.assertListEqual(expected, dates)
+
+    def test_as_machine_time(self):
+        self.assertEqual(
+            (time(1), time(2, 59, 59, 999999)),
+            utils.as_machine_time(1, 3)
+        )
+
+        self.assertEqual(
+            (time(0), time(23, 59, 59, 999999)),
+            utils.as_machine_time(0, 24)
+        )
+
+        self.assertRaises(AssertionError, utils.as_machine_time, 0, 0)
