@@ -140,12 +140,12 @@ seantis.formgroups.init = function(el) {
 
     add({
         name: "recurrence",
-        trigger: find("#formfield-form-widgets-recurrence input[name=richeckbox]"),
+        trigger: find("#form-widgets-recurrence"),
         fields: [
             find('#formfield-form-widgets-separately')
         ],
         on_is_enabled: function(trigger) {
-            return trigger.attr('checked');
+            return trigger.val() !== undefined && trigger.val() !== '';
         }
     });
 
