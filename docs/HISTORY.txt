@@ -5,6 +5,10 @@ Changelog
 1.1 (unreleased)
 ----------------
 
+- Move timetable rendering from JavaScript to page templates for IE8
+  performance optimization.
+  [deiferni]
+
 - Don't autohide messages from a closing lightbox but replace existing portal
   messages in the main column.
   [deiferni]
