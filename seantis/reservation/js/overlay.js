@@ -19,28 +19,36 @@ var reservation_overlay_init = null;
     // Shows portalMessages swallowed by the prepOverlay mechanism
     // on the parent page
     var get_popup_messages = function(soup) {
+
         // all portal messages are in the same DOM (no iframe), so get the first
         var target = $('dl.portalMessage:first');
-        var messages = soup.find('dl.portalMessage');
+        // the currently displayed messages, we can overwrite them with
+        // the new messages
+        var current_messages = $('dl.portalMessage');
+        // the new messages from the overlay
+        var new_messages = soup.find('dl.portalMessage');
 
         // filter out the ones without any text
-        messages = _.filter(messages, function(m) {
+        new_messages = _.filter(new_messages, function(m) {
             return !_.isEmpty($.trim($(m).find('dd').text()));
         });
 
-        if (!messages.length) {
-            return {};
+        if (!new_messages.length) {
+            var show = function() {
+                current_messages.hide();
+            };
+            return {show: show};
         }
 
-        messages = $(messages);
+        new_messages = $(new_messages);
 
         var show = function() {
-            messages.hide();
-            target.after(messages);
-            messages.fadeIn('slow');
+            current_messages.hide();
+            new_messages.hide();
+            target.after(new_messages);
+            new_messages.fadeIn('slow');
         };
         var hide = function() {
-            messages.fadeOut('slow');
             popups = null;
         };
 
@@ -62,7 +70,6 @@ var reservation_overlay_init = null;
         }
 
         setTimeout(get_result.show, 0);
-        setTimeout(get_result.hide, 4000);
     };
 
     var disable_readonly_calendars = function() {

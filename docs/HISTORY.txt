@@ -5,6 +5,10 @@ Changelog
 1.1 (unreleased)
 ----------------
 
+- Don't autohide messages from a closing lightbox but replace existing portal
+  messages in the main column.
+  [deiferni]
+
 - Be a bit more tolerant with time user-input for allocations and reservations.
   Auto-Correct "24:00" to "00:00" and strip additional text like "13:00 Uhr".
   Don't validate start/end time of an allocation when "Whole Day" has been
