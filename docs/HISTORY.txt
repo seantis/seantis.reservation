@@ -17,15 +17,21 @@ Changelog
   Auto-Correct "24:00" to "00:00" and strip additional text like "13:00 Uhr".
   Don't validate start/end time of an allocation when "Whole Day" has been
   selected to avoid confusing error messages.
+  [deiferni]
 
 - Enable recurrence widget for allocations and reservations
+  [deiferni]
 
 - Adds the ability to add a description to reservations which may then be
-  displaye in the calendar.
+  displayed in the calendar.
+  [deiferni]
 
 - Adds the ability to edit the reservation start/end time.
+  [deiferni]
 
 - Adds plone.app.multilingual support.
+  [deiferni]
+
 
 1.0.17 (unreleased)
 -------------------
