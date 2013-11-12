@@ -965,11 +965,14 @@ def get_dates(data, is_whole_day=False):
 
     """
 
-    start, end = get_date_range(
-        data['day'], data['start_time'], data['end_time']
-    )
     if is_whole_day:
-        start, end = align_range_to_day(start, end)
+        # time does not matter, it is replaced
+        day = datetime.combine(data['day'], datetime_time(0))
+        start, end = align_range_to_day(day, day)
+    else:
+        start, end = get_date_range(
+            data['day'], data['start_time'], data['end_time']
+        )
 
     if not data['recurrence']:
         return ((start, end))
