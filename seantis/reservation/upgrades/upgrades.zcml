@@ -236,4 +236,13 @@
         profile="seantis.reservation:default">
     </genericsetup:upgradeStep>
 
+    <genericsetup:upgradeStep
+        title="Remove jquery.timetable.js"
+        description=""
+        source="1105"
+        destination="1106"
+        handler=".upgrades.upgrade_1105_to_1106"
+        profile="seantis.reservation:default">
+    </genericsetup:upgradeStep>
+
 </configure>
