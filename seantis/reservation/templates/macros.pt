@@ -67,6 +67,8 @@
       <tal:block define="
         first_reservation python: reservations[0];
         last_reservation python: reservations[-1];
+        timespan_start view/timespan_start | nothing;
+        timespan_end view/timespan_end | nothing;
       ">
         <div class="reservation">
           <tal:block define="
@@ -79,7 +81,7 @@
           <div tal:repeat="reservation reservations" class="reservation-list">
             <tal:block define="
                 data python: reservation.data;
-                timespans python: reservation.timespans();
+                timespans python: reservation.timespan_entries(start=timespan_start, end=timespan_end);
               ">
                 <metal:use use-macro="context/@@seantis-reservation-macros/reservation-data" />
                 <metal:use use-macro="context/@@seantis-reservation-macros/reservation-timespans" />
@@ -183,7 +185,7 @@
     <tal:comment replace="nothing">
     Reservation timespans block. Needs the following variables:
 
-    timespans -> list of start/end tuples
+    timespans -> list of Timespan namedtuples
     </tal:comment>
 
     <metal:define define-macro="reservation-timespans" tal:define="macro python: context.unrestrictedTraverse('@@seantis-reservation-macros')">
@@ -193,11 +195,28 @@
 
           <tal:block tal:repeat="timespan python: sorted(timespans)">
               <tal:block tal:define="
-                start python: timespan[0];
-                end python: timespan[1];
+                start python: timespan.start;
+                end python: timespan.end;
+                allocation_id python: timespan.allocation_id;
                 display python: macro.utils.display_date(start, end);
               ">
-                <div tal:content="display"></div>
+                  <div>
+                      <tal:inline tal:content="display"></tal:inline>
+                      <tal:removal_links tal:condition="show_actions | nothing">
+                      <a tal:condition="python: reservation.is_recurrence and len(timespans) > 1"
+                         class="link-overlay remove-reserved-slots"
+                         tal:attributes="href python: macro.remove_reserved_slots_url(token, allocation_id)"
+                         i18n:translate="">
+                         Remove reservation
+                      </a>
+                      <a tal:condition="not: repeat/timespan/start"
+                         class="link-overlay remove-all-reserved-slots"
+                         tal:attributes="href python: macro.remove_all_reserved_slots_url(token, allocation_id)"
+                         i18n:translate="">
+                         Remove future reservations
+                      </a>
+                      </tal:removal_links>
+                  </div>
               </tal:block>
           </tal:block>
 
