@@ -1,7 +1,7 @@
 import json
 
 from calendar import Calendar
-from datetime import date, timedelta
+from datetime import date, time, timedelta
 
 from five import grok
 from zope.interface import Interface
@@ -130,6 +130,84 @@ class MonthlyReportView(
 
         return False
 
+    def merged_divisions(self, reservation):
+        """Calculate timetable cells for display in reports.
+
+        Converted from jquery.timetable.js to python.
+
+        """
+        start, end = reservation['start'], reservation['end']
+        if start.hour < self.min_hour:
+            start = time(self.min_hour, 0)
+        if end.hour > self.max_hour:
+            end = time(self.max_hour, 0)
+
+        text = "{} - {}".format(start.strftime('%H:%M'), end.strftime('%H:%M'))
+
+        result = []
+        for hour in range(self.min_hour, self.max_hour):
+
+            # outside of start & end are the free cells
+            if hour < start.hour or end.hour < hour:
+                result.append(dict(left=0.0, right=0.0, span=1.0, state='free',
+                                   text=''))
+                continue
+
+            # one single occupied cell
+            if hour == start.hour and hour == end.hour:
+                result.append(dict(
+                    left=(start.minute / 60.0) * 100,
+                    right=((60.0 - end.minute) / 60.0) * 100,
+                    span=1.0,
+                    state='occupied',
+                    text=text
+                ))
+                continue
+
+            #a item which will span multiple cells
+            if hour == start.hour:
+                result.append(dict(
+                    left=(start.minute / 60.0) * 100,
+                    right=0.0,
+                    span=1.0,
+                    state='occupied',
+                    text=text
+                ))
+                continue
+
+            previous = result[-1]
+
+            # increment span of most recent item
+            if start.hour < hour and hour < end.hour:
+                previous['span'] += 1
+                continue
+
+            # close last item
+            if hour == end.hour:
+                # if the hour ends on zero the last cell is free
+                if end.minute == 0:
+                    result.append(dict(
+                        left=0.0, right=0.0, state='free', span=1.0
+                    ))
+                else:
+                    previous['right'] = ((60 - end.minute) / 60.0) * 100
+                    previous['span'] += 1
+
+                previous['left'] = (previous['left'] /
+                                    (previous['span'] * 100)) * 100
+                previous['right'] = (previous['right'] /
+                                     (previous['span'] * 100)) * 100
+                continue
+
+        for each in result:
+            left = each['left']
+            right = each['right']
+            middle = 100 - left - right
+            style = "width: {}%; margin-left: {}%; margin-right: {}%;"
+            each['style'] = style.format(middle, left, right)
+
+        return result
+
 
 def monthly_report(year, month, resources, reservations='*'):
 
@@ -211,7 +289,7 @@ def monthly_report(year, month, resources, reservations='*'):
         used_days[day] = True
 
         end += timedelta(microseconds=1)
-        start, end = start.strftime('%H:%M'), end.strftime('%H:%M')
+        start_fmt, end_fmt = start.strftime('%H:%M'), end.strftime('%H:%M')
 
         context = resources[utils.string_uuid(reservation.resource)]
 
@@ -245,7 +323,7 @@ def monthly_report(year, month, resources, reservations='*'):
                 end=end,
                 email=reservation.email,
                 data=reservation.data,
-                timespans=json_timespans(start, end),
+                timespans=dict(start=start_fmt, end=end_fmt),
                 rightside_urls=rightside_urls,
                 token=reservation.token,
                 quota=utils.get_reservation_quota_statement(reservation.quota),
