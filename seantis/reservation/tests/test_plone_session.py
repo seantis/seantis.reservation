@@ -1,3 +1,7 @@
+from plone.app.testing import SITE_OWNER_NAME
+from plone.app.testing import TEST_USER_NAME
+from plone.app.testing import login
+from plone.app.testing import logout
 from seantis.reservation import plone_session
 from seantis.reservation.tests import IntegrationTestCase
 
@@ -41,3 +45,14 @@ class TestPloneSession(IntegrationTestCase):
         result1 = plone_session.get_session_id(context)
         result2 = plone_session.get_session_id(context)
         self.assertEqual(result1, result2)
+
+    def test_generate_session_id_logged_in_users(self):
+        login(self.portal, TEST_USER_NAME)
+        id_user = plone_session.generate_session_id(self.portal)
+        logout()
+
+        self.login_admin()
+        id_site_owner = plone_session.generate_session_id(self.portal)
+        logout()
+
+        self.assertNotEqual(id_user, id_site_owner)
