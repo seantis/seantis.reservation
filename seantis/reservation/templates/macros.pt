@@ -186,6 +186,7 @@
     Reservation timespans block. Needs the following variables:
 
     timespans -> list of Timespan namedtuples
+    reservation -> the reservation
     </tal:comment>
 
     <metal:define define-macro="reservation-timespans" tal:define="macro python: context.unrestrictedTraverse('@@seantis-reservation-macros')">
@@ -199,10 +200,11 @@
                 end python: timespan.end;
                 allocation_id python: timespan.allocation_id;
                 display python: macro.utils.display_date(start, end);
+                show_actions show_actions | nothing;
               ">
                   <div>
                       <tal:inline tal:content="display"></tal:inline>
-                      <tal:removal_links tal:condition="show_actions | nothing">
+                      <tal:removal_links tal:condition="python: show_actions and not reservation.is_pending">
                       <a tal:condition="python: reservation.is_recurrence and len(timespans) > 1"
                          class="link-overlay remove-reserved-slots"
                          tal:attributes="href python: macro.remove_reserved_slots_url(token, allocation_id)"
