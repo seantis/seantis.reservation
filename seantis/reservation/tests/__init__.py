@@ -81,8 +81,8 @@ class TestCase(unittest.TestCase):
         outlaw.execute('DELETE FROM blocked_periods')
         outlaw.execute('DELETE FROM reservations')
         outlaw.execute('DELETE FROM reserved_slots')
-        outlaw.execute('DELETE FROM recurrences')
         outlaw.execute('DELETE FROM allocations')
+        outlaw.execute('DELETE FROM recurrences')
         outlaw.dispose()
 
         self.logout()

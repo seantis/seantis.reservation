@@ -1,3 +1,6 @@
+from datetime import date
+from datetime import time
+from datetime import timedelta
 import json
 import transaction
 from itertools import chain
@@ -10,6 +13,7 @@ from datetime import datetime
 from seantis.reservation import utils
 from seantis.reservation import db
 from seantis.reservation.tests import FunctionalTestCase
+from seantis.reservation.db import Scheduler
 
 
 class FormsetField(object):
@@ -595,6 +599,89 @@ class TestBrowser(FunctionalTestCase):
         self.assertNotIn(
             'Please specify a valid time, for example 09:00', errors
         )
+
+    def test_remove_reserved_slots_not_present_for_pending_reservations(self):
+        # setup resource and allocations
+        browser = self.new_browser()
+        browser.login_admin()
+
+        self.add_resource('removeslots')
+        resource = self.portal['testfolder']['removeslots']
+
+        db = Scheduler(resource.uuid())
+        start1 = datetime.combine(date.today(), time(resource.first_hour))
+        end1 = datetime.combine(date.today(), time(resource.last_hour))
+        start2 = start1 + timedelta(days=1)
+        end2 = end1 + timedelta(days=1)
+
+        rrule = 'RRULE:FREQ=DAILY;COUNT=2'
+        dates = (start1, end1, start2, end2)
+
+        db.allocate(
+            dates, raster=15, partly_available=True, rrule=rrule,
+            approve_manually=True, grouped=False
+        )
+        db.reserve(
+            u'foo@example.com', dates=dates, rrule=rrule
+        )
+        transaction.commit()
+
+        browser.open(self.infolder('/removeslots'))
+        menu = self.allocation_menu('removeslots', start1, end1)
+        browser.open(menu['manage'])
+
+        self.assertNotIn(
+            'Remove reservation',
+            str(browser.query('.remove-reserved-slots'))
+        )
+
+    def test_remove_reserved_slots(self):
+        # setup resource and allocations
+        browser = self.new_browser()
+        browser.login_admin()
+
+        self.add_resource('removeslots')
+        resource = self.portal['testfolder']['removeslots']
+
+        db = Scheduler(resource.uuid())
+        start1 = datetime.combine(date.today(), time(resource.first_hour))
+        end1 = datetime.combine(date.today(), time(resource.last_hour))
+        start2 = start1 + timedelta(days=1)
+        end2 = end1 + timedelta(days=1)
+
+        rrule = 'RRULE:FREQ=DAILY;COUNT=2'
+        dates = (start1, end1, start2, end2)
+
+        db.allocate(
+            dates, raster=15, partly_available=True, rrule=rrule,
+            approve_manually=False, grouped=False
+        )
+        token = db.reserve(
+            u'foo@example.com', dates=dates, rrule=rrule
+        )
+        db.approve_reservation(token)
+        transaction.commit()
+
+        browser.open(self.infolder('/removeslots'))
+        menu = self.allocation_menu('removeslots', start1, end1)
+        browser.open(menu['manage'])
+
+        self.assertTrue(db.has_reserved_slot_in_range(start1, end1))
+        self.assertTrue(db.has_reserved_slot_in_range(start2, end2))
+
+        # do stuff, go to reservation overwie and make sure links are present
+        self.assertIn(
+            'Remove reservation',
+            str(browser.query('.remove-reserved-slots'))
+        )
+        # click first link
+        link = browser.getLink('Remove reservation')
+        link.click()
+        # confirm removal
+        browser.getControl('Remove').click()
+
+        self.assertFalse(db.has_reserved_slot_in_range(start1, end1))
+        self.assertTrue(db.has_reserved_slot_in_range(start2, end2))
 
     def test_reservation_approval(self):
 

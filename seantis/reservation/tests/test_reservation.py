@@ -25,3 +25,10 @@ class TestReservation(unittest.TestCase):
         self.assertSequenceEqual([(self.reservation.start,
                                    self.reservation.end)],
                                  self.reservation.target_dates())
+
+    def test_is_pending(self):
+        self.reservation.status = 'pending'
+        self.assertTrue(self.reservation.is_pending)
+
+        self.reservation.status = 'approved'
+        self.assertFalse(self.reservation.is_pending)

@@ -120,6 +120,10 @@ class Reservation(TimestampMixin, ORMBase, OtherModels):
         return reservation
 
     @property
+    def is_pending(self):
+        return self.status == 'pending'
+
+    @property
     def is_recurrence(self):
         return self.target_type == 'recurrence'
 
