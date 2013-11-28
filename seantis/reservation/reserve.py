@@ -328,12 +328,7 @@ class ReservationBaseForm(ResourceBaseForm):
 
         additional_data = self.additional_data(data, add_manager_defaults=True)
 
-        # only store forms defined in the formsets list
-        additional_data = dict(
-            (
-                form, additional_data[form]
-            ) for form in self.context.formsets if form in additional_data
-        )
+        additional_data = self.filter_additional_data(additional_data)
 
         if dates:
             for start, end in utils.pairs(dates):
@@ -364,6 +359,19 @@ class ReservationBaseForm(ResourceBaseForm):
         else:
             self.scheduler.approve_reservation(token)
             self.flash(_(u'Reservation successful'))
+
+        return token
+
+    def filter_additional_data(self, additional_data):
+        """Only store forms defined in the formsets list """
+
+        additional_data = dict(
+            (
+                form, additional_data[form]
+            ) for form in self.context.formsets if form in additional_data
+        )
+
+        return additional_data
 
 
 class ReservationForm(
