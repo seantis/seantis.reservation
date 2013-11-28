@@ -26,6 +26,10 @@ Changelog
 1.0.17 (unreleased)
 -------------------
 
+- Implement the filtering of form data in it's own method.
+  This makes it easier to override.
+  [mathias.leimgruber]
+
 - Ensures that different logged in users don't see each others reservations.
   [deiferni]
 
