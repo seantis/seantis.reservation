@@ -731,7 +731,7 @@ msgstr "Ressources"
 #: ./reserve.py:917
 #: ./templates/macros.pt:123
 msgid "Revoke"
-msgstr "Annuler"
+msgstr "Supprimer"
 
 #: ./reserve.py:904
 msgid "Revoke reservation"
