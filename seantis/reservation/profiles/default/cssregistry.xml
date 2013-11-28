@@ -3,13 +3,14 @@
 
     <!-- should eventually move to a separate module -->
     <stylesheet id="++resource++seantis.reservation.css/miniTip.css"
-        expression="python:object.portal_type == 'seantis.reservation.resource'"  
+        expression="python:object.portal_type == 'seantis.reservation.resource'"
         media="all" rendering="link"
     />
 
-    <!-- dito -->
+    <!-- dito. The corresponding jqyery plugin has been killed for performance
+    reasons (IE8). -->
     <stylesheet
-        id="++resource++seantis.reservation.css/jquery.timetable.css" 
+        id="++resource++seantis.reservation.css/jquery.timetable.css"
         media="all" rendering="link"
     />
 
@@ -21,8 +22,8 @@
     />
 
     <!-- print styles are not really theme dependent and unimportant anyway -->
-    <stylesheet id="++resource++seantis.reservation.css/print.css" 
+    <stylesheet id="++resource++seantis.reservation.css/print.css"
         media="print" rendering="link"
     />
-    
+
 </object>

@@ -545,3 +545,11 @@ def upgrade_1104_to_1105(context):
 
     add_new_email_template(context, 'reservation_changed')
     add_new_email_template(context, 'reservation_updated')
+
+
+def upgrade_1105_to_1106(context):
+    js_registry = getToolByName(context, 'portal_javascripts')
+
+    js_id = '++resource++seantis.reservation.js/jquery.timetable.js'
+    js_registry.unregisterResource(js_id)
+    js_registry.cookResources()

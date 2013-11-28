@@ -226,5 +226,71 @@
         </div>
     </metal:define>
 
+    <tal:comment replace="nothing">
+    Header for a Reservation timetable. Needs the following variables:
+
+    view.view.max_hour -> The last hour of the timetable
+    view.min_hour -> The first hour of the timetable
+    view.show_timetable -> If the timetable should be hidden initially
+    </tal:comment>
+
+    <metal:define define-macro="reservation-timetable-header" tal:define="macro python: context.unrestrictedTraverse('@@seantis-reservation-macros')">
+        <div tal:attributes="class python: 'timetable-wrapper' + ('hidden-timetable' if not view.show_timetable else '')">
+        <table class="timetable" tal:define="colcount python: view.max_hour - view.min_hour;
+                                             hwidth python: 100.0 / colcount">
+            <thead>
+                <tr>
+                    <tal:block repeat="hour python: range(view.min_hour, view.max_hour)">
+                        <th tal:attributes="style string:width:${hwidth}%;" tal:content="string:${hour}:00"></th>
+                    </tal:block>
+                </tr>
+            </thead>
+        </table>
+        </div>
+    </metal:define>
+
+    <tal:comment replace="nothing">
+    Body for a Reservation timetable. Needs the following variables/methods:
+
+    reservation -> the reservation
+
+    view.view.max_hour -> The last hour of the timetable
+    view.min_hour -> The first hour of the timetable
+    view.show_timetable -> If the timetable should be hidden initially
+    view.merged_divisions() -> Calculates free/occupied table cells
+    </tal:comment>
+
+    <metal:define define-macro="reservation-timetable-body" tal:define="macro python: context.unrestrictedTraverse('@@seantis-reservation-macros')">
+        <div tal:attributes="class python: 'timetable-wrapper' + ('hidden-timetable' if not view.show_timetable else '')">
+        <table class="timetable" tal:define="colcount python: view.max_hour - view.min_hour;
+                                             hwidth python: 100.0 / colcount">
+            <tbody>
+                <tr class="empty_row">
+                    <tal:block repeat="col python: range(colcount)">
+                        <td tal:attributes="style string:width:${hwidth}%;"></td>
+                    </tal:block>
+                </tr>
+                <tr>
+                    <tal:block repeat="cell python:view.merged_divisions(reservation)">
+                        <td tal:attributes="colSpan cell/span">
+                            <div class="timespan">
+                                <div tal:attributes="style cell/style; class cell/state">
+                                    <span tal:condition="exists:cell/text" tal:content="cell/text">
+                                    </span>
+                                </div>
+                            </div>
+                        </td>
+                    </tal:block>
+                </tr>
+                <tr class="empty_row">
+                    <tal:block repeat="col python: range(colcount)">
+                        <td tal:attributes="style string:width:${hwidth}%;"></td>
+                    </tal:block>
+                </tr>
+            </tbody>
+        </table>
+        </div>
+    </metal:define>
+
   </body>
 </html>

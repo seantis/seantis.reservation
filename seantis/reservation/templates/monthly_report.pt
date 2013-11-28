@@ -11,9 +11,9 @@
     <tal:main-macro metal:define-macro="main">
 
         <div tal:replace="structure provider:plone.abovecontenttitle" />
-        
+
         <h1 class="documentFirstHeading" tal:content="view/title"></h1>
-                
+
         <div tal:replace="structure provider:plone.abovecontentbody" />
 
         <metal:use use-macro="context/@@seantis-reservation-macros/controlbox">
@@ -37,7 +37,7 @@
 
         <div class="monthly-report seantis-reservation-report" tal:define="results view/results">
             <div class="day" tal:repeat="day results">
-                
+
                 <h2 tal:content="python: view.format_day(day)"></h2>
 
                 <tal:block repeat="uuid python: results[day]">
@@ -55,15 +55,8 @@
                                         <h4 tal:content="python: resource['lists'][rtype]"></h4>
                                     </div>
                                     <div class="rightcolumn">
-                                        <div 
-                                            tal:attributes="
-                                                class python: ' '.join((
-                                                    'timetable-wrapper', not view.show_timetable and 'hidden-timetable' or ''
-                                                ));
-                                                data-min_hour view/min_hour;
-                                                data-max_hour view/max_hour;
-                                            "
-                                         ></div>
+                                        <metal:use use-macro="context/@@seantis-reservation-macros/reservation-timetable-header">
+                                        </metal:use>
                                     </div>
                                     <div style="clear:both;"></div>
                                 </div>
@@ -79,25 +72,18 @@
                                             <div tal:content="structure reservation/quota"></div>
                                         </div>
                                         <div class="rightcolumn">
-                                            <div tal:attributes="
-                                                data-min_hour view/min_hour;
-                                                data-max_hour view/max_hour;
-                                                data-show_header string:false;
-                                                data-timespans reservation/timespans;
-                                                class python: ' '.join((
-                                                    'timetable-wrapper', not view.show_timetable and 'hidden-timetable' or ''
-                                                ));
-                                            "></div>
+                                            <metal:use use-macro="context/@@seantis-reservation-macros/reservation-timetable-body">
+                                            </metal:use>
                                         </div>
                                         <div style="clear:both;"></div>
                                     </div>
                                     <div class="reservation-detail">
-                                        
+
                                         <tal:comment replace="nothing">
                                             Notice how the context is grabbed through a python expression. Without it ZPT
                                             looses it. If ZPT was an animal somebody would shoot it out of pity.
                                         </tal:comment>
-                                        
+
                                         <div class="leftcolumn" tal:define="
                                             context python: reservation['resource'];
                                             data reservation/data;
@@ -110,7 +96,7 @@
                                         <div class="rightcolumn">
                                             <div class="reservation-urls">
                                                 <tal:block repeat="url reservation/rightside_urls">
-                                                    <a 
+                                                    <a
                                                         tal:attributes="href python: url[1]"
                                                         tal:content="structure python: url[0]"
                                                     >
