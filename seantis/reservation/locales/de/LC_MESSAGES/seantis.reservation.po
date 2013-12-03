@@ -32,11 +32,11 @@ msgstr "%i%% Frei"
 
 #: ./utils.py:699
 msgid "%i/%i Spot Available"
-msgstr "%i/%i Platz Verfügbar"
+msgstr "%i/%i Platz verfügbar"
 
 #: ./utils.py:695
 msgid "%i/%i Spots Available"
-msgstr "%i/%i Plätze Verfügbar"
+msgstr "%i/%i Plätze verfügbar"
 
 #: ./templates/monthly_report.pt:23
 msgid "&lt;&lt; Previous Month"
