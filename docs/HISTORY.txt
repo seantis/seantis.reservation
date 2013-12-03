@@ -5,6 +5,10 @@ Changelog
 1.0.17 (unreleased)
 -------------------
 
+- Custom e-mail templates now show a translated template upon creation, if the
+  translation is available. Fixes #92.
+  [href]
+
 - Adds quota to email templates. Closes #41.
   [href]
 
