@@ -636,7 +636,9 @@ class IEmailTemplate(form.Schema):
     reservation_received_subject = schema.TextLine(
         title=_(u'Email Subject for Received Reservations'),
         description=_(
-            u'Sent to <b>users</b> when a new pending reservation is made. '
+            u'Sent to <b>users</b> when a new reservation is made wheter they '
+            u'still need to be approved or not. By default it cointains the '
+            u'reservations made with an indication of the approval status. '
             u'May contain the template variables listed below.'
         ),
         default=templates['reservation_received'].get_subject('en')
