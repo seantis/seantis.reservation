@@ -735,6 +735,35 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(len(mirrors) + 1, len(allocation.siblings()))
 
     @serialized
+    def test_allocations_by_reservation(self):
+
+        sc = Scheduler(new_uuid())
+
+        start = datetime(2013, 12, 3, 13, 0)
+        end = datetime(2013, 12, 3, 15, 0)
+        daterange = (start, end)
+
+        allocations = sc.allocate(daterange, approve_manually=True)
+        token = sc.reserve(reservation_email, daterange)
+
+        # pending reservations return empty
+        self.assertEqual(sc.allocations_by_reservation(token).all(), [])
+
+        # on the reservation itself, the target can be found however
+        reservation = sc.reservation_by_token(token).one()
+        self.assertEqual(reservation._target_allocations().all(), allocations)
+
+        # note how this changes once the reservation is approved
+        sc.approve_reservation(token)
+
+        self.assertEqual(
+            sc.allocations_by_reservation(token).all(), allocations
+        )
+
+        # all the while it stays the same here
+        self.assertEqual(reservation._target_allocations().all(), allocations)
+
+    @serialized
     def test_quota_changes(self):
         sc = Scheduler(new_uuid())
 

@@ -672,6 +672,12 @@ class Scheduler(object):
         return query
 
     def allocations_by_reservation(self, reservation_token):
+        """ Returns the allocations for the reservation if it was *approved*,
+        pending reservations return nothing. If you need to get the allocation
+        a pending reservation might be targeting, use _target_allocations
+        in model.reservation.
+
+        """
         query = self.managed_allocations()
         query = query.join(ReservedSlot)
         query = query.filter(

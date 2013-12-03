@@ -436,9 +436,21 @@ class ReservationListView(object):
         """ Returns True if the waitinglist should be hidden. It is hidden
         if all the allocations involved in the view are set to automatic
         approval and no existing entries can be found (there might be because
-        of switching).
+        of switching from manual approval to automatic approval).
 
         """
+
+        # if a single pending reservation is wanted, the waitinglist
+        # must be visible. The allocations are not that interesting here,
+        # because there's not a real link between a pending reservation and
+        # an allocation.
+        if self.reservation:
+            reservation = self.context.scheduler().reservation_by_token(
+                self.reservation
+            ).first()
+
+            if reservation and reservation.status == 'pending':
+                return False
 
         all_allocations = self.all_allocations()
         manual_allocations = all_allocations.filter(

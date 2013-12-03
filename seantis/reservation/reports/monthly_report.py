@@ -12,7 +12,6 @@ from seantis.reservation import Session
 from seantis.reservation import db
 from seantis.reservation import utils
 from seantis.reservation.models import Allocation, Reservation
-from seantis.reservation.reserve import ReservationUrls
 from seantis.reservation.reports import GeneralReportParametersMixin
 
 calendar = Calendar()
@@ -197,7 +196,6 @@ def monthly_report(year, month, resources, reservations='*'):
     query = query.order_by(Reservation.status)
 
     reservations = query.all()
-    reservation_urls = ReservationUrls()
 
     @utils.memoize
     def json_timespans(start, end):
@@ -215,27 +213,6 @@ def monthly_report(year, month, resources, reservations='*'):
 
         context = resources[utils.string_uuid(reservation.resource)]
 
-        if reservation.status == u'approved':
-            rightside_urls = [(
-                _(u'Delete'),
-                reservation_urls.revoke_all_url(reservation.token, context)
-            )]
-        elif reservation.status == u'pending':
-            rightside_urls = [
-                (
-                    _(u'Approve'),
-                    reservation_urls.approve_all_url(
-                        reservation.token, context
-                    )
-                ),
-                (
-                    _(u'Deny'),
-                    reservation_urls.deny_all_url(reservation.token, context)
-                ),
-            ]
-        else:
-            raise NotImplementedError
-
         reservation_lists = report[day][utils.string_uuid(
             reservation.resource
         )]
@@ -246,7 +223,6 @@ def monthly_report(year, month, resources, reservations='*'):
                 email=reservation.email,
                 data=reservation.data,
                 timespans=json_timespans(start, end),
-                rightside_urls=rightside_urls,
                 token=reservation.token,
                 quota=utils.get_reservation_quota_statement(reservation.quota),
                 resource=context

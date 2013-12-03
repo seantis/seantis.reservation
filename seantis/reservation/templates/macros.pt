@@ -102,6 +102,43 @@
     </metal:define>
 
     <tal:comment replace="nothing">
+    Reservation links block (approve, decline, revoke, print). 
+    Needs the following following variables:
+
+    context -> the resource the reservation belongs to
+    token   -> token of the reservation
+    status  -> status of the reservation ('approved' or 'pending')
+    </tal:comment>
+
+    <metal:define define-macro="reservation-links" tal:define="macro python: context.unrestrictedTraverse('@@seantis-reservation-macros')">
+      <span class="reservation-urls">
+        <tal:block condition="python: status == 'approved'">
+          <a tal:attributes="href python: macro.revoke_all_url(token, context)"
+            class="reservation-action" i18n:translate="">
+            Revoke
+          </a>
+        </tal:block>
+
+        <tal:block condition="python: status == 'pending'">
+          <a tal:attributes="href python: macro.deny_all_url(token, context)"
+            class="reservation-action" i18n:translate="">
+            Deny
+          </a>
+          <a tal:attributes="href python: macro.approve_all_url(token, context)"
+            class="reservation-action" i18n:translate="">
+            Approve
+          </a>
+        </tal:block>
+
+        <a tal:attributes="href python: macro.print_all_url(token, context)"
+            class="reservation-action" i18n:translate="" data-no-overlay="true"
+            target="_blank">
+            Print
+        </a>
+      </span>
+    </metal:define>
+
+    <tal:comment replace="nothing">
     Reservation title block. Needs the following variables:
 
     title        -> title to display
@@ -115,34 +152,11 @@
 
     <metal:define define-macro="reservation-title" tal:define="macro python: context.unrestrictedTraverse('@@seantis-reservation-macros')">
       <div class="reservation-title">
+        <h3 tal:content="title"></h3>
 
-          <h3 tal:content="title"></h3>
-
-          <span tal:condition="show_actions | nothing" class="reservation-urls">
-            <tal:block condition="python: status == 'approved'">
-              <a tal:attributes="href python: macro.revoke_all_url(token, context)"
-                class="reservation-action" i18n:translate="">
-                Revoke
-              </a>
-            </tal:block>
-
-            <tal:block condition="python: status == 'pending'">
-              <a tal:attributes="href python: macro.deny_all_url(token, context)"
-                class="reservation-action" i18n:translate="">
-                Deny
-              </a>
-              <a tal:attributes="href python: macro.approve_all_url(token, context)"
-                class="reservation-action" i18n:translate="">
-                Approve
-              </a>
-            </tal:block>
-
-            <a tal:attributes="href python: macro.print_all_url(token, context)"
-                class="reservation-action" i18n:translate="" data-no-overlay="true">
-                Print
-            </a>
-          </span>
-
+        <tal:block condition="show_actions | nothing">
+          <metal:use use-macro="context/@@seantis-reservation-macros/reservation-links" />
+        </tal:block>
       </div>
     </metal:define>
 

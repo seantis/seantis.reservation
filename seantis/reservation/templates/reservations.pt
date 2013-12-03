@@ -45,7 +45,7 @@
   </div>
   <div class="splitscreen splitright">
    
-    <h2 class="documentFirstHeading" i18n:translate="">Waitinglist</h2>
+    <h2 class="documentFirstHeading" i18n:translate="" tal:condition="not:view/print_site">Waitinglist</h2>
     
     <div class="reservation-info reservation-pending" metal:define-macro="pending_reservations">
       <tal:block tal:repeat="group python: view.pending_reservations().items()">
