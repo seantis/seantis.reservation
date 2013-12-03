@@ -312,6 +312,10 @@ class ReservationMail(ReservationDataView, ReservationUrls):
 
             p['dates'] = '\n'.join(lines)
 
+        # reservation quota
+        if is_needed('quota'):
+            p['quota'] = reservation.quota
+
         # tabbed reservation data
         if is_needed('data'):
             data = reservation.data
