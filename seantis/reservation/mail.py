@@ -15,6 +15,7 @@ from plone.memoize import view
 from Products.CMFCore.interfaces import IFolderish
 from Products.CMFCore.utils import getToolByName
 from z3c.form import button
+from zope.schema import getFields
 
 from seantis.reservation.form import ReservationDataView
 from seantis.reservation.reserve import ReservationUrls
@@ -441,6 +442,35 @@ class TemplateAddForm(dexterity.AddForm):
     grok.require(permission)
 
     grok.name('seantis.reservation.emailtemplate')
+
+    def update(self, **kwargs):
+        super(TemplateAddForm, self).update(**kwargs)
+        self.use_translated_emails_as_default()
+
+    def get_field_map(self, suffix):
+        return dict(
+            (field.replace(suffix, ''), field)
+            for field in getFields(self.schema) if field.endswith(suffix)
+        )
+
+    def apply_field_map(self, mapping, get_template_value):
+        for template, field in mapping.items():
+            value = get_template_value(template)
+            if value:
+                self.widgets[field].value = value
+
+    def use_translated_emails_as_default(self):
+        language = utils.get_current_language(self.context, self.request)[:2]
+
+        subjects = self.get_field_map('_subject')
+        contents = self.get_field_map('_content')
+
+        self.apply_field_map(
+            subjects, lambda tpl: templates[tpl].get_subject(language)
+        )
+        self.apply_field_map(
+            contents, lambda tpl: templates[tpl].get_body(language)
+        )
 
     @button.buttonAndHandler(_('Save'), name='save')
     def handleAdd(self, action):
