@@ -5,6 +5,9 @@ Changelog
 1.0.17 (unreleased)
 -------------------
 
+- The print link is now shown in the monthly_report. Fixes #33.
+  [href]
+
 - Custom e-mail templates now show a translated template upon creation, if the
   translation is available. Fixes #92.
   [href]
