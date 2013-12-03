@@ -8,6 +8,9 @@ Termine:
 Email:
 %(reservation_mail)s
 
+Kontingent:
+%(quota)s
+
 Formulardaten:
 %(data)s
 

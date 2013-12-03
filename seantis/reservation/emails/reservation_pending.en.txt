@@ -8,6 +8,9 @@ Dates:
 Email:
 %(reservation_mail)s
 
+Quota:
+%(quota)s
+
 Form data:
 %(data)s
 

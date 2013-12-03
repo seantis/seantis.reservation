@@ -579,6 +579,7 @@ template_variables = _(
     u'May contain the following template variables:<br>'
     u'%(resource)s - title of the resource<br>'
     u'%(dates)s - list of dates reserved<br>'
+    u'%(quota)s - reservation quota<br>'
     u'%(reservation_mail)s - email of reservee<br>'
     u'%(data)s - formdata associated with the reservation<br>'
     u'%(approval_link)s - link to the approval view<br>'
