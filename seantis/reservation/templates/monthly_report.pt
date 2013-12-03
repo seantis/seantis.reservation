@@ -91,32 +91,23 @@
                                         </div>
                                         <div style="clear:both;"></div>
                                     </div>
-                                    <div class="reservation-detail">
-                                        
-                                        <tal:comment replace="nothing">
-                                            Notice how the context is grabbed through a python expression. Without it ZPT
-                                            looses it. If ZPT was an animal somebody would shoot it out of pity.
-                                        </tal:comment>
-                                        
-                                        <div class="leftcolumn" tal:define="
+                                    <tal:comment replace="nothing">
+                                        Notice how the context is grabbed through a python expression. Without it ZPT
+                                        looses it. If ZPT was an animal somebody would shoot it out of pity.
+                                    </tal:comment>
+                                    <div class="reservation-detail" tal:define="
                                             context python: reservation['resource'];
                                             data reservation/data;
                                             token reservation/token;
                                             show_actions python: True;
+                                            status rtype;
                                         ">
+                                        <div class="leftcolumn" >
                                             <metal:block use-macro="context/@@seantis-reservation-macros/reservation-data"/>
                                         </div>
 
                                         <div class="rightcolumn">
-                                            <div class="reservation-urls">
-                                                <tal:block repeat="url reservation/rightside_urls">
-                                                    <a 
-                                                        tal:attributes="href python: url[1]"
-                                                        tal:content="structure python: url[0]"
-                                                    >
-                                                    </a>
-                                                </tal:block>
-                                            </div>
+                                            <metal:block use-macro="context/@@seantis-reservation-macros/reservation-links"/>
                                         </div>
 
                                         <div style="clear:both"></div>
