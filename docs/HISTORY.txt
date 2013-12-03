@@ -5,6 +5,9 @@ Changelog
 1.0.17 (unreleased)
 -------------------
 
+- Adds quota to email templates. Closes #41.
+  [href]
+
 - Clarify the received reservations email helptext, ensuring that it's clear 
   that this mail is sent in all cases. Closes #95.
   [href]
