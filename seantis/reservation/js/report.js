@@ -221,8 +221,10 @@
 
         var init_reservations = function(parent) {
             var $parent = $(parent);
-            $parent.find('.reservation').click(function() {
-                show_details($(this));
+            $parent.find('.reservation').click(function(e) {
+                if (! $(e.target).is('a')) {
+                    show_details($(this));
+                }
             });
             reservation_overlay_init($parent.find('.reservation-urls a:not([data-no-overlay])'), options);
 

@@ -131,7 +131,8 @@
         </tal:block>
 
         <a tal:attributes="href python: macro.print_all_url(token, context)"
-            class="reservation-action" i18n:translate="" data-no-overlay="true">
+            class="reservation-action" i18n:translate="" data-no-overlay="true"
+            target="_blank">
             Print
         </a>
       </span>
