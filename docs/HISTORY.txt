@@ -5,6 +5,10 @@ Changelog
 1.0.17 (unreleased)
 -------------------
 
+- Clarify the received reservations email helptext, ensuring that it's clear 
+  that this mail is sent in all cases. Closes #95.
+  [href]
+
 - Ensures that different logged in users don't see each others reservations.
   [deiferni]
 
