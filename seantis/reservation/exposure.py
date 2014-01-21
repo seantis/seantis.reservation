@@ -35,6 +35,8 @@ def for_allocations(context, resources):
         if checkPermission(
                 'seantis.reservation.ViewHiddenAllocations', resource):
             timeframes[uuid] = []
+        elif resource is None:
+            timeframes[uuid] = [None]
         else:
             timeframes[uuid] = timeframes_by_context(resource)
 
@@ -45,8 +47,11 @@ def for_allocations(context, resources):
         # as plone objects
         frames = timeframes[allocation.mirror_of]
 
-        if not frames:
+        if frames is None or len(frames) == 0:
             return True
+
+        if frames == [None]:
+            return False
 
         # the start date is relevant
         day = allocation.start.date()

@@ -5,13 +5,15 @@ Changelog
 1.0.19 (unreleased)
 -------------------
 
-Nothing yet.
+- Make sure that the exposure checking method doesn't trip up if the resource
+  may not be viewed and is therefore None. Fixes #114.
+  [href]
 
 1.0.18 (2014-01-21)
 -------------------
 
 - No longer throws an exception if the allocation cannot be found. Returns
-  a 404 instead. Fixes #112
+  a 404 instead. Fixes #112.
   [href]
 
 1.0.17
