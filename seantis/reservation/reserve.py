@@ -16,6 +16,7 @@ from z3c.form import field
 from z3c.form import button
 from z3c.form.browser.radio import RadioFieldWidget
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
+from zExceptions import NotFound
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from zope.schema import Choice, List, Set
 
@@ -395,9 +396,12 @@ class ReservationForm(
 
     def allocation(self, id):
         if not id:
-            return None
+            raise NotFound
 
-        return self.scheduler.allocation_by_id(id)
+        try:
+            return self.scheduler.allocation_by_id(id)
+        except NoResultFound:
+            raise NotFound
 
     def strptime(self, value):
         if not value:

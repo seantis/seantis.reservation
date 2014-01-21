@@ -5,7 +5,9 @@ Changelog
 1.0.18 (unreleased)
 ------
 
-Nothing yet.
+- No longer throws an exception if the allocation cannot be found. Returns
+  a 404 instead. Fixes #112
+  [href]
 
 1.0.17
 ------

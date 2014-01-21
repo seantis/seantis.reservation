@@ -42,6 +42,7 @@ def extract_action_data(fn):
             return
 
         return fn(self, self.extracted_data)
+    wrapper.func = fn
 
     return wrapper
 
