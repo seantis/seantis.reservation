@@ -5,6 +5,9 @@ Changelog
 1.0.2 (unreleased)
 ------------------
 
+- Integrate seantis.plonetools
+  [href]
+
 - Make sure that the exposure checking method doesn't trip up if the resource
   may not be viewed and is therefore None. Fixes #114.
   [href]

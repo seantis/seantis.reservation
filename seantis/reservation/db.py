@@ -39,9 +39,10 @@ from seantis.reservation.error import (
     InvalidAllocationError
 )
 
+from seantis.plonetools.schemafields import validate_email
+
 from seantis.reservation.session import serialized
 from seantis.reservation.raster import rasterize_span, MIN_RASTER_VALUE
-from seantis.reservation.interfaces import validate_email
 from seantis.reservation import utils
 from seantis.reservation import Session
 
@@ -304,7 +305,7 @@ def remove_expired_reservation_sessions(expiration_date=None):
         reservations = reservations.filter(
             Reservation.session_id.in_(expired_sessions)
         )
-        
+
         slots = Session.query(ReservedSlot)
         slots = slots.filter(
             ReservedSlot.reservation_token.in_(

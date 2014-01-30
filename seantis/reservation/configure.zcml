@@ -11,13 +11,13 @@
     i18n_domain="plone"
     >
 
-<!-- ZCML of this package fails in Zope 2.13 for strange reason 
+<!-- ZCML of this package fails in Zope 2.13 for strange reason
 
 For more information see
 http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc16027017f?pli=1
 
 -->
-<exclude package="zope.contentprovider" /> 
+<exclude package="zope.contentprovider" />
 
 <i18n:registerTranslations directory="locales" />
 
@@ -59,7 +59,7 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
 
 <!-- Setup -->
 
-<genericsetup:registerProfile 
+<genericsetup:registerProfile
     name="default"
     title="Seantis Reservation"
     description="Base Profile for Seantis Reservation, Minimal Styles"
@@ -122,17 +122,6 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
     title="Reservation Manager Formset"
     description="Marks types as reservation form interfaces for managers"
     provides=".interfaces.IReservationManagerFormSet"
-    />
-    
-<!-- Email field registration -->
-<utility zcml:condition="installed plone.schemaeditor"
-    name="seantis.reservation.interfaces.EmailField"
-    component=".interfaces.EmailFieldFactory"
-    />
-    
-<utility zcml:condition="installed plone.supermodel"
-    name="seantis.reservation.interfaces.EmailField"
-    component=".interfaces.EmailFieldHandler"
     />
 
 <!-- Dynamic Default Form Adapters -->

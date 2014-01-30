@@ -9,9 +9,6 @@ from zope.component import getAllUtilitiesRegisteredFor as getallutils
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 
-from Products.CMFDefault.utils import checkEmailAddress
-from Products.CMFDefault.exceptions import EmailAddressInvalid
-
 from plone.directives import form
 from plone.dexterity.interfaces import IDexterityFTI
 from plone.dexterity.utils import schemaNameToPortalType as getname
@@ -19,11 +16,12 @@ from plone.dexterity.utils import schemaNameToPortalType as getname
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from z3c.form.browser.radio import RadioFieldWidget
 from z3c.form import widget
+
+from seantis.plonetools.schemafields import Email
+
 from seantis.reservation import _, utils
 from seantis.reservation.raster import VALID_RASTER_VALUES
-
 from seantis.reservation.mail_templates import templates
-
 from seantis.reservation.utils import _languagelist
 
 days = SimpleVocabulary(
@@ -103,33 +101,6 @@ def plone_languages(context):
     terms = sorted(map(get_term, _languagelist.items()), key=lambda t: t.title)
 
     return SimpleVocabulary(terms)
-
-
-# TODO -> Move this to a separate module as it is also used in seantis.dir.base
-def validate_email(value):
-    try:
-        if value:
-            checkEmailAddress(value)
-    except EmailAddressInvalid:
-        raise Invalid(_(u'Invalid email address'))
-    return True
-
-
-class EmailField(schema.TextLine):
-
-    def __init__(self, *args, **kwargs):
-        super(schema.TextLine, self).__init__(*args, **kwargs)
-
-    def _validate(self, value):
-        super(schema.TextLine, self)._validate(value)
-        validate_email(value)
-
-# referenced by configuration.zcml to register the Email fields
-from plone.schemaeditor.fields import FieldFactory
-EmailFieldFactory = FieldFactory(EmailField, _(u'Email'))
-
-from plone.supermodel.exportimport import BaseHandler
-EmailFieldHandler = BaseHandler(EmailField)
 
 
 class IOverview(Interface):
@@ -729,7 +700,7 @@ class IReservation(Interface):
         default=1
     )
 
-    email = EmailField(
+    email = Email(
         title=_(u'Email'),
         required=True
     )
@@ -759,7 +730,7 @@ class IGroupReservation(Interface):
         default=1
     )
 
-    email = EmailField(
+    email = Email(
         title=_(u'Email'),
         required=True
     )
