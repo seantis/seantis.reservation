@@ -596,26 +596,21 @@ class UserFormDataEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-class UserFormDataDecoder(json.JSONDecoder):
-    """Decodes additional user data."""
+def userformdata_decode(string):
+    if not isinstance(string, basestring):
+        return string
 
-    def decode(self, s):
-        decoded = userformdata_decode(s)
-        return decoded or json.JSONDecoder.decode(self, s)
+    if string.startswith(u'__date__@'):
+        return isodate.parse_date(string[9:19])
 
+    if string.startswith(u'__datetime__@'):
+        return isodate.parse_datetime(string[13:32])
 
-def userformdata_decode(s):
-    if s.startswith(u'__date__@'):
-        return isodate.parse_date(s[9:19])
+    if string.startswith(u'__time__@'):
+        return isodate.parse_time(string[9:18])
 
-    if s.startswith(u'__datetime__@'):
-        return isodate.parse_datetime(s[13:32])
-
-    if s.startswith(u'__time__@'):
-        return isodate.parse_time(s[9:18])
-
-    if s.startswith(u'__richtext__@'):
-        data = json.loads(base64.b64decode(s[13:]))
+    if string.startswith(u'__richtext__@'):
+        data = json.loads(base64.b64decode(string[13:]))
         return RichTextValue(
             raw=data['raw'],
             mimeType=data['mime'],
@@ -623,39 +618,48 @@ def userformdata_decode(s):
             encoding=data['encoding']
         )
 
-    return None
+    return string
 
 
-def decode_for_display(s):
-
-    if isinstance(s, basestring):
-        decoded = userformdata_decode(s)
-    else:
-        decoded = s
-
+def as_human_readable_string(value):
     # don't use strftime here because users may end up entering year '3' and
     # strftime does not suppport years before 1900
 
-    if isinstance(decoded, datetime):
+    if isinstance(value, basestring):
+        return value
+
+    if isinstance(value, datetime):
         return '%02d.%02d.%04d %02d:%02d' % (
-            decoded.day,
-            decoded.month,
-            decoded.year,
-            decoded.hour,
-            decoded.minute
+            value.day,
+            value.month,
+            value.year,
+            value.hour,
+            value.minute
         )
 
-    if isinstance(decoded, date):
+    if isinstance(value, date):
         return '%02d.%02d.%04d' % (
-            decoded.day,
-            decoded.month,
-            decoded.year
+            value.day,
+            value.month,
+            value.year
         )
 
-    if isinstance(decoded, RichTextValue):
-        return decoded.output
+    if isinstance(value, RichTextValue):
+        return value.output
 
-    return s
+    if value is True:
+        return _(u'Yes')
+
+    if value is False:
+        return _(u'No')
+
+    if value is None:
+        return u''
+
+    if isinstance(value, (list, tuple)):
+        return ', '.join(as_human_readable_string(v) for v in value)
+
+    return value
 
 
 def event_class(availability):

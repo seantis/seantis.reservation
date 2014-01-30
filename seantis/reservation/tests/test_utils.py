@@ -12,35 +12,44 @@ class UtilsTestCase(IntegrationTestCase):
 
         self.assertEqual(utils.pairs(one), utils.pairs(two))
 
-    def test_decoded_for_displays(self):
+    def test_as_human_readable_string(self):
         self.assertEqual(
-            utils.decode_for_display(datetime(year=2012, month=1, day=12)),
+            utils.as_human_readable_string(datetime(2012, 1, 12)),
             '12.01.2012 00:00'
         )
 
         self.assertEqual(
-            utils.decode_for_display(datetime(1889, 5, 12, 12)),
+            utils.as_human_readable_string(datetime(1889, 5, 12, 12)),
             '12.05.1889 12:00'
         )
 
         self.assertEqual(
-            utils.decode_for_display(datetime(3, 5, 12, 13, 3)),
+            utils.as_human_readable_string(datetime(3, 5, 12, 13, 3)),
             '12.05.0003 13:03'
         )
 
         self.assertEqual(
-            utils.decode_for_display(date(2012, 1, 12)),
+            utils.as_human_readable_string(date(2012, 1, 12)),
             '12.01.2012'
         )
 
         self.assertEqual(
-            utils.decode_for_display(date(1889, 5, 12)),
+            utils.as_human_readable_string(date(1889, 5, 12)),
             '12.05.1889'
         )
 
         self.assertEqual(
-            utils.decode_for_display(date(3, 5, 12)),
+            utils.as_human_readable_string(date(3, 5, 12)),
             '12.05.0003'
+        )
+
+        self.assertEqual(
+            utils.as_human_readable_string(None), u''
+        )
+
+        self.assertEqual(
+            utils.as_human_readable_string([True, False]),
+            u'Yes, No'
         )
 
     def test_align_dates(self):
@@ -146,12 +155,14 @@ class UtilsTestCase(IntegrationTestCase):
 
     def test_unite(self):
         self.assertEqual(
-            utils.unite([1, 1, 1, 2, 2], lambda last, current: last == current),
-            [[1,1,1], [2, 2]]
+            utils.unite(
+                [1, 1, 1, 2, 2], lambda last, current: last == current
+            ),
+            [[1, 1, 1], [2, 2]]
         )
-        
+
         united = utils.United(lambda last, current: last == current)
-    
+
         united.append(1)
         self.assertEqual(united.groups, [[1]])
 

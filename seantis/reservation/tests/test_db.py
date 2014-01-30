@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from copy import copy
 from datetime import datetime, timedelta
 from uuid import uuid1 as new_uuid
 
@@ -1001,6 +1002,44 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(
             reservation_denied_event.event.reservation.token, token
         )
+
+    @serialized
+    def test_data_coding(self):
+        """ Make sure that reservation data stored in the database is returned
+        without any alterations after encoding/decoding it to and from JSON.
+
+        """
+        self.login_manager()
+        data = {
+            'index': 1,
+            'name': 'record',
+            'date': datetime(2014, 1, 1, 14, 0),
+            'dates': [
+                datetime(2014, 1, 1, 14, 0),
+                datetime(2014, 1, 1, 14, 0),
+                datetime(2014, 1, 1, 14, 0),
+                {
+                    'str': [
+                        datetime(2014, 1, 1, 14, 0),
+                    ],
+                    u'unicode': datetime(2014, 1, 1, 14, 0)
+                }
+            ],
+            'nothing': None
+        }
+        data['nested'] = map(copy, (data, data))
+
+        resource = self.create_resource()
+        sc = resource.scheduler()
+
+        start = datetime(2014, 1, 30, 15, 0)
+        end = datetime(2014, 1, 30, 19, 0)
+
+        sc.allocate((start, end))
+        token = sc.reserve(reservation_email, (start, end), data=data)
+        db_data = sc.reservation_by_token(token).one().data
+
+        self.assertEqual(db_data, data)
 
     @serialized
     def test_email(self):

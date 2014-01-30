@@ -59,6 +59,15 @@ class JSONEncodedDict(TypeDecorator):
         return value
 
     def process_result_value(self, value, dialect):
+        def object_hook(dictionary):
+            for key, value in dictionary.items():
+                if isinstance(value, basestring):
+                    dictionary[key] = utils.userformdata_decode(value)
+                elif isinstance(value, (list, tuple)):
+                    dictionary[key] = map(utils.userformdata_decode, value)
+
+            return dictionary
+
         if value is not None:
-            value = json.loads(value, cls=utils.UserFormDataDecoder)
+            value = json.loads(value, object_hook=object_hook)
         return value

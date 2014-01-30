@@ -346,24 +346,8 @@ class ReservationDataView(object):
         return sorted(values, key=lambda v: v['sortkey'])
 
     def display_reservation_data(self, value):
-        """ Transforms json data values into a human readable format
-        where appropriate.
-
-        """
-
-        if value is True:
-            return _(u'Yes')
-
-        if value is False:
-            return _(u'No')
-
-        if isinstance(value, basestring):
-            return utils.decode_for_display(value)
-
-        if isinstance(value, list):
-            return ', '.join(utils.decode_for_display(v) for v in value)
-
-        return value
+        """ Returns data in a human readable format. """
+        return utils.as_human_readable_string(value)
 
 
 class ResourceParameterView(object):

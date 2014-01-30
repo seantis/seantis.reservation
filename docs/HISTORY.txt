@@ -5,7 +5,11 @@ Changelog
 1.0.2 (unreleased)
 ------------------
 
-- Integrate seantis.plonetools
+- Reservation data is now stored more transparently. This has no effect
+  for users, but it ensures better data integrity in the future. Fixes #119.
+  [href]
+
+- Integrates seantis.plonetools.
   [href]
 
 - Make sure that the exposure checking method doesn't trip up if the resource
