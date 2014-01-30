@@ -12,22 +12,24 @@ from seantis.reservation import exports
 Source = namedtuple('Source', ['id', 'title', 'description', 'method'])
 
 sources = [
-    Source('reservations', _(u'Reservations (Normal)'), 
-        _(
+    Source(
+        'reservations', _(u'Reservations (Normal)'),
+        (
             u'The default reservations export with every date in the resource '
             u'having a separate record.'
-        ), 
+        ),
         lambda resources, language: exports.reservations.dataset(
             resources, language, compact=False
         )
     ),
 
-    Source('united-reservations', _(u'Reservations (Compact)'), 
-        _(
+    Source(
+        'united-reservations', _(u'Reservations (Compact)'),
+        (
             u'Like the normal reservations export, but with '
             u'group-reservations spanning multiple days merged into single '
             u'records.'
-        ), 
+        ),
         lambda resources, language: exports.reservations.dataset(
             resources, language, compact=True
         )
@@ -56,15 +58,15 @@ def get_exports(context, request, uuids):
     query = '&uuid='.join(uuids)
     urltemplate = ''.join(
         (
-            context.absolute_url(), 
-            '/reservation-export.{ext}?source={id}&uuid=', 
+            context.absolute_url(),
+            '/reservation-export.{ext}?source={id}&uuid=',
             query
         )
     )
 
     exports = []
     for source in sources:
-        
+
         urls = []
         for extension, title in extensions.items():
             urls.append(
@@ -89,14 +91,13 @@ class ExportListView(grok.View, form.ResourceParameterView):
     grok.require(permission)
     grok.context(Interface)
     grok.name('reservation-exports')
-    
+
     template = grok.PageTemplateFile('templates/reservation_exports.pt')
 
     title = _(u'Export Reservations')
 
     def exports(self):
         return get_exports(self.context, self.request, self.uuids)
-        
 
 
 class ExportView(grok.View, form.ResourceParameterView):
