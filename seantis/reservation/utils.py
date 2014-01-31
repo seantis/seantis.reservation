@@ -534,15 +534,15 @@ def get_resource_by_uuid(
     return len(results) == 1 and results[0] or None
 
 
-def get_resource_title(resource):
+def get_resource_title(resource, title_prefix=''):
     if hasattr(resource, '__parent__'):
         parent = resource.__parent__.title
     elif hasattr(resource, 'parent'):
         parent = resource.parent().title
     else:
-        return resource.title
+        return title_prefix + resource.title
 
-    return ' - '.join((parent, resource.title))
+    return ' - '.join((parent, title_prefix + resource.title))
 
 
 def get_reservation_quota_statement(quota):

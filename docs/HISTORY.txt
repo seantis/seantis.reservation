@@ -5,7 +5,11 @@ Changelog
 1.0.2 (unreleased)
 ------------------
 
+- Adds the reservation quota to the reservation confirmation mail. Fixes #111.
+  [href]
+
 - No longer send reservee emails to the resrevation manager. Fixes #118.
+  [href]
 
 - Richtextfields may now be exported to excel/csv/json. HTML is converted into
   text when this is done.
@@ -46,7 +50,7 @@ Changelog
 - Adds quota to email templates. Closes #41.
   [href]
 
-- Clarify the received reservations email helptext, ensuring that it's clear 
+- Clarify the received reservations email helptext, ensuring that it's clear
   that this mail is sent in all cases. Closes #95.
   [href]
 

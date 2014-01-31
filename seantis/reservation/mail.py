@@ -215,7 +215,10 @@ def send_reservations_confirmed(reservations, language):
             resource = resources[reservation.resource]
 
             prefix = '' if reservation.autoapprovable else '* '
-            lines.append(prefix + utils.get_resource_title(resource))
+            title_prefix = '{}x '.format(reservation.quota)
+            lines.append(
+                prefix + utils.get_resource_title(resource, title_prefix)
+            )
 
             for start, end in reservation.timespans():
                 lines.append(utils.display_date(start, end))
