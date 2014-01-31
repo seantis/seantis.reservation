@@ -200,6 +200,21 @@ class ResourceBaseForm(GroupForm, form.Form):
         for k, v in other_defaults.items():
             assert self.set_widget(k, v), "invalid default field %s" % k
 
+    def adjust_date_ranges(self):
+        """ Someone thought it was a good idea to have plone date widgets
+        default to a daterange of ten years in the past, ten years in the
+        future. 
+
+        This code undoes that on all widgets used for custom fields.
+
+        """
+        sane_range = (-100, 10)
+
+        for group in self.groups:
+            for widget in group.widgets.values():
+                if hasattr(widget, 'years_range'):
+                    widget.years_range = sane_range
+
     def redirect_to_context(self):
         """ Redirect to the url of the resource. """
         self.request.response.redirect(self.context.absolute_url())
@@ -291,6 +306,7 @@ class ResourceBaseForm(GroupForm, form.Form):
 
         self.apply_defaults()
         self.disable_fields()
+        self.adjust_date_ranges()
 
 
 class AllocationGroupView(object):
