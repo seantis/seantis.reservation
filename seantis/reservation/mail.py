@@ -354,6 +354,11 @@ class ReservationMail(ReservationDataView, ReservationUrls):
 
             p['data'] = '\n'.join(lines)
 
+        if is_needed('reservation_link'):
+            p['reservation_link'] = self.show_all_url(
+                reservation.token, resource
+            )
+
         # approval link
         if is_needed('approval_link'):
             p['approval_link'] = self.approve_all_url(

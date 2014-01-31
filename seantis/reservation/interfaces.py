@@ -553,6 +553,7 @@ template_variables = _(
     u'%(quota)s - reservation quota<br>'
     u'%(reservation_mail)s - email of reservee<br>'
     u'%(data)s - formdata associated with the reservation<br>'
+    u'%(reservation_link)s - link to the reservation view<br>'
     u'%(approval_link)s - link to the approval view<br>'
     u'%(denial_link)s - link to the denial view<br>'
     u'%(cancel_link)s - link to the cancel view'

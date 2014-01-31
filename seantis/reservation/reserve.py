@@ -74,6 +74,11 @@ class ReservationUrls(object):
         base = context.absolute_url()
         return base + u'/reservations?reservation={}&print=1'.format(token)
 
+    def show_all_url(self, token, context):
+        context = context or self.contex
+        base = context.absolute_url()
+        return base + u'/reservations?reservation={}'.format(token)
+
 
 class ReservationSchemata(object):
     """ Mixin to use with plone.autoform and IResourceBase which makes the

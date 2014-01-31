@@ -14,7 +14,10 @@ Quota:
 Form data:
 %(data)s
 
-To approve this reservation click the following link:
+To view this reservation click the following link:
+%(reservation_link)s
+
+To approve this reservation:
 %(approval_link)s
 
 To deny this reservation:

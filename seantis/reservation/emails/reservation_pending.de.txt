@@ -14,7 +14,10 @@ Kontingent:
 Formulardaten:
 %(data)s
 
-Um die Reservation anzunehmen klicken Sie bitten den folgenden Link:
+Um die Reservation zu sehen klicken Sie bitte den folgenden Link:
+%(reservation_link)s
+
+Um die Reservation anzunehmen:
 %(approval_link)s
 
 Um die Reservation abzulehnen:
