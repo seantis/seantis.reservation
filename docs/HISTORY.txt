@@ -5,6 +5,8 @@ Changelog
 1.0.2 (unreleased)
 ------------------
 
+- No longer send reservee emails to the resrevation manager. Fixes #118.
+
 - Richtextfields may now be exported to excel/csv/json. HTML is converted into
   text when this is done.
   [href]

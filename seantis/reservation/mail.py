@@ -169,6 +169,28 @@ def get_email_content(context, email_type, language):
     return templates[email_type].get(language)
 
 
+def load_resources(reservations):
+    resources = dict()
+
+    for resource in (r.resource for r in reservations):
+        if resource in resources:
+            continue
+
+        resources[resource] = utils.get_resource_by_uuid(resource).getObject()
+
+    return resources
+
+
+def may_send_mail(resource, mail, intended_for_admin):
+    if intended_for_admin:
+        return True
+
+    if mail.recipient in get_manager_emails_by_context(resource):
+        return False
+
+    return True
+
+
 def send_reservations_confirmed(reservations, language):
 
     sender = utils.get_site_email_sender()
@@ -178,17 +200,7 @@ def send_reservations_confirmed(reservations, language):
         return
 
     # load resources
-    resources = dict()
-    for reservation in reservations:
-
-        if not reservation.resource in resources:
-            resources[reservation.resource] = utils.get_resource_by_uuid(
-                reservation.resource
-            ).getObject()
-
-            if not resources[reservation.resource]:
-                log.warn('Cannot send email as the resource does not exist')
-                return
+    resources = load_resources(reservations)
 
     # send reservations grouped by reservee email
     groupkey = lambda r: r.email
@@ -224,7 +236,8 @@ def send_reservations_confirmed(reservations, language):
             reservations=lines[:-1]
         )
 
-        send_mail(resource, mail)
+        if may_send_mail(resource, mail, intended_for_admin=False):
+            send_mail(resource, mail)
 
 
 def send_reservation_mail(reservation, email_type, language,
@@ -266,7 +279,8 @@ def send_reservation_mail(reservation, email_type, language,
             revocation_reason=revocation_reason
         )
 
-        send_mail(resource, mail)
+        if may_send_mail(resource, mail, intended_for_admin=to_managers):
+            send_mail(resource, mail)
 
 
 def send_mail(context, mail):

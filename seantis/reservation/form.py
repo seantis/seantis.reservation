@@ -338,6 +338,9 @@ class ReservationDataView(object):
     """Mixin for reservation-data showing."""
 
     def sort_reservation_data(self, data):
+        if not data:
+            return {}
+
         items = [(d[0], d[1]['values'][0]['sortkey']) for d in data.items()]
 
         return [i[0] for i in sorted(items, key=lambda k: k[1])]

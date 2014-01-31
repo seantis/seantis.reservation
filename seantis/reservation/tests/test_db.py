@@ -1035,11 +1035,59 @@ class TestScheduler(IntegrationTestCase):
         start = datetime(2014, 1, 30, 15, 0)
         end = datetime(2014, 1, 30, 19, 0)
 
-        sc.allocate((start, end))
+        sc.allocate((start, end), quota=10)
         token = sc.reserve(reservation_email, (start, end), data=data)
         db_data = sc.reservation_by_token(token).one().data
 
         self.assertEqual(db_data, data)
+
+        token = sc.reserve(reservation_email, (start, end), data=None)
+        db_data = sc.reservation_by_token(token).one().data
+
+        self.assertEqual(db_data, None)
+
+    @serialized
+    def test_email_reservation_by_manager(self):
+        """ When a manager reserves an email for himself, only the manager
+        emails are sent to him, not the reservee emails.
+
+        """
+        self.login_manager()
+
+        mail = self.mailhost
+        mail.messages = []
+        resource = self.create_resource()
+        sc = resource.scheduler()
+
+        start = datetime(2012, 2, 29, 15, 0)
+        end = datetime(2012, 2, 29, 19, 0)
+        dates = (start, end)
+
+        manager_mail = u'manager@example.org'
+        self.assign_reservation_manager(manager_mail, resource)
+
+        sc.allocate(dates, approve_manually=True)
+
+        session_id = new_uuid()
+        token = sc.reserve(manager_mail, dates, session_id=session_id)
+        db.confirm_reservations_for_session(session_id)
+        sc.approve_reservation(token)
+
+        self.assertEqual(len(mail.messages), 1)
+
+        mail.messages = []
+        start = datetime(2013, 1, 29, 15, 0)
+        end = datetime(2013, 1, 29, 19, 0)
+        dates = (start, end)
+
+        sc.allocate(dates, approve_manually=False)
+
+        session_id = new_uuid()
+        token = sc.reserve(manager_mail, dates, session_id=session_id)
+        db.confirm_reservations_for_session(session_id)
+        sc.approve_reservation(token)
+
+        self.assertEqual(len(mail.messages), 1)
 
     @serialized
     def test_email(self):
