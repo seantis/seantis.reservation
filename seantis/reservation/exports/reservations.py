@@ -53,10 +53,14 @@ def basic_headers():
     ]
 
 
-def dataset(resources, language, compact=False):
+def dataset(resources, language, transform_record=None, compact=False):
     """ Takes a list of resources and returns a tablib dataset filled with
     all reservations of these resources. The json data of the reservations
     is filled using a single column for each type (form + field).
+
+    transform_record is called before each record is added to the dataset. It
+    allows for changes to the dataset, which is hard otherwise because the
+    records are stored as tuples in the dataset and not meant to be changed.
 
     If compact is True, whole day group reservations spanning multiple days
     are merged into one using utils.unite_dates.
@@ -88,27 +92,28 @@ def dataset(resources, language, compact=False):
         else:
             timespans = r.timespans()
 
-        datetime_format = '%Y-%m-%d %H:%M'
-
         for start, end in timespans:
             record = [
                 get_parent_title(resource),
                 resource.title,
                 token,
                 r.email,
-                start.strftime(datetime_format),
-                end.strftime(datetime_format),
-                dataview.display_reservation_data(utils.whole_day(start, end)),
+                start,
+                end,
+                utils.whole_day(start, end),
                 _(r.status.capitalize()),
                 r.quota,
-                r.created.strftime(datetime_format),
-                r.modified and r.modified.strftime(datetime_format) or None,
+                r.created,
+                r.modified and r.modified or None,
             ]
             record.extend(
                 additional_columns(
                     r, dataheaders, dataview.display_reservation_data
                 )
             )
+
+            if callable(transform_record):
+                transform_record(record)
 
             translator.translate(record)
             records.append(record)
@@ -174,7 +179,7 @@ def additional_columns(reservation, headers, display_info=lambda x: x):
             key = fieldkey(form, field)
             idx = headers.index(key)
 
-            columns[idx] = display_info(field["value"])
+            columns[idx] = field["value"]
 
     return columns
 

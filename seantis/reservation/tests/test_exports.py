@@ -7,7 +7,7 @@ from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation import utils
 from seantis.reservation.session import serialized
 from seantis.reservation import exports
-from seantis.reservation.export import ExportView
+from seantis.reservation.export import ExportView, prepare_record
 
 
 class TestExports(IntegrationTestCase):
@@ -21,6 +21,7 @@ class TestExports(IntegrationTestCase):
 
         start = datetime(2012, 2, 1, 12, 0)
         end = datetime(2012, 2, 1, 16, 0)
+        some_date = datetime(2014, 1, 30, 13, 37)
         dates = (start, end)
 
         reservation_email = u'test@example.com'
@@ -31,7 +32,8 @@ class TestExports(IntegrationTestCase):
             data=utils.mock_data_dictionary(
                 {
                     'stop': u'hammertime!',
-                    'bust': u'a move!'
+                    'bust': u'a move!',
+                    'when': some_date
                 }
             )
         )
@@ -41,7 +43,8 @@ class TestExports(IntegrationTestCase):
             data=utils.mock_data_dictionary(
                 {
                     'never': u'gonna',
-                    'give': u'you up'
+                    'give': u'you up',
+                    'when': some_date
                 }
             )
         )
@@ -51,7 +54,16 @@ class TestExports(IntegrationTestCase):
         )
 
         self.assertEqual(len(dataset), 2)
-        self.assertEqual(len(dataset.headers), 11 + 4)
+
+        existing_columns = 11
+        token_1_unique = 2
+        token_2_unique = 2
+        token_common = 1
+
+        self.assertEqual(
+            len(dataset.headers),
+            existing_columns + token_1_unique + token_2_unique + token_common
+        )
 
         self.assertEqual(dataset.dict[0]['Token'], utils.string_uuid(token1))
         self.assertEqual(dataset.dict[0]['Mocktest.stop'], u'hammertime!')
@@ -65,10 +77,21 @@ class TestExports(IntegrationTestCase):
         self.assertEqual(dataset.dict[1]['Mocktest.never'], u'gonna')
         self.assertEqual(dataset.dict[1]['Mocktest.give'], u'you up')
 
+        self.assertEqual(dataset.dict[0]['Start'], start)
+        self.assertEqual(dataset.dict[1]['Start'], start)
+        self.assertEqual(dataset.dict[0]['End'], end)
+        self.assertEqual(dataset.dict[1]['End'], end)
+
+        self.assertEqual(dataset.dict[0]['Mocktest.when'], some_date)
+        self.assertEqual(dataset.dict[1]['Mocktest.when'], some_date)
+
         # just make sure these don't raise exceptions
-        dataset.xls
-        dataset.json
-        dataset.csv
+        for format in ('xls', 'json', 'csv'):
+            transform_record = lambda r: prepare_record(r, format)
+            dataset = exports.reservations.dataset(
+                {resource.uuid(): resource}, 'en', transform_record
+            )
+            getattr(dataset, format)
 
     @serialized
     def test_reservations_export_title(self):
@@ -107,7 +130,7 @@ class TestExports(IntegrationTestCase):
         self.assertEqual(dataset[0][0], None)
 
     def test_export_view(self):
-        
+
         class MyExportView(ExportView):
             pass
 
@@ -130,13 +153,14 @@ class TestExports(IntegrationTestCase):
             file_extension = 'json'
 
         view = MyJsonExportView(self.portal, self.request())
-        
+
         view.request['source'] = 'reservations'
         self.assertEqual('[]', view.render())
 
         response = view.request.RESPONSE
         self.assertEqual(response.headers['content-length'], '2')
-        self.assertEqual(response.headers['content-disposition'],
+        self.assertEqual(
+            response.headers['content-disposition'],
             'filename="Plone site.json"'
         )
         self.assertEqual(

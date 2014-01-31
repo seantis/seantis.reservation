@@ -5,6 +5,14 @@ Changelog
 1.0.2 (unreleased)
 ------------------
 
+- Richtextfields may now be exported to excel/csv/json. HTML is converted into
+  text when this is done.
+  [href]
+
+- Dates in the excel/csv/json export are now uniformly exported in ISO8601.
+  Fixes #116.
+  [href]
+
 - Reservation data is now stored more transparently. This has no effect
   for users, but it ensures better data integrity in the future. Fixes #119.
   [href]

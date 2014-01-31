@@ -1,8 +1,14 @@
 import codecs
+import isodate
+
 from collections import namedtuple
+from datetime import datetime, date, time
 
 from five import grok
 from zope.interface import Interface
+
+from plone import api
+from plone.app.textfield.value import RichTextValue
 
 from seantis.reservation import _
 from seantis.reservation import form
@@ -18,8 +24,9 @@ sources = [
             u'The default reservations export with every date in the resource '
             u'having a separate record.'
         ),
-        lambda resources, language: exports.reservations.dataset(
-            resources, language, compact=False
+        lambda resources, language, transform_record:
+        exports.reservations.dataset(
+            resources, language, transform_record, compact=False
         )
     ),
 
@@ -30,8 +37,9 @@ sources = [
             u'group-reservations spanning multiple days merged into single '
             u'records.'
         ),
-        lambda resources, language: exports.reservations.dataset(
-            resources, language, compact=True
+        lambda resources, language, transform_record:
+        exports.reservations.dataset(
+            resources, language, transform_record, compact=True
         )
     )
 ]
@@ -84,6 +92,44 @@ def get_exports(context, request, uuids):
     return exports
 
 
+def convert_datelikes_to_isoformat(record):
+    for ix, value in enumerate(record):
+        if isinstance(value, datetime):
+            record[ix] = isodate.datetime_isoformat(value)
+        elif isinstance(value, date):
+            record[ix] = isodate.date_isoformat(value)
+        elif isinstance(value, time):
+            record[ix] = isodate.date_isoformat(value)
+
+
+def extract_text_from_richtext(record):
+    transforms = api.portal.get_tool('portal_transforms')
+
+    for ix, value in enumerate(record):
+        if isinstance(value, RichTextValue):
+            stream = transforms.convertTo(
+                'text/plain', value.output, mimetype='text/html'
+            )
+            record[ix] = stream.getData().strip()
+
+
+def convert_boolean_to_yes_no(record):
+    for ix, value in enumerate(record):
+        if isinstance(value, bool):
+            record[ix] = _(u'Yes') if value is True else _(u'No')
+
+
+def prepare_record(record, target_format):
+
+    if target_format in ('xls', ):
+        convert_boolean_to_yes_no(record)
+
+    convert_datelikes_to_isoformat(record)
+    extract_text_from_richtext(record)
+
+    return record
+
+
 class ExportListView(grok.View, form.ResourceParameterView):
     """Shows the available exports for the resource. """
 
@@ -129,14 +175,17 @@ class ExportView(grok.View, form.ResourceParameterView):
         if not source:
             raise NotImplementedError
 
-        return lambda: source.method(self.resources, self.language)
+        transform_record = lambda r: prepare_record(r, self.file_extension)
+
+        return lambda: source.method(
+            self.resources, self.language, transform_record
+        )
 
     def render(self, **kwargs):
         filename = '%s.%s' % (self.context.title, self.file_extension)
         filename = codecs.utf_8_encode('filename="%s"' % filename)[0]
 
-        dataset = self.source()
-        output = getattr(dataset, self.file_extension)
+        output = getattr(self.source(), self.file_extension)
 
         RESPONSE = self.request.RESPONSE
         RESPONSE.setHeader("Content-disposition", filename)
