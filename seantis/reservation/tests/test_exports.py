@@ -86,7 +86,7 @@ class TestExports(IntegrationTestCase):
         self.assertEqual(dataset.dict[1]['Mocktest.when'], some_date)
 
         # just make sure these don't raise exceptions
-        for format in ('xls', 'json', 'csv'):
+        for format in ('xls', 'xlsx', 'json', 'csv'):
             transform_record = lambda r: prepare_record(r, format)
             dataset = exports.reservations.dataset(
                 {resource.uuid(): resource}, 'en', transform_record

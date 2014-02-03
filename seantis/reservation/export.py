@@ -46,9 +46,10 @@ sources = [
 
 
 extensions = {
-    'xls': _(u'Excel Format'),
+    'xls': _(u'Excel Format (XLS)'),
+    'xlsx': _(u'Excel Format (XLSX)'),
     'csv': _(u'CSV Format'),
-    'json': _(u'JSON Format')
+    'json': _(u'JSON Format'),
 }
 
 
@@ -76,7 +77,7 @@ def get_exports(context, request, uuids):
     for source in sources:
 
         urls = []
-        for extension, title in extensions.items():
+        for extension, title in sorted(extensions.items(), key=lambda i: i[1]):
             urls.append(
                 Url(
                     urltemplate.format(ext=extension, id=source.id),
@@ -89,7 +90,7 @@ def get_exports(context, request, uuids):
             translate(source.description),
         ))
 
-    return exports
+    return sorted(exports, key=lambda src: src.title)
 
 
 def convert_datelikes_to_isoformat(record):
@@ -121,7 +122,7 @@ def convert_boolean_to_yes_no(record):
 
 def prepare_record(record, target_format):
 
-    if target_format in ('xls', ):
+    if target_format in ('xls', 'xlsx'):
         convert_boolean_to_yes_no(record)
 
     convert_datelikes_to_isoformat(record)
@@ -201,6 +202,12 @@ class XlsExportView(ExportView):
     grok.name('reservation-export.xls')
     content_type = 'application/xls'
     file_extension = 'xls'
+
+
+class XlsxExportView(ExportView):
+    grok.name('reservation-export.xlsx')
+    content_type = 'application/xlsx'
+    file_extension = 'xlsx'
 
 
 class JsonExportView(ExportView):

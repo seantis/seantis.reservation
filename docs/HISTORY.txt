@@ -5,6 +5,9 @@ Changelog
 1.0.2 (unreleased)
 ------------------
 
+- Adds xlsx as output format to exports.
+  [href]
+
 - Adds option to define one global manager email address. Fixes #69.
   [href]
 

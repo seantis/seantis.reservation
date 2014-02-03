@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-02-03 15:17+0000\n"
+"POT-Creation-Date: 2014-02-03 15:26+0000\n"
 "PO-Revision-Date: 2012-09-06 11:33+0100\n"
 "Last-Translator: Fabian Reinhard <fabian.reinhard@seantis.ch>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -140,7 +140,7 @@ msgstr "Zugelassen"
 msgid "Available Views"
 msgstr "Verfügbare Ansichten"
 
-#: ./export.py:50
+#: ./export.py:51
 msgid "CSV Format"
 msgstr "CSV Format"
 
@@ -370,10 +370,14 @@ msgid "Everything before this hour is not shown in the calendar, making the cale
 msgstr "Alles vor dieser Stunde wird im Kalender nicht angezeigt, was die Anzeige kompakter macht. Sie sollten eine Stunde wählen vor der es keine Reservationen geben kann."
 
 #: ./export.py:49
-msgid "Excel Format"
-msgstr "Excel Format"
+msgid "Excel Format (XLS)"
+msgstr "Excel Format (XLS)"
 
-#: ./export.py:143
+#: ./export.py:50
+msgid "Excel Format (XLSX)"
+msgstr "Excel Format (XLSX)"
+
+#: ./export.py:144
 #: ./templates/utils.pt:25
 msgid "Export Reservations"
 msgstr "Reservationen exportieren"
@@ -450,7 +454,7 @@ msgstr "Ungültige letzte volle Stunde"
 msgid "Invalid reservation request"
 msgstr "Ungültige Reservations-Anfrage"
 
-#: ./export.py:51
+#: ./export.py:52
 msgid "JSON Format"
 msgstr "JSON Format"
 
@@ -518,7 +522,7 @@ msgstr "Navigation"
 msgid "Next Month &gt;&gt;"
 msgstr "Nächster Monat &gt;&gt;"
 
-#: ./export.py:119
+#: ./export.py:120
 #: ./utils.py:654
 msgid "No"
 msgstr "Nein"
@@ -989,7 +993,7 @@ msgstr "Wochenansicht"
 msgid "Whole Day"
 msgstr "Ganztägig"
 
-#: ./export.py:119
+#: ./export.py:120
 #: ./utils.py:651
 msgid "Yes"
 msgstr "Ja"

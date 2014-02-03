@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-02-03 15:17+0000\n"
+"POT-Creation-Date: 2014-02-03 15:26+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -143,7 +143,7 @@ msgstr ""
 msgid "Available Views"
 msgstr ""
 
-#: ./export.py:50
+#: ./export.py:51
 msgid "CSV Format"
 msgstr ""
 
@@ -373,10 +373,14 @@ msgid "Everything before this hour is not shown in the calendar, making the cale
 msgstr ""
 
 #: ./export.py:49
-msgid "Excel Format"
+msgid "Excel Format (XLS)"
 msgstr ""
 
-#: ./export.py:143
+#: ./export.py:50
+msgid "Excel Format (XLSX)"
+msgstr ""
+
+#: ./export.py:144
 #: ./templates/utils.pt:25
 msgid "Export Reservations"
 msgstr ""
@@ -453,7 +457,7 @@ msgstr ""
 msgid "Invalid reservation request"
 msgstr ""
 
-#: ./export.py:51
+#: ./export.py:52
 msgid "JSON Format"
 msgstr ""
 
@@ -521,7 +525,7 @@ msgstr ""
 msgid "Next Month &gt;&gt;"
 msgstr ""
 
-#: ./export.py:119
+#: ./export.py:120
 #: ./utils.py:654
 msgid "No"
 msgstr ""
@@ -992,7 +996,7 @@ msgstr ""
 msgid "Whole Day"
 msgstr ""
 
-#: ./export.py:119
+#: ./export.py:120
 #: ./utils.py:651
 msgid "Yes"
 msgstr ""
