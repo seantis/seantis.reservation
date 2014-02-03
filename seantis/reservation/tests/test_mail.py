@@ -1,8 +1,11 @@
 from plone.app.testing import TEST_USER_ID
 
+from seantis.reservation import settings
 from seantis.reservation.session import serialized
 from seantis.reservation.tests import IntegrationTestCase
-from seantis.reservation.mail import get_managers_by_context
+from seantis.reservation.mail import (
+    get_managers_by_context, get_manager_emails
+)
 
 
 class MailTestCase(IntegrationTestCase):
@@ -26,4 +29,24 @@ class MailTestCase(IntegrationTestCase):
         self.assertEqual(
             sorted(get_managers_by_context(resource)),
             sorted(['ted', 'brad'])
+        )
+
+        settings.set('send_email_to_managers', 'by_path')
+        self.assertEqual(
+            sorted(get_manager_emails(resource)),
+            ['brad@example.com', 'ted@example.com']
+        )
+
+        settings.set('manager_email', u'manager@example.org')
+        settings.set('send_email_to_managers', 'by_address')
+
+        self.assertEqual(
+            get_manager_emails(resource),
+            ['manager@example.org']
+        )
+
+        settings.set('send_email_to_managers', 'never')
+        self.assertEqual(
+            get_manager_emails(resource),
+            []
         )

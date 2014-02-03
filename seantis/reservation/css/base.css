@@ -7,12 +7,12 @@
 /* the approve field is now called approve_manually, since the old one has to linger around for migration
 and there's no easy way to hide it, this hack helps: */
 #formfield-form-widgets-approve {
-    display: none;   
+    display: none;
 }
 
 /* without this the events in the month view are not clickable */
 .fc-view-month .fc-day-content {
-    visibility: hidden; 
+    visibility: hidden;
 }
 
 
@@ -27,6 +27,11 @@ and there's no easy way to hide it, this hack helps: */
 .your-reservations .limitedList,
 .your-reservations-view .limitedList {
     max-width: 100%;
+}
+
+/* controlpanel settings page */
+#formfield-form-widgets-send_email_to_managers .option {
+    display: block;
 }
 
 /* overview calendar */
@@ -203,11 +208,11 @@ body .event-unavailable .fc-event-time {
 /* hidden waitinglist in manage reservations */
 
 .hide-waitinglist .splitleft {
-    width: 75%;   
+    width: 75%;
 }
 
 .hide-waitinglist .splitright {
-    display: none;   
+    display: none;
 }
 
 /* to overlap the overlay */

@@ -1,7 +1,8 @@
 <registry>
     <records interface="seantis.reservation.settings.ISeantisReservationSettings">
         <value key="throttle_minutes">1</value>
-        <value key="send_email_to_managers">True</value>
+        <value key="send_email_to_managers">by_path</value>
+        <value key="manager_email"></value>
         <value key="send_email_to_reservees">True</value>
         <value key="pre_reservation_script"></value>
     </records>

@@ -280,7 +280,24 @@ seantis.formgroups.init = function(el) {
         on_is_enabled: function(trigger) {
             return trigger.is(':checked');
         }
-    })
+    });
+
+    add({
+        name: "send_email_to_managers",
+        trigger: find('#form-widgets-send_email_to_managers-2'),
+        fields: [
+            find('#formfield-form-widgets-manager_email')
+        ],
+        on_is_enabled: function(trigger) {
+            return trigger.is(':checked');
+        },
+        other_triggers: find(
+            [
+                '#form-widgets-send_email_to_managers-0',
+                '#form-widgets-send_email_to_managers-1'
+            ].join(',')
+        )
+    });
 
     seantis.formgroups.add_utility_links();
     seantis.formgroups.add_recurrency_helper();

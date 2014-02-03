@@ -2,15 +2,19 @@ import logging
 logger = logging.getLogger('seantis.reservation')
 
 from zope import schema
-from zope.interface import Interface, Invalid
-from zope.component import getUtility
+from zope.interface import Interface, Invalid, invariant
+from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+from z3c.form.browser.radio import RadioFieldWidget
 
+from plone import api
+from plone.directives import form
 from plone.z3cform import layout
-from plone.registry.interfaces import IRegistry
 from plone.app.registry.browser.controlpanel import RegistryEditForm
 from plone.app.registry.browser.controlpanel import ControlPanelFormWrapper
 
 from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
+
+from seantis.plonetools.schemafields import validate_email
 
 from seantis.reservation import _
 from seantis.reservation.restricted_eval import validate_expression
@@ -36,12 +40,41 @@ class ISeantisReservationSettings(Interface):
         )
     )
 
-    send_email_to_managers = schema.Bool(
+    form.widget(send_email_to_managers=RadioFieldWidget)
+    send_email_to_managers = schema.Choice(
         title=_(u"Email Notifications for Managers"),
         description=_(
-            u'Send emails about new pending reservations to '
-            u'the first reservation managers found in the path.'
-        )
+            u'Either send an email to the manager(s) responsible for the '
+            u'resource or use a single recipient address for all resources.'
+        ),
+        source=SimpleVocabulary(
+            [
+                SimpleTerm(
+                    value='never',
+                    title=_(u'Do not send manager emails')
+                ),
+                SimpleTerm(
+                    value='by_path',
+                    title=_(u'Send to the responsible manager(s)')
+                ),
+                SimpleTerm(
+                    value='by_address',
+                    title=_(u'Always send to the following address:')
+                )
+            ]
+        ),
+        default='by_path'
+    )
+
+    # XXX
+    # the plone registry is a bit weird in how it handles fields, it will
+    # not work with seantis.plonetools' Email field - so we use TextLine with
+    # a valid_email constraint.
+    manager_email = schema.TextLine(
+        title=_(u"Email Address for Manager Emails"),
+        required=False,
+        default=u'',
+        constraint=validate_email
     )
 
     send_email_to_reservees = schema.Bool(
@@ -63,21 +96,23 @@ class ISeantisReservationSettings(Interface):
         constraint=valid_expression
     )
 
+    @invariant
+    def filled_manager_email(settings):
+        if settings.send_email_to_managers == 'by_address':
+            if not (settings.manager_email or u'').strip():
+                raise Invalid(_(
+                    u'Please specify an address to send the manager emails to'
+                ))
+
 
 def get(name):
-    registry = getUtility(IRegistry)
-    settings = registry.forInterface(ISeantisReservationSettings)
-
-    assert hasattr(settings, name), "Unknown setting: %s" % name
-    return getattr(settings, name)
+    prefix = ISeantisReservationSettings.__identifier__
+    return api.portal.get_registry_record('.'.join((prefix, name)))
 
 
 def set(name, value):
-    registry = getUtility(IRegistry)
-    settings = registry.forInterface(ISeantisReservationSettings)
-
-    assert hasattr(settings, name), "Unknown setting: %s" % name
-    return setattr(settings, name, value)
+    prefix = ISeantisReservationSettings.__identifier__
+    return api.portal.set_registry_record('.'.join((prefix, name)), value)
 
 
 class SeantisReservationSettingsPanelForm(RegistryEditForm):

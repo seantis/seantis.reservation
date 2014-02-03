@@ -13,12 +13,15 @@ from sqlalchemy import Table
 from sqlalchemy import not_
 from sqlalchemy.schema import Column
 
+from plone.registry.interfaces import IRegistry
+from plone.api.exc import InvalidParameterError
 from plone.dexterity.interfaces import IDexterityFTI
 from Products.CMFCore.utils import getToolByName
 from zope.component import getUtility
 
 from seantis.reservation import Session
 from seantis.reservation import utils
+from seantis.reservation import settings
 from seantis.reservation.models import Reservation, ReservedSlot
 from seantis.reservation.models import customtypes
 from seantis.reservation.session import (
@@ -362,3 +365,44 @@ def upgrade_1019_to_1020(context):
     setup.runImportStepFromProfile(
         'profile-seantis.reservation:default', 'plone.app.registry'
     )
+
+
+def upgrade_1020_to_1021(context):
+
+    send_email_to_managers = settings.get('send_email_to_managers')
+
+    registry = getUtility(IRegistry)
+    registry.registerInterface(settings.ISeantisReservationSettings)
+
+    if send_email_to_managers is True:
+        settings.set('send_email_to_managers', 'by_path')
+    elif send_email_to_managers is False:
+        settings.set('send_email_to_managers', 'never')
+
+    # try:
+    #     send_email_to_managers = settings.get('send_email_to_managers')
+    # except InvalidParameterError:
+    #     send_email_to_managers = True
+
+    # if send_email_to_managers in (True, False):
+
+    #     prefix = settings.ISeantisReservationSettings.__identifier__
+    #     key = lambda k: '.'.join((prefix, k))
+
+
+
+    #     del registry.records[key('send_email_to_managers')]
+
+    #     if send_email_to_managers is True:
+    #         registry.records[key('send_email_to_managers')] = 'by_path'
+    #     else:
+    #         registry.records[key('send_email_to_managers')] = 'never'
+
+    # try:
+    #     settings.get('manager_email')
+    # except InvalidParameterError:
+    #     registry.records[key('manager_email')] = u''
+
+    # ensure that the records exist now
+    settings.get('manager_email')
+    settings.get('send_email_to_managers')

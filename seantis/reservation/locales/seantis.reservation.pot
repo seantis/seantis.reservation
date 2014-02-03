@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-01-31 15:38+0000\n"
+"POT-Creation-Date: 2014-02-03 15:17+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -65,7 +65,7 @@ msgstr ""
 msgid "A pending reservation would be affected by the requested change"
 msgstr ""
 
-#: ./mail.py:545
+#: ./mail.py:554
 msgid "Add email template"
 msgstr ""
 
@@ -107,6 +107,10 @@ msgstr ""
 
 #: ./interfaces.py:448
 msgid "Allocations may start every 5 minutes if the allocation is not partly available. If it is partly available the start time may be every x minute where x equals the given raster."
+msgstr ""
+
+#: ./settings.py:62
+msgid "Always send to the following address:"
 msgstr ""
 
 #: ./interfaces.py:60
@@ -209,7 +213,7 @@ msgid "Defines the minimum length of any given reservation as well as the alignm
 msgstr ""
 
 #: ./allocate.py:297
-#: ./mail.py:554
+#: ./mail.py:563
 #: ./timeframe.py:187
 msgid "Delete"
 msgstr ""
@@ -229,6 +233,10 @@ msgstr ""
 
 #: ./templates/monthly_report.pt:26
 msgid "Details"
+msgstr ""
+
+#: ./settings.py:54
+msgid "Do not send manager emails"
 msgstr ""
 
 #: ./reserve.py:689
@@ -252,7 +260,7 @@ msgid "Do you want to reserve the following allocations?"
 msgstr ""
 
 #: ./allocate.py:244
-#: ./mail.py:553
+#: ./mail.py:562
 #: ./resource.py:342
 msgid "Edit"
 msgstr ""
@@ -265,16 +273,24 @@ msgstr ""
 msgid "Edit allocation"
 msgstr ""
 
+#: ./settings.py:46
+msgid "Either send an email to the manager(s) responsible for the resource or use a single recipient address for all resources."
+msgstr ""
+
 #: ./exports/reservations.py:45
 #: ./interfaces.py:705
 msgid "Email"
 msgstr ""
 
-#: ./settings.py:40
+#: ./settings.py:74
+msgid "Email Address for Manager Emails"
+msgstr ""
+
+#: ./settings.py:45
 msgid "Email Notifications for Managers"
 msgstr ""
 
-#: ./settings.py:48
+#: ./settings.py:81
 msgid "Email Notifications for Reservees"
 msgstr ""
 
@@ -556,7 +572,11 @@ msgstr ""
 msgid "Pending"
 msgstr ""
 
-#: ./settings.py:56
+#: ./settings.py:103
+msgid "Please specify an address to send the manager emails to"
+msgstr ""
+
+#: ./settings.py:89
 msgid "Pre-Reservation Script"
 msgstr ""
 
@@ -618,7 +638,7 @@ msgstr ""
 msgid "Reservation Quota Limit"
 msgstr ""
 
-#: ./settings.py:30
+#: ./settings.py:34
 msgid "Reservation Throttling"
 msgstr ""
 
@@ -702,7 +722,7 @@ msgstr ""
 msgid "Revoke reservation"
 msgstr ""
 
-#: ./settings.py:57
+#: ./settings.py:90
 msgid "Run custom validation code for reservations. This is for advanced users only and may disable the reservations process. For documentation study the source code at Github."
 msgstr ""
 
@@ -710,13 +730,13 @@ msgstr ""
 msgid "Sa"
 msgstr ""
 
-#: ./mail.py:497
+#: ./mail.py:506
 #: ./reserve.py:889
 #: ./timeframe.py:83
 msgid "Save"
 msgstr ""
 
-#: ./settings.py:85
+#: ./settings.py:120
 msgid "Seantis Reservation Control Panel"
 msgstr ""
 
@@ -748,12 +768,12 @@ msgstr ""
 msgid "Send an email to the reservee informing him of the revocation"
 msgstr ""
 
-#: ./settings.py:49
+#: ./settings.py:82
 msgid "Send emails about made, approved and denied reservations to the user that made the reservation."
 msgstr ""
 
-#: ./settings.py:41
-msgid "Send emails about new pending reservations to the first reservation managers found in the path."
+#: ./settings.py:58
+msgid "Send to the responsible manager(s)"
 msgstr ""
 
 #: ./interfaces.py:596
@@ -853,7 +873,7 @@ msgstr ""
 msgid "The maximum quota a single reservation may occupy at once. There is no limit if set to zero."
 msgstr ""
 
-#: ./settings.py:31
+#: ./settings.py:35
 msgid "The number of minutes a user needs to wait between reservations, use 0 if no throttling should occur. Users with the 'Unthrottled Reservations' permission are excempt from this rule (Reservation-Managers by default)."
 msgstr ""
 
@@ -889,15 +909,15 @@ msgstr ""
 msgid "The selected view must be one of the available views."
 msgstr ""
 
-#: ./form.py:544
+#: ./form.py:560
 msgid "There are ${nb} reservations being entered for this resource."
 msgstr ""
 
-#: ./form.py:540
+#: ./form.py:556
 msgid "There is one reservation being entered for this resource."
 msgstr ""
 
-#: ./mail.py:453
+#: ./mail.py:462
 msgid "There's already an Email template in the same folder for the same language"
 msgstr ""
 

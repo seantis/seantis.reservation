@@ -5,6 +5,9 @@ Changelog
 1.0.2 (unreleased)
 ------------------
 
+- Adds option to define one global manager email address. Fixes #69.
+  [href]
+
 - Start treating sqlalchemy warnings during tests as errors.
   [href]
 

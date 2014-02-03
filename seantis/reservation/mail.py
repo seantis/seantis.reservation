@@ -39,7 +39,7 @@ def on_reservations_confirmed(event):
         send_reservations_confirmed(event.reservations, event.language)
 
     # send many mails to the admins
-    if settings.get('send_email_to_managers'):
+    if settings.get('send_email_to_managers') != 'never':
         for reservation in event.reservations:
 
             if reservation.autoapprovable:
@@ -152,6 +152,15 @@ def get_manager_emails_by_context(context):
     return emails
 
 
+def get_manager_emails(context):
+    if settings.get('send_email_to_managers') == 'by_path':
+        return get_manager_emails_by_context(context)
+    elif settings.get('send_email_to_managers') == 'by_address':
+        return [settings.get('manager_email')]
+    else:
+        return []
+
+
 def get_email_content(context, email_type, language):
     user_templates = utils.portal_type_by_context(
         context, portal_type='seantis.reservation.emailtemplate'
@@ -185,7 +194,7 @@ def may_send_mail(resource, mail, intended_for_admin):
     if intended_for_admin:
         return True
 
-    if mail.recipient in get_manager_emails_by_context(resource):
+    if mail.recipient in get_manager_emails(resource):
         return False
 
     return True
@@ -263,7 +272,7 @@ def send_reservation_mail(reservation, email_type, language,
     resource = resource.getObject()
 
     if to_managers:
-        recipients = get_manager_emails_by_context(resource)
+        recipients = get_manager_emails(resource)
         if not recipients:
             log.warn("Couldn't find a manager to send an email to")
             return

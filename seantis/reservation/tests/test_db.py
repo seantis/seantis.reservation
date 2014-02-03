@@ -3,6 +3,7 @@ from copy import copy
 from datetime import datetime, timedelta
 from uuid import uuid1 as new_uuid
 
+from seantis.reservation import settings
 from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation.error import (
     OverlappingAllocationError,
@@ -1090,8 +1091,39 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(len(mail.messages), 1)
 
     @serialized
+    def test_single_address_manager(self):
+        self.login_manager()
+
+        mail = self.mailhost
+
+        settings.set('manager_email', u'manager@example.org')
+        settings.set('send_email_to_managers', 'by_address')
+
+        resource = self.create_resource()
+        sc = resource.scheduler()
+
+        start = datetime(2012, 2, 29, 15, 0)
+        end = datetime(2012, 2, 29, 19, 0)
+        dates = (start, end)
+
+        # should be ignored
+        self.assign_reservation_manager('ignored@example.org', resource)
+        self.assign_reservation_manager('another@example.org', resource)
+
+        session_id = new_uuid()
+
+        sc.allocate(dates, approve_manually=False)
+        sc.reserve(reservation_email, dates, session_id=session_id)
+        db.confirm_reservations_for_session(session_id)
+
+        self.assertEqual(len(mail.messages), 2)
+        self.assertIn('To: manager@example.org', mail.messages[1])
+
+    @serialized
     def test_email(self):
         self.login_manager()
+
+        settings.set('send_email_to_managers', 'by_path')
 
         mail = self.mailhost
         resource = self.create_resource()

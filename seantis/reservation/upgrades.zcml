@@ -182,4 +182,13 @@
         profile="seantis.reservation:default">
     </genericsetup:upgradeStep>
 
+    <genericsetup:upgradeStep
+        title="Upgrade to finer-grained manager email settings"
+        description=""
+        source="1020"
+        destination="1021"
+        handler=".upgrades.upgrade_1020_to_1021"
+        profile="seantis.reservation:default">
+    </genericsetup:upgradeStep>
+
 </configure>
