@@ -124,6 +124,9 @@ def dataset(resources, language, transform_record=None, compact=False):
 
 def fetch_records(resources):
     """ Returns the records used for the dataset. """
+    if not resources.keys():
+        return []
+
     query = Session.query(Reservation)
     query = query.filter(Reservation.resource.in_(resources.keys()))
     query = query.order_by(

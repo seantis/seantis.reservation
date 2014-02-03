@@ -5,6 +5,9 @@ Changelog
 1.0.2 (unreleased)
 ------------------
 
+- Start treating sqlalchemy warnings during tests as errors.
+  [href]
+
 - Adds a link to the reservation to the manager email. Fixes #117.
   [href]
 

@@ -34,6 +34,11 @@ class TestCase(unittest.TestCase):
 
     def setUp(self):
 
+        # treat sqlalchemy warnings as errors
+        import warnings
+        from sqlalchemy.exc import SAWarning
+        warnings.simplefilter("error", SAWarning)
+
         self.app = self.layer['app']
         self.portal = self.layer['portal']
 
