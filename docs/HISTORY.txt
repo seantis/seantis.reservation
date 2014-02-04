@@ -5,6 +5,9 @@ Changelog
 1.0.2 (unreleased)
 ------------------
 
+- Improves print style for single reservation view. Fixes #109.
+  [href]
+
 - Adds seantis.reservation specific browserlayer.
   [href]
 
