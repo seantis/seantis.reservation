@@ -5,6 +5,13 @@ Changelog
 1.0.2 (unreleased)
 ------------------
 
+- Adds month/year filter to the export. Fixes #101.
+  [href]
+
+- Replaces the export list view with a form where the export type, format and
+  other options can be chosen.
+  [href]
+
 - Improves print style for single reservation view. Fixes #109.
   [href]
 

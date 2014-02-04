@@ -1,46 +1,56 @@
 import codecs
 import isodate
 
+from copy import copy
 from collections import namedtuple
 from datetime import datetime, date, time
 
 from five import grok
+from zope import schema
 from zope.interface import Interface
+from zope.schema.interfaces import IContextSourceBinder
+from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+
+from z3c.form import field
+from z3c.form import button
 
 from plone import api
 from plone.app.textfield.value import RichTextValue
+
+from seantis.plonetools import tools
 
 from seantis.reservation import _
 from seantis.reservation import form
 from seantis.reservation import utils
 from seantis.reservation import exports
-from seantis.reservation.base import BaseView
+from seantis.reservation.form import extract_action_data
+from seantis.reservation.base import BaseView, BaseForm
 
 Source = namedtuple('Source', ['id', 'title', 'description', 'method'])
 
 sources = [
     Source(
         'reservations', _(u'Reservations (Normal)'),
-        (
+        _(
             u'The default reservations export with every date in the resource '
             u'having a separate record.'
         ),
-        lambda resources, language, transform_record:
+        lambda resources, language, year, month, transform_record:
         exports.reservations.dataset(
-            resources, language, transform_record, compact=False
+            resources, language, year, month, transform_record, compact=False
         )
     ),
 
     Source(
         'united-reservations', _(u'Reservations (Compact)'),
-        (
+        _(
             u'Like the normal reservations export, but with '
             u'group-reservations spanning multiple days merged into single '
             u'records.'
         ),
-        lambda resources, language, transform_record:
+        lambda resources, language, year, month, transform_record:
         exports.reservations.dataset(
-            resources, language, transform_record, compact=True
+            resources, language, year, month, transform_record, compact=True
         )
     )
 ]
@@ -54,44 +64,152 @@ extensions = {
 }
 
 
-def get_exports(context, request, uuids):
-    Export = namedtuple(
-        'Export', ('urls', 'title', 'description')
-    )
+def get_sources_description(request):
+    translate = tools.translator(request, 'seantis.reservation')
 
-    Url = namedtuple(
-        'Url', ('href', 'title')
-    )
+    items = [
+        u'<dt>{}</dt><dd>{}</dd>'.format(
+            *map(translate, (s.title, s.description))
+        ) for s in sources
+    ]
 
-    translate = utils.translator(context, request)
+    return u'<dl>{}</dl>'.format(''.join(items))
 
-    query = '&uuid='.join(uuids)
-    urltemplate = ''.join(
-        (
-            context.absolute_url(),
-            '/reservation-export.{ext}?source={id}&uuid=',
-            query
+
+@grok.provider(IContextSourceBinder)
+def year_choices(context):
+    years = [
+        SimpleTerm(value=u'all', title=_(u'All'))
+    ]
+
+    minyear = datetime.now().year - 5
+    maxyear = datetime.now().year + 1
+
+    for year in range(minyear, maxyear + 1):
+        years.append(
+            SimpleTerm(value=unicode(year), title=unicode(year))
         )
+
+    return SimpleVocabulary(years)
+
+
+month_choices = SimpleVocabulary(
+    [
+        SimpleTerm(value=u'all', title=_(u'All')),
+        SimpleTerm(value=u'1', title=_(u'January')),
+        SimpleTerm(value=u'2', title=_(u'February')),
+        SimpleTerm(value=u'3', title=_(u'March')),
+        SimpleTerm(value=u'4', title=_(u'April')),
+        SimpleTerm(value=u'5', title=_(u'May')),
+        SimpleTerm(value=u'6', title=_(u'June')),
+        SimpleTerm(value=u'7', title=_(u'July')),
+        SimpleTerm(value=u'8', title=_(u'August')),
+        SimpleTerm(value=u'9', title=_(u'September')),
+        SimpleTerm(value=u'10', title=_(u'October')),
+        SimpleTerm(value=u'11', title=_(u'November')),
+        SimpleTerm(value=u'12', title=_(u'December')),
+    ]
+)
+
+export_choices = SimpleVocabulary(
+    [SimpleTerm(value=source.id, title=source.title) for source in sources]
+)
+
+format_choices = SimpleVocabulary(
+    [
+        SimpleTerm(value=ext, title=name)
+        for ext, name in sorted(extensions.items(), key=lambda i: i[1])
+    ]
+)
+
+
+class IExportSelection(Interface):
+    """ Configuration for all exports. """
+
+    export = schema.Choice(
+        title=_(u'Export'),
+        source=export_choices,
+        required=True,
+        default=sources[0].id,
     )
 
-    exports = []
-    for source in sources:
+    format = schema.Choice(
+        title=_(u'Format'),
+        source=format_choices,
+        required=True,
+        default=extensions.keys()[0]
+    )
 
-        urls = []
-        for extension, title in sorted(extensions.items(), key=lambda i: i[1]):
-            urls.append(
-                Url(
-                    urltemplate.format(ext=extension, id=source.id),
-                    translate(title)
-                )
-            )
-        exports.append(Export(
-            urls,
-            translate(source.title),
-            translate(source.description),
-        ))
+    year = schema.Choice(
+        title=_(u"Year"),
+        source=year_choices,
+        required=True,
+        default=u'all'
+    )
 
-    return sorted(exports, key=lambda src: src.title)
+    month = schema.Choice(
+        title=_(u"Month"),
+        source=month_choices,
+        required=True,
+        default=u'all'
+    )
+
+
+class ExportSelection(BaseForm, form.ResourceParameterView):
+    permission = 'seantis.reservation.ViewReservations'
+    grok.require(permission)
+    grok.context(Interface)
+    grok.name('reservation-exports')
+
+    label = _(u'Reservation Export')
+
+    fields = field.Fields(IExportSelection)
+    ignoreContext = True
+
+    enable_unload_protection = False
+
+    @property
+    def action(self):
+        return u'{base}/reservation-exports?uuid={uuids}'.format(
+            base=self.context.absolute_url(),
+            uuids='&uuid='.join(self.uuids)
+        )
+
+    def build_export_url(self, data):
+        if not self.uuids:
+            utils.form_error(_(u"Missing 'uuid' parameter"))
+
+        url_template = (
+            u'{base}/reservation-export.{format}?source={export}&uuid={uuids}'
+            u'&year={year}&month={month}'
+        )
+
+        data['base'] = self.context.absolute_url()
+        data['uuids'] = '&uuid='.join(self.uuids)
+
+        return url_template.format(**data)
+
+    def updateActions(self):
+        super(ExportSelection, self).updateActions()
+        self.actions['export'].addClass('allowMultiSubmit')
+        self.actions['export'].addClass('context')
+
+    def update(self):
+        self.fields['export'].field = copy(self.fields['export'].field)
+        self.fields['export'].field.description = get_sources_description(
+            self.request
+        )
+        super(ExportSelection, self).update()
+
+    @button.buttonAndHandler(_(u'Export'))
+    @extract_action_data
+    def export(self, data):
+        self.request.response.redirect(self.build_export_url(data))
+
+    @button.buttonAndHandler(_(u'Cancel'))
+    @extract_action_data
+    def cancel(self, data):
+        self.request.response.redirect(self.context.absolute_url())
 
 
 def convert_datelikes_to_isoformat(record):
@@ -132,22 +250,6 @@ def prepare_record(record, target_format):
     return record
 
 
-class ExportListView(BaseView, form.ResourceParameterView):
-    """Shows the available exports for the resource. """
-
-    permission = 'seantis.reservation.ViewReservations'
-    grok.require(permission)
-    grok.context(Interface)
-    grok.name('reservation-exports')
-
-    template = grok.PageTemplateFile('templates/reservation_exports.pt')
-
-    title = _(u'Export Reservations')
-
-    def exports(self):
-        return get_exports(self.context, self.request, self.uuids)
-
-
 class ExportView(BaseView, form.ResourceParameterView):
     """Exports the reservations from a list of resources. """
 
@@ -170,6 +272,14 @@ class ExportView(BaseView, form.ResourceParameterView):
         return self.request.get('lang', 'en')
 
     @property
+    def year(self):
+        return self.request.get('year', 'any')
+
+    @property
+    def month(self):
+        return self.request.get('month', 'any')
+
+    @property
     def source(self):
         source_id = self.request.get('source')
         source = next((s for s in sources if s.id == source_id), None)
@@ -180,7 +290,11 @@ class ExportView(BaseView, form.ResourceParameterView):
         transform_record = lambda r: prepare_record(r, self.file_extension)
 
         return lambda: source.method(
-            self.resources, self.language, transform_record
+            self.resources,
+            self.language,
+            self.year,
+            self.month,
+            transform_record
         )
 
     def render(self, **kwargs):

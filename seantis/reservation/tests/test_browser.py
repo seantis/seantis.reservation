@@ -727,3 +727,23 @@ class TestBrowser(FunctionalTestCase):
         self.assertEqual(keeper.managed_allocations().count(), 1)
         self.assertEqual(keeper.managed_reservations().count(), 1)
         self.assertEqual(keeper.managed_reserved_slots().count(), 1)
+
+    @db.serialized
+    def test_export_selection(self):
+        browser = self.admin_browser
+
+        self.add_resource('export')
+
+        browser.open(self.infolder('/export/@@uuid'))
+        uuid = browser.contents
+
+        browser.open(
+            self.infolder('/reservation-exports?uuid={}'.format(uuid))
+        )
+
+        self.assertIn('Reservation Export', browser.contents)
+        browser.getControl(name='form.buttons.export').click()
+
+        self.assertIn('uuid={}'.format(uuid), browser.url)
+        self.assertIn('year=all', browser.url)
+        self.assertIn('month=all', browser.url)

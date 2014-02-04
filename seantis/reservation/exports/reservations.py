@@ -3,6 +3,8 @@ import tablib
 from zope import i18n
 from zope.i18nmessageid import Message
 
+from sqlalchemy.sql.expression import extract
+
 from seantis.reservation import _
 from seantis.reservation import Session
 from seantis.reservation import utils
@@ -53,7 +55,9 @@ def basic_headers():
     ]
 
 
-def dataset(resources, language, transform_record=None, compact=False):
+def dataset(
+    resources, language, year, month, transform_record=None, compact=False
+):
     """ Takes a list of resources and returns a tablib dataset filled with
     all reservations of these resources. The json data of the reservations
     is filled using a single column for each type (form + field).
@@ -68,7 +72,7 @@ def dataset(resources, language, transform_record=None, compact=False):
     """
 
     translator = Translator(language)
-    reservations = fetch_records(resources)
+    reservations = fetch_records(resources, year, month)
 
     # create the headers
     headers = translator.translate(basic_headers())
@@ -122,13 +126,20 @@ def dataset(resources, language, transform_record=None, compact=False):
     return generate_dataset(headers, records)
 
 
-def fetch_records(resources):
+def fetch_records(resources, year, month):
     """ Returns the records used for the dataset. """
     if not resources.keys():
         return []
 
     query = Session.query(Reservation)
     query = query.filter(Reservation.resource.in_(resources.keys()))
+
+    if year != 'all':
+        query = query.filter(extract('year', Reservation.start) == int(year))
+
+    if month != 'all':
+        query = query.filter(extract('month', Reservation.start) == int(month))
+
     query = query.order_by(
         Reservation.resource,
         Reservation.status,

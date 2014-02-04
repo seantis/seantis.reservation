@@ -50,7 +50,7 @@ class TestExports(IntegrationTestCase):
         )
 
         dataset = exports.reservations.dataset(
-            {resource.uuid(): resource}, 'en'
+            {resource.uuid(): resource}, 'en', 'all', 'all'
         )
 
         self.assertEqual(len(dataset), 2)
@@ -89,9 +89,52 @@ class TestExports(IntegrationTestCase):
         for format in ('xls', 'xlsx', 'json', 'csv'):
             transform_record = lambda r: prepare_record(r, format)
             dataset = exports.reservations.dataset(
-                {resource.uuid(): resource}, 'en', transform_record
+                {resource.uuid(): resource},
+                'en', 'all', 'all', transform_record
             )
             getattr(dataset, format)
+
+    @serialized
+    def test_reservations_export_date_filter(self):
+        self.login_manager()
+
+        resource = self.create_resource()
+        sc = resource.scheduler()
+
+        this_year = (
+            datetime(2013, 1, 1, 12, 0), datetime(2013, 1, 1, 13, 0)
+        )
+
+        next_year = (
+            datetime(2014, 1, 1, 12, 0), datetime(2014, 1, 1, 13, 0)
+        )
+
+        reservation_email = u'test@example.com'
+        sc.allocate(this_year, approve_manually=False)
+        sc.allocate(next_year, approve_manually=False)
+
+        sc.reserve(reservation_email, this_year)
+        sc.reserve(reservation_email, next_year)
+
+        dataset = exports.reservations.dataset(
+            {resource.uuid(): resource}, 'en', year='all', month='all'
+        )
+        self.assertEqual(len(dataset), 2)
+
+        dataset = exports.reservations.dataset(
+            {resource.uuid(): resource}, 'en', year='all', month='1'
+        )
+        self.assertEqual(len(dataset), 2)
+
+        dataset = exports.reservations.dataset(
+            {resource.uuid(): resource}, 'en', year='2013', month='all'
+        )
+        self.assertEqual(len(dataset), 1)
+
+        dataset = exports.reservations.dataset(
+            {resource.uuid(): resource}, 'en', year='2010', month='all'
+        )
+        self.assertEqual(len(dataset), 0)
 
     @serialized
     def test_reservations_export_title(self):
@@ -113,7 +156,7 @@ class TestExports(IntegrationTestCase):
         resource.aq_inner.aq_parent.title = 'testtitel'
 
         dataset = exports.reservations.dataset(
-            {resource.uuid(): resource}, 'en'
+            {resource.uuid(): resource}, 'en', 'all', 'all'
         )
 
         self.assertEqual(len(dataset), 1)
@@ -123,7 +166,7 @@ class TestExports(IntegrationTestCase):
         resource = aq_base(resource)
 
         dataset = exports.reservations.dataset(
-            {resource.uuid(): resource}, 'en'
+            {resource.uuid(): resource}, 'en', 'all', 'all'
         )
 
         self.assertEqual(len(dataset), 1)

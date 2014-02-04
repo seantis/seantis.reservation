@@ -1,5 +1,8 @@
 from five import grok
+
 from plone.app.layout.globals.layout import LayoutPolicy
+from plone.directives.form import Form
+
 from seantis.reservation.interfaces import ISeantisReservationSpecific
 
 
@@ -10,6 +13,12 @@ class BaseView(grok.View):
 
 
 class BaseViewlet(grok.Viewlet):
+
+    grok.baseclass()
+    grok.layer(ISeantisReservationSpecific)
+
+
+class BaseForm(Form):
 
     grok.baseclass()
     grok.layer(ISeantisReservationSpecific)
