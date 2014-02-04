@@ -818,6 +818,11 @@ class ReservationList(BaseView, ReservationListView, ReservationUrls):
         """ Returns true if the document should be printed when opening it. """
         return self.request.get('print', None) is not None
 
+    @property
+    def body_classes(self):
+        if utils.is_uuid(self.reservation):
+            return ['single-reservation-view']
+
 
 class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
 

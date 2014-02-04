@@ -133,4 +133,14 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
 <browser:resourceDirectory name="seantis.reservation.js" directory="js"/>
 <browser:resourceDirectory name="seantis.reservation.css" directory="css"/>
 
+<!-- Custom CSS Body Classes -->
+<browser:page
+    name="plone_layout"
+    for=".interfaces.IResource"
+    permission="zope.Public"
+    class=".base.ReservationLayoutPolicy"
+    layer=".interfaces.ISeantisReservationSpecific"
+    allowed_interface="plone.app.layout.globals.interfaces.ILayoutPolicy"
+    />
+
 </configure>

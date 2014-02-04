@@ -144,3 +144,28 @@ div.fc > * {
 .day h2 {
     border-width: 0 0 1px 0 !important;
 }
+
+.single-reservation-view .reservation-info {
+    border: 1px solid #aaa;
+    padding: 1em;
+}
+
+.single-reservation-view .reservation {
+    border: none !important;
+}
+
+.single-reservation-view .splitscreen {
+    width: auto;
+}
+
+.single-reservation-view .reservation-info {
+    margin: 1em;
+}
+
+.single-reservation-view .reservation-title {
+    margin-bottom: 1em !important;
+}
+
+.single-reservation-view .splitscreen {
+    page-break-after: avoid;
+}
