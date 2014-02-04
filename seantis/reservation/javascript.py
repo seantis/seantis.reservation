@@ -5,6 +5,8 @@ from zope.interface import Interface
 from plone.app.layout.viewlets.interfaces import IHtmlHead
 from zope.component import getMultiAdapter
 
+from seantis.reservation.base import BaseViewlet
+
 TEMPLATE = u"""
 <script type="text/javascript" class="javascript-settings">
     var %(name)s = %(variables)s;
@@ -12,7 +14,7 @@ TEMPLATE = u"""
 """
 
 
-class JavascriptSettings(grok.Viewlet):
+class JavascriptSettings(BaseViewlet):
 
     grok.context(Interface)
     grok.viewletmanager(IHtmlHead)

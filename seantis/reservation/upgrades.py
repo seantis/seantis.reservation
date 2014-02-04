@@ -13,8 +13,8 @@ from sqlalchemy import Table
 from sqlalchemy import not_
 from sqlalchemy.schema import Column
 
+from plone import api
 from plone.registry.interfaces import IRegistry
-from plone.api.exc import InvalidParameterError
 from plone.dexterity.interfaces import IDexterityFTI
 from Products.CMFCore.utils import getToolByName
 from zope.component import getUtility
@@ -379,30 +379,14 @@ def upgrade_1020_to_1021(context):
     elif send_email_to_managers is False:
         settings.set('send_email_to_managers', 'never')
 
-    # try:
-    #     send_email_to_managers = settings.get('send_email_to_managers')
-    # except InvalidParameterError:
-    #     send_email_to_managers = True
-
-    # if send_email_to_managers in (True, False):
-
-    #     prefix = settings.ISeantisReservationSettings.__identifier__
-    #     key = lambda k: '.'.join((prefix, k))
-
-
-
-    #     del registry.records[key('send_email_to_managers')]
-
-    #     if send_email_to_managers is True:
-    #         registry.records[key('send_email_to_managers')] = 'by_path'
-    #     else:
-    #         registry.records[key('send_email_to_managers')] = 'never'
-
-    # try:
-    #     settings.get('manager_email')
-    # except InvalidParameterError:
-    #     registry.records[key('manager_email')] = u''
-
     # ensure that the records exist now
     settings.get('manager_email')
     settings.get('send_email_to_managers')
+
+
+def upgrade_1021_to_1022(context):
+
+    setup = api.portal.get_tool('portal_setup')
+    setup.runImportStepFromProfile(
+        'profile-seantis.reservation:default', 'browserlayer'
+    )

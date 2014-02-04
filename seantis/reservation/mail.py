@@ -19,12 +19,14 @@ from zope.schema import getFields
 
 from seantis.reservation.form import ReservationDataView
 from seantis.reservation.reserve import ReservationUrls
+from seantis.reservation.base import BaseViewlet
 from seantis.reservation.interfaces import IReservationsConfirmedEvent
 from seantis.reservation.interfaces import IReservationApprovedEvent
 from seantis.reservation.interfaces import IReservationDeniedEvent
 from seantis.reservation.interfaces import IReservationRevokedEvent
 from seantis.reservation.interfaces import OverviewletManager
 from seantis.reservation.interfaces import IEmailTemplate
+from seantis.reservation.interfaces import ISeantisReservationSpecific
 from seantis.reservation.mail_templates import templates
 from seantis.reservation import utils
 from seantis.reservation import settings
@@ -471,6 +473,7 @@ class TemplateAddForm(dexterity.AddForm):
 
     grok.context(IEmailTemplate)
     grok.require(permission)
+    grok.layer(ISeantisReservationSpecific)
 
     grok.name('seantis.reservation.emailtemplate')
 
@@ -516,6 +519,7 @@ class TemplateEditForm(dexterity.EditForm):
 
     grok.context(IEmailTemplate)
     grok.require(permission)
+    grok.layer(ISeantisReservationSpecific)
 
     @button.buttonAndHandler(_(u'Save'), name='save')
     def handleApply(self, action):
@@ -524,7 +528,7 @@ class TemplateEditForm(dexterity.EditForm):
         dexterity.EditForm.handleApply(self, action)
 
 
-class TemplatesViewlet(grok.Viewlet):
+class TemplatesViewlet(BaseViewlet):
 
     permission = 'cmf.ModifyPortalContent'
 

@@ -22,6 +22,7 @@ from seantis.reservation import exposure
 from seantis.reservation import utils
 from seantis.reservation import db
 from seantis.reservation import _
+from seantis.reservation.base import BaseView
 from seantis.reservation.events import ResourceViewedEvent
 from seantis.reservation.timeframe import timeframes_by_context
 from seantis.reservation.form import AllocationGroupView
@@ -81,7 +82,7 @@ def on_removed_resource(resource, event):
     db.extinguish_resource(resource.uuid())
 
 
-class View(grok.View):
+class View(BaseView):
     permission = 'zope2.View'
 
     grok.context(IResourceBase)
@@ -211,7 +212,7 @@ class View(grok.View):
         return viewlet.render()
 
 
-class GroupView(grok.View, AllocationGroupView):
+class GroupView(BaseView, AllocationGroupView):
     permission = 'zope2.View'
 
     grok.context(IResourceBase)
@@ -228,7 +229,7 @@ class GroupView(grok.View, AllocationGroupView):
         return self.group
 
 
-class Listing(grok.View):
+class Listing(BaseView):
     permission = 'zope2.View'
     implements(IOverview)
 
@@ -278,7 +279,7 @@ class CalendarRequest(object):
         raise NotImplementedError
 
 
-class Slots(grok.View, CalendarRequest):
+class Slots(BaseView, CalendarRequest):
     permission = 'zope2.View'
 
     grok.context(IResourceBase)

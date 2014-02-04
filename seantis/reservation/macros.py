@@ -4,8 +4,10 @@ from zope.interface import Interface
 from seantis.reservation.reserve import ReservationUrls
 from seantis.reservation.form import ReservationDataView
 from seantis.reservation import utils
+from seantis.reservation.base import BaseView
 
-class View(grok.View, ReservationUrls, ReservationDataView):
+
+class View(BaseView, ReservationUrls, ReservationDataView):
     """A numer of macros for use with seantis.dir.base"""
 
     grok.context(Interface)

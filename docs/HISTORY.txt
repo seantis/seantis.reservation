@@ -5,6 +5,9 @@ Changelog
 1.0.2 (unreleased)
 ------------------
 
+- Adds seantis.reservation specific browserlayer.
+  [href]
+
 - Adds xlsx as output format to exports.
   [href]
 

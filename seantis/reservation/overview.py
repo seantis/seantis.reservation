@@ -8,10 +8,11 @@ from seantis.reservation.resource import CalendarRequest
 from seantis.reservation import utils
 from seantis.reservation import db
 from seantis.reservation import exposure
+from seantis.reservation.base import BaseView, BaseViewlet
 from seantis.reservation.interfaces import IOverview, OverviewletManager
 
 
-class Overviewlet(grok.Viewlet):
+class Overviewlet(BaseViewlet):
     grok.context(Interface)
     grok.name('seantis.reservation.overviewlet')
     grok.require('zope2.View')
@@ -65,7 +66,7 @@ class Overviewlet(grok.Viewlet):
         }
 
 
-class Overview(grok.View, CalendarRequest):
+class Overview(BaseView, CalendarRequest):
     grok.context(Interface)
     grok.name('overview')
     grok.require('zope2.View')
@@ -115,7 +116,7 @@ class Overview(grok.View, CalendarRequest):
         return events
 
 
-class Utilsviewlet(grok.Viewlet):
+class Utilsviewlet(BaseViewlet):
     grok.context(Interface)
     grok.name('seantis.reservation.utilslet')
     grok.require('zope2.View')

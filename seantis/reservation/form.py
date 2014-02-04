@@ -13,7 +13,10 @@ from sqlalchemy import null
 from seantis.reservation import _
 from seantis.reservation import utils
 from seantis.reservation.models import Allocation, Reservation
-from seantis.reservation.interfaces import IResourceBase
+from seantis.reservation.interfaces import (
+    IResourceBase,
+    ISeantisReservationSpecific
+)
 
 from plone.memoize import view
 
@@ -72,6 +75,7 @@ class ResourceBaseForm(GroupForm, form.Form):
     """
     grok.baseclass()
     grok.context(IResourceBase)
+    grok.layer(ISeantisReservationSpecific)
 
     ignoreContext = True
     ignore_requirements = False
@@ -203,7 +207,7 @@ class ResourceBaseForm(GroupForm, form.Form):
     def adjust_date_ranges(self):
         """ Someone thought it was a good idea to have plone date widgets
         default to a daterange of ten years in the past, ten years in the
-        future. 
+        future.
 
         This code undoes that on all widgets used for custom fields.
 

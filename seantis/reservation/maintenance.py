@@ -13,6 +13,7 @@ from zope.interface import Interface
 from ZServer.ClockServer import ClockServer
 
 from seantis.reservation import db
+from seantis.reservation.base import BaseView
 from seantis.reservation.interfaces import IResourceViewedEvent
 from seantis.reservation.session import ISessionUtility
 
@@ -133,7 +134,7 @@ class ClockLogger(object):
             log.warn("ClockServer for %s returned %i" % (self.method, code))
 
 
-class RemoveExpiredSessions(grok.View):
+class RemoveExpiredSessions(BaseView):
     """ Removes all expired sessions when called. Does not require permission.
 
     """

@@ -14,6 +14,7 @@ from seantis.reservation import _
 from seantis.reservation import form
 from seantis.reservation import utils
 from seantis.reservation import exports
+from seantis.reservation.base import BaseView
 
 Source = namedtuple('Source', ['id', 'title', 'description', 'method'])
 
@@ -131,7 +132,7 @@ def prepare_record(record, target_format):
     return record
 
 
-class ExportListView(grok.View, form.ResourceParameterView):
+class ExportListView(BaseView, form.ResourceParameterView):
     """Shows the available exports for the resource. """
 
     permission = 'seantis.reservation.ViewReservations'
@@ -147,7 +148,7 @@ class ExportListView(grok.View, form.ResourceParameterView):
         return get_exports(self.context, self.request, self.uuids)
 
 
-class ExportView(grok.View, form.ResourceParameterView):
+class ExportView(BaseView, form.ResourceParameterView):
     """Exports the reservations from a list of resources. """
 
     permission = 'seantis.reservation.ViewReservations'

@@ -26,9 +26,11 @@ from seantis.reservation.interfaces import (
     IReservation,
     IGroupReservation,
     IRevokeReservation,
-    IReservationIdForm
+    IReservationIdForm,
+    ISeantisReservationSpecific
 )
 
+from seantis.reservation.base import BaseView, BaseViewlet
 from seantis.reservation.error import DirtyReadOnlySession
 from seantis.reservation.restricted_eval import run_pre_reserve_script
 from seantis.reservation import _
@@ -619,7 +621,7 @@ class YourReservations(ResourceBaseForm, YourReservationsData):
         super(YourReservations, self).update()
 
 
-class YourReservationsViewlet(grok.Viewlet, YourReservationsData):
+class YourReservationsViewlet(BaseViewlet, YourReservationsData):
     grok.context(Interface)
     grok.name('seantis.reservation.YourReservationsviewlet')
     grok.require('zope2.View')
@@ -664,6 +666,7 @@ class ReservationDecisionForm(ReservationIdForm, ReservationListView,
     """ Base class for admin's approval / denial forms. """
 
     grok.baseclass()
+    grok.layer(ISeantisReservationSpecific)
 
     template = ViewPageTemplateFile('templates/decide_reservation.pt')
 
@@ -746,6 +749,7 @@ class ReservationRevocationForm(
 
     grok.name('revoke-reservation')
     grok.require(permission)
+    grok.layer(ISeantisReservationSpecific)
 
     destructive_buttons = ('revoke', )
 
@@ -782,7 +786,7 @@ class ReservationRevocationForm(
         self.redirect_to_context()
 
 
-class ReservationList(grok.View, ReservationListView, ReservationUrls):
+class ReservationList(BaseView, ReservationListView, ReservationUrls):
 
     permission = "seantis.reservation.ViewReservations"
 
@@ -823,6 +827,7 @@ class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
     grok.require(permission)
 
     grok.context(IResourceBase)
+    grok.layer(ISeantisReservationSpecific)
 
     context_buttons = ('save', )
     extracted_errors = []

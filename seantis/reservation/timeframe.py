@@ -7,7 +7,10 @@ from Products.CMFCore.interfaces import IFolderish
 from z3c.form import button
 
 from seantis.reservation import _
-from seantis.reservation.interfaces import ITimeframe, OverviewletManager
+from seantis.reservation.base import BaseViewlet
+from seantis.reservation.interfaces import (
+    ITimeframe, OverviewletManager, ISeantisReservationSpecific
+)
 from seantis.reservation import utils
 
 # TODO cache all timeframe stuff for an hour or so.. no frequent updates needed
@@ -76,6 +79,7 @@ class TimeframeAddForm(dexterity.AddForm):
     permission = 'cmf.AddPortalContent'
 
     grok.context(ITimeframe)
+    grok.layer(ISeantisReservationSpecific)
     grok.require(permission)
 
     grok.name('seantis.reservation.timeframe')
@@ -92,6 +96,7 @@ class TimeframeEditForm(dexterity.EditForm):
     permission = 'cmf.ModifyPortalContent'
 
     grok.context(ITimeframe)
+    grok.layer(ISeantisReservationSpecific)
     grok.require(permission)
 
     @button.buttonAndHandler(_(u'Save'), name='save')
@@ -101,7 +106,7 @@ class TimeframeEditForm(dexterity.EditForm):
         dexterity.EditForm.handleApply(self, action)
 
 
-class TimeframeViewlet(grok.Viewlet):
+class TimeframeViewlet(BaseViewlet):
 
     permission = 'cmf.ModifyPortalContent'
 

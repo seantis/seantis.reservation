@@ -13,6 +13,7 @@ from seantis.reservation import db
 from seantis.reservation import utils
 from seantis.reservation.models import Allocation, Reservation
 from seantis.reservation.reports import GeneralReportParametersMixin
+from seantis.reservation.interfaces import ISeantisReservationSpecific
 
 calendar = Calendar()
 
@@ -26,6 +27,7 @@ class MonthlyReportView(
     grok.require(permission)
 
     grok.context(Interface)
+    grok.layer(ISeantisReservationSpecific)
     grok.name('monthly_report')  # note that this text is copied in utils.py
 
     template = grok.PageTemplateFile('../templates/monthly_report.pt')

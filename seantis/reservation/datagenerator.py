@@ -15,11 +15,12 @@ from seantis.reservation.error import (
     ReservationError
 )
 from seantis.reservation.raster import VALID_RASTER_VALUES
+from seantis.reservation.base import BaseView
 
 import transaction
 
 
-class DataGeneratorView(grok.View):
+class DataGeneratorView(BaseView):
 
     permission = 'cmf.ManagePortal'
     grok.require(permission)

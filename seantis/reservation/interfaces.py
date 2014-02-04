@@ -24,6 +24,11 @@ from seantis.reservation.raster import VALID_RASTER_VALUES
 from seantis.reservation.mail_templates import templates
 from seantis.reservation.utils import _languagelist
 
+
+class ISeantisReservationSpecific(Interface):
+    pass
+
+
 days = SimpleVocabulary(
     [
         SimpleTerm(value=rrule.MO, title=_(u'Mo')),
@@ -173,6 +178,7 @@ class OverviewletManager(grok.ViewletManager):
     """ Manages the viewlets shown in the overview. """
     grok.context(Interface)
     grok.name('seantis.reservation.overviewletmanager')
+    grok.layer(ISeantisReservationSpecific)
 
     @utils.cached_property
     def uuidmap(self):

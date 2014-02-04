@@ -10,6 +10,7 @@ from seantis.reservation import db
 from seantis.reservation import _
 from seantis.reservation import utils
 from seantis.reservation.models import Reservation
+from seantis.reservation.base import BaseView
 from seantis.reservation.reports import GeneralReportParametersMixin
 
 
@@ -40,7 +41,7 @@ def human_date(date):
         })
 
 
-class LatestReservationsReportView(grok.View, GeneralReportParametersMixin):
+class LatestReservationsReportView(BaseView, GeneralReportParametersMixin):
 
     permission = 'seantis.reservation.ViewReservations'
 
