@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-02-04 15:23+0000\n"
+"POT-Creation-Date: 2014-02-05 11:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,6 +39,10 @@ msgstr ""
 
 #: ./utils.py:699
 msgid "%i/%i Spots Available"
+msgstr ""
+
+#: ./templates/latest_reservations.pt:25
+msgid "&lt;&lt; Previous 30 Days"
 msgstr ""
 
 #: ./templates/monthly_report.pt:23
@@ -164,7 +168,7 @@ msgid "Calendar date shown when opening the calendar."
 msgstr ""
 
 #: ./allocate.py:172
-#: ./export.py:208
+#: ./export.py:209
 #: ./reserve.py:497
 msgid "Cancel"
 msgstr ""
@@ -401,10 +405,6 @@ msgstr ""
 msgid "Export"
 msgstr ""
 
-#: ./export.py:164
-msgid "Export Reservation Data"
-msgstr ""
-
 #: ./templates/utils.pt:25
 msgid "Export Reservations"
 msgstr ""
@@ -513,6 +513,7 @@ msgstr ""
 msgid "Last hour of the day"
 msgstr ""
 
+#: ./reports/latest_reservations.py:57
 #: ./templates/utils.pt:15
 msgid "Latest Reservations"
 msgstr ""
@@ -581,15 +582,20 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
+#: ./templates/latest_reservations.pt:23
 #: ./templates/monthly_report.pt:22
 msgid "Navigation"
+msgstr ""
+
+#: ./templates/latest_reservations.pt:27
+msgid "Next 30 Days &gt;&gt;"
 msgstr ""
 
 #: ./templates/monthly_report.pt:23
 msgid "Next Month &gt;&gt;"
 msgstr ""
 
-#: ./export.py:238
+#: ./export.py:239
 #: ./utils.py:654
 msgid "No"
 msgstr ""
@@ -706,6 +712,10 @@ msgstr ""
 msgid "Reservation"
 msgstr ""
 
+#: ./export.py:164
+msgid "Reservation Export"
+msgstr ""
+
 #: ./interfaces.py:705
 msgid "Reservation Quota"
 msgstr ""
@@ -761,10 +771,6 @@ msgstr ""
 
 #: ./error.py:116
 msgid "Reservations can't be made for more than 24 hours at a time"
-msgstr ""
-
-#: ./reports/latest_reservations.py:57
-msgid "Reservations in the last 30 days"
 msgstr ""
 
 #: ./reserve.py:469
@@ -1022,6 +1028,10 @@ msgstr ""
 msgid "Timetable"
 msgstr ""
 
+#: ./reports/latest_reservations.py:90
+msgid "Today"
+msgstr ""
+
 #: ./reports/latest_reservations.py:29
 msgid "Today, at ${time}"
 msgstr ""
@@ -1080,7 +1090,7 @@ msgstr ""
 msgid "Year"
 msgstr ""
 
-#: ./export.py:238
+#: ./export.py:239
 #: ./utils.py:651
 msgid "Yes"
 msgstr ""

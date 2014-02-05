@@ -13,10 +13,30 @@
         <div tal:replace="structure provider:plone.abovecontenttitle" />
         
         <h1 class="documentFirstHeading" tal:content="view/title"></h1>
+        <p tal:content="view/daterange_label"></p>
                 
         <div tal:replace="structure provider:plone.abovecontentbody" />
 
         <metal:use use-macro="context/@@seantis-reservation-macros/controlbox">
+          <metal:fill-slot fill-slot="report-specific-nav-blocks">
+            <div class="nav-block">
+              <h2 i18n:translate="">Navigation</h2>
+              <tal:block condition="view/forward_url">
+                <a tal:attributes="href view/backward_url" i18n:translate="" class="previous-month">
+                  &lt;&lt; Previous 30 Days
+                </a> | <a tal:attributes="href view/forward_url" i18n:translate="" class="next-month">
+                  Next 30 Days &gt;&gt;
+                </a>
+              </tal:block>
+
+              <tal:block condition="not: view/forward_url">
+                <a tal:attributes="href view/backward_url" i18n:translate="" class="previous-month">
+                  &lt;&lt; Previous 30 Days
+                </a>
+              </tal:block>
+              
+            </div>
+          </metal:fill-slot>
         </metal:use>
 
         <div class="latest-reservations-report seantis-reservation-report" tal:define="results view/results">

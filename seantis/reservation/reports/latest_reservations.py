@@ -54,11 +54,71 @@ class LatestReservationsReportView(BaseView, GeneralReportParametersMixin):
 
     @property
     def title(self):
-        return _(u'Reservations in the last 30 days')
+        return _(u'Latest Reservations')
+
+    @property
+    def start(self):
+        return utils.safe_parse_int(self.request.get('start'), 0)
+
+    @property
+    def end(self):
+        return utils.safe_parse_int(self.request.get('end'), 30)
 
     @property
     def results(self):
-        return latest_reservations(self.resources, self.reservations or '*')
+        return latest_reservations(
+            resources=self.resources,
+            reservations=self.reservations or '*',
+            daterange=self.daterange,
+        )
+
+    @property
+    def daterange(self):
+        now = utils.utcnow()
+
+        since = now - timedelta(days=self.end)
+        until = now - timedelta(days=self.start)
+
+        return since, until
+
+    @property
+    def daterange_label(self):
+        since, until = self.daterange
+
+        if until.date() == utils.utcnow().date():
+            return ' - '.join(
+                (since.strftime('%d.%m.%Y'), self.translate(_(u'Today')))
+            )
+        return ' - '.join(
+            (since.strftime('%d.%m.%Y'), until.strftime('%d.%m.%Y'))
+        )
+
+    def build_url(self, start, end):
+        params = [
+            ('start', str(start)),
+            ('end', str(end))
+        ]
+
+        return super(LatestReservationsReportView, self).build_url(
+            extra_parameters=params
+        )
+
+    @property
+    def forward_url(self):
+        start, end = self.start, self.end
+        start, end = start - 30, end - 30
+
+        if start < 0:
+            return None
+
+        return self.build_url(start, end)
+
+    @property
+    def backward_url(self):
+        start, end = self.start, self.end
+        start, end = start + 30, end + 30
+
+        return self.build_url(start, end)
 
     def reservation_title(self, reservation):
         human_date_text = utils.translate(
@@ -67,17 +127,16 @@ class LatestReservationsReportView(BaseView, GeneralReportParametersMixin):
         return '{} - {}'.format(human_date_text, reservation.title)
 
 
-def latest_reservations(resources, reservations='*', days=30):
+def latest_reservations(resources, daterange, reservations='*'):
     schedulers = {}
 
     for uuid in resources.keys():
         schedulers[uuid] = db.Scheduler(uuid)
 
-    since = utils.utcnow() - timedelta(days=days)
-
     query = Session.query(Reservation)
     query = query.filter(Reservation.resource.in_(resources.keys()))
-    query = query.filter(Reservation.created > since)
+    query = query.filter(Reservation.created > daterange[0])
+    query = query.filter(Reservation.created <= daterange[1])
     query = query.order_by(desc(Reservation.created))
 
     if reservations != '*':

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-02-04 15:23+0000\n"
+"POT-Creation-Date: 2014-02-05 11:56+0000\n"
 "PO-Revision-Date: 2012-09-06 11:33+0100\n"
 "Last-Translator: Fabian Reinhard <fabian.reinhard@seantis.ch>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,6 +37,10 @@ msgstr "%i/%i Platz verfügbar"
 #: ./utils.py:699
 msgid "%i/%i Spots Available"
 msgstr "%i/%i Plätze verfügbar"
+
+#: ./templates/latest_reservations.pt:25
+msgid "&lt;&lt; Previous 30 Days"
+msgstr "&lt;&lt; 30 Tage zurück"
 
 #: ./templates/monthly_report.pt:23
 msgid "&lt;&lt; Previous Month"
@@ -161,7 +165,7 @@ msgid "Calendar date shown when opening the calendar."
 msgstr "Das Datum das beim Öffnen des Kalenders angezeigt wird."
 
 #: ./allocate.py:172
-#: ./export.py:208
+#: ./export.py:209
 #: ./reserve.py:497
 msgid "Cancel"
 msgstr "Abbrechen"
@@ -398,10 +402,6 @@ msgstr "Excel Format (XLSX)"
 msgid "Export"
 msgstr "Export"
 
-#: ./export.py:164
-msgid "Reservation Export"
-msgstr "Reservations-Export"
-
 #: ./templates/utils.pt:25
 msgid "Export Reservations"
 msgstr "Reservationen exportieren"
@@ -510,6 +510,7 @@ msgstr "Sprache"
 msgid "Last hour of the day"
 msgstr "Letzte volle Stunde"
 
+#: ./reports/latest_reservations.py:57
 #: ./templates/utils.pt:15
 msgid "Latest Reservations"
 msgstr "Neueste Reservationen"
@@ -578,15 +579,20 @@ msgstr "Monatsansicht"
 msgid "Name"
 msgstr "Name"
 
+#: ./templates/latest_reservations.pt:23
 #: ./templates/monthly_report.pt:22
 msgid "Navigation"
 msgstr "Navigation"
+
+#: ./templates/latest_reservations.pt:27
+msgid "Next 30 Days &gt;&gt;"
+msgstr "30 Tage vorwärts &gt;&gt;"
 
 #: ./templates/monthly_report.pt:23
 msgid "Next Month &gt;&gt;"
 msgstr "Nächster Monat &gt;&gt;"
 
-#: ./export.py:238
+#: ./export.py:239
 #: ./utils.py:654
 msgid "No"
 msgstr "Nein"
@@ -703,6 +709,10 @@ msgstr "Einteilungen entfernen"
 msgid "Reservation"
 msgstr "Reservation"
 
+#: ./export.py:164
+msgid "Reservation Export"
+msgstr "Reservations-Export"
+
 #: ./interfaces.py:705
 msgid "Reservation Quota"
 msgstr "Anzahl Reservationen"
@@ -759,10 +769,6 @@ msgstr "Reservierung erfolgreich abgeschlossen"
 #: ./error.py:116
 msgid "Reservations can't be made for more than 24 hours at a time"
 msgstr "Reservationen können nicht über mehr als 24 Stunden gemacht werden"
-
-#: ./reports/latest_reservations.py:57
-msgid "Reservations in the last 30 days"
-msgstr "Reservationen in den letzten 30 Tagen"
 
 #: ./reserve.py:469
 #: ./resource.py:318
@@ -1019,6 +1025,10 @@ msgstr "Belegungsperioden"
 msgid "Timetable"
 msgstr "Zeitachse"
 
+#: ./reports/latest_reservations.py:90
+msgid "Today"
+msgstr "Heute"
+
 #: ./reports/latest_reservations.py:29
 msgid "Today, at ${time}"
 msgstr "Heute, um ${time}"
@@ -1077,7 +1087,7 @@ msgstr "Ganztägig"
 msgid "Year"
 msgstr "Jahr"
 
-#: ./export.py:238
+#: ./export.py:239
 #: ./utils.py:651
 msgid "Yes"
 msgstr "Ja"

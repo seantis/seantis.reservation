@@ -3,6 +3,7 @@ from five import grok
 from plone.app.layout.globals.layout import LayoutPolicy
 from plone.directives.form import Form
 
+from seantis.plonetools import tools
 from seantis.reservation.interfaces import ISeantisReservationSpecific
 
 
@@ -10,6 +11,9 @@ class BaseView(grok.View):
 
     grok.baseclass()
     grok.layer(ISeantisReservationSpecific)
+
+    def translate(self, text):
+        return tools.translator(self.request, 'seantis.reservation')(text)
 
 
 class BaseViewlet(grok.Viewlet):

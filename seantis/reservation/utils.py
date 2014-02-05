@@ -762,6 +762,13 @@ def pairwise(iterable):
     return izip(a, b)
 
 
+def safe_parse_int(value, default):
+    try:
+        return int(value)
+    except (ValueError, TypeError):
+        return default
+
+
 def get_config(key):
     config = getConfiguration()
     if not hasattr(config, 'product_config'):

@@ -5,6 +5,9 @@ Changelog
 1.0.2 (unreleased)
 ------------------
 
+- Adds next/previous 30 days to latest reservations report.
+  [href]
+
 - Adds month/year filter to the export. Fixes #101.
   [href]
 

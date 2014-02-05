@@ -15,6 +15,7 @@ from seantis.reservation.reports.latest_reservations import (
 
 reservation_email = u'test@example.com'
 
+
 class TestReports(IntegrationTestCase):
 
     def test_report_parameters_mixin_defaults(self):
@@ -155,7 +156,6 @@ class TestReports(IntegrationTestCase):
     @serialized
     @mock.patch('seantis.reservation.utils.utcnow')
     def test_latest_reservations(self, utcnow):
-        now = utcnow.return_value = datetime.utcnow().replace(tzinfo=pytz.utc)
 
         self.login_admin()
 
@@ -171,13 +171,13 @@ class TestReports(IntegrationTestCase):
         sc.approve_reservation(sc.reserve(reservation_email, today))
         sc.approve_reservation(sc.reserve(reservation_email, tomorrow))
 
-        report = latest_reservations({resource.uuid(): resource})
+        now = datetime.utcnow().replace(tzinfo=pytz.utc)
+
+        daterange = (now - timedelta(days=30), now)
+
+        report = latest_reservations({resource.uuid(): resource}, daterange)
         self.assertEqual(len(report), 2)
 
-        utcnow.return_value = now + timedelta(days=30)
-        report = latest_reservations({resource.uuid(): resource})
-        self.assertEqual(len(report), 2)
-
-        utcnow.return_value = now + timedelta(days=31)
-        report = latest_reservations({resource.uuid(): resource})
+        daterange = (now - timedelta(days=31), now - timedelta(seconds=60))
+        report = latest_reservations({resource.uuid(): resource}, daterange)
         self.assertEqual(len(report), 0)
