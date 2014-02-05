@@ -36,7 +36,7 @@ Changelog
 - Adds the reservation quota to the reservation confirmation mail. Fixes #111.
   [href]
 
-- No longer send reservee emails to the resrevation manager. Fixes #118.
+- No longer send reservee emails to the reservation manager. Fixes #118.
   [href]
 
 - Richtextfields may now be exported to excel/csv/json. HTML is converted into
