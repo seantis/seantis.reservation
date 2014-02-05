@@ -2,8 +2,8 @@
 Changelog
 =========
 
-1.0.2 (2014-02-05)
-------------------
+1.0.19 (2014-02-05)
+-------------------
 
 - Adds next/previous 30 days to latest reservations report.
   [href]
