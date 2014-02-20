@@ -85,6 +85,8 @@ class TestCase(unittest.TestCase):
 
         self.logout()
 
+        util._reset_sessions()
+
     def request(self):
         return self.layer['request']
 

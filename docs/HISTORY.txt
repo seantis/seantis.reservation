@@ -2,6 +2,15 @@
 Changelog
 =========
 
+1.0.20 (unreleased)
+-------------------
+
+- Fixes a major Heisenbug occurring in testing using the latest SQLAlchemy
+  release.
+  [href]
+  
+
+
 1.0.19 (2014-02-05)
 -------------------
 

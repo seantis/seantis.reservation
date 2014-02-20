@@ -226,6 +226,11 @@ class SessionUtility(grok.GlobalUtility):
     implements(ISessionUtility)
 
     def __init__(self):
+        self._reset_sessions()
+
+    def _reset_sessions(self):
+        """ Resets the session and threadstore. Useful for testing. """
+
         # Session information is stored independently for each thread.
         # SQLAlchemy does provide this in a way with scoped_session, but
         # it seems sane to be independent here
