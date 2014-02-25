@@ -376,6 +376,9 @@ class ReservationForm(
         except DirtyReadOnlySession:
             pass
 
+        except NotFound:
+            pass
+
         return hidden
 
     @property
@@ -391,6 +394,9 @@ class ReservationForm(
                     disabled.append('end_time')
 
         except DirtyReadOnlySession:
+            pass
+
+        except NotFound:
             pass
 
         return disabled

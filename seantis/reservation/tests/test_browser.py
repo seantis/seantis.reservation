@@ -610,7 +610,13 @@ class TestBrowser(FunctionalTestCase):
         menu = self.allocation_menu(*allocation)
 
         browser.open(menu['reserve'])
-        browser.show()
+
+        self.assertEqual(browser.query('.fc-event').length, 4)
+
+        browser.getControl('Email').value = 'test@example.org'
+        browser.getControl('Reserve').click()
+
+        self.assertTrue('Your reservations' in browser.contents)
 
     def test_reservation_formsets(self):
 
