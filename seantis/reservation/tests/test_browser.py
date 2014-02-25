@@ -1,5 +1,7 @@
 import json
 import transaction
+
+from datetime import timedelta
 from itertools import chain
 
 from zope.component import queryUtility
@@ -89,7 +91,10 @@ class TestBrowser(FunctionalTestCase):
         partly_available=False,
         quota=1,
         quota_limit=1,
-        approve_manually=False
+        approve_manually=False,
+        recurrence_start=None,
+        recurrence_end=None,
+        separately_reservable=False
     ):
 
         browser = self.admin_browser
@@ -111,6 +116,18 @@ class TestBrowser(FunctionalTestCase):
         browser.getControl('Partly available').selected = partly_available
         browser.getControl('Quota', index=0).value = str(quota)
         browser.getControl('Reservation Quota Limit').value = str(quota_limit)
+
+        if recurrence_start and recurrence_end:
+            browser.getControl('Daily').selected = True
+            browser.set_date('form.widgets.recurrence_start', recurrence_start)
+            browser.set_date('form.widgets.recurrence_end', recurrence_end)
+
+            for day in ('Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'):
+                browser.getControl(day).selected = True
+
+            (
+                browser.getControl('Separately reservable')
+            ).selected = separately_reservable
 
         browser.getControl(
             'Manually approve reservation requests'
@@ -574,6 +591,32 @@ class TestBrowser(FunctionalTestCase):
 
         self.assertTrue('Revoke' in browser.contents)
         self.assertFalse('Approve' in browser.contents)
+
+    def test_reserve_group(self):
+
+        browser = self.admin_browser
+
+        self.add_resource('group_reservation', action='publish')
+
+        start = datetime(2014, 2, 25, 12, 00)
+        end = datetime(2014, 2, 25, 15, 00)
+
+        allocation = ['group_reservation', start, end]
+        self.add_allocation(
+            *allocation,
+            recurrence_start=start.date(),
+            recurrence_end=start.date() + timedelta(days=3)
+        )
+        menu = self.allocation_menu(*allocation)
+
+        browser.open(menu['reserve'])
+
+        self.assertEqual(browser.query('.fc-event').length, 4)
+
+        browser.getControl('Email').value = 'test@example.org'
+        browser.getControl('Reserve').click()
+
+        self.assertTrue('Your reservations' in browser.contents)
 
     def test_reservation_formsets(self):
 
