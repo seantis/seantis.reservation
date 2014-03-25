@@ -5,6 +5,10 @@ Changelog
 1.0.21 (unreleased)
 -------------------
 
+- Email addresses are now verified and stored without leading or trailing
+  space. Fixes #127.
+  [href]
+
 - Shows an error when displaying or submitting the reservation confirm form, if
   no reservation can be confirmed. Fixes #128.
   [href]
@@ -18,7 +22,6 @@ Changelog
 - Fixes a major Heisenbug occurring in testing using the latest SQLAlchemy
   release.
   [href]
-
 
 1.0.19 (2014-02-05)
 -------------------
