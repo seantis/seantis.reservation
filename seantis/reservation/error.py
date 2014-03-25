@@ -91,10 +91,10 @@ errormap = {
     _(u'A conflicting allocation exists for the requested time period.'),
 
     AffectedReservationError:
-    _(u'An existing reservation would be affected by the requested change'),
+    _(u'An existing reservation would be affected by the requested change.'),
 
     AffectedPendingReservationError:
-    _(u'A pending reservation would be affected by the requested change'),
+    _(u'A pending reservation would be affected by the requested change.'),
 
     TransactionRollbackError:
     _(u'The resource is being edited by someone else. Please try again.'),
@@ -139,6 +139,6 @@ errormap = {
       u'requested reservation quota.'),
 
     InvalidAllocationError:
-    _(u'The resulting allocation would be invalid'),
+    _(u'The resulting allocation would be invalid.')
 
 }

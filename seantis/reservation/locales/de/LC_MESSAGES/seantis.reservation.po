@@ -60,11 +60,11 @@ msgstr "<b>1</b> Reservation"
 
 #: ./error.py:91
 msgid "A conflicting allocation exists for the requested time period."
-msgstr "Es existiert bereits eine Einteilung für den gewählten Zeitraum"
+msgstr "Es existiert bereits eine Einteilung für den gewählten Zeitraum."
 
 #: ./error.py:97
-msgid "A pending reservation would be affected by the requested change"
-msgstr "Ein offene Reservierung wäre durch die Änderung betroffen"
+msgid "A pending reservation would be affected by the requested change."
+msgstr "Ein offene Reservierung wäre durch die Änderung betroffen."
 
 #: ./mail.py:558
 msgid "Add email template"
@@ -127,8 +127,8 @@ msgid "Always show the current date"
 msgstr "Immer das aktuelle Datum anzeigen"
 
 #: ./error.py:94
-msgid "An existing reservation would be affected by the requested change"
-msgstr "Eine bestehende Reservation wäre durch die Änderung betroffen"
+msgid "An existing reservation would be affected by the requested change."
+msgstr "Eine bestehende Reservation wäre durch die Änderung betroffen."
 
 #: ./reserve.py:694
 #: ./templates/macros.pt:127
@@ -989,8 +989,8 @@ msgid "The resource is being edited by someone else. Please try again."
 msgstr "Die Resource wird von jemand anderem bearbeitet. Bitte versuchen Sie es nochmal."
 
 #: ./error.py:142
-msgid "The resulting allocation would be invalid"
-msgstr "Die resultierende Einteilung wäre Ungültig"
+msgid "The resulting allocation would be invalid."
+msgstr "Die resultierende Einteilung wäre Ungültig."
 
 #: ./interfaces.py:423
 msgid "The selected view must be one of the available views."
