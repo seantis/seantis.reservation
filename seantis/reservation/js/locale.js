@@ -88,5 +88,9 @@ seantis.locale.dictionary = {
     'reserve' : [
         'Reserve',
         'Reservieren'
+    ],
+    'no_connection': [
+        'Connection to remote server failed.',
+        'Verbindung zum Server fehlgeschlagen.'
     ]
 };

@@ -5,6 +5,10 @@ Changelog
 1.0.21 (unreleased)
 -------------------
 
+- If an overlay fails to load the remote address after a click, an error
+  is shown.
+  [href]
+
 - Email addresses are now verified and stored without leading or trailing
   space. Fixes #127.
   [href]

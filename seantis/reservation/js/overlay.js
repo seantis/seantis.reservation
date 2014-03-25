@@ -95,9 +95,15 @@ var reservation_overlay_init = null;
         init_tinymce();
     };
 
-    var on_formload_failure = function(e, parent, form) {
+    var on_formload_failure = function(e, parent, form, status) {
         if (popups) {
             show_popup_messages(popups);
+        }
+
+        if (status == 'error') {
+            parent.find('div').append(
+                '<b>' + seantis.locale('no_connection') + '</b>'
+            );
         }
     };
 
@@ -212,8 +218,8 @@ var reservation_overlay_init = null;
         $(document).bind('formOverlayLoadSuccess', function(e, overlay, form, api, pb, ajax_parent) {
             $(document).trigger('seantis.formload_success', [ajax_parent, form]);
         });
-        $(document).bind('formOverlayLoadFailure', function(e, overlay, form, api, pb, ajax_parent) {
-            $(document).trigger('seantis.formload_failure', [ajax_parent, form]);
+        $(document).bind('formOverlayLoadFailure', function(e, overlay, form, api, pb, ajax_parent, noform) {
+            $(document).trigger('seantis.formload_failure', [ajax_parent, form, noform]);
         });
         // $(document).bind('loadInsideOverlay', function(e, el, responseText, errorText, api) {
         //     _.defer(function() {
