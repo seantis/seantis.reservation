@@ -912,7 +912,7 @@ class Scheduler(object):
             reservation.resource = self.uuid
             reservation.data = data
             reservation.session_id = session_id
-            reservation.email = email
+            reservation.email = email.strip()
             reservation.quota = quota
             Session.add(reservation)
         else:
@@ -938,7 +938,7 @@ class Scheduler(object):
                     reservation.resource = self.uuid
                     reservation.data = data
                     reservation.session_id = session_id
-                    reservation.email = email
+                    reservation.email = email.strip()
                     reservation.quota = quota
                     Session.add(reservation)
 
