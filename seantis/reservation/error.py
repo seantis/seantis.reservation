@@ -85,6 +85,10 @@ class InvalidAllocationError(ReservationError):
     pass
 
 
+class NoReservationsToConfirm(ReservationError):
+    pass
+
+
 errormap = {
 
     OverlappingAllocationError:
@@ -139,6 +143,9 @@ errormap = {
       u'requested reservation quota.'),
 
     InvalidAllocationError:
-    _(u'The resulting allocation would be invalid.')
+    _(u'The resulting allocation would be invalid.'),
+
+    NoReservationsToConfirm:
+    _(u'No reservations to confirm.')
 
 }

@@ -36,7 +36,8 @@ from seantis.reservation.error import (
     QuotaOverLimit,
     InvalidQuota,
     QuotaImpossible,
-    InvalidAllocationError
+    InvalidAllocationError,
+    NoReservationsToConfirm
 )
 
 from seantis.plonetools.schemafields import validate_email
@@ -202,6 +203,9 @@ def confirm_reservations_for_session(session_id, token=None, language=None):
         reservations = reservations.filter(Reservation.token == token)
 
     reservations = reservations.all()
+
+    if not reservations:
+        raise NoReservationsToConfirm
 
     for reservation in reservations:
         reservation.session_id = None

@@ -5,7 +5,9 @@ Changelog
 1.0.21 (unreleased)
 -------------------
 
-Nothing yet.
+- Shows an error when displaying or submitting the reservation confirm form, if
+  no reservation can be confirmed. Fixes #128.
+  [href]
 
 1.0.20 (2014-02-25)
 -------------------

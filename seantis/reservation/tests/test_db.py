@@ -11,7 +11,8 @@ from seantis.reservation.error import (
     AlreadyReservedError,
     ReservationTooLong,
     InvalidReservationError,
-    InvalidAllocationError
+    InvalidAllocationError,
+    NoReservationsToConfirm
 )
 
 from seantis.reservation import utils
@@ -1118,6 +1119,29 @@ class TestScheduler(IntegrationTestCase):
 
         self.assertEqual(len(mail.messages), 2)
         self.assertIn('To: manager@example.org', mail.messages[1])
+
+    @serialized
+    def test_no_reservations_to_confirm(self):
+        self.login_manager()
+
+        resource = self.create_resource()
+        sc = resource.scheduler()
+
+        start = datetime(2014, 3, 25, 14, 0)
+        end = datetime(2014, 3, 25, 16, 0)
+        dates = (start, end)
+
+        session_id = new_uuid()
+
+        sc.allocate(dates, approve_manually=False)
+        sc.reserve(reservation_email, dates, session_id=session_id)
+
+        # note the new session_id
+        self.assertRaises(
+            NoReservationsToConfirm,
+            db.confirm_reservations_for_session,
+            new_uuid()
+        )
 
     @serialized
     def test_email(self):

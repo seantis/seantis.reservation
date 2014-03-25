@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-02-05 11:56+0000\n"
+"POT-Creation-Date: 2014-03-25 14:03+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -61,12 +61,12 @@ msgstr ""
 msgid "<b>1</b> reservation"
 msgstr ""
 
-#: ./error.py:91
+#: ./error.py:95
 msgid "A conflicting allocation exists for the requested time period."
 msgstr ""
 
-#: ./error.py:97
-msgid "A pending reservation would be affected by the requested change"
+#: ./error.py:101
+msgid "A pending reservation would be affected by the requested change."
 msgstr ""
 
 #: ./mail.py:558
@@ -129,16 +129,16 @@ msgstr ""
 msgid "Always show the current date"
 msgstr ""
 
-#: ./error.py:94
-msgid "An existing reservation would be affected by the requested change"
+#: ./error.py:98
+msgid "An existing reservation would be affected by the requested change."
 msgstr ""
 
-#: ./reserve.py:694
+#: ./reserve.py:700
 #: ./templates/macros.pt:127
 msgid "Approve"
 msgstr ""
 
-#: ./reserve.py:685
+#: ./reserve.py:691
 msgid "Approve reservation"
 msgstr ""
 
@@ -169,7 +169,7 @@ msgstr ""
 
 #: ./allocate.py:172
 #: ./export.py:209
-#: ./reserve.py:497
+#: ./reserve.py:503
 msgid "Cancel"
 msgstr ""
 
@@ -239,12 +239,12 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-#: ./reserve.py:727
+#: ./reserve.py:733
 #: ./templates/macros.pt:123
 msgid "Deny"
 msgstr ""
 
-#: ./reserve.py:718
+#: ./reserve.py:724
 msgid "Deny reservation"
 msgstr ""
 
@@ -260,11 +260,11 @@ msgstr ""
 msgid "Do not send manager emails"
 msgstr ""
 
-#: ./reserve.py:692
+#: ./reserve.py:698
 msgid "Do you really want to approve the following reservations?"
 msgstr ""
 
-#: ./reserve.py:725
+#: ./reserve.py:731
 msgid "Do you really want to deny the following reservations?"
 msgstr ""
 
@@ -272,7 +272,7 @@ msgstr ""
 msgid "Do you really want to remove the following allocations?"
 msgstr ""
 
-#: ./reserve.py:768
+#: ./reserve.py:774
 msgid "Do you really want to revoke the following reservations?"
 msgstr ""
 
@@ -286,7 +286,7 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-#: ./reserve.py:843
+#: ./reserve.py:849
 msgid "Edit Formdata"
 msgstr ""
 
@@ -425,7 +425,7 @@ msgstr ""
 msgid "Format"
 msgstr ""
 
-#: ./reserve.py:909
+#: ./reserve.py:915
 msgid "Formdata updated"
 msgstr ""
 
@@ -473,7 +473,7 @@ msgstr ""
 msgid "If the allocation is partly available users may reserve only a part of it (e.g. half of it). If not the allocation Must be reserved as a whole or not at all"
 msgstr ""
 
-#: ./error.py:109
+#: ./error.py:113
 msgid "Invalid change. Your request may have already been processed earlier."
 msgstr ""
 
@@ -485,7 +485,7 @@ msgstr ""
 msgid "Invalid last hour"
 msgstr ""
 
-#: ./reserve.py:433
+#: ./reserve.py:439
 msgid "Invalid reservation request"
 msgstr ""
 
@@ -600,15 +600,19 @@ msgstr ""
 msgid "No"
 msgstr ""
 
-#: ./reserve.py:845
+#: ./reserve.py:851
 msgid "No Formdata to edit"
 msgstr ""
 
-#: ./error.py:113
+#: ./error.py:117
 msgid "No reservable slot found."
 msgstr ""
 
-#: ./reserve.py:690
+#: ./error.py:149
+msgid "No reservations to confirm."
+msgstr ""
+
+#: ./reserve.py:696
 msgid "No such reservation"
 msgstr ""
 
@@ -683,7 +687,7 @@ msgstr ""
 msgid "Reason"
 msgstr ""
 
-#: ./reserve.py:535
+#: ./reserve.py:541
 msgid "Recurrance reservation"
 msgstr ""
 
@@ -728,15 +732,15 @@ msgstr ""
 msgid "Reservation Throttling"
 msgstr ""
 
-#: ./reserve.py:700
+#: ./reserve.py:706
 msgid "Reservation confirmed"
 msgstr ""
 
-#: ./reserve.py:733
+#: ./reserve.py:739
 msgid "Reservation denied"
 msgstr ""
 
-#: ./reserve.py:429
+#: ./reserve.py:435
 msgid "Reservation out of bounds"
 msgstr ""
 
@@ -744,7 +748,7 @@ msgstr ""
 msgid "Reservation quota limit must zero or a positive number"
 msgstr ""
 
-#: ./reserve.py:780
+#: ./reserve.py:786
 msgid "Reservation revoked"
 msgstr ""
 
@@ -765,20 +769,20 @@ msgstr ""
 msgid "Reservations (Normal)"
 msgstr ""
 
-#: ./reserve.py:606
+#: ./reserve.py:612
 msgid "Reservations Successfully Submitted"
 msgstr ""
 
-#: ./error.py:116
+#: ./error.py:120
 msgid "Reservations can't be made for more than 24 hours at a time"
 msgstr ""
 
-#: ./reserve.py:469
+#: ./reserve.py:475
 #: ./resource.py:318
 msgid "Reserve"
 msgstr ""
 
-#: ./reserve.py:610
+#: ./reserve.py:616
 msgid "Reserve More"
 msgstr ""
 
@@ -795,12 +799,12 @@ msgstr ""
 msgid "Resources"
 msgstr ""
 
-#: ./reserve.py:772
+#: ./reserve.py:778
 #: ./templates/macros.pt:116
 msgid "Revoke"
 msgstr ""
 
-#: ./reserve.py:759
+#: ./reserve.py:765
 msgid "Revoke reservation"
 msgstr ""
 
@@ -813,7 +817,7 @@ msgid "Sa"
 msgstr ""
 
 #: ./mail.py:509
-#: ./reserve.py:899
+#: ./reserve.py:905
 #: ./timeframe.py:87
 msgid "Save"
 msgstr ""
@@ -923,7 +927,7 @@ msgstr ""
 msgid "Subforms that need to be filled out to make a reservation. Forms can currently only be created by a site-administrator."
 msgstr ""
 
-#: ./reserve.py:602
+#: ./reserve.py:608
 msgid "Submit Reservations"
 msgstr ""
 
@@ -931,7 +935,7 @@ msgstr ""
 msgid "Th"
 msgstr ""
 
-#: ./error.py:138
+#: ./error.py:142
 msgid "The allocation does not have enough spots to possibly satisfy the requested reservation quota."
 msgstr ""
 
@@ -947,15 +951,15 @@ msgstr ""
 msgid "The default reservations export with every date in the resource having a separate record."
 msgstr ""
 
-#: ./error.py:123
+#: ./error.py:127
 msgid "The given reservation paramters are invalid."
 msgstr ""
 
-#: ./error.py:126
+#: ./error.py:130
 msgid "The given reservation token is invalid."
 msgstr ""
 
-#: ./error.py:103
+#: ./error.py:107
 msgid "The item does no longer exist."
 msgstr ""
 
@@ -971,11 +975,11 @@ msgstr ""
 msgid "The requested allocations could not be found"
 msgstr ""
 
-#: ./error.py:106
+#: ./error.py:110
 msgid "The requested period is no longer available."
 msgstr ""
 
-#: ./error.py:135
+#: ./error.py:139
 msgid "The requested quota is invalid (must be at least one)."
 msgstr ""
 
@@ -983,16 +987,16 @@ msgstr ""
 msgid "The requested recurrence could not be found"
 msgstr ""
 
-#: ./error.py:132
+#: ./error.py:136
 msgid "The requested reservation quota is higher than allowed."
 msgstr ""
 
-#: ./error.py:100
+#: ./error.py:104
 msgid "The resource is being edited by someone else. Please try again."
 msgstr ""
 
-#: ./error.py:142
-msgid "The resulting allocation would be invalid"
+#: ./error.py:146
+msgid "The resulting allocation would be invalid."
 msgstr ""
 
 #: ./interfaces.py:423
@@ -1040,7 +1044,7 @@ msgstr ""
 msgid "Token"
 msgstr ""
 
-#: ./error.py:119
+#: ./error.py:123
 msgid "Too many reservations in a short time. Wait for a moment before trying again."
 msgstr ""
 
