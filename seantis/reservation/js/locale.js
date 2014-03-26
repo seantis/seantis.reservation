@@ -92,5 +92,9 @@ seantis.locale.dictionary = {
     'no_connection': [
         'Connection to remote server failed.',
         'Verbindung zum Server fehlgeschlagen.'
+    ],
+    'error': [
+        'Error',
+        'Fehler'
     ]
 };

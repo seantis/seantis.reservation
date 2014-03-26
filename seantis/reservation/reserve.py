@@ -324,11 +324,15 @@ class ReservationBaseForm(ResourceBaseForm):
 
         token = throttled(run, 'reserve')()
 
-        if approve_manually:
-            self.flash(_(u'Added to waitinglist'))
-        else:
+        if not approve_manually:
             self.scheduler.approve_reservation(token)
-            self.flash(_(u'Reservation successful'))
+
+        self.flash(
+            _(
+                u'Added reservation to your list. '
+                u'You have 15 minutes to confirm your reservations.'
+            )
+        )
 
 
 class ReservationForm(
@@ -609,7 +613,9 @@ class YourReservations(ResourceBaseForm, YourReservationsData):
     def finish(self, data):
         def on_success():
             self.request.response.redirect(self.context.absolute_url())
-            self.flash(_(u'Reservations Successfully Submitted'))
+            self.flash(_(
+                u'Your reservations have been successfully submitted.'
+            ))
 
         utils.handle_action(self.confirm_reservations, success=on_success)
 
@@ -703,7 +709,7 @@ class ReservationApprovalForm(ReservationDecisionForm):
 
         def approve():
             self.scheduler.approve_reservation(data['reservation'])
-            self.flash(_(u'Reservation confirmed'))
+            self.flash(_(u'Reservation approved'))
 
         utils.handle_action(action=approve, success=self.redirect_to_context)
 

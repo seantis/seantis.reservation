@@ -102,7 +102,12 @@ var reservation_overlay_init = null;
 
         if (status == 'error') {
             parent.find('div').append(
-                '<b>' + seantis.locale('no_connection') + '</b>'
+                [
+                    '<dl class="portalMessage error">',
+                    '<dt>' + seantis.locale('error') + '</dt>',
+                    '<dd>' + seantis.locale('no_connection') + '</dd>',
+                    '</dl>'
+                ].join('\n')
             );
         }
     };

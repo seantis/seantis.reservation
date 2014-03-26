@@ -5,6 +5,10 @@ Changelog
 1.0.21 (unreleased)
 -------------------
 
+- The messages shown when reserving/confirming a reservation have been
+  reworked to be more informative.
+  [href]
+
 - If an overlay fails to load the remote address after a click, an error
   is shown.
   [href]
