@@ -2,7 +2,7 @@
 Changelog
 =========
 
-1.0.21 (unreleased)
+1.0.21 (2014-03-26)
 -------------------
 
 - The messages shown when reserving/confirming a reservation have been
