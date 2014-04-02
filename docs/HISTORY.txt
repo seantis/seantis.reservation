@@ -2,6 +2,12 @@
 Changelog
 =========
 
+1.0.22 (unreleased)
+-------------------
+
+- Slims down the session handling code.
+  [href]
+
 1.0.21 (2014-03-26)
 -------------------
 

@@ -10,7 +10,7 @@ from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation.session import (
     getUtility,
     ISessionUtility,
-    serialized_call
+    serialized
 )
 
 from seantis.reservation import Session
@@ -94,8 +94,8 @@ class TestSession(IntegrationTestCase):
         t1.join()
         t2.join()
 
-        self.assertFalse(t1.serial_id == None)
-        self.assertFalse(t2.serial_id == None)
+        self.assertFalse(t1.serial_id is None)
+        self.assertFalse(t2.serial_id is None)
         self.assertFalse(t1.serial_id == t2.serial_id)
         self.assertFalse(t1.readonly_id == t2.readonly_id)
 
@@ -108,11 +108,11 @@ class TestSession(IntegrationTestCase):
 
         Session.flush()  # should not throw an exception
 
-        serialized_call(lambda: None)()
+        serialized(lambda: None)()
 
         Session.flush()  # nothing happened, no exception
 
-        serialized_call(add_something)()
+        serialized(add_something)()
 
         self.assertRaises(DirtyReadOnlySession, lambda: Session.flush)
 
@@ -123,15 +123,15 @@ class TestSession(IntegrationTestCase):
             add_something()
             transaction.commit()
 
-        serialized_call(commit)()
+        serialized(commit)()
 
         try:
             def change_allocation():
                 allocation = Session.query(Allocation).one()
                 allocation.group = uuid()
 
-            t1 = ExceptionThread(serialized_call(change_allocation))
-            t2 = ExceptionThread(serialized_call(change_allocation))
+            t1 = ExceptionThread(serialized(change_allocation))
+            t2 = ExceptionThread(serialized(change_allocation))
 
             t1.start()
             t2.start()
@@ -156,7 +156,7 @@ class TestSession(IntegrationTestCase):
                 Session.query(Allocation).delete()
                 transaction.commit()
 
-            serialized_call(drop)()
+            serialized(drop)()
 
     def test_non_collision(self):
         # same as above, but this time the second session is read only and
@@ -166,7 +166,7 @@ class TestSession(IntegrationTestCase):
             add_something()
             transaction.commit()
 
-        serialized_call(commit)()
+        serialized(commit)()
 
         try:
             def change_allocation():
@@ -177,7 +177,7 @@ class TestSession(IntegrationTestCase):
                 allocation = Session.query(Allocation).one()
                 allocation.resource
 
-            t1 = ExceptionThread(serialized_call(change_allocation))
+            t1 = ExceptionThread(serialized(change_allocation))
             t2 = ExceptionThread(read_allocation)
 
             t1.start()
@@ -199,4 +199,4 @@ class TestSession(IntegrationTestCase):
                 Session.query(Allocation).delete()
                 transaction.commit()
 
-            serialized_call(drop)()
+            serialized(drop)()

@@ -354,7 +354,7 @@ class SessionWrapper(object):
 Session = SessionWrapper()
 
 
-def serialized_call(fn):
+def serialized(fn):
     """ Wrapper function which wraps any function with a serial session.
     All methods called by this wrapped function will uuse the serial session.
 
@@ -364,35 +364,17 @@ def serialized_call(fn):
     """
     @functools.wraps(fn)
     def wrapper(*args, **kwargs):
-
         util = getUtility(ISessionUtility)
 
-        # Since a serialized call may be part of another serialized call, we
-        # need store the current session and reset it afterwards
         current = util.sessionstore.current
-
         serial = util.use_serial()
-        serial.begin_nested()
 
         try:
             result = fn(*args, **kwargs)
             serial.flush()
             serial.expire_all()
             return result
-        except:
-            serial.rollback()
-            raise
         finally:
             util.sessionstore.current = current
-
-    return wrapper
-
-
-def serialized(fn):
-    """ A decorator to apply to any class method that needs to be serialized.
-    """
-    @functools.wraps(fn)
-    def wrapper(*args, **kwargs):
-        return serialized_call(fn)(*args, **kwargs)
 
     return wrapper
