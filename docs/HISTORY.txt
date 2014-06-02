@@ -5,6 +5,9 @@ Changelog
 1.0.22 (unreleased)
 -------------------
 
+- Fixes overlay js failing if loaded after jquery tools.
+  [href]
+
 - Slims down the session handling code.
   [href]
 

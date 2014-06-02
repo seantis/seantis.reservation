@@ -177,7 +177,9 @@ var reservation_overlay_init = null;
             _before_load.apply(this, arguments);
         };
 
-        elements.prepOverlay(all_options);
+        if (! _.isUndefined(elements.prepOverlay)) {
+            elements.prepOverlay(all_options);
+        }
     };
 
     var _eval_stripped = function(responseText) {
