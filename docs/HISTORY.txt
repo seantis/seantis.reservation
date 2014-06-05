@@ -2,7 +2,7 @@
 Changelog
 =========
 
-1.0.22 (unreleased)
+1.0.22 (2014-06-05)
 -------------------
 
 - Adds new reservation-assistant role which may view but not edit submitted
