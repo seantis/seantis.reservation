@@ -7,4 +7,10 @@
       permission="Manage portal"
       i18n:attributes="title"
       />
+  <role
+      id="Reservation-Assistant"
+      title="Can view reservation data"
+      permission="Manage portal"
+      i18n:attributes="title"
+      />
 </sharing>

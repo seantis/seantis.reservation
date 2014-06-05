@@ -200,4 +200,13 @@
         profile="seantis.reservation:default">
     </genericsetup:upgradeStep>
 
+    <genericsetup:upgradeStep
+        title="Adds new reservation-assistant role"
+        description=""
+        source="1022"
+        destination="1023"
+        handler=".upgrades.upgrade_1022_to_1023"
+        profile="seantis.reservation:default">
+    </genericsetup:upgradeStep>
+
 </configure>

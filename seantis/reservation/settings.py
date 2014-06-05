@@ -36,7 +36,8 @@ class ISeantisReservationSettings(Interface):
             u'The number of minutes a user needs to wait between '
             u'reservations, use 0 if no throttling should occur. '
             u'Users with the \'Unthrottled Reservations\' permission '
-            u'are excempt from this rule (Reservation-Managers by default).'
+            u'are excempt from this rule (Reservation-Managers and '
+            u'Reservation-Assistants by default).'
         )
     )
 

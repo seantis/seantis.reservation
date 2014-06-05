@@ -2,6 +2,7 @@
 <rolemap>
     <roles>
         <role name="Reservation-Manager"/>
+        <role name="Reservation-Assistant"/>
     </roles>
     <permissions>
         <permission name="seantis.reservation: Approve Reservations" acquire="True">
@@ -12,12 +13,15 @@
         </permission>
         <permission name="seantis.reservation: View Reservations" acquire="True">
             <role name="Reservation-Manager" />
+            <role name="Reservation-Assistant" />
         </permission>
         <permission name="seantis.reservation: Unthrottled Reservations" acquire="True">
             <role name="Reservation-Manager" />
+            <role name="Reservation-Assistant" />
         </permission>
         <permission name="seantis.reservation: View Hidden Allocations" acquire="True">
             <role name="Reservation-Manager" />
+            <role name="Reservation-Assistant" />
             <role name="Contributor" />
             <role name="Editor" />
             <role name="Reviewer" />

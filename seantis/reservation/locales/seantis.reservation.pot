@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-26 10:21+0000\n"
+"POT-Creation-Date: 2014-06-05 08:24+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -117,7 +117,7 @@ msgstr ""
 msgid "Allocations may start every 5 minutes if the allocation is not partly available. If it is partly available the start time may be every x minute where x equals the given raster."
 msgstr ""
 
-#: ./settings.py:62
+#: ./settings.py:63
 msgid "Always send to the following address:"
 msgstr ""
 
@@ -256,7 +256,7 @@ msgstr ""
 msgid "Details"
 msgstr ""
 
-#: ./settings.py:54
+#: ./settings.py:55
 msgid "Do not send manager emails"
 msgstr ""
 
@@ -294,7 +294,7 @@ msgstr ""
 msgid "Edit allocation"
 msgstr ""
 
-#: ./settings.py:46
+#: ./settings.py:47
 msgid "Either send an email to the manager(s) responsible for the resource or use a single recipient address for all resources."
 msgstr ""
 
@@ -303,15 +303,15 @@ msgstr ""
 msgid "Email"
 msgstr ""
 
-#: ./settings.py:74
+#: ./settings.py:75
 msgid "Email Address for Manager Emails"
 msgstr ""
 
-#: ./settings.py:45
+#: ./settings.py:46
 msgid "Email Notifications for Managers"
 msgstr ""
 
-#: ./settings.py:81
+#: ./settings.py:82
 msgid "Email Notifications for Reservees"
 msgstr ""
 
@@ -659,11 +659,11 @@ msgstr ""
 msgid "Pending"
 msgstr ""
 
-#: ./settings.py:103
+#: ./settings.py:104
 msgid "Please specify an address to send the manager emails to"
 msgstr ""
 
-#: ./settings.py:89
+#: ./settings.py:90
 msgid "Pre-Reservation Script"
 msgstr ""
 
@@ -801,7 +801,7 @@ msgstr ""
 msgid "Revoke reservation"
 msgstr ""
 
-#: ./settings.py:90
+#: ./settings.py:91
 msgid "Run custom validation code for reservations. This is for advanced users only and may disable the reservations process. For documentation study the source code at Github."
 msgstr ""
 
@@ -815,7 +815,7 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-#: ./settings.py:120
+#: ./settings.py:121
 msgid "Seantis Reservation Control Panel"
 msgstr ""
 
@@ -847,11 +847,11 @@ msgstr ""
 msgid "Send an email to the reservee informing him of the revocation"
 msgstr ""
 
-#: ./settings.py:82
+#: ./settings.py:83
 msgid "Send emails about made, approved and denied reservations to the user that made the reservation."
 msgstr ""
 
-#: ./settings.py:58
+#: ./settings.py:59
 msgid "Send to the responsible manager(s)"
 msgstr ""
 
@@ -961,7 +961,7 @@ msgid "The maximum quota a single reservation may occupy at once. There is no li
 msgstr ""
 
 #: ./settings.py:35
-msgid "The number of minutes a user needs to wait between reservations, use 0 if no throttling should occur. Users with the 'Unthrottled Reservations' permission are excempt from this rule (Reservation-Managers by default)."
+msgid "The number of minutes a user needs to wait between reservations, use 0 if no throttling should occur. Users with the 'Unthrottled Reservations' permission are excempt from this rule (Reservation-Managers and Reservation-Assistants by default)."
 msgstr ""
 
 #: ./templates/remove_allocation.pt:18

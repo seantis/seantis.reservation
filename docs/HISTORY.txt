@@ -5,6 +5,10 @@ Changelog
 1.0.22 (unreleased)
 -------------------
 
+- Adds new reservation-assistant role which may view but not edit submitted
+  reservation data.
+  [href]
+
 - Fixes overlay js failing if loaded after jquery tools.
   [href]
 

@@ -17,8 +17,14 @@ msgstr "Sichtbar machen"
 msgid "Reservation-Manager"
 msgstr "Reservations-Manager"
 
+msgid "Reservation-Assistant"
+msgstr "Reservations-Assistent"
+
 msgid "Can manage reservations"
 msgstr "Kann Reservationen verwalten"
+
+msgid "Can view reservation data"
+msgstr "Kann Reservations-Daten ansehen"
 
 msgid "seantis.reservation: Approve Reservations"
 msgstr "seantis.reservation: Reservationen zulassen"

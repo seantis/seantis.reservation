@@ -14,6 +14,7 @@ from sqlalchemy import not_
 from sqlalchemy.schema import Column
 
 from plone import api
+from plone.app.workflow.exportimport import import_sharing
 from plone.registry.interfaces import IRegistry
 from plone.dexterity.interfaces import IDexterityFTI
 from Products.CMFCore.utils import getToolByName
@@ -389,4 +390,15 @@ def upgrade_1021_to_1022(context):
     setup = api.portal.get_tool('portal_setup')
     setup.runImportStepFromProfile(
         'profile-seantis.reservation:default', 'browserlayer'
+    )
+
+
+def upgrade_1022_to_1023(context):
+
+    setup = api.portal.get_tool('portal_setup')
+    setup.runImportStepFromProfile(
+        'profile-seantis.reservation:default', 'sharing'
+    )
+    setup.runImportStepFromProfile(
+        'profile-seantis.reservation:default', 'rolemap'
     )
