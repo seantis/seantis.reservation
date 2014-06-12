@@ -189,6 +189,63 @@ var CalendarGroups = function() {
             });
         }(); // run init immediatly
 
+        // partitions are relative to the event. Since depending on the
+        // calendar only part of an event may be shown, we need to account
+        // for that fact. This function takes the event, and the range of
+        // the calendar and adjusts the partitions if necessary.
+        var adjust_partitions = function(event, min_hour, max_hour) {
+            if (min_hour <= event.start.getHours() && event.end.getHours() <= max_hour) {
+                return event.partitions;
+            }
+
+            // if the whole plane is shown the same way, no adjustments are needed
+            if (event.partitions.length == 1) {
+                return event.partitions;
+            }
+
+            function round(num) {
+                return +(Math.round(num + "e+2")  + "e-2");
+            }
+
+            var pHour = 1/24*100;
+            var top_margin = min_hour * pHour;
+            var bottom_margin = (24 - max_hour) * pHour;
+
+            var remove_margin = function(partitions, margin) {
+                var removed = 0;
+
+                for (var i=0; i < partitions.length; i++) {
+                    if (round(partitions[i][0]) >= round(margin)) {
+                        partitions[i][0] = partitions[i][0] - margin;
+                        return partitions;
+                    } else {
+                        removed += partitions[i][0];
+                        partitions.splice(i, 1);
+
+                        if (removed >= margin) {
+                            return partitions;
+                        }
+                    }
+                }
+            };
+
+            var partitions = event.partitions;
+
+            partitions = remove_margin(partitions, top_margin);
+            partitions.reverse();
+
+            partitions = remove_margin(partitions, bottom_margin);
+            partitions.reverse();
+
+            // blow up the result to 100%;
+            var total =  _.reduce(partitions, function(total, p){ return total + p[0]; }, 0);
+            _.each(partitions, function(partition, index) {
+                partition[0] = partition[0] / total * 100;
+            });
+
+            return partitions;
+        };
+
         // renders the occupied partitions on an event
         var render_partitions = function(event, element, calendar) {
 
@@ -202,8 +259,11 @@ var CalendarGroups = function() {
             var partition_block = _.template('<div style="height:<%= height %>px;"><%= partitions %></div>');
 
             // build the individual partitions
+            var event_partitions = adjust_partitions(
+                event, calendar.options.minTime, calendar.options.maxTime
+            );
             var partitions = '';
-            _.each(event.partitions, function(partition) {
+            _.each(event_partitions, function(partition) {
                 var reserved = partition[1];
                 if (reserved === false) {
                     partitions += free({height: partition[0]});
