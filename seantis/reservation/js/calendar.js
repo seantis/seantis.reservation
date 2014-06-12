@@ -209,7 +209,7 @@ var CalendarGroups = function() {
 
             var pHour = 1/24*100;
             var top_margin = min_hour * pHour;
-            var bottom_margin = (24 - max_hour) * pHour;
+            var bottom_margin = (24 - max_hour) * pHour - 1/24 * 10;
 
             var remove_margin = function(partitions, margin) {
                 var removed = 0;
