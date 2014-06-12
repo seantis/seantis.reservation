@@ -377,8 +377,9 @@ class ReservationForm(
                     hidden.append('quota')
 
                 if allocation.whole_day:
-                    hidden.append('start_time')
-                    hidden.append('end_time')
+                    if not allocation.partly_available:
+                        hidden.append('start_time')
+                        hidden.append('end_time')
 
         except DirtyReadOnlySession:
             pass
@@ -494,8 +495,12 @@ class ReservationForm(
         # whole day allocations don't show the start / end time which is to
         # say the data arrives with 00:00 - 00:00. we align that to the day
         if allocation.whole_day:
-            assert start == end
-            start, end = utils.align_range_to_day(start, end)
+
+            if not allocation.partly_available:
+                assert start == end
+
+            if start == end:
+                start, end = utils.align_range_to_day(start, end)
 
         def reserve():
             self.run_reserve(
