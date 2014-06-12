@@ -221,8 +221,11 @@ class YourReservationsData(object):
         )
 
     def remove_reservation(self, token):
-        session_id = plone_session.get_session_id(self.context)
-        db.remove_reservation_from_session(session_id, token)
+        try:
+            session_id = plone_session.get_session_id(self.context)
+            db.remove_reservation_from_session(session_id, token)
+        except NoResultFound:
+            pass  # act idempotent to the user
 
     def reservation_data(self):
         """ Prepares data to be shown in the my reservation's table """

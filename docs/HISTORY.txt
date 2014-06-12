@@ -5,7 +5,9 @@ Changelog
 1.0.23 (unreleased)
 -------------------
 
-Nothing yet.
+- No longer raise an exception to the user if a nonexistant reservation is
+  removed from 'your reservations'. Fixes #123.
+  [href]
 
 1.0.22 (2014-06-05)
 -------------------
