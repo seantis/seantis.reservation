@@ -194,12 +194,19 @@ var CalendarGroups = function() {
         // for that fact. This function takes the event, and the range of
         // the calendar and adjusts the partitions if necessary.
         var adjust_partitions = function(event, min_hour, max_hour) {
+
+            if (_.isUndefined(event.partitions)) {
+                return event.partitions;
+            }
+
+            // if the event fits inside the calendar hours, all is ok
             if (min_hour <= event.start.getHours() && event.end.getHours() <= max_hour) {
                 return event.partitions;
             }
 
-            // if the whole plane is shown the same way, no adjustments are needed
-            if (event.partitions.length == 1) {
+            // if the whole event contains only one partition, no move will
+            // change anything
+            if (event.partitions.length <= 1) {
                 return event.partitions;
             }
 
@@ -207,26 +214,57 @@ var CalendarGroups = function() {
                 return +(Math.round(num + "e+2")  + "e-2");
             }
 
-            var pHour = 1/24*100;
-            var top_margin = min_hour * pHour;
-            var bottom_margin = (24 - max_hour) * pHour - 1/24 * 10;
+            function sum(partitions) {
+                return _.reduce(partitions, function(total, p) {
+                    return total + p[0];
+                }, 0);
+            }
 
+            // the event is rendered within the calendar, with the top and
+            // bottom cut off. The partitions are calculated assuming the
+            // event is being rendered as a whole. To adjust we cut the
+            // bottom and top from the partitions and blow up the whole event.
+            //
+            // It made sense when I wrote the initial implementation :)
+            var percentage_per_hour = 1/24*100;
+            var top_margin = 0, bottom_margin = 0;
+
+            if (event.start.getHours() < min_hour) {
+                top_margin = min_hour * percentage_per_hour;
+            }
+
+            if (event.end.getHours() > max_hour) {
+                bottom_margin = (24 - max_hour) * percentage_per_hour;
+            }
+
+            // remove the given margin from the top of the partitions array
+            // the margin is given as a percentage
             var remove_margin = function(partitions, margin) {
-                var removed = 0;
+                if (margin === 0) {
+                    return partitions;
+                }
+
+                var removed_total = 0;
+                var original_margin = margin;
 
                 for (var i=0; i < partitions.length; i++) {
                     if (round(partitions[i][0]) >= round(margin)) {
                         partitions[i][0] = partitions[i][0] - margin;
-                        return partitions;
+                        break;
                     } else {
-                        removed += partitions[i][0];
+                        removed_total += partitions[i][0];
+                        margin -= partitions[i][0];
                         partitions.splice(i, 1);
 
-                        if (removed >= margin) {
-                            return partitions;
+                        i -= 1;
+
+                        if (removed_total >= original_margin) {
+                            break;
                         }
                     }
                 }
+
+                return partitions;
             };
 
             var partitions = event.partitions;
@@ -238,7 +276,7 @@ var CalendarGroups = function() {
             partitions.reverse();
 
             // blow up the result to 100%;
-            var total =  _.reduce(partitions, function(total, p){ return total + p[0]; }, 0);
+            var total = sum(partitions);
             _.each(partitions, function(partition, index) {
                 partition[0] = partition[0] / total * 100;
             });
