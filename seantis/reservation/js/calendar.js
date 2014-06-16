@@ -199,8 +199,11 @@ var CalendarGroups = function() {
                 return event.partitions;
             }
 
+            var start_hour = event.start.getHours();
+            var end_hour = event.end.getHours() === 0 ? 24 : event.end.getHours();
+
             // if the event fits inside the calendar hours, all is ok
-            if (min_hour <= event.start.getHours() && event.end.getHours() <= max_hour) {
+            if (min_hour <= start_hour && end_hour <= max_hour) {
                 return event.partitions;
             }
 
@@ -229,11 +232,10 @@ var CalendarGroups = function() {
             var percentage_per_hour = 1/24*100;
             var top_margin = 0, bottom_margin = 0;
 
-            if (event.start.getHours() < min_hour) {
+            if (start_hour < min_hour) {
                 top_margin = min_hour * percentage_per_hour;
             }
-
-            if (event.end.getHours() > max_hour) {
+            if (end_hour > max_hour) {
                 bottom_margin = (24 - max_hour) * percentage_per_hour;
             }
 
