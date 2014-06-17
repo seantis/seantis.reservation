@@ -201,10 +201,6 @@ var CalendarGroups = function() {
 
             // clone the partitions
             var partitions = _.map(event.partitions, _.clone);
-            _.each(partitions, function(p, ix) {
-                console.log(ix, p[0]);
-            });
-
 
             var start_hour = event.start.getHours();
             var end_hour = event.end.getHours() === 0 ? 24 : event.end.getHours();
@@ -302,8 +298,8 @@ var CalendarGroups = function() {
             }
 
             var free = _.template('<div style="height:<%= height %>%;"></div>');
-            var used = _.template('<div style="height:<%= height %>%;" class="calendar-occupied"></div>');
-            var partition_block = _.template('<div style="height:<%= height %>px;"><%= partitions %></div>');
+            var used = _.template('<div style="height:<%= height %>%; margin-bottom: -1px;" class="calendar-occupied"></div>');
+            var partition_block = _.template('<div style="height:<%= height %>px; margin-top: -1px;"><%= partitions %></div>');
 
             // build the individual partitions
             var event_partitions = adjust_partitions(
