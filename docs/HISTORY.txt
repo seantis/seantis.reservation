@@ -5,6 +5,10 @@ Changelog
 1.0.23 (unreleased)
 -------------------
 
+- Allocations which are not completely displayed on the calendar now show
+  correct availability partitions. Fixes #145.
+  [href]
+
 - Correctly handles partly-available whole-day allocations. Fixes #129.
   [href]
 

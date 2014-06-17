@@ -189,6 +189,106 @@ var CalendarGroups = function() {
             });
         }(); // run init immediatly
 
+        // partitions are relative to the event. Since depending on the
+        // calendar only part of an event may be shown, we need to account
+        // for that fact. This function takes the event, and the range of
+        // the calendar and adjusts the partitions if necessary.
+        var adjust_partitions = function(event, min_hour, max_hour) {
+
+            if (_.isUndefined(event.partitions)) {
+                return event.partitions;
+            }
+
+            // clone the partitions
+            var partitions = _.map(event.partitions, _.clone);
+
+            var start_hour = event.start.getHours();
+            var end_hour = event.end.getHours() === 0 ? 24 : event.end.getHours();
+            var duration = end_hour - start_hour;
+
+            // if the event fits inside the calendar hours, all is ok
+            if (min_hour <= start_hour && end_hour <= max_hour) {
+                return partitions;
+            }
+
+            // if the whole event contains only one partition, no move will
+            // change anything
+            if (partitions.length <= 1) {
+                return partitions;
+            }
+
+            function round(num) {
+                return +(Math.round(num + "e+2")  + "e-2");
+            }
+
+            function sum(partitions) {
+                return _.reduce(partitions, function(total, p) {
+                    return total + p[0];
+                }, 0);
+            }
+
+            // the event is rendered within the calendar, with the top and
+            // bottom cut off. The partitions are calculated assuming the
+            // event is being rendered as a whole. To adjust we cut the
+            // bottom and top from the partitions and blow up the whole event.
+            //
+            // It made sense when I wrote the initial implementation :)
+            var percentage_per_hour = 1/duration*100;
+            var top_margin = 0, bottom_margin = 0;
+
+            if (start_hour < min_hour) {
+                top_margin = (min_hour - start_hour) * percentage_per_hour;
+            }
+            if (end_hour > max_hour) {
+                bottom_margin = (end_hour - max_hour) * percentage_per_hour;
+            }
+
+            // remove the given margin from the top of the partitions array
+            // the margin is given as a percentage
+            var remove_margin = function(partitions, margin) {
+
+                if (margin === 0) {
+                    return partitions;
+                }
+
+                var removed_total = 0;
+                var original_margin = margin;
+
+                for (var i=0; i < partitions.length; i++) {
+                    if (round(partitions[i][0]) >= round(margin)) {
+                        partitions[i][0] = partitions[i][0] - margin;
+                        break;
+                    } else {
+                        removed_total += partitions[i][0];
+                        margin -= partitions[i][0];
+                        partitions.splice(i, 1);
+
+                        i -= 1;
+
+                        if (removed_total >= original_margin) {
+                            break;
+                        }
+                    }
+                }
+
+                return partitions;
+            };
+
+            partitions = remove_margin(partitions, top_margin);
+            partitions.reverse();
+
+            partitions = remove_margin(partitions, bottom_margin);
+            partitions.reverse();
+
+            // blow up the result to 100%;
+            var total = sum(partitions);
+            _.each(partitions, function(partition, index) {
+                partition[0] = partition[0] / total * 100;
+            });
+
+            return partitions;
+        };
+
         // renders the occupied partitions on an event
         var render_partitions = function(event, element, calendar) {
 
@@ -198,12 +298,15 @@ var CalendarGroups = function() {
             }
 
             var free = _.template('<div style="height:<%= height %>%;"></div>');
-            var used = _.template('<div style="height:<%= height %>%;" class="calendar-occupied"></div>');
-            var partition_block = _.template('<div style="height:<%= height %>px;"><%= partitions %></div>');
+            var used = _.template('<div style="height:<%= height %>%; margin-bottom: -1px;" class="calendar-occupied"></div>');
+            var partition_block = _.template('<div style="height:<%= height %>px; margin-top: -1px;"><%= partitions %></div>');
 
             // build the individual partitions
+            var event_partitions = adjust_partitions(
+                event, calendar.options.minTime, calendar.options.maxTime
+            );
             var partitions = '';
-            _.each(event.partitions, function(partition) {
+            _.each(event_partitions, function(partition) {
                 var reserved = partition[1];
                 if (reserved === false) {
                     partitions += free({height: partition[0]});
