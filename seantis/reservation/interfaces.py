@@ -702,7 +702,7 @@ class IReservation(Interface):
     )
 
     quota = schema.Int(
-        title=_(u'Reservation Quota'),
+        title=_(u'Number of Reservations'),
         required=False,
         default=1
     )
@@ -732,7 +732,7 @@ class IGroupReservation(Interface):
     )
 
     quota = schema.Int(
-        title=_(u'Reservation Quota'),
+        title=_(u'Number of Reservations'),
         required=False,
         default=1
     )

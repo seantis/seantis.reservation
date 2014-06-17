@@ -5,6 +5,9 @@ Changelog
 1.0.23 (unreleased)
 -------------------
 
+- Renames "Reservation Quota" (eng) to "Number of Reservations". Fixes #143.
+  [href]
+
 - Availability partitions are now more visible. Fixes #149.
   [href]
 

@@ -133,14 +133,14 @@ errormap = {
     _(u'The given reservation paramters are invalid.'),
 
     QuotaOverLimit:
-    _(u'The requested reservation quota is higher than allowed.'),
+    _(u'The requested number of reservations is higher than allowed.'),
 
     InvalidQuota:
     _(u'The requested quota is invalid (must be at least one).'),
 
     QuotaImpossible:
     _(u'The allocation does not have enough spots to possibly satisfy the '
-      u'requested reservation quota.'),
+      u'requested number of reservations.'),
 
     InvalidAllocationError:
     _(u'The resulting allocation would be invalid.'),
