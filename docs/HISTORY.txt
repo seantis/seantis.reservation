@@ -5,6 +5,9 @@ Changelog
 1.0.23 (unreleased)
 -------------------
 
+- Availability partitions are now more visible. Fixes #149.
+  [href]
+
 - Allocations which are not completely displayed on the calendar now show
   correct availability partitions. Fixes #145.
   [href]

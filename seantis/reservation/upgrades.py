@@ -14,7 +14,6 @@ from sqlalchemy import not_
 from sqlalchemy.schema import Column
 
 from plone import api
-from plone.app.workflow.exportimport import import_sharing
 from plone.registry.interfaces import IRegistry
 from plone.dexterity.interfaces import IDexterityFTI
 from Products.CMFCore.utils import getToolByName
@@ -402,3 +401,8 @@ def upgrade_1022_to_1023(context):
     setup.runImportStepFromProfile(
         'profile-seantis.reservation:default', 'rolemap'
     )
+
+
+def upgrade_1023_to_1024(context):
+    recook_css_resources(context)
+    recook_js_resources(context)

@@ -152,9 +152,9 @@ body .event-unavailable .fc-event-time {
 }
 
 .calendar-occupied {
-    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAOVBMVEXY2Nj////d7h7d7h7d7h7d7h7///////////////////////////////////////////////////+4yo5sAAAAQklEQVQoke3LqQ3AMADAQKP8b/cftjjAUgaI6cmEmHKprY+59seRSkAlopJQyagUVCoqDZWOykBlorJQ2aj48+Rafr0hD9knm0tJAAAAAElFTkSuQmCC);
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAIAAAAmKNuZAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAgUlEQVRIia3Uyw3AIAwDULcdhbmYLoOmFyQECuTrs/Xkkx9mhiFEZKm9hVbvXefsFtR1LkvhvNaNC1hHLmbJXNgSuIy1c0lr4fLW5EqswVVZAL7WWpUF4wUYLSLSObsFdZ3LUjivdeMC1pGLWTIXtgQuY+1c0lq4vDW5EmtwVRaAHw+qTptplxYcAAAAAElFTkSuQmCC);
     background-repeat: repeat;
-    border: solid #ccc 1px;
+    border: solid #a2a2a2 1px;
 }
 
 .loading {

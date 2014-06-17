@@ -209,4 +209,13 @@
         profile="seantis.reservation:default">
     </genericsetup:upgradeStep>
 
+    <genericsetup:upgradeStep
+        title="Availability partitions improvements"
+        description=""
+        source="1023"
+        destination="1024"
+        handler=".upgrades.upgrade_1023_to_1024"
+        profile="seantis.reservation:default">
+    </genericsetup:upgradeStep>
+
 </configure>
