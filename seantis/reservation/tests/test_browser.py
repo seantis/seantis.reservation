@@ -425,12 +425,14 @@ class TestBrowser(FunctionalTestCase):
         browser.open(self.allocation_menu(*allocation)['reserve'])
 
         browser.getControl('Email').value = 'test@example.com'
-        browser.getControl('Quota', index=0).value = '3'
-
+        browser.getControl('Number of Reservations', index=0).value = '3'
         browser.getControl('Reserve').click()
-
-        self.assertTrue('quota is higher than allowed' in browser.contents)
-        self.assertEqual('3', browser.getControl('Quota', index=0).value)
+        self.assertTrue(
+            'number of reservations is higher than allowed' in browser.contents
+        )
+        self.assertEqual(
+            '3', browser.getControl('Number of Reservations', index=0).value
+        )
 
     def test_overreserve_regression(self):
 
@@ -450,13 +452,13 @@ class TestBrowser(FunctionalTestCase):
 
         browser.open(self.allocation_menu(*allocation)['reserve'])
         browser.getControl('Email').value = 'test@example.com'
-        browser.getControl('Quota', index=0).value = '3'
+        browser.getControl('Number of Reservations', index=0).value = '3'
         browser.getControl('Reserve').click()
         browser.getControl('Submit Reservations').click()
 
         browser.open(self.allocation_menu(*allocation)['reserve'])
         browser.getControl('Email').value = 'test@example.com'
-        browser.getControl('Quota', index=0).value = '3'
+        browser.getControl('Number of Reservations', index=0).value = '3'
 
         browser.getControl('Reserve').click()
         self.assertTrue(
@@ -487,7 +489,7 @@ class TestBrowser(FunctionalTestCase):
 
         # validation issues don't lead to throttling (missing email here)
         browser.open(self.allocation_menu(*allocation)['reserve'])
-        browser.getControl('Quota', index=0).value = '1'
+        browser.getControl('Number of Reservations', index=0).value = '1'
         browser.getControl('Reserve').click()
         browser.getControl('Reserve').click()
         self.assertFalse('Too many reservations' in browser.contents)
@@ -499,7 +501,7 @@ class TestBrowser(FunctionalTestCase):
 
         browser.open(self.allocation_menu(*allocation)['reserve'])
         browser.getControl('Email').value = 'test@example.com'
-        browser.getControl('Quota', index=0).value = '1'
+        browser.getControl('Number of Reservations', index=0).value = '1'
         browser.getControl('Reserve').click()
         self.assertTrue('Too many reservations' in browser.contents)
 
