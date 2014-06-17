@@ -199,18 +199,26 @@ var CalendarGroups = function() {
                 return event.partitions;
             }
 
+            // clone the partitions
+            var partitions = _.map(event.partitions, _.clone);
+            _.each(partitions, function(p, ix) {
+                console.log(ix, p[0]);
+            });
+
+
             var start_hour = event.start.getHours();
             var end_hour = event.end.getHours() === 0 ? 24 : event.end.getHours();
+            var duration = end_hour - start_hour;
 
             // if the event fits inside the calendar hours, all is ok
             if (min_hour <= start_hour && end_hour <= max_hour) {
-                return event.partitions;
+                return partitions;
             }
 
             // if the whole event contains only one partition, no move will
             // change anything
-            if (event.partitions.length <= 1) {
-                return event.partitions;
+            if (partitions.length <= 1) {
+                return partitions;
             }
 
             function round(num) {
@@ -229,19 +237,20 @@ var CalendarGroups = function() {
             // bottom and top from the partitions and blow up the whole event.
             //
             // It made sense when I wrote the initial implementation :)
-            var percentage_per_hour = 1/24*100;
+            var percentage_per_hour = 1/duration*100;
             var top_margin = 0, bottom_margin = 0;
 
             if (start_hour < min_hour) {
-                top_margin = min_hour * percentage_per_hour;
+                top_margin = (min_hour - start_hour) * percentage_per_hour;
             }
             if (end_hour > max_hour) {
-                bottom_margin = (24 - max_hour) * percentage_per_hour;
+                bottom_margin = (end_hour - max_hour) * percentage_per_hour;
             }
 
             // remove the given margin from the top of the partitions array
             // the margin is given as a percentage
             var remove_margin = function(partitions, margin) {
+
                 if (margin === 0) {
                     return partitions;
                 }
@@ -268,8 +277,6 @@ var CalendarGroups = function() {
 
                 return partitions;
             };
-
-            var partitions = event.partitions;
 
             partitions = remove_margin(partitions, top_margin);
             partitions.reverse();
