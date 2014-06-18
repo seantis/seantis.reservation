@@ -13,6 +13,7 @@ from itertools import tee, izip
 from uuid import UUID
 from uuid import uuid5 as new_uuid_mirror
 from plone.uuid.interfaces import IUUID, IUUIDAware
+from plone import api
 
 import pytz
 
@@ -622,27 +623,34 @@ def userformdata_decode(string):
 
 
 def as_human_readable_string(value):
-    # don't use strftime here because users may end up entering year '3' and
-    # strftime does not suppport years before 1900
-
     if isinstance(value, basestring):
         return value
 
     if isinstance(value, datetime):
-        return '%02d.%02d.%04d %02d:%02d' % (
-            value.day,
-            value.month,
-            value.year,
-            value.hour,
-            value.minute
-        )
+        # don't use strftime here because users may end up entering year '3'
+        # strftime does not suppport years before 1900, which is just lame
+        # in this case we just use the German locale for now..
+        if value.year < 1900:
+            return '%02d.%02d.%04d %02d:%02d' % (
+                value.day,
+                value.month,
+                value.year,
+                value.hour,
+                value.minute
+            )
+        else:
+            return api.portal.get_localized_time(value, long_format=True)
 
     if isinstance(value, date):
-        return '%02d.%02d.%04d' % (
-            value.day,
-            value.month,
-            value.year
-        )
+        if value.year < 1900:
+            return '%02d.%02d.%04d' % (
+                value.day,
+                value.month,
+                value.year
+            )
+        else:
+            dt = datetime(value.year, value.month, value.day)
+            return api.portal.get_localized_time(dt, long_format=False)
 
     if isinstance(value, RichTextValue):
         return value.output
@@ -1091,16 +1099,25 @@ def display_date(start, end):
 
     if (start, end) == align_range_to_day(start, end):
         if start.date() == end.date():
-            return '{:%d.%m.%Y}'.format(start)
+            return api.portal.get_localized_time(start, long_format=False)
         else:
-            return '{:%d.%m.%Y} - {:%d.%m.%Y}'.format(start, end)
+            return ' - '.join((
+                api.portal.get_localized_time(start, long_format=False),
+                api.portal.get_localized_time(end, long_format=False)
+            ))
 
     end += timedelta(microseconds=1)
+
     if start.date() == end.date():
-        return start.strftime('%d.%m.%Y %H:%M - ') + end.strftime('%H:%M')
+        return ' - '.join((
+            api.portal.get_localized_time(start, long_format=True),
+            api.portal.get_localized_time(end, time_only=True)
+        ))
     else:
-        return start.strftime('%d.%m.%Y %H:%M - ') \
-            + end.strftime('%d.%m.%Y %H:%M')
+        return ' - '.join((
+            api.portal.get_localized_time(start, long_format=True),
+            api.portal.get_localized_time(end, long_format=True)
+        ))
 
 
 class United(object):

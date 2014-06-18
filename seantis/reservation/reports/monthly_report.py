@@ -1,10 +1,11 @@
 import json
 
 from calendar import Calendar
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
 from five import grok
 from zope.interface import Interface
+from plone import api
 from plone.memoize import view
 
 from seantis.reservation import _
@@ -118,11 +119,15 @@ class MonthlyReportView(
         return self.build_url(year, month)
 
     def format_day(self, day):
-        daydate = date(self.year, self.month, day)
+        daydate = datetime(self.year, self.month, day)
         weekday = utils.weekdayname_abbr(
             self.context, self.request, utils.shift_day(daydate.weekday())
         )
-        return weekday + daydate.strftime(', %d. %m')
+
+        return ', '.join((
+            weekday,
+            api.portal.get_localized_time(daydate, long_format=False)
+        ))
 
     def has_reservations(self, resource):
         for status in resource['lists']:
@@ -211,7 +216,8 @@ def monthly_report(year, month, resources, reservations='*'):
         used_days[day] = True
 
         end += timedelta(microseconds=1)
-        start, end = start.strftime('%H:%M'), end.strftime('%H:%M')
+        start = api.portal.get_localized_time(start, time_only=True)
+        end = api.portal.get_localized_time(end, time_only=True)
 
         context = resources[utils.string_uuid(reservation.resource)]
 

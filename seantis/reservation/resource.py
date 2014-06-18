@@ -10,6 +10,7 @@ from Products.ATContentTypes.interface import IATFolder
 
 from Acquisition import aq_inner
 from five import grok
+from plone import api
 from plone.dexterity.content import Container
 from plone.uuid.interfaces import IUUID
 from plone.app.linkintegrity.interfaces import ILinkIntegrityInfo
@@ -186,6 +187,20 @@ class View(BaseView):
             options['year'] = specific_date.year
             options['month'] = specific_date.month - 1  # js is off by one
             options['date'] = specific_date.day
+
+        # localize the date display on the calendar, currently the default
+        # is German (calendar.js), with english being used alternatively
+        # format: http://arshaw.com/fullcalendar/docs1/utilities/formatDate/
+        lang = api.portal.get_tool('portal_languages').getPreferredLanguage()
+
+        if lang.startswith('en'):
+            options['axisFormat'] = 'h:mm tt'
+            options['timeFormat'] = 'h:mm tt { - h:mm tt}'
+            options['columnFormat'] = {
+                'month': 'ddd',
+                'week': 'ddd M/d',
+                'year': 'dddd M/d'
+            }
 
         return template % (
             resource._v_calendar_id, json.dumps(options), addurl

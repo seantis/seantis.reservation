@@ -5,6 +5,10 @@ Changelog
 1.0.23 (unreleased)
 -------------------
 
+- The date is now correctly localized in all the views as well as the calendar.
+  Fixes #142.
+  [href]
+
 - Renames "Reservation Quota" (eng) to "Number of Reservations". Fixes #143.
   [href]
 

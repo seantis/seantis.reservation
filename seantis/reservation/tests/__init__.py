@@ -11,6 +11,7 @@ from zope.component import getSiteManager
 from Products.CMFPlone.tests.utils import MockMailHost
 from Products.MailHost.interfaces import IMailHost
 
+from plone import api
 from plone.testing import z2
 from plone.dexterity.utils import createContentInContainer
 from plone.app.testing import TEST_USER_NAME, TEST_USER_ID
@@ -57,7 +58,30 @@ class TestCase(unittest.TestCase):
         ]
         setuphandlers.dbsetup(None)
 
+        self.setup_expected_date_formats()
         self.logged_in = False
+
+    def setup_expected_date_formats(self):
+        name_root = 'Products.CMFPlone.i18nl10n.override_dateformat.'
+        api.portal.set_registry_record(
+            name=name_root + 'Enabled',
+            value=True
+        )
+
+        api.portal.set_registry_record(
+            name=name_root + 'date_format_short',
+            value='%d.%m.%Y'
+        )
+
+        api.portal.set_registry_record(
+            name=name_root + 'date_format_long',
+            value='%d.%m.%Y %H:%M'
+        )
+
+        api.portal.set_registry_record(
+            name=name_root + 'time_format',
+            value='%H:%M'
+        )
 
     def tearDown(self):
 

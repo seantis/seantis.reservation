@@ -24,9 +24,9 @@
             <div metal:define-macro="grouplist">
                 <div tal:repeat="alloc view/allocations">
                     <tal:block define="
-                        day python: alloc.display_start.strftime('%d.%m.%Y');
-                        start python: alloc.display_start.strftime('%H:%M');
-                        end python: alloc.display_end.strftime('%H:%M');
+                        day python: view.date_as_day(alloc.display_start);
+                        start python: view.date_as_time(alloc.display_start);
+                        end python: view.date_as_time(alloc.display_end);
                         time string: ${start} - ${end};
                         title python: view.event_title(alloc);
                         eventclass python: view.event_class(alloc);

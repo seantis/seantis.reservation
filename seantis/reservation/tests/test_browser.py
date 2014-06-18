@@ -551,12 +551,15 @@ class TestBrowser(FunctionalTestCase):
         browser.getControl('Reserve').click()
 
         browser.open(self.infolder('/removal'))
-        self.assertTrue('13.09.2013 11:00 - 12:00' in browser.contents)
+
+        # the datetime in the browsers cannot be swayed, it always is english
+        self.assertTrue('Sep 13, 2013 11:00 AM - 12:00 PM' in browser.contents)
 
         browser.getLink('Remove').click()
         browser.open(self.infolder('/removal'))
 
-        self.assertFalse('13.09.2013 11:00 - 12:00' in browser.contents)
+        # the datetime in the browsers cannot be swayed, it always is english
+        self.assertFalse('Sep 13, 2013 11:00 AM - 12:00 PM' in browser.contents)
 
     def test_reservation_approval(self):
 
@@ -586,7 +589,9 @@ class TestBrowser(FunctionalTestCase):
         browser.getLink('Approve').click()
 
         self.assertTrue('Concerned Dates' in browser.contents)
-        self.assertTrue('21.06.2013 13:00 - 17:00' in browser.contents)
+
+        # the datetime in the browsers cannot be swayed, it always is english
+        self.assertTrue('Jun 21, 2013 01:00 PM - 05:00 PM' in browser.contents)
 
         browser.getControl('Approve').click()
         browser.open(menu['manage'])

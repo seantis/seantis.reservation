@@ -1,4 +1,7 @@
+from datetime import datetime
+
 from five import grok
+from plone import api
 from plone.directives import dexterity
 from plone.dexterity.content import Item
 from plone.memoize import view
@@ -19,10 +22,16 @@ from seantis.reservation import utils
 class Timeframe(Item):
     @property
     def timestr(self):
-        return u'%s - %s' % (
-            self.start.strftime('%d.%m.%Y'),
-            self.end.strftime('%d.%m.%Y')
-        )
+        return ' - '.join((
+            api.portal.get_localized_time(
+                datetime(self.start.year, self.start.month, self.start.day),
+                long_format=False
+            ),
+            api.portal.get_localized_time(
+                datetime(self.end.year, self.end.month, self.end.day),
+                long_format=False
+            )
+        ))
 
     # Can't set a property here for some odd reason. Why does it work for
     # timestr? Same in resource.py.. it does not make sense.

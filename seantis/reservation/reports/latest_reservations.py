@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 from five import grok
+from plone import api
 from zope.interface import Interface
 
 from sqlalchemy import desc
@@ -15,7 +16,7 @@ from seantis.reservation.reports import GeneralReportParametersMixin
 
 
 def human_date(date):
-    # timezones are currently naive and implicity the the one used by
+    # timezones are currently naive and implicity the one used by
     # the users - we don't have international reservations yet
     now = utils.utcnow()
 
@@ -23,7 +24,11 @@ def human_date(date):
         now.year, now.month, now.day
     ).replace(tzinfo=now.tzinfo)
 
-    time = date.strftime('%H:%M')
+    # remove the timezone before getting the localized time - or plone.api
+    # will adjust it.. it's really weird
+    time = api.portal.get_localized_time(
+        date.replace(tzinfo=None), time_only=True
+    )
 
     if date >= this_morning:
         return _(u'Today, at ${time}', mapping={'time': time})
@@ -86,12 +91,14 @@ class LatestReservationsReportView(BaseView, GeneralReportParametersMixin):
         since, until = self.daterange
 
         if until.date() == utils.utcnow().date():
-            return ' - '.join(
-                (since.strftime('%d.%m.%Y'), self.translate(_(u'Today')))
-            )
-        return ' - '.join(
-            (since.strftime('%d.%m.%Y'), until.strftime('%d.%m.%Y'))
-        )
+            return ' - '.join((
+                api.portal.get_localized_time(since, long_format=False),
+                self.translate(_(u'Today'))
+            ))
+        return ' - '.join((
+            api.portal.get_localized_time(since, long_format=False),
+            api.portal.get_localized_time(until, long_format=False)
+        ))
 
     def build_url(self, start, end):
         params = [
