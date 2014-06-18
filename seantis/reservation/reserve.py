@@ -7,7 +7,6 @@ from datetime import time
 from DateTime import DateTime
 from five import grok
 
-from plone import api
 from plone.dexterity.interfaces import IDexterityFTI
 from zope.component import queryUtility
 from zope.interface import Interface
@@ -601,12 +600,6 @@ class GroupReservationForm(
     @button.buttonAndHandler(_(u'Cancel'))
     def cancel(self, action):
         self.redirect_to_context()
-
-    def date_as_day(self, date):
-        return api.portal.get_localized_time(date, long_format=False)
-
-    def date_as_time(self, date):
-        return api.portal.get_localized_time(date, time_only=False)
 
 
 class YourReservations(ResourceBaseForm, YourReservationsData):

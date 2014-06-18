@@ -2,6 +2,7 @@ from datetime import datetime
 from functools import wraps
 
 from five import grok
+from plone import api
 from plone.directives import form
 from zope.component import getMultiAdapter
 from z3c.form import interfaces
@@ -352,6 +353,12 @@ class AllocationGroupView(object):
 
     def event_title(self, allocation):
         return self.event_availability(allocation)[1]
+
+    def date_as_day(self, date):
+        return api.portal.get_localized_time(date, long_format=False)
+
+    def date_as_time(self, date):
+        return api.portal.get_localized_time(date, time_only=False)
 
 
 class ReservationDataView(object):
