@@ -86,6 +86,7 @@ class ResourceBaseForm(GroupForm, form.Form):
 
     context_buttons = tuple()
     destructive_buttons = tuple()
+    standalone_buttons = tuple()
 
     css_class = 'seantis-reservation-form wizard'
 
@@ -303,6 +304,9 @@ class ResourceBaseForm(GroupForm, form.Form):
 
         for button in self.destructive_buttons:
             self.actions[button].addClass("destructive")
+
+        for button in self.standalone_buttons:
+            self.actions[button].addClass("standalone")
 
     def update(self, **kwargs):
         self.updateFields()

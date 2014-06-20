@@ -253,9 +253,11 @@ class YourReservationsData(object):
 
             timespans = []
             for start, end in reservation.timespans():
-                timespans.append(u'◆ ' + utils.display_date(start, end))
+                timespans.append(utils.display_date(start, end))
 
-            data['time'] = '<br />'.join(timespans)
+            data['time'] = '<ul class="dense"><li>{}</li></ul>'.format(
+                '</li><li>'.join(timespans)
+            )
             data['quota'] = utils.get_reservation_quota_statement(
                 reservation.quota
             ) if reservation.quota > 1 else u''
@@ -357,6 +359,7 @@ class ReservationForm(
     grok.require(permission)
 
     context_buttons = ('reserve', )
+    standalone_buttons = ('cancel', )
 
     fields = field.Fields(IReservation)
     label = _(u'Resource reservation')
@@ -555,6 +558,7 @@ class GroupReservationForm(
     grok.require(permission)
 
     context_buttons = ('reserve', )
+    standalone_buttons = ('cancel', )
 
     fields = field.Fields(IGroupReservation)
     label = _(u'Recurrance reservation')
@@ -617,6 +621,7 @@ class YourReservations(ResourceBaseForm, YourReservationsData):
     grok.require(permission)
 
     context_buttons = ('finish', )
+    standalone_buttons = ('cancel', )
 
     grok.context(Interface)
 
@@ -715,6 +720,7 @@ class ReservationApprovalForm(ReservationDecisionForm):
     grok.require(permission)
 
     context_buttons = ('approve', )
+    standalone_buttons = ('cancel', )
 
     label = _(u'Approve reservation')
 
@@ -748,6 +754,7 @@ class ReservationDenialForm(ReservationDecisionForm):
     grok.require(permission)
 
     destructive_buttons = ('deny', )
+    standalone_buttons = ('cancel', )
 
     label = _(u'Deny reservation')
 
@@ -786,6 +793,7 @@ class ReservationRevocationForm(
     grok.layer(ISeantisReservationSpecific)
 
     destructive_buttons = ('revoke', )
+    standalone_buttons = ('cancel', )
 
     fields = field.Fields(IRevokeReservation)
     template = ViewPageTemplateFile('templates/revoke_reservation.pt')
@@ -869,6 +877,7 @@ class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
     grok.layer(ISeantisReservationSpecific)
 
     context_buttons = ('save', )
+    standalone_buttons = ('cancel', )
     extracted_errors = []
 
     @property

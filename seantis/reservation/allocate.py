@@ -34,6 +34,7 @@ class AllocationAddForm(AllocationForm):
     grok.require(permission)
 
     context_buttons = ('allocate', )
+    standalone_buttons = ('cancel', )
 
     fields = field.Fields(IAllocation).select(
         'id', 'group', 'timeframes', 'whole_day', 'start_time', 'end_time',
@@ -181,6 +182,7 @@ class AllocationEditForm(AllocationForm):
     grok.require(permission)
 
     context_buttons = ('edit', )
+    standalone_buttons = ('cancel', )
 
     fields = field.Fields(IAllocation).select(
         'id',
@@ -285,6 +287,7 @@ class AllocationRemoveForm(AllocationForm, AllocationGroupView):
     grok.require(permission)
 
     destructive_buttons = ('delete', )
+    standalone_buttons = ('cancel', )
 
     fields = field.Fields(IAllocation).select('id', 'group')
     template = ViewPageTemplateFile('templates/remove_allocation.pt')

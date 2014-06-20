@@ -37,6 +37,6 @@ this.seantis.your_reservations.update = function() {
 
 (function($) {
     $(document).ready(function() {
-        seantis.your_reservations.init();
+        _.defer(seantis.your_reservations.init);
     });
 })(jQuery);
