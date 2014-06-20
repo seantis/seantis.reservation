@@ -386,7 +386,8 @@ class IResourceBase(IResourceAllocationDefaults):
             u"Shown to the user when the reservation has been completed. "
             u"A good place to inform the user general information about the "
             u"reservation he just completed."
-        )
+        ),
+        required=False
     )
 
     formsets = schema.List(
