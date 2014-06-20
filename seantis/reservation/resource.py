@@ -16,7 +16,7 @@ from plone.uuid.interfaces import IUUID
 from plone.app.linkintegrity.interfaces import ILinkIntegrityInfo
 from plone.memoize import view
 from zope.event import notify
-from zope.interface import implements
+from zope.interface import implements, Interface
 from zope.lifecycleevent.interfaces import IObjectRemovedEvent
 
 from seantis.reservation import exposure
@@ -26,7 +26,7 @@ from seantis.reservation import _
 from seantis.reservation.base import BaseView
 from seantis.reservation.events import ResourceViewedEvent
 from seantis.reservation.timeframe import timeframes_by_context
-from seantis.reservation.form import AllocationGroupView
+from seantis.reservation.form import AllocationGroupView, ResourceParameterView
 from seantis.reservation.interfaces import IResourceBase
 from seantis.reservation.interfaces import IOverview
 
@@ -261,6 +261,29 @@ class Listing(BaseView):
         return (r.UID for r in utils.portal_type_in_context(
             self.context, 'seantis.reservation.resource'
         ))
+
+
+class ThankYouPage(BaseView, ResourceParameterView):
+    grok.context(Interface)
+    grok.require('zope2.View')
+    grok.name('thank-you-for-reserving')
+
+    template = grok.PageTemplateFile('templates/thankyoupage.pt')
+
+    @property
+    def current_url(self):
+        return self.request.ACTUAL_URL + "?" + self.request.QUERY_STRING
+
+    def infoblocks(self):
+        blocks = []
+
+        for resource in self.resources.values():
+            text = (getattr(resource, 'thank_you_text', None) or u'').strip()
+
+            if text:
+                blocks.append((utils.get_resource_title(resource), text))
+
+        return blocks
 
 
 class CalendarRequest(object):

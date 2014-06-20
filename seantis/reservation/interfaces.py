@@ -9,6 +9,7 @@ from zope.component import getAllUtilitiesRegisteredFor as getallutils
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 
+from plone.app.z3cform.wysiwyg import WysiwygFieldWidget
 from plone.directives import form
 from plone.dexterity.interfaces import IDexterityFTI
 from plone.dexterity.utils import schemaNameToPortalType as getname
@@ -376,6 +377,17 @@ class IResourceBase(IResourceAllocationDefaults):
             'quota', 'partly_available', 'raster', 'approve_manually',
             'reservation_quota_limit'
         )
+    )
+
+    form.widget(thank_you_text=WysiwygFieldWidget)
+    thank_you_text = schema.Text(
+        title=_(u"Thank you text"),
+        description=_(
+            u"Shown to the user when the reservation has been completed. "
+            u"A good place to inform the user general information about the "
+            u"reservation he just completed."
+        ),
+        required=False
     )
 
     formsets = schema.List(

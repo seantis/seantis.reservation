@@ -1,9 +1,12 @@
-
 Changelog
 =========
 
 1.0.23 (unreleased)
 -------------------
+
+- Adds thank-you page shown after submitting a reservation. Each resource
+  may have a custom text which is shown under the thank you note. Closes #138.
+  [href]
 
 - Refetch less agressively to make the interface 'calmer'. Only actions by
   the user which change something trigger a refresh now. Clicking on the

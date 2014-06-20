@@ -67,12 +67,15 @@ class TestBrowser(FunctionalTestCase):
 
         super(TestBrowser, self).tearDown()
 
-    def add_resource(self, name, description='', formsets=[], action=None):
+    def add_resource(
+        self, name, description='', formsets=[], action=None, thank_you=''
+    ):
         browser = self.admin_browser
 
         browser.open(self.infolder('/++add++seantis.reservation.resource'))
         browser.getControl('Name').value = name
         browser.getControl('Description').value = description
+        browser.getControl('Thank you text').value = thank_you
 
         for formset in formsets:
             browser.getControl(formset).selected = True
@@ -559,7 +562,9 @@ class TestBrowser(FunctionalTestCase):
         browser.open(self.infolder('/removal'))
 
         # the datetime in the browsers cannot be swayed, it always is english
-        self.assertFalse('Sep 13, 2013 11:00 AM - 12:00 PM' in browser.contents)
+        self.assertFalse(
+            'Sep 13, 2013 11:00 AM - 12:00 PM' in browser.contents
+        )
 
     def test_reservation_approval(self):
 
@@ -797,3 +802,40 @@ class TestBrowser(FunctionalTestCase):
         self.assertIn('uuid={}'.format(uuid), browser.url)
         self.assertIn('year=all', browser.url)
         self.assertIn('month=all', browser.url)
+
+    @db.serialized
+    def test_thank_you_page(self):
+        browser = self.admin_browser
+
+        self.add_resource('one', thank_you='<b>one thanks</b>')
+        self.add_resource('two', thank_you='<b>two thanks</b>')
+        self.add_resource('three', thank_you='')
+
+        start, end = (
+            datetime(2014, 6, 20, 15, 15), datetime(2014, 6, 20, 15, 30)
+        )
+
+        def reserve(resource):
+            allocation = [resource, start, end]
+            self.add_allocation(*allocation)
+
+            menu = self.allocation_menu(*allocation)
+
+            browser.open(menu['reserve'])
+            browser.getControl('Email').value = 'test@example.org'
+            browser.getControl('Reserve').click()
+
+        map(reserve, ('one', 'two', 'three'))
+        browser.getControl('Submit Reservations').click()
+
+        self.assertIn('thank-you-for-reserving', browser.url)
+
+        # one and two have thank you texts, so they show up
+        self.assertIn('testfolder - one', browser.contents)
+        self.assertIn('<b>one thanks</b>', browser.contents)
+
+        self.assertIn('testfolder - two', browser.contents)
+        self.assertIn('<b>two thanks</b>', browser.contents)
+
+        # three doesn't, so it won't show up
+        self.assertNotIn('testfolder - three', browser.contents)

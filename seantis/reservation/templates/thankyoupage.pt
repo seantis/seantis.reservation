@@ -1,0 +1,36 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xml:lang="en"
+      lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="seantis.reservation">
+  <head><title></title></head>
+
+  <body>
+    <metal:content-title fill-slot="content-title">
+      <h1 class="documentFirstHeading" i18n:translate="">Thank you</h1>
+    </metal:content-title>
+    <metal:content-core fill-slot="content-core">
+
+      <tal:comment content="nothing">
+        The presence of #redirect-to-url forces the overlay to redirect
+        to the url in data-url.
+      </tal:comment>
+
+      <div id="redirect-to-url" tal:attributes="data-url view/current_url" />
+
+      <p i18n:translate="">
+        We have received your reservation.
+        Confirmation and further updates are sent to you by email.
+      </p>
+
+      <tal:block repeat="block view/infoblocks">
+        <h2 tal:content="python: block[0]" />
+        <p tal:content="structure python: block[1]" />
+      </tal:block>
+    </metal:content-core>
+
+  </body>
+</html>
