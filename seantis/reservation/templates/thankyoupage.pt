@@ -15,17 +15,21 @@
     <metal:content-core fill-slot="content-core">
 
       <tal:comment content="nothing">
-        The presence of #replace-current-page forces the overlay to show the
-        ther overlay's '#content > *' in the main page. Replacing the current
-        #content.
+        The presence of #redirect-to-url forces the overlay to redirect
+        to the url in data-url.
       </tal:comment>
 
-      <div id="replace-current-page" />
+      <div id="redirect-to-url" tal:attributes="data-url view/current_url" />
 
       <p i18n:translate="">
         We have received your reservation.
         Confirmation and further updates are sent to you by email.
       </p>
+
+      <tal:block repeat="block view/infoblocks">
+        <h2 tal:content="python: block[0]" />
+        <p tal:content="structure python: block[1]" />
+      </tal:block>
     </metal:content-core>
 
   </body>
