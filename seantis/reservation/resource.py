@@ -16,7 +16,7 @@ from plone.uuid.interfaces import IUUID
 from plone.app.linkintegrity.interfaces import ILinkIntegrityInfo
 from plone.memoize import view
 from zope.event import notify
-from zope.interface import implements
+from zope.interface import implements, Interface
 from zope.lifecycleevent.interfaces import IObjectRemovedEvent
 
 from seantis.reservation import exposure
@@ -261,6 +261,14 @@ class Listing(BaseView):
         return (r.UID for r in utils.portal_type_in_context(
             self.context, 'seantis.reservation.resource'
         ))
+
+
+class ThankYouPage(BaseView):
+    grok.context(Interface)
+    grok.require('zope2.View')
+    grok.name('thank-you-for-reserving')
+
+    template = grok.PageTemplateFile('templates/thankyoupage.pt')
 
 
 class CalendarRequest(object):

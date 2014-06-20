@@ -154,7 +154,13 @@ var reservation_overlay_init = null;
             filter:           common_content_filter,
             formselector:     '.seantis-reservation-form',
             closeselector:    '[name="form.buttons.cancel"]',
-            noform:           'close',
+            noform:           function(overlay) {
+                if ($(overlay).find('#replace-current-page').length > 0) {
+                    $(overlay).attr('id', 'content');
+                    $('#content').replaceWith(overlay);
+                }
+                return 'close';
+            },
             afterpost:        (function() {}),
             config: {
                 onBeforeLoad: (function() {}),

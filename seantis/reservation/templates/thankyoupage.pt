@@ -1,0 +1,32 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xml:lang="en"
+      lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="seantis.reservation">
+  <head><title></title></head>
+
+  <body>
+    <metal:content-title fill-slot="content-title">
+      <h1 class="documentFirstHeading" i18n:translate="">Thank you</h1>
+    </metal:content-title>
+    <metal:content-core fill-slot="content-core">
+
+      <tal:comment content="nothing">
+        The presence of #replace-current-page forces the overlay to show the
+        ther overlay's '#content > *' in the main page. Replacing the current
+        #content.
+      </tal:comment>
+
+      <div id="replace-current-page" />
+
+      <p i18n:translate="">
+        We have received your reservation.
+        Confirmation and further updates are sent to you by email.
+      </p>
+    </metal:content-core>
+
+  </body>
+</html>

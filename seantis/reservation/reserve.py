@@ -207,6 +207,13 @@ class YourReservationsData(object):
         session_id = plone_session.get_session_id(self.context)
         return db.reservations_by_session(session_id).all()
 
+    def resources(self):
+        """ Returns a list of resources contained in the reservations. The
+        result is a set of uuid strings (without hyphens).
+
+        """
+        return set(utils.string_uuid(r.resource) for r in self.reservations())
+
     @property
     def has_reservations(self):
         session_id = plone_session.get_session_id(self.context)
@@ -619,11 +626,16 @@ class YourReservations(ResourceBaseForm, YourReservationsData):
 
     @button.buttonAndHandler(_(u'Submit Reservations'), name="finish")
     def finish(self, data):
+
+        resources = self.resources()
+
         def on_success():
-            self.request.response.redirect(self.context.absolute_url())
-            self.flash(_(
-                u'Your reservations have been successfully submitted.'
-            ))
+            self.request.response.redirect(
+                '{context}/thank-you-for-reserving?uuid={uuids}'.format(
+                    context=self.context.absolute_url(),
+                    uuids='&uuid='.join(resources)
+                )
+            )
 
         utils.handle_action(self.confirm_reservations, success=on_success)
 
