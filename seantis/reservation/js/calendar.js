@@ -82,7 +82,6 @@ var CalendarGroups = function() {
                     var on_close = function(e) {
                         calendar.is_resizing = false;
                         calendar.is_moving = false;
-                        calendar.refetch();
 
                         if (onclose) {
                             _.defer(onclose);

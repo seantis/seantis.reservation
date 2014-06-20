@@ -5,6 +5,11 @@ Changelog
 1.0.23 (unreleased)
 -------------------
 
+- Refetch less agressively to make the interface 'calmer'. Only actions by
+  the user which change something trigger a refresh now. Clicking on the
+  cancel button of an overlay for example won't reload the events anymore.
+  [href]
+
 - The date is now correctly localized in all the views as well as the calendar.
   Fixes #142.
   [href]

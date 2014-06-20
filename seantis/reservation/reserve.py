@@ -627,7 +627,9 @@ class YourReservations(ResourceBaseForm, YourReservationsData):
 
         utils.handle_action(self.confirm_reservations, success=on_success)
 
-    @button.buttonAndHandler(_(u'Reserve More'), name="proceed")
+    # the button's name is 'cancel' because it should behave like a cancel
+    # button in the browser (namely, it should not refetch the events)
+    @button.buttonAndHandler(_(u'Reserve More'), name="cancel")
     def proceed(self, data):
         # Don't do anything, reservations stay in the session.
         self.request.response.redirect(self.context.absolute_url())
