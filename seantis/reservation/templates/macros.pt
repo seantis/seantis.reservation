@@ -114,19 +114,19 @@
       <span class="reservation-urls">
         <tal:block condition="python: status == 'approved'">
           <a tal:attributes="href python: macro.revoke_all_url(token, context)"
-            class="reservation-action" i18n:translate="">
-            Revoke
+            class="reservation-action reservation-action-revoke">
+            ✗ <span i18n:translate="">Revoke</span>
           </a>
         </tal:block>
 
         <tal:block condition="python: status == 'pending'">
-          <a tal:attributes="href python: macro.deny_all_url(token, context)"
-            class="reservation-action" i18n:translate="">
-            Deny
-          </a>
           <a tal:attributes="href python: macro.approve_all_url(token, context)"
-            class="reservation-action" i18n:translate="">
-            Approve
+            class="reservation-action reservation-action-approve">
+            ✓ <span i18n:translate="">Approve</span>
+          </a>
+          <a tal:attributes="href python: macro.deny_all_url(token, context)"
+            class="reservation-action reservation-action-deny">
+            ✗ <span i18n:translate="">Deny</span>
           </a>
         </tal:block>
 
