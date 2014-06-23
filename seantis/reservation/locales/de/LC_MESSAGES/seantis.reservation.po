@@ -894,7 +894,7 @@ msgstr "Anzeigen"
 
 #: ./interfaces.py:385
 msgid "Shown to the user when the reservation has been completed. A good place to inform the user general information about the reservation he just completed."
-msgstr "Wird dem Benutzer angezeigt wenn die Reservation abgeschlossen wurde. Dies ist ein guter Platz um dem Benutzer allgemeine Information über die Reservation zu geben, die abgeschlossen hat."
+msgstr "Wird dem Benutzer angezeigt wenn die Reservation abgeschlossen wurde. Dies ist ein guter Platz um dem Benutzer allgemeine Information über die Reservation zu geben, die er abgeschlossen hat."
 
 #: ./interfaces.py:369
 msgid "Specific Date"
@@ -1084,7 +1084,7 @@ msgstr "Mi"
 
 #: ./templates/thankyoupage.pt:24
 msgid "We have received your reservation. Confirmation and further updates are sent to you by email."
-msgstr "Wir haben Ihre Reservation erhalten. Eine Bestätigung und allfällige Änderungen werden über E-mail kommuniziert."
+msgstr "Wir haben Ihre Reservation erhalten. Eine Bestätigung und allfällige Änderungen werden per E-Mail kommuniziert."
 
 #: ./interfaces.py:55
 msgid "Weekly View"
