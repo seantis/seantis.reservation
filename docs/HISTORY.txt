@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0.23 (unreleased)
+1.0.23 (2014-06-23)
 -------------------
 
 - Adds unicode check/cross marks for approve/deny/revoke, to increase legibility.
