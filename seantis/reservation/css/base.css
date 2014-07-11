@@ -239,6 +239,44 @@ body .event-unavailable .fc-event-time {
     border-radius: 0 0 2px 2px;
 }
 
+#content .color .occupied {
+    border-style: solid;
+    border-width: 8px;
+    width: 0;
+    height: 0;
+}
+
+#content .color .event-available {
+    background-color: #5bad5b !important;   
+}
+
+#content .color .event-partly-available {
+    background-color: #fdad5b !important;   
+}
+
+#content .color .event-unavailable {
+    background-color: #d65b5b !important;   
+}
+
+#content .color .event-available.occupied {
+    border-left-color: #5bad5b !important;
+    border-top-color: #5bad5b !important;
+}
+
+#content .color .event-partly-available.occupied {
+    border-left-color: #fdad5b !important;
+    border-top-color: #fdad5b !important;
+}
+
+#content .color .event-unavailable.occupied {
+    border-left-color: #d65b5b !important;
+    border-top-color: #d65b5b !important;
+}
+
+.legend .mini-note {
+    color: #777;
+}
+
 .legend div {
     display: inline;
 }

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-06-20 12:57+0000\n"
+"POT-Creation-Date: 2014-07-11 14:46+0000\n"
 "PO-Revision-Date: 2012-09-06 11:33+0100\n"
 "Last-Translator: Fabian Reinhard <fabian.reinhard@seantis.ch>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,6 +50,10 @@ msgstr "&lt;&lt; Vorheriger Monat"
 msgid "&raquo; Edit Formdata"
 msgstr "&raquo; Formdaten Bearbeiten"
 
+#: ./templates/resource.pt:73
+msgid "(shaded)"
+msgstr "(schattiert)"
+
 #: ./utils.py:551
 msgid "<b>${quota}</b> reservations"
 msgstr "<b>${quota}</b> Reservationen"
@@ -74,11 +78,11 @@ msgstr "Email Vorlage hinzufügen"
 msgid "Add timeframe"
 msgstr "Belegungsperiode hinzufügen"
 
-#: ./reserve.py:341
+#: ./reserve.py:343
 msgid "Added reservation to your list. You have 15 minutes to confirm your reservations."
 msgstr "Die Reservation wurde zu Ihrer Liste hinzugefügt. Sie haben 15 Minuten Zeit um die Reservation zu bestätigen."
 
-#: ./allocate.py:55
+#: ./allocate.py:56
 msgid "Advanced Settings"
 msgstr "Erweiterte Einstellungen"
 
@@ -86,23 +90,23 @@ msgstr "Erweiterte Einstellungen"
 msgid "All"
 msgstr "Alle"
 
-#: ./allocate.py:151
+#: ./allocate.py:152
 msgid "Allocate"
 msgstr "Einteilen"
 
-#: ./allocate.py:46
+#: ./allocate.py:47
 msgid "Allocation"
 msgstr "Einteilung"
 
-#: ./allocate.py:168
+#: ./allocate.py:169
 msgid "Allocation added"
 msgstr "Einteilung hinzugefügt"
 
-#: ./allocate.py:308
+#: ./allocate.py:311
 msgid "Allocation removed"
 msgstr "Einteilung entfernt"
 
-#: ./allocate.py:272
+#: ./allocate.py:274
 msgid "Allocation saved"
 msgstr "Einteilung gespeichert"
 
@@ -130,12 +134,12 @@ msgstr "Immer das aktuelle Datum anzeigen"
 msgid "An existing reservation would be affected by the requested change."
 msgstr "Eine bestehende Reservation wäre durch die Änderung betroffen."
 
-#: ./reserve.py:728
-#: ./templates/macros.pt:127
+#: ./reserve.py:734
+#: ./templates/macros.pt:125
 msgid "Approve"
 msgstr "Zulassen"
 
-#: ./reserve.py:719
+#: ./reserve.py:725
 msgid "Approve reservation"
 msgstr "Reservation zulassen"
 
@@ -164,13 +168,13 @@ msgstr "CSV Format"
 msgid "Calendar date shown when opening the calendar."
 msgstr "Das Datum das beim Öffnen des Kalenders angezeigt wird."
 
-#: ./allocate.py:172
+#: ./allocate.py:173
 #: ./export.py:209
-#: ./reserve.py:522
+#: ./reserve.py:525
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: ./templates/resource.pt:110
+#: ./templates/resource.pt:118
 msgid "Click on a calendar block to reserve it."
 msgstr "Klicken Sie auf einen Block im Kalender um diesen zu reservieren."
 
@@ -206,7 +210,7 @@ msgstr "Täglich"
 msgid "Daily View"
 msgstr "Tagesansicht"
 
-#: ./allocate.py:49
+#: ./allocate.py:50
 msgid "Date"
 msgstr "Datum"
 
@@ -230,18 +234,18 @@ msgstr "Standard Einteilungswerte"
 msgid "Defines the minimum length of any given reservation as well as the alignment of the start / end of the allocation. E.g. a raster of 30 minutes means that the allocation can only start at xx:00 and xx:30 respectively"
 msgstr "Definiert die Mindestlänge der Reservationen für diese Einteilung, sowie die automatische Anpassung der Start- bzw. Endzeit. Ein Raster von 30 Minuten bedeuted beispielsweise, dass die Einteilung nur um xx:00 Uhr und xx:30 Uhr beginnen kann."
 
-#: ./allocate.py:297
+#: ./allocate.py:300
 #: ./mail.py:567
 #: ./timeframe.py:201
 msgid "Delete"
 msgstr "Löschen"
 
-#: ./reserve.py:761
-#: ./templates/macros.pt:123
+#: ./reserve.py:768
+#: ./templates/macros.pt:129
 msgid "Deny"
 msgstr "Ablehnen"
 
-#: ./reserve.py:752
+#: ./reserve.py:759
 msgid "Deny reservation"
 msgstr "Reservation ablehnen"
 
@@ -257,11 +261,11 @@ msgstr "Details"
 msgid "Do not send manager emails"
 msgstr "Managern keine E-Mails senden"
 
-#: ./reserve.py:726
+#: ./reserve.py:732
 msgid "Do you really want to approve the following reservations?"
 msgstr "Möchten Sie die folgende Reservation wirklich zulassen?"
 
-#: ./reserve.py:759
+#: ./reserve.py:766
 msgid "Do you really want to deny the following reservations?"
 msgstr "Möchten Sie die folgende Reservation wirklich ablehnen?"
 
@@ -269,7 +273,7 @@ msgstr "Möchten Sie die folgende Reservation wirklich ablehnen?"
 msgid "Do you really want to remove the following allocations?"
 msgstr "Möchten Sie die folgenden Einteilungen wirklich löschen?"
 
-#: ./reserve.py:802
+#: ./reserve.py:810
 msgid "Do you really want to revoke the following reservations?"
 msgstr "Möchten Sie die folgende Reservation wirklich absagen?"
 
@@ -277,17 +281,17 @@ msgstr "Möchten Sie die folgende Reservation wirklich absagen?"
 msgid "Do you want to reserve the following allocations?"
 msgstr "Möchten Sie die folgenden Einteilungen reservieren?"
 
-#: ./allocate.py:244
+#: ./allocate.py:246
 #: ./mail.py:566
 #: ./resource.py:381
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: ./reserve.py:877
+#: ./reserve.py:886
 msgid "Edit Formdata"
 msgstr "Formdaten Bearbeiten"
 
-#: ./allocate.py:194
+#: ./allocate.py:196
 msgid "Edit allocation"
 msgstr "Einteilung bearbeiten"
 
@@ -422,7 +426,7 @@ msgstr "Erste volle Stunde"
 msgid "Format"
 msgstr "Format"
 
-#: ./reserve.py:943
+#: ./reserve.py:952
 msgid "Formdata updated"
 msgstr "Formdaten aktualisiert"
 
@@ -438,15 +442,15 @@ msgstr "Fr"
 msgid "From"
 msgstr "Von"
 
-#: ./templates/resource.pt:55
+#: ./templates/resource.pt:56
 msgid "Fully available"
 msgstr "Verfügbar"
 
-#: ./reserve.py:368
+#: ./reserve.py:371
 msgid "General Information"
 msgstr "Allgemein"
 
-#: ./templates/resource.pt:70
+#: ./templates/resource.pt:78
 msgid "Has a waitinglist"
 msgstr "Hat eine Warteliste"
 
@@ -482,7 +486,7 @@ msgstr "Ungültige erste volle Stunde"
 msgid "Invalid last hour"
 msgstr "Ungültige letzte volle Stunde"
 
-#: ./reserve.py:454
+#: ./reserve.py:457
 msgid "Invalid reservation request"
 msgstr "Ungültige Reservations-Anfrage"
 
@@ -597,7 +601,7 @@ msgstr "Nächster Monat &gt;&gt;"
 msgid "No"
 msgstr "Nein"
 
-#: ./reserve.py:879
+#: ./reserve.py:888
 msgid "No Formdata to edit"
 msgstr "Keine Formdaten zum Bearbeiten"
 
@@ -610,7 +614,7 @@ msgstr "Der gewünschte Zeitbereich ist bereits besetzt."
 msgid "No reservations to confirm."
 msgstr "Keine Reservationen zur Bestätigung gefunden."
 
-#: ./reserve.py:724
+#: ./reserve.py:730
 msgid "No such reservation"
 msgstr "Unbekannte Reservation"
 
@@ -647,7 +651,7 @@ msgid "Parent"
 msgstr "Übergeordnetes Element"
 
 #: ./interfaces.py:263
-#: ./templates/resource.pt:60
+#: ./templates/resource.pt:61
 msgid "Partly available"
 msgstr "Teilweise verfügbar"
 
@@ -689,7 +693,7 @@ msgstr "Raster"
 msgid "Reason"
 msgstr "Grund"
 
-#: ./reserve.py:560
+#: ./reserve.py:564
 msgid "Recurrance reservation"
 msgstr "Wiederholung reservieren"
 
@@ -710,7 +714,7 @@ msgstr "Wiederholungen"
 msgid "Remove"
 msgstr "Entfernen"
 
-#: ./allocate.py:292
+#: ./allocate.py:295
 msgid "Remove allocations"
 msgstr "Einteilungen entfernen"
 
@@ -730,15 +734,15 @@ msgstr "Limite der Anzahl Reservationen"
 msgid "Reservation Throttling"
 msgstr "Reservations-Beschränkung"
 
-#: ./reserve.py:734
+#: ./reserve.py:740
 msgid "Reservation approved"
 msgstr "Die Reservation wurde angenommen"
 
-#: ./reserve.py:767
+#: ./reserve.py:774
 msgid "Reservation denied"
 msgstr "Reservation abgelehnt"
 
-#: ./reserve.py:450
+#: ./reserve.py:453
 msgid "Reservation out of bounds"
 msgstr "Reservation ausserhalb des gültigen Bereichs"
 
@@ -746,7 +750,7 @@ msgstr "Reservation ausserhalb des gültigen Bereichs"
 msgid "Reservation quota limit must zero or a positive number"
 msgstr "Limit der Anzahl Reservationen muss Null oder grösser sein"
 
-#: ./reserve.py:814
+#: ./reserve.py:822
 msgid "Reservation revoked"
 msgstr "Reservation abgesagt"
 
@@ -767,12 +771,12 @@ msgstr "Reservationen (Normal)"
 msgid "Reservations can't be made for more than 24 hours at a time"
 msgstr "Reservationen können nicht über mehr als 24 Stunden gemacht werden"
 
-#: ./reserve.py:490
+#: ./reserve.py:493
 #: ./resource.py:356
 msgid "Reserve"
 msgstr "Reservieren"
 
-#: ./reserve.py:644
+#: ./reserve.py:649
 msgid "Reserve More"
 msgstr "Weitere Reservationen"
 
@@ -781,7 +785,7 @@ msgstr "Weitere Reservationen"
 msgid "Resource"
 msgstr "Ressource"
 
-#: ./reserve.py:362
+#: ./reserve.py:365
 msgid "Resource reservation"
 msgstr "Reservation"
 
@@ -789,12 +793,12 @@ msgstr "Reservation"
 msgid "Resources"
 msgstr "Ressourcen"
 
-#: ./reserve.py:806
-#: ./templates/macros.pt:116
+#: ./reserve.py:814
+#: ./templates/macros.pt:118
 msgid "Revoke"
 msgstr "Absagen"
 
-#: ./reserve.py:793
+#: ./reserve.py:801
 msgid "Revoke reservation"
 msgstr "Reservation absagen"
 
@@ -807,7 +811,7 @@ msgid "Sa"
 msgstr "Sa"
 
 #: ./mail.py:509
-#: ./reserve.py:933
+#: ./reserve.py:942
 #: ./timeframe.py:96
 msgid "Save"
 msgstr "Speichern"
@@ -884,7 +888,7 @@ msgstr "Separat reservierbar"
 msgid "September"
 msgstr "September"
 
-#: ./allocate.py:205
+#: ./allocate.py:207
 msgid "Settings"
 msgstr "Einstellungen"
 
@@ -921,7 +925,7 @@ msgstr "So"
 msgid "Subforms that need to be filled out to make a reservation. Forms can currently only be created by a site-administrator."
 msgstr "Unterformulare die ausgefüllt werden müssen um eine Reservation zu machen. Unterformulare können zur Zeit nur durch Administratoren erstellt werden."
 
-#: ./reserve.py:627
+#: ./reserve.py:632
 msgid "Submit Reservations"
 msgstr "Bestätigen und abschliessen"
 
@@ -1005,17 +1009,21 @@ msgstr "Die resultierende Einteilung wäre Ungültig."
 msgid "The selected view must be one of the available views."
 msgstr "Die ausgewählte Ansicht muss eine verfügbare Ansicht sein."
 
-#: ./form.py:571
+#: ./form.py:575
 msgid "There are ${nb} reservations being entered for this resource."
 msgstr "${nb} Reservationen werden gerade eingegeben."
 
-#: ./form.py:567
+#: ./form.py:571
 msgid "There is one reservation being entered for this resource."
 msgstr "Eine Reservation wird gerade eingegeben."
 
 #: ./mail.py:464
 msgid "There's already an Email template in the same folder for the same language"
 msgstr "Es besteht bereits eine Email Vorlage mit dieser Sprache in diesem Order"
+
+#: ./templates/resource.pt:73
+msgid "Occupied"
+msgstr "Besetzt"
 
 #: ./profiles/default/types/seantis.reservation.timeframe.xml
 msgid "Timeframe"
@@ -1054,7 +1062,7 @@ msgstr "Zu viele Reservationen in einer kurzen Zeit. Bitte warten Sie für einen
 msgid "Tu"
 msgstr "Di"
 
-#: ./templates/resource.pt:65
+#: ./templates/resource.pt:66
 msgid "Unavailable"
 msgstr "Nicht verfügbar"
 

@@ -406,3 +406,7 @@ def upgrade_1022_to_1023(context):
 def upgrade_1023_to_1024(context):
     recook_css_resources(context)
     recook_js_resources(context)
+
+
+def upgrade_1024_to_1025(context):
+    recook_css_resources(context)

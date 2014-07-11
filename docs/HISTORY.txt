@@ -5,7 +5,8 @@ Changelog
 1.0.24 (unreleased)
 -------------------
 
-Nothing yet.
+- Adds shading (avilability indicator) to the calendar legend. Fixes #154.
+  [href]
 
 1.0.23 (2014-06-23)
 -------------------

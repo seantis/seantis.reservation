@@ -218,4 +218,13 @@
         profile="seantis.reservation:default">
     </genericsetup:upgradeStep>
 
+    <genericsetup:upgradeStep
+        title="Add shading to the legend"
+        description=""
+        source="1024"
+        destination="1025"
+        handler=".upgrades.upgrade_1024_to_1025"
+        profile="seantis.reservation:default">
+    </genericsetup:upgradeStep>
+
 </configure>

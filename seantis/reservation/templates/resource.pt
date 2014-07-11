@@ -50,6 +50,7 @@
                     <div tal:attributes="id calendar_id"></div>
 
                     <div class="legend" metal:define-macro="calendar_legend">
+
                         <div class="color">
                             <div class="event-available"></div>
                             <tal:block i18n:translate="">Fully available</tal:block>
@@ -63,6 +64,13 @@
                         <div class="color">
                             <div class="event-unavailable"></div>
                             <tal:block i18n:translate="">Unavailable</tal:block>
+                        </div>
+
+                        <div class="color">
+                            <div class="event-available occupied"></div>
+                            <div class="event-partly-available occupied"></div>
+                            <div class="event-unavailable occupied"></div>
+                            <span class="mini-note" i18n:translate="">(shaded)</span> <tal:block i18n:translate="">Occupied</tal:block>
                         </div>
 
                         <div class="icon">
