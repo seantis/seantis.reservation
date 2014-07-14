@@ -259,6 +259,14 @@ class ExportView(BaseView, form.ResourceParameterView):
     grok.context(Interface)
     grok.baseclass()
 
+    def get_source_by_id(self, source_id):
+        source = next((s for s in sources if s.id == source_id), None)
+
+        if not source:
+            raise NotImplementedError
+
+        return source
+
     @property
     def content_type(self):
         raise NotImplementedError
@@ -281,12 +289,7 @@ class ExportView(BaseView, form.ResourceParameterView):
 
     @property
     def source(self):
-        source_id = self.request.get('source')
-        source = next((s for s in sources if s.id == source_id), None)
-
-        if not source:
-            raise NotImplementedError
-
+        source = self.get_source_by_id(self.request.get('source'))
         transform_record = lambda r: prepare_record(r, self.file_extension)
 
         return lambda: source.method(
@@ -297,16 +300,39 @@ class ExportView(BaseView, form.ResourceParameterView):
             transform_record
         )
 
-    def render(self, **kwargs):
-        filename = '%s.%s' % (self.context.title, self.file_extension)
-        filename = codecs.utf_8_encode('filename="%s"' % filename)[0]
+    @property
+    def filename(self):
+        parts = []
 
+        parts.append(self.context.title)
+
+        source = self.get_source_by_id(self.request.get('source'))
+        translate = tools.translator(self.request, 'seantis.reservation')
+        parts.append(translate(source.title))
+
+        if self.year != 'all':
+            parts.append(self.year)
+
+        if self.month != 'all':
+            if len(self.month) == 1:
+                parts.append('0{}'.format(self.month))
+            else:
+                parts.append(self.month)
+
+        parts.append(self.file_extension)
+
+        return '.'.join(parts)
+
+    def render(self, **kwargs):
         output = getattr(self.source(), self.file_extension)
 
         RESPONSE = self.request.RESPONSE
-        RESPONSE.setHeader("Content-disposition", filename)
         RESPONSE.setHeader(
-            "Content-Type", "%s;charset=utf-8" % self.content_type
+            "Content-disposition",
+            codecs.utf_8_encode('filename="{}"'.format(self.filename))[0]
+        )
+        RESPONSE.setHeader(
+            "Content-Type", "{};charset=utf-8".format(self.content_type)
         )
         RESPONSE.setHeader("Content-Length", len(output))
 

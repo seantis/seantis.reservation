@@ -5,6 +5,9 @@ Changelog
 1.0.24 (unreleased)
 -------------------
 
+- Export filenames now include the year and the month. Fixes #155.
+  [href]
+
 - Adds shading (avilability indicator) to the calendar legend. Fixes #154.
   [href]
 
