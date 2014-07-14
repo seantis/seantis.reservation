@@ -33,6 +33,9 @@ seantis.contextmenu = function(event, element, calendar) {
                         calendar.inline_init($link, url, filter, target);
                         break;
 
+                    case "window":
+                        break;
+
                     default:
                         break;
                 }
@@ -88,9 +91,11 @@ seantis.contextmenu.close = function() {
 //
 seantis.contextmenu.build = function(event) {
     var title = _.template('<div><%= text %></div>');
-    var entry = _.template('<a class="seantis-reservation-reserve" \
-                               data-target="<%= target %>" href="<%= url %>">\
-                               <%= name %></a>');
+    var entry = _.template([
+        '<a class="seantis-reservation-reserve"',
+        'data-target="<%= target %>"',
+        'href="<%= url %>"><%= name %></a>'
+    ].join(' '));
 
     var simple = seantis.contextmenu.simple(event) !== false;
 

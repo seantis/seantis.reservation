@@ -5,6 +5,9 @@ Changelog
 1.0.24 (unreleased)
 -------------------
 
+- Adds a fast way to switch to another view from the allocation menu. Fixes #153.
+  [href]
+
 - Exceptions occurring in forms now include the correct stacktrace.
   [href]
 

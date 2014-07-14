@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-07-11 14:46+0000\n"
+"POT-Creation-Date: 2014-07-14 09:50+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,19 +25,19 @@ msgstr ""
 msgid "%(reason)s - reason for revocation<br>"
 msgstr ""
 
-#: ./utils.py:723
+#: ./utils.py:724
 msgid "%i People Waiting"
 msgstr ""
 
-#: ./utils.py:704
+#: ./utils.py:705
 msgid "%i%% Free"
 msgstr ""
 
-#: ./utils.py:711
+#: ./utils.py:712
 msgid "%i/%i Spot Available"
 msgstr ""
 
-#: ./utils.py:707
+#: ./utils.py:708
 msgid "%i/%i Spots Available"
 msgstr ""
 
@@ -57,11 +57,11 @@ msgstr ""
 msgid "(shaded)"
 msgstr ""
 
-#: ./utils.py:551
+#: ./utils.py:552
 msgid "<b>${quota}</b> reservations"
 msgstr ""
 
-#: ./utils.py:553
+#: ./utils.py:554
 msgid "<b>1</b> reservation"
 msgstr ""
 
@@ -210,6 +210,7 @@ msgid "Daily"
 msgstr ""
 
 #: ./interfaces.py:56
+#: ./resource.py:428
 msgid "Daily View"
 msgstr ""
 
@@ -286,7 +287,7 @@ msgstr ""
 
 #: ./allocate.py:246
 #: ./mail.py:566
-#: ./resource.py:381
+#: ./resource.py:402
 msgid "Edit"
 msgstr ""
 
@@ -385,7 +386,7 @@ msgstr ""
 msgid "End date before start date"
 msgstr ""
 
-#: ./resource.py:378
+#: ./resource.py:399
 msgid "Entry"
 msgstr ""
 
@@ -526,11 +527,11 @@ msgstr ""
 msgid "Like the normal reservations export, but with group-reservations spanning multiple days merged into single records."
 msgstr ""
 
-#: ./resource.py:397
+#: ./resource.py:416
 msgid "List"
 msgstr ""
 
-#: ./resource.py:372
+#: ./resource.py:393
 msgid "Manage"
 msgstr ""
 
@@ -579,6 +580,7 @@ msgid "Monthly Report for ${month} ${year}"
 msgstr ""
 
 #: ./interfaces.py:54
+#: ./resource.py:444
 msgid "Monthly View"
 msgstr ""
 
@@ -600,7 +602,7 @@ msgid "Next Month &gt;&gt;"
 msgstr ""
 
 #: ./export.py:239
-#: ./utils.py:662
+#: ./utils.py:663
 msgid "No"
 msgstr ""
 
@@ -633,6 +635,10 @@ msgstr ""
 msgid "Number of times an allocation may be reserved at the same time. e.g. 3 spots in a daycare center, 2 available cars, 1 meeting room. "
 msgstr ""
 
+#: ./templates/resource.pt:73
+msgid "Occupied"
+msgstr ""
+
 #: ./export.py:108
 msgid "October"
 msgstr ""
@@ -641,7 +647,7 @@ msgstr ""
 msgid "Once"
 msgstr ""
 
-#: ./utils.py:721
+#: ./utils.py:722
 msgid "One Person Waiting"
 msgstr ""
 
@@ -708,11 +714,11 @@ msgstr ""
 msgid "Recurrence View"
 msgstr ""
 
-#: ./resource.py:394
+#: ./resource.py:413
 msgid "Recurrences"
 msgstr ""
 
-#: ./resource.py:385
+#: ./resource.py:406
 #: ./templates/your_reservations_viewlet.pt:16
 msgid "Remove"
 msgstr ""
@@ -757,7 +763,7 @@ msgstr ""
 msgid "Reservation revoked"
 msgstr ""
 
-#: ./resource.py:353
+#: ./resource.py:374
 #: ./templates/reservations.pt:32
 msgid "Reservations"
 msgstr ""
@@ -775,7 +781,7 @@ msgid "Reservations can't be made for more than 24 hours at a time"
 msgstr ""
 
 #: ./reserve.py:493
-#: ./resource.py:356
+#: ./resource.py:377
 msgid "Reserve"
 msgstr ""
 
@@ -1024,10 +1030,6 @@ msgstr ""
 msgid "There's already an Email template in the same folder for the same language"
 msgstr ""
 
-#: ./templates/resource.pt:73
-msgid "Time unavailable"
-msgstr ""
-
 #: ./profiles/default/types/seantis.reservation.timeframe.xml
 msgid "Timeframe"
 msgstr ""
@@ -1077,6 +1079,10 @@ msgstr ""
 msgid "Utils"
 msgstr ""
 
+#: ./resource.py:428
+msgid "Views"
+msgstr ""
+
 #: ./interfaces.py:340
 msgid "Views available to the user on the calendar."
 msgstr ""
@@ -1085,7 +1091,7 @@ msgstr ""
 msgid "Waitinglist"
 msgstr ""
 
-#: ./utils.py:719
+#: ./utils.py:720
 msgid "Waitinglist is Free"
 msgstr ""
 
@@ -1098,12 +1104,13 @@ msgid "We have received your reservation. Confirmation and further updates are s
 msgstr ""
 
 #: ./interfaces.py:55
+#: ./resource.py:436
 msgid "Weekly View"
 msgstr ""
 
 #: ./exports/reservations.py:50
 #: ./interfaces.py:485
-#: ./resource.py:439
+#: ./resource.py:485
 msgid "Whole Day"
 msgstr ""
 
@@ -1112,7 +1119,7 @@ msgid "Year"
 msgstr ""
 
 #: ./export.py:239
-#: ./utils.py:659
+#: ./utils.py:660
 msgid "Yes"
 msgstr ""
 

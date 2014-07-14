@@ -93,6 +93,19 @@ class View(BaseView):
 
     fired_event = False
 
+    @property
+    def selected_view(self):
+        return self.request.get('selected_view')
+
+    @property
+    def specific_date(self):
+        specific_date = self.request.get('specific_date')
+
+        try:
+            return datetime.strptime(specific_date, '%Y-%m-%d')
+        except:
+            return None
+
     def update(self, *args, **kwargs):
         super(View, self).update(*args, **kwargs)
 
@@ -171,7 +184,10 @@ class View(BaseView):
         options['minTime'] = first_hour or resource.first_hour
         options['maxTime'] = last_hour or resource.last_hour
 
-        options['defaultView'] = selected_view or resource.selected_view
+        if self.selected_view in ('month', 'agendaWeek', 'agendaDay'):
+            options['defaultView'] = self.selected_view
+        else:
+            options['defaultView'] = selected_view or resource.selected_view
 
         is_exposed = exposure.for_calendar(resource)
         options['selectable'] = is_exposed('selectable')
@@ -183,7 +199,12 @@ class View(BaseView):
             'right': ', '.join(available_views or resource.available_views)
         }
 
-        if selected_date == 'specific' and specific_date:
+        if self.specific_date:
+            specific_date = self.specific_date
+            options['year'] = specific_date.year
+            options['month'] = specific_date.month - 1  # js is off by one
+            options['date'] = specific_date.day
+        elif selected_date == 'specific' and specific_date:
             options['year'] = specific_date.year
             options['month'] = specific_date.month - 1  # js is off by one
             options['date'] = specific_date.day
@@ -386,21 +407,46 @@ class Slots(BaseView, CalendarRequest):
             'overlay'
         )
 
-        if not allocation.in_group:
-            return items
+        if allocation.in_group:
+            # menu entries for group items
+            group_add = lambda n, v, p, t: \
+                items.menu_add(_('Recurrences'), n, v, p, t)
 
-        # menu entries for group items
-        group_add = lambda n, v, p, t: \
-            items.menu_add(_('Recurrences'), n, v, p, t)
+            group_add(
+                _(u'List'), 'group', dict(name=allocation.group), 'overlay'
+            )
 
-        group_add(
-            _(u'List'), 'group', dict(name=allocation.group), 'overlay'
-        )
+            group_add(
+                _(u'Remove'), 'remove-allocation',
+                dict(group=allocation.group),
+                'overlay'
+            )
 
-        group_add(
-            _(u'Remove'), 'remove-allocation', dict(group=allocation.group),
-            'overlay'
-        )
+        # view selections
+        if 'agendaDay' in self.context.available_views:
+            items.menu_add(
+                _(u'Views'), _(u'Daily View'), 'view',
+                dict(
+                    selected_view='agendaDay',
+                    specific_date=allocation.start.strftime('%Y-%m-%d')
+                ), 'window'
+            )
+        if 'agendaWeek' in self.context.available_views:
+            items.menu_add(
+                _(u'Views'), _(u'Weekly View'), 'view',
+                dict(
+                    selected_view='agendaWeek',
+                    specific_date=allocation.start.strftime('%Y-%m-%d')
+                ), 'window'
+            )
+        if 'month' in self.context.available_views:
+            items.menu_add(
+                _(u'Views'), _(u'Monthly View'), 'view',
+                dict(
+                    selected_view='month',
+                    specific_date=allocation.start.strftime('%Y-%m-%d')
+                ), 'window'
+            )
 
         return items
 
