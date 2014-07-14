@@ -310,10 +310,10 @@ class ExportView(BaseView, form.ResourceParameterView):
         translate = tools.translator(self.request, 'seantis.reservation')
         parts.append(translate(source.title))
 
-        if self.year != 'all':
+        if self.year not in ('any', 'all'):
             parts.append(self.year)
 
-        if self.month != 'all':
+        if self.month not in ('any', 'all'):
             if len(self.month) == 1:
                 parts.append('0{}'.format(self.month))
             else:

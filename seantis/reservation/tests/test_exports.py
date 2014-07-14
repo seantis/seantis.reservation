@@ -204,7 +204,7 @@ class TestExports(IntegrationTestCase):
         self.assertEqual(response.headers['content-length'], '2')
         self.assertEqual(
             response.headers['content-disposition'],
-            'filename="Plone site.json"'
+            'filename="Plone site.Reservations (Normal).json"'
         )
         self.assertEqual(
             response.headers['content-type'], 'application/json;charset=utf-8'
