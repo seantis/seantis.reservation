@@ -5,6 +5,7 @@ import collections
 import functools
 import isodate
 import base64
+import sys
 
 from datetime import datetime, timedelta, date, time as datetime_time
 from urlparse import urljoin
@@ -439,21 +440,21 @@ def handle_action(action=None, success=None, message_handler=None):
 
     except Exception, e:
         e = hasattr(e, 'orig') and e.orig or e
-        handle_exception(e, message_handler)
+        handle_exception(e, sys.exc_info(), message_handler)
 
 
 def form_error(msg):
     raise ActionExecutionError(interface.Invalid(msg))
 
 
-def handle_exception(ex, message_handler=None):
+def handle_exception(ex, exception_info, message_handler=None):
     if isinstance(ex, error.CustomReservationError):
         form_error(ex.msg)
 
     msg = error.errormap.get(type(ex))
 
     if not msg:
-        raise ex
+        raise exception_info[1], None, exception_info[2]
 
     if message_handler:
         message_handler(msg)
