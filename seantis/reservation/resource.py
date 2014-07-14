@@ -425,25 +425,9 @@ class Slots(BaseView, CalendarRequest):
         # view selections
         if 'agendaDay' in self.context.available_views:
             items.menu_add(
-                _(u'Views'), _(u'Daily View'), 'view',
+                _(u'Reservations'), _(u'Daily View'), 'view',
                 dict(
                     selected_view='agendaDay',
-                    specific_date=allocation.start.strftime('%Y-%m-%d')
-                ), 'window'
-            )
-        if 'agendaWeek' in self.context.available_views:
-            items.menu_add(
-                _(u'Views'), _(u'Weekly View'), 'view',
-                dict(
-                    selected_view='agendaWeek',
-                    specific_date=allocation.start.strftime('%Y-%m-%d')
-                ), 'window'
-            )
-        if 'month' in self.context.available_views:
-            items.menu_add(
-                _(u'Views'), _(u'Monthly View'), 'view',
-                dict(
-                    selected_view='month',
                     specific_date=allocation.start.strftime('%Y-%m-%d')
                 ), 'window'
             )
