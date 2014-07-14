@@ -5,6 +5,10 @@ Changelog
 1.0.24 (unreleased)
 -------------------
 
+- Limits the width of the day view, to improve the accessibility of the menu.
+  Fixes #157.
+  [href]
+
 - Adds a fast way to switch to another view from the allocation menu. Fixes #153.
   [href]
 

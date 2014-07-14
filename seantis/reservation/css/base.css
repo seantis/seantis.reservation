@@ -231,12 +231,12 @@ body .event-unavailable .fc-event-time {
 
 /* calendar legend */
 .legend {
-    float:right;
-    border: 1px solid #ccc;
-    border-top: none;
-    padding: 1px 5px 5px 5px;
-    background-color: #f8f8f8;
-    border-radius: 0 0 2px 2px;
+    padding: 3px 3px 5px 3px !important;
+    background-color: #eee;
+    width: 59%;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
 }
 
 #content .color .occupied {
@@ -315,6 +315,14 @@ body .event-unavailable .fc-event-time {
     .singlecalendar .legend .icon {
         display: none !important;
     }
+
+    .singlecalendar .legend > div {
+        display: block;
+    }
+    .singlecalendar .legend {
+        text-align: left;
+        width: 100%;
+    }
 }
 
 @media all and (max-width: 2000px) {
@@ -325,4 +333,11 @@ body .event-unavailable .fc-event-time {
     .multicalendar .legend .icon {
         display: none !important;
     }
+}
+
+/* make the daily view calendar smaller than the rest */
+.seantis-reservation-view .fc-view-agendaDay {
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
 }
