@@ -7,6 +7,7 @@ import isodate
 import base64
 import sys
 
+from copy import deepcopy
 from datetime import datetime, timedelta, date, time as datetime_time
 from urlparse import urljoin
 from urllib import quote
@@ -127,6 +128,50 @@ def additional_data_dictionary(data, fti):
         result[key] = record
 
     return result
+
+
+def merge_data_dictionaries(base, extra):
+    """ Merges the given data dictionaries. The extra dictionary will overwrite
+    matching keys in the base dictionary.
+
+    """
+
+    merged = deepcopy(base)
+
+    for extra_form in extra:
+        if extra_form in base:
+            merged[extra_form]['desc'] = extra[extra_form]['desc']
+            merged[extra_form]['interface'] = extra[extra_form]['interface']
+
+            # this really should be a dict, since the key matters...
+            base_values = dict(
+                (i['key'], i) for i in base[extra_form]['values']
+            )
+            extra_values = dict(
+                (i['key'], i) for i in extra[extra_form]['values']
+            )
+
+            merged[extra_form]['values'] = []
+
+            for value in base[extra_form]['values']:
+                if value['key'] in extra_values:
+                    merged[extra_form]['values'].append(
+                        extra_values[value['key']]
+                    )
+                else:
+                    merged[extra_form]['values'].append(
+                        base_values[value['key']]
+                    )
+
+            for value in extra[extra_form]['values']:
+                if value['key'] in base_values:
+                    continue
+                else:
+                    merged[extra_form]['values'].append(value)
+        else:
+            merged[extra_form] = extra[extra_form]
+
+    return merged
 
 
 def additional_data_objects(data):

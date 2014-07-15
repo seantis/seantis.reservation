@@ -3,6 +3,7 @@
 from logging import getLogger
 log = getLogger('seantis.reservation')
 
+from copy import copy
 from datetime import time
 from DateTime import DateTime
 from five import grok
@@ -880,12 +881,52 @@ class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
     standalone_buttons = ('cancel', )
     extracted_errors = []
 
+    template = ViewPageTemplateFile('templates/form.pt')
+
+    @property
+    def broken_data(self):
+        return self.broken
+
     @property
     def label(self):
         if self.context.formsets:
             return _(u'Edit Formdata')
         else:
             return _(u'No Formdata to edit')
+
+    def separate_broken_data(self):
+        """ Goes through the reservation data and returns the the reservation
+        data in two pieces. The first is the working data, the second is the
+        broken data.
+
+        Broken data is the data which cannot be loaded in the form, because
+        the underlying form schema has changed since the data has been
+        written.
+
+        """
+        reservation_data = self.get_reservation_data()
+
+        def init_form(data, form):
+            if form in data:
+                return data
+
+            data[form] = copy(reservation_data[form])
+            data[form]['values'] = []
+
+            return data
+
+        working, broken = {}, {}
+
+        for form in reservation_data:
+            for value in reservation_data[form]['values']:
+                id = '.'.join((form, value['key']))
+
+                if self.get_field(id) and self.get_field(id):
+                    init_form(working, form)[form]['values'].append(value)
+                else:
+                    init_form(broken, form)[form]['values'].append(value)
+
+        return working, broken
 
     def get_reservation_data(self):
         if not self.reservation:
@@ -906,7 +947,9 @@ class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
         if not self.context.formsets:
             return defaults
 
-        data = self.get_reservation_data()
+        self.working, self.broken = self.separate_broken_data()
+
+        data = self.working
 
         errors = [e.widget.__name__ for e in self.extracted_errors]
 
@@ -943,7 +986,15 @@ class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
     @extract_action_data
     def save(self, data):
 
-        self.additional_data = utils.additional_data_dictionary(data, self.fti)
+        broken = self.separate_broken_data()[1]
+        working = utils.additional_data_dictionary(data, self.fti)
+
+        if broken:
+            self.additional_data = utils.merge_data_dictionaries(
+                broken, working
+            )
+        else:
+            self.additional_data = working
 
         def save():
             self.scheduler.update_reservation_data(

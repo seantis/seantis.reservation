@@ -689,6 +689,59 @@ class TestBrowser(FunctionalTestCase):
         browser.open(menu['manage'])
         self.assertTrue('no comment' in browser.contents)
 
+    def test_broken_formsets(self):
+
+        browser = self.admin_browser
+
+        self.add_formset(
+            'one', [FormsetField('one', 'Text')], for_managers=False
+        )
+        self.add_formset(
+            'two', [FormsetField('two', 'Text')], for_managers=False
+        )
+
+        self.add_resource(
+            'broken', formsets=['one', 'two'], action='publish'
+        )
+
+        start = datetime(2013, 6, 27, 13, 37)
+        end = datetime(2013, 6, 27, 17, 15)
+
+        allocation = ['broken', start, end]
+        self.add_allocation(*allocation)
+        menu = self.allocation_menu(*allocation)
+
+        browser.open(menu['reserve'])
+        browser.getControl('Email').value = 'test@example.com'
+        browser.getControl('one').value = 'Eins'
+        browser.getControl('two').value = 'Zwei'
+        browser.getControl('Reserve').click()
+        browser.getControl('Submit Reservations').click()
+
+        browser.open(menu['manage'])
+        self.assertTrue('Eins' in browser.contents)
+        self.assertTrue('Zwei' in browser.contents)
+
+        browser.open(self.infolder('/broken/edit'))
+        browser.getControl('two').selected = False
+        browser.getControl('Save').click()
+
+        browser.open(menu['manage'])
+        browser.getLink('Edit Formdata').click()
+        self.assertTrue('Unchangeable formdata found!' in browser.contents)
+        self.assertFalse('<span>Eins</span>' in browser.contents)
+        self.assertTrue('<span>Zwei</span>' in browser.contents)
+
+        browser.open(self.infolder('/broken/edit'))
+        browser.getControl('two').selected = True
+        browser.getControl('Save').click()
+
+        browser.open(menu['manage'])
+        browser.getLink('Edit Formdata').click()
+        self.assertFalse('Unchangeable formdata found!' in browser.contents)
+        self.assertFalse('<span>Eins</span>' in browser.contents)
+        self.assertFalse('<span>Zwei</span>' in browser.contents)
+
     @db.serialized
     def test_resource_removal(self):
 

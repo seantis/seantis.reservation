@@ -93,7 +93,7 @@
                                     </div>
                                     <tal:comment replace="nothing">
                                         Notice how the context is grabbed through a python expression. Without it ZPT
-                                        looses it. If ZPT was an animal somebody would shoot it out of pity.
+                                        loses it. If ZPT was an animal somebody would shoot it out of pity.
                                     </tal:comment>
                                     <div class="reservation-detail" tal:define="
                                             context python: reservation['resource'];

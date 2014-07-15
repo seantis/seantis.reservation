@@ -171,7 +171,7 @@
     </tal:comment>
 
     <metal:define define-macro="reservation-data" tal:define="macro python: context.unrestrictedTraverse('@@seantis-reservation-macros')">
-      <div class="reservation-data" tal:condition="data">
+      <div class="reservation-data">
 
         <tal:block tal:condition="data" tal:repeat="key python: macro.sort_reservation_data(data)">
           <tal:block tal:define="interface python: data[key]">

@@ -12,6 +12,84 @@ class UtilsTestCase(IntegrationTestCase):
 
         self.assertEqual(utils.pairs(one), utils.pairs(two))
 
+    def test_merge_additional_data(self):
+        base, extra = {}, {}
+
+        self.assertEqual(utils.merge_data_dictionaries(base, extra), {})
+
+        base = {
+            'form': {
+                'desc': "Base Description",
+                'interface': "Base Interface",
+                'values': [
+                    {
+                        'key': "one",
+                        'value': "eins",
+                        'desc': "one == eins"
+                    },
+                    {
+                        'key': "two",
+                        'value': "zwei",
+                        'desc': "two == zwei"
+                    },
+                ]
+            }
+        }
+
+        extra = {
+            'form': {
+                'desc': "Extra Description",
+                'interface': "Extra Interface",
+                'values': [
+                    {
+                        'key': "two",
+                        'value': "deux",
+                        'desc': "two == deux"
+                    },
+                    {
+                        'key': "three",
+                        'value': "drei",
+                        'desc': "three == drei"
+                    },
+                ]
+            },
+            'another_form': {}
+        }
+
+        merged = {
+            'form': {
+                'desc': "Extra Description",
+                'interface': "Extra Interface",
+                'values': [
+                    {
+                        'key': "one",
+                        'value': "eins",
+                        'desc': "one == eins"
+                    },
+                    {
+                        'key': "two",
+                        'value': "deux",
+                        'desc': "two == deux"
+                    },
+                    {
+                        'key': "three",
+                        'value': "drei",
+                        'desc': "three == drei"
+                    },
+                ]
+            },
+            'another_form': {}
+        }
+
+        self.maxDiff = None
+        actual_merged = utils.merge_data_dictionaries(base, extra)
+
+        self.assertEqual(merged.keys(), actual_merged.keys())
+        self.assertEqual(
+            merged['form']['values'], actual_merged['form']['values']
+        )
+        self.assertEqual(merged['form'], actual_merged['form'])
+
     def test_as_human_readable_string(self):
         self.assertEqual(
             utils.as_human_readable_string(datetime(2012, 1, 12)),

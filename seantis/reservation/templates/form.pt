@@ -9,8 +9,36 @@
 
 <metal:main fill-slot="main">
 <tal:main-macro metal:define-macro="main">
-        
-<h1 class="documentFirstHeading" tal:content="view/label | nothing" />        
+
+<h1 class="documentFirstHeading" tal:content="view/label | nothing" />
+<tal:block define="broken view/broken_data | nothing">
+    <div tal:condition="broken" id="broken-data">
+    
+        <h2 i18n:translate="">Warning</h2>
+
+        <div class="short-message" i18n:translate="">
+            Unchangeable formdata found!
+        </div>
+        <div class="long-message" i18n:translate="">
+            This can occur when the underlying custom forms have changed since
+            the data was stored. The data is not lost, but it cannot be changed
+            anymore.
+        </div>
+
+        <div class="short-message" i18n:translate="">This is the formdata that was found to be unchangeable:</div>
+
+        <tal:block define="data broken; show_actions python: False">
+            <div class="reservation">
+            <div class="reservation-list">
+                <metal:block use-macro="context/@@seantis-reservation-macros/macros/reservation-data" />
+            </div>
+            </div>
+            <div class="clearfix"></div>
+        </tal:block>
+
+    </div>
+</tal:block>
+
 <metal:block use-macro="context/@@ploneform-macros/titlelessform" />
 
 </tal:main-macro>

@@ -5,6 +5,11 @@ Changelog
 1.0.24 (unreleased)
 -------------------
 
+- Adds the ability to view formdata that cannot be written anymore. This can
+  happen if the custom forms are changed after the data has been written.
+  Fixes #150.
+  [href]
+
 - Limits the width of the day view, to improve the accessibility of the menu.
   Fixes #157.
   [href]
