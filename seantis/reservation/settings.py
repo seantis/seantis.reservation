@@ -97,6 +97,56 @@ class ISeantisReservationSettings(Interface):
         constraint=valid_expression
     )
 
+    available_threshold = schema.Int(
+        title=_(u'Available Threshold (%)'),
+        description=_(
+            u'Allocations with an availability above or equal to this value '
+            u'are considered available and are shown green'
+        ),
+        default=75
+    )
+
+    partly_available_threshold = schema.Int(
+        title=_(u'Partly Available Threshold (%)'),
+        description=_(
+            u'Allocations with an availability above or equal to this value '
+            u'but below the available threshold are considered partly '
+            u'available and are shown orange. Allocations with an '
+            u'availability below this value are considered unavailable and '
+            u'are shown red'
+        ),
+        default=1
+    )
+
+    @invariant
+    def isValidThreshold(Allocation):
+
+        thresholds = [
+            Allocation.available_threshold,
+            Allocation.partly_available_threshold,
+        ]
+
+        if thresholds[0] == thresholds[1]:
+            raise Invalid(
+                _(u'Thresholds must have differing values')
+            )
+
+        if not (thresholds[0] > thresholds[1]):
+            raise Invalid(
+                _(
+                    u'The available threshold must have a larger value than '
+                    u'the partly available threshold'
+                )
+            )
+
+        for threshold in thresholds:
+            if not (0 <= threshold and threshold <= 100):
+                raise Invalid(
+                    _(
+                        u'Thresholds must have values between 0 and 100'
+                    )
+                )
+
     @invariant
     def filled_manager_email(settings):
         if settings.send_email_to_managers == 'by_address':

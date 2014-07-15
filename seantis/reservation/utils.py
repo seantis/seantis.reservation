@@ -39,6 +39,21 @@ from Products.CMFPlone.interfaces import IPloneSiteRoot
 from seantis.reservation import error
 from seantis.reservation import _
 
+
+# avoid circular import of settings
+_settings = None
+
+
+def settings():
+    global _settings
+
+    if _settings is None:
+        from seantis.reservation import settings
+        _settings = settings
+
+    return _settings
+
+
 try:
     from collections import OrderedDict  # python >= 2.7
     OrderedDict  # Pyflakes
@@ -718,12 +733,18 @@ def as_human_readable_string(value):
 
 def event_class(availability):
     """Returns the event class to be used depending on the availability."""
-    if availability == 0:
-        return 'event-unavailable'
-    elif availability < 75:
+
+    s = settings()
+
+    available = s.get('available_threshold')
+    partly = s.get('partly_available_threshold')
+
+    if availability >= available:
+        return 'event-available'
+    elif partly <= availability and availability < available:
         return 'event-partly-available'
     else:
-        return 'event-available'
+        return 'event-unavailable'
 
 
 def allocation_class(allocation):

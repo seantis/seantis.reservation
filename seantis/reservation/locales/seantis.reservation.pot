@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-07-14 15:00+0000\n"
+"POT-Creation-Date: 2014-07-15 09:44+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,19 +25,19 @@ msgstr ""
 msgid "%(reason)s - reason for revocation<br>"
 msgstr ""
 
-#: ./utils.py:724
+#: ./utils.py:790
 msgid "%i People Waiting"
 msgstr ""
 
-#: ./utils.py:705
+#: ./utils.py:771
 msgid "%i%% Free"
 msgstr ""
 
-#: ./utils.py:712
+#: ./utils.py:778
 msgid "%i/%i Spot Available"
 msgstr ""
 
-#: ./utils.py:708
+#: ./utils.py:774
 msgid "%i/%i Spots Available"
 msgstr ""
 
@@ -57,11 +57,11 @@ msgstr ""
 msgid "(shaded)"
 msgstr ""
 
-#: ./utils.py:552
+#: ./utils.py:612
 msgid "<b>${quota}</b> reservations"
 msgstr ""
 
-#: ./utils.py:554
+#: ./utils.py:614
 msgid "<b>1</b> reservation"
 msgstr ""
 
@@ -121,6 +121,14 @@ msgstr ""
 msgid "Allocations may start every 5 minutes if the allocation is not partly available. If it is partly available the start time may be every x minute where x equals the given raster."
 msgstr ""
 
+#: ./settings.py:102
+msgid "Allocations with an availability above or equal to this value are considered available and are shown green"
+msgstr ""
+
+#: ./settings.py:111
+msgid "Allocations with an availability above or equal to this value but below the available threshold are considered partly available and are shown orange. Allocations with an availability below this value are considered unavailable and are shown red"
+msgstr ""
+
 #: ./settings.py:63
 msgid "Always send to the following address:"
 msgstr ""
@@ -157,6 +165,10 @@ msgstr ""
 
 #: ./export.py:106
 msgid "August"
+msgstr ""
+
+#: ./settings.py:101
+msgid "Available Threshold (%)"
 msgstr ""
 
 #: ./interfaces.py:339
@@ -430,7 +442,7 @@ msgstr ""
 msgid "Format"
 msgstr ""
 
-#: ./reserve.py:995
+#: ./reserve.py:1003
 msgid "Formdata updated"
 msgstr ""
 
@@ -580,7 +592,6 @@ msgid "Monthly Report for ${month} ${year}"
 msgstr ""
 
 #: ./interfaces.py:54
-#: ./resource.py:444
 msgid "Monthly View"
 msgstr ""
 
@@ -602,7 +613,7 @@ msgid "Next Month &gt;&gt;"
 msgstr ""
 
 #: ./export.py:239
-#: ./utils.py:663
+#: ./utils.py:723
 msgid "No"
 msgstr ""
 
@@ -647,7 +658,7 @@ msgstr ""
 msgid "Once"
 msgstr ""
 
-#: ./utils.py:722
+#: ./utils.py:788
 msgid "One Person Waiting"
 msgstr ""
 
@@ -657,6 +668,10 @@ msgstr ""
 
 #: ./exports/reservations.py:44
 msgid "Parent"
+msgstr ""
+
+#: ./settings.py:110
+msgid "Partly Available Threshold (%)"
 msgstr ""
 
 #: ./interfaces.py:263
@@ -673,7 +688,7 @@ msgstr ""
 msgid "Pending"
 msgstr ""
 
-#: ./settings.py:104
+#: ./settings.py:154
 msgid "Please specify an address to send the manager emails to"
 msgstr ""
 
@@ -825,7 +840,7 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-#: ./settings.py:121
+#: ./settings.py:171
 msgid "Seantis Reservation Control Panel"
 msgstr ""
 
@@ -962,6 +977,10 @@ msgstr ""
 msgid "The allocation spans the whole day."
 msgstr ""
 
+#: ./settings.py:136
+msgid "The available threshold must have a larger value than the partly available threshold"
+msgstr ""
+
 #: ./export.py:34
 msgid "The default reservations export with every date in the resource having a separate record."
 msgstr ""
@@ -1030,12 +1049,20 @@ msgstr ""
 msgid "There's already an Email template in the same folder for the same language"
 msgstr ""
 
-#: ./templates/form.pt:23
+#: ./templates/form.pt:22
 msgid "This can occur when the underlying custom forms have changed since the data was stored. The data is not lost, but it cannot be changed anymore."
 msgstr ""
 
-#: ./templates/form.pt:29
+#: ./templates/form.pt:28
 msgid "This is the formdata that was found to be unchangeable:"
+msgstr ""
+
+#: ./settings.py:131
+msgid "Thresholds must have differing values"
+msgstr ""
+
+#: ./settings.py:145
+msgid "Thresholds must have values between 0 and 100"
 msgstr ""
 
 #: ./profiles/default/types/seantis.reservation.timeframe.xml
@@ -1079,7 +1106,7 @@ msgstr ""
 msgid "Unavailable"
 msgstr ""
 
-#: ./templates/form.pt:20
+#: ./templates/form.pt:19
 msgid "Unchangeable formdata found!"
 msgstr ""
 
@@ -1091,10 +1118,6 @@ msgstr ""
 msgid "Utils"
 msgstr ""
 
-#: ./resource.py:428
-msgid "Views"
-msgstr ""
-
 #: ./interfaces.py:340
 msgid "Views available to the user on the calendar."
 msgstr ""
@@ -1103,7 +1126,7 @@ msgstr ""
 msgid "Waitinglist"
 msgstr ""
 
-#: ./utils.py:720
+#: ./utils.py:786
 msgid "Waitinglist is Free"
 msgstr ""
 
@@ -1120,13 +1143,12 @@ msgid "We have received your reservation. Confirmation and further updates are s
 msgstr ""
 
 #: ./interfaces.py:55
-#: ./resource.py:436
 msgid "Weekly View"
 msgstr ""
 
 #: ./exports/reservations.py:50
 #: ./interfaces.py:485
-#: ./resource.py:485
+#: ./resource.py:469
 msgid "Whole Day"
 msgstr ""
 
@@ -1135,7 +1157,7 @@ msgid "Year"
 msgstr ""
 
 #: ./export.py:239
-#: ./utils.py:660
+#: ./utils.py:720
 msgid "Yes"
 msgstr ""
 

@@ -410,3 +410,16 @@ def upgrade_1023_to_1024(context):
 
 def upgrade_1024_to_1025(context):
     recook_css_resources(context)
+
+
+def upgrade_1025_to_1026(context):
+
+    registry = getUtility(IRegistry)
+    registry.registerInterface(settings.ISeantisReservationSettings)
+
+    settings.set('available_threshold', 75)
+    settings.set('partly_available_threshold', 1)
+
+    # ensure that the records exist now
+    settings.get('available_threshold')
+    settings.get('partly_available_threshold')

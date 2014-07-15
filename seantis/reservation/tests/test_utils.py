@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta, date
 
 from seantis.reservation import utils
+from seantis.reservation import settings
 from seantis.reservation.tests import IntegrationTestCase
 
 
@@ -11,6 +12,20 @@ class UtilsTestCase(IntegrationTestCase):
         two = (('aa', 'bb'), ('cc', 'dd'))
 
         self.assertEqual(utils.pairs(one), utils.pairs(two))
+
+    def test_event_class(self):
+        self.assertEqual(utils.event_class(100), 'event-available')
+        self.assertEqual(utils.event_class(75), 'event-available')
+        self.assertEqual(utils.event_class(1), 'event-partly-available')
+        self.assertEqual(utils.event_class(0), 'event-unavailable')
+
+        settings.set('available_threshold', 100)
+        settings.set('partly_available_threshold', 1)
+
+        self.assertEqual(utils.event_class(100), 'event-available')
+        self.assertEqual(utils.event_class(99), 'event-partly-available')
+        self.assertEqual(utils.event_class(1), 'event-partly-available')
+        self.assertEqual(utils.event_class(0), 'event-unavailable')
 
     def test_merge_additional_data(self):
         base, extra = {}, {}
