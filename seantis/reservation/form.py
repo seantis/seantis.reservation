@@ -11,6 +11,8 @@ from z3c.form.group import GroupForm
 
 from sqlalchemy import null
 
+from seantis.plonetools.browser import BaseForm as SharedBaseForm
+
 from seantis.reservation import _
 from seantis.reservation import utils
 from seantis.reservation.models import Allocation, Reservation
@@ -67,6 +69,19 @@ def from_timestamp(fn):
             return date
 
     return converter
+
+
+class BaseForm(SharedBaseForm):
+    """ Baseform provided by senatis.plonetools. Currently incompatible with
+    ResourceBaseForm - this should change, but for now it's technical debt.
+
+    Should be used by forms independent of resources.
+
+    """
+    grok.baseclass()
+    grok.layer(ISeantisReservationSpecific)
+
+    domain = 'seantis.reservation'
 
 
 class ResourceBaseForm(GroupForm, form.Form):

@@ -234,6 +234,9 @@ seantis.formgroups.init = function(el) {
             find('#formfield-form-widgets-separately')
         ],
         on_is_enabled: function(trigger) {
+            if ($(document).find('.always-show-days').length) {
+                return true;
+            }
             return trigger.attr('checked');
         },
         on_show: function(show) {

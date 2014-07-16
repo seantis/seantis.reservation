@@ -222,7 +222,7 @@ def search_allocations(resources, start, end, options={}, is_included=None):
     assert end
 
     days = options.get('days', 'all')
-    reservable_spots = options.get('reservable_spots', 0)
+    reservable_spots = options.get('reservable_spots', 1)
     available_only = options.get('available_only', False)
     whole_day = options.get('whole_day', 'any')
 
@@ -278,7 +278,7 @@ def search_allocations(resources, start, end, options={}, is_included=None):
                     if available_only and availability == 0.0:
                         continue
 
-                if reservable_spots != 0:
+                if reservable_spots >= 1:
 
                     required_availability = (
                         reservable_spots / float(allocation.quota) * 100.0
