@@ -2,11 +2,12 @@
 Changelog
 =========
 
-1.0.24 (unreleased)
+1.0.24 (2014-07-16)
 -------------------
 
 - Adds the ability to define green/orange/red thresholds in the controlpanel.
   Fixes #158.
+  [href]
 
 - Adds the ability to view formdata that cannot be written anymore. This can
   happen if the custom forms are changed after the data has been written.
