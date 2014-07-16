@@ -2,6 +2,7 @@ from logging import getLogger
 log = getLogger('seantis.reservation')
 
 import json
+import isodate
 import pytz
 
 from datetime import datetime
@@ -305,6 +306,99 @@ class ThankYouPage(BaseView, ResourceParameterView):
                 blocks.append((utils.get_resource_title(resource), text))
 
         return blocks
+
+
+class SearchAllocations(BaseView):
+    permission = 'zope2.View'
+
+    grok.context(Interface)
+    grok.require(permission)
+    grok.name('search-allocations')
+
+    @property
+    def resources(self):
+        resources = self.request.get('resource')
+
+        if isinstance(resources, basestring):
+            return [resources]
+        else:
+            return resources
+
+    @property
+    def start(self):
+        return isodate.parse_datetime(self.request.get('start'))
+
+    @property
+    def end(self):
+        return isodate.parse_datetime(self.request.get('end'))
+
+    @property
+    def days(self):
+        days = self.request.get('days')
+
+        if not days:
+            return None
+        else:
+            return days.split(',')
+
+    @property
+    def reservable_spots(self):
+        return int(self.request.get('reservable_spots', 0))
+
+    @property
+    def available_only(self):
+        return 'available_only' in self.request
+
+    @property
+    def whole_day(self):
+        return self.request.get('whole_day', 'any')
+
+    def render(self):
+        return json.dumps(self.search())
+
+    def search(self):
+        resources = {}
+
+        for resource in self.resources:
+            r = utils.get_resource_by_uuid(resource)
+
+            resources[resource] = {
+                'title': utils.get_resource_title(r),
+                'uuid': utils.string_uuid(resource),
+                'url': r.getURL()
+            }
+
+        is_exposed = exposure.for_allocations(self.context, self.resources)
+
+        options = {}
+        options['days'] = self.days
+        options['reservable_spots'] = self.reservable_spots
+        options['available_only'] = self.available_only
+        options['whole_day'] = self.whole_day
+
+        found = db.search_allocations(
+            self.resources, self.start, self.end,
+            options=options, is_included=is_exposed
+        )
+
+        result = []
+
+        for allocation in found:
+            result.append({
+                'resource': resources[utils.string_uuid(allocation.resource)],
+                'allocation': {
+                    'start': isodate.datetime_isoformat(
+                        allocation.display_start
+                    ),
+                    'end': isodate.datetime_isoformat(
+                        allocation.display_end
+                    ),
+                    'id': allocation.id,
+                    'availability': allocation.availability
+                }
+            })
+
+        return result
 
 
 class CalendarRequest(object):
