@@ -219,5 +219,37 @@
         </div>
     </metal:define>
 
+    <tal:comment replace="nothing">
+    Adds the tabs for the different resource views. Use this variable:
+
+    selected_view = ('calendar'|'search')
+    </tal:comment>
+
+    <metal:define define-macro="resource-tabs" tal:define="macro python: context.unrestrictedTraverse('@@seantis-reservation-macros')">
+      <ul class="formTabs">
+        <li class="formTab firstFormTab">
+          <a id="fieldsetlegend-default" href="#fieldsetlegend-default"
+            tal:attributes="
+              class python: selected_view == 'calendar' and 'selected' or '';
+              href python: context.absolute_url() + '/view'
+            "
+          >
+            <span i18n:translate="">Calendar</span>
+          </a>
+        </li>
+        <li class="formTab lastFormTab">
+          <a id="fieldsetlegend-defaults"
+            tal:attributes="
+              class python: selected_view == 'search' and 'selected' or '';
+              href python: context.absolute_url() + '/search'
+            "
+          >
+            <span i18n:translate="search_noun">Search</span>
+          </a>
+        </li>
+      </ul>
+
+    </metal:define>
+
   </body>
 </html>

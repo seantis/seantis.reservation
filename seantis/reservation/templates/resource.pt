@@ -47,6 +47,10 @@
                         </tal:block>
                     </div>
 
+                    <tal:block define="selected_view string:calendar">
+                        <metal:block use-macro="context/@@seantis-reservation-macros/resource-tabs" />
+                    </tal:block>
+
                     <div tal:attributes="id calendar_id"></div>
 
                     <div class="legend" metal:define-macro="calendar_legend">

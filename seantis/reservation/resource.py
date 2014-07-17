@@ -86,7 +86,26 @@ def on_removed_resource(resource, event):
     db.extinguish_resource(resource.uuid())
 
 
-class View(BaseView):
+class YourReservationsViewlet(object):
+
+    @utils.cached_property
+    def your_reservations(self):
+
+        # circular imports.. better things to do than fixing that right now..
+        # grumble, grumble
+        from seantis.reservation.reserve import YourReservationsViewlet
+
+        context = aq_inner(self.context)
+        viewlet = YourReservationsViewlet(context, self.request, None, None)
+
+        if not viewlet.has_reservations:
+            return ""
+
+        viewlet.update()
+        return viewlet.render()
+
+
+class View(BaseView, YourReservationsViewlet):
     permission = 'zope2.View'
 
     grok.context(IResourceBase)
@@ -233,22 +252,6 @@ class View(BaseView):
     @property
     def calendar_count(self):
         return len(self.resources())
-
-    @utils.cached_property
-    def your_reservations(self):
-
-        # circular imports.. better things to do than fixing that right now..
-        # grumble, grumble
-        from seantis.reservation.reserve import YourReservationsViewlet
-
-        context = aq_inner(self.context)
-        viewlet = YourReservationsViewlet(context, self.request, None, None)
-
-        if not viewlet.has_reservations:
-            return ""
-
-        viewlet.update()
-        return viewlet.render()
 
 
 class GroupView(BaseView, AllocationGroupView):
