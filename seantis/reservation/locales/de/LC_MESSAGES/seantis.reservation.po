@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-07-17 08:44+0000\n"
+"POT-Creation-Date: 2014-07-17 15:09+0000\n"
 "PO-Revision-Date: 2012-09-06 11:33+0100\n"
 "Last-Translator: Fabian Reinhard <fabian.reinhard@seantis.ch>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,19 +22,19 @@ msgstr "Vor ${days} Tagen, um ${time}"
 msgid "%(reason)s - reason for revocation<br>"
 msgstr "%(reason)s - Grund für die Absage<br>"
 
-#: ./utils.py:790
+#: ./utils.py:792
 msgid "%i People Waiting"
 msgstr "%i Personen warten"
 
-#: ./utils.py:771
+#: ./utils.py:773
 msgid "%i%% Free"
 msgstr "%i%% Frei"
 
-#: ./utils.py:778
+#: ./utils.py:780
 msgid "%i/%i Spot Available"
 msgstr "%i/%i Platz verfügbar"
 
-#: ./utils.py:774
+#: ./utils.py:776
 msgid "%i/%i Spots Available"
 msgstr "%i/%i Plätze verfügbar"
 
@@ -50,7 +50,7 @@ msgstr "&lt;&lt; Vorheriger Monat"
 msgid "&raquo; Edit Formdata"
 msgstr "&raquo; Formdaten Bearbeiten"
 
-#: ./templates/resource.pt:73
+#: ./templates/resource.pt:77
 msgid "(shaded)"
 msgstr "(schattiert)"
 
@@ -172,13 +172,17 @@ msgstr "Verfügbar-Schwellenwert (%)"
 msgid "Available Views"
 msgstr "Verfügbare Ansichten"
 
-#: ./search.py:100
+#: ./search.py:64
 msgid "Available only"
 msgstr "Nur wenn Verfügbar"
 
 #: ./export.py:62
 msgid "CSV Format"
 msgstr "CSV Format"
+
+#: ./templates/macros.pt:237
+msgid "Calendar"
+msgstr "Kalendar"
 
 #: ./interfaces.py:361
 msgid "Calendar date shown when opening the calendar."
@@ -190,7 +194,7 @@ msgstr "Das Datum das beim Öffnen des Kalenders angezeigt wird."
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: ./templates/resource.pt:118
+#: ./templates/resource.pt:122
 msgid "Click on a calendar block to reserve it."
 msgstr "Klicken Sie auf einen Block im Kalender um diesen zu reservieren."
 
@@ -223,7 +227,7 @@ msgid "Daily"
 msgstr "Täglich"
 
 #: ./interfaces.py:56
-#: ./resource.py:428
+#: ./resource.py:434
 msgid "Daily View"
 msgstr "Tagesansicht"
 
@@ -236,7 +240,7 @@ msgid "Day"
 msgstr "Tag"
 
 #: ./interfaces.py:512
-#: ./search.py:76
+#: ./search.py:47
 msgid "Days"
 msgstr "Tage"
 
@@ -301,7 +305,7 @@ msgstr "Möchten Sie die folgenden Einteilungen reservieren?"
 
 #: ./allocate.py:246
 #: ./mail.py:566
-#: ./resource.py:402
+#: ./resource.py:408
 msgid "Edit"
 msgstr "Bearbeiten"
 
@@ -396,7 +400,7 @@ msgstr "Email Text für Abgesagte Reservationen"
 msgid "End"
 msgstr "Ende"
 
-#: ./search.py:55
+#: ./search.py:26
 msgid "End date"
 msgstr "Bis-Datum"
 
@@ -404,11 +408,11 @@ msgstr "Bis-Datum"
 msgid "End date before start date"
 msgstr "Ende vor Start"
 
-#: ./search.py:71
+#: ./search.py:42
 msgid "End time"
 msgstr "Bis Uhrzeit"
 
-#: ./resource.py:399
+#: ./resource.py:405
 msgid "Entry"
 msgstr "Eintrag"
 
@@ -464,7 +468,7 @@ msgstr "Teilformulare"
 msgid "Fr"
 msgstr "Fr"
 
-#: ./search.py:94
+#: ./search.py:59
 msgid "Free spots"
 msgstr "Freie Plätze"
 
@@ -472,7 +476,7 @@ msgstr "Freie Plätze"
 msgid "From"
 msgstr "Von"
 
-#: ./templates/resource.pt:56
+#: ./templates/resource.pt:60
 msgid "Fully available"
 msgstr "Verfügbar"
 
@@ -480,7 +484,7 @@ msgstr "Verfügbar"
 msgid "General Information"
 msgstr "Allgemein"
 
-#: ./templates/resource.pt:78
+#: ./templates/resource.pt:82
 msgid "Has a waitinglist"
 msgstr "Hat eine Warteliste"
 
@@ -553,11 +557,11 @@ msgstr "Neueste Reservationen"
 msgid "Like the normal reservations export, but with group-reservations spanning multiple days merged into single records."
 msgstr "Mehrtägige Gruppen Reservationen werden bei diesem Export auf eine Zeile zusammengezogen."
 
-#: ./resource.py:416
+#: ./resource.py:422
 msgid "List"
 msgstr "Auflisten"
 
-#: ./resource.py:393
+#: ./resource.py:399
 msgid "Manage"
 msgstr "Verwalten"
 
@@ -660,7 +664,7 @@ msgstr "Anzahl Reservationen"
 msgid "Number of times an allocation may be reserved at the same time. e.g. 3 spots in a daycare center, 2 available cars, 1 meeting room. "
 msgstr "Legt das Kontingent der Einteilung fest. z.B. 3 Plätze in einer Kinderkrippe, 2 verfügbare Autos, 1 Besprechungszimmer"
 
-#: ./templates/resource.pt:73
+#: ./templates/resource.pt:77
 msgid "Occupied"
 msgstr "Besetzt"
 
@@ -672,7 +676,7 @@ msgstr "Oktober"
 msgid "Once"
 msgstr "Ohne"
 
-#: ./utils.py:788
+#: ./utils.py:790
 msgid "One Person Waiting"
 msgstr "Eine Person wartet"
 
@@ -680,7 +684,7 @@ msgstr "Eine Person wartet"
 msgid "Optional reason for the revocation. Sent to the reservee. e.g. 'Your reservation has to be cancelled because the lecturer is ill'."
 msgstr "Optionaler Grund für die Absage. Wird an den Reservierenden gesendet. Z.B. 'Ihre Reservation muss abesagt werden, weil der Dozent krank ist'."
 
-#: ./search.py:83
+#: ./search.py:54
 msgid "Options"
 msgstr "Optionen"
 
@@ -693,7 +697,7 @@ msgid "Partly Available Threshold (%)"
 msgstr "Teilweise-Verfügbar-Schwellenwert (%)"
 
 #: ./interfaces.py:263
-#: ./templates/resource.pt:61
+#: ./templates/resource.pt:65
 msgid "Partly available"
 msgstr "Teilweise verfügbar"
 
@@ -747,11 +751,11 @@ msgstr "Wiederholung"
 msgid "Recurrence View"
 msgstr "Auflistung der Wiederholung"
 
-#: ./resource.py:413
+#: ./resource.py:419
 msgid "Recurrences"
 msgstr "Wiederholungen"
 
-#: ./resource.py:406
+#: ./resource.py:412
 #: ./templates/your_reservations_viewlet.pt:16
 msgid "Remove"
 msgstr "Entfernen"
@@ -796,7 +800,7 @@ msgstr "Limit der Anzahl Reservationen muss Null oder grösser sein"
 msgid "Reservation revoked"
 msgstr "Reservation abgesagt"
 
-#: ./resource.py:374
+#: ./resource.py:380
 #: ./templates/reservations.pt:32
 msgid "Reservations"
 msgstr "Reservationen"
@@ -814,7 +818,7 @@ msgid "Reservations can't be made for more than 24 hours at a time"
 msgstr "Reservationen können nicht über mehr als 24 Stunden gemacht werden"
 
 #: ./reserve.py:494
-#: ./resource.py:377
+#: ./resource.py:383
 msgid "Reserve"
 msgstr "Reservieren"
 
@@ -831,7 +835,6 @@ msgstr "Ressource"
 msgid "Resource reservation"
 msgstr "Reservation"
 
-#: ./search.py:88
 #: ./templates/macros.pt:32
 msgid "Resources"
 msgstr "Ressourcen"
@@ -867,13 +870,9 @@ msgstr "Seantis Reservation Kontrollzentrum"
 msgid "Seantis Reservation Settings"
 msgstr "Seantis Reservation Einstellungen"
 
-#: ./search.py:135
+#: ./search.py:105
 msgid "Search"
 msgstr "Suchen"
-
-#: ./templates/search_and_reserve.pt:14
-msgid "Search &amp; Reserve"
-msgstr "Suchen &amp; Reservieren"
 
 #: ./interfaces.py:74
 msgid "Select at least one value"
@@ -960,11 +959,11 @@ msgstr "Bestimmtes Datum"
 msgid "Start"
 msgstr "Start"
 
-#: ./search.py:50
+#: ./search.py:21
 msgid "Start date"
 msgstr "Von-Datum"
 
-#: ./search.py:66
+#: ./search.py:37
 msgid "Start time"
 msgstr "Ab Uhrzeit"
 
@@ -1137,7 +1136,7 @@ msgstr "Zu viele Reservationen in einer kurzen Zeit. Bitte warten Sie für einen
 msgid "Tu"
 msgstr "Di"
 
-#: ./templates/resource.pt:66
+#: ./templates/resource.pt:70
 msgid "Unavailable"
 msgstr "Nicht verfügbar"
 
@@ -1161,7 +1160,7 @@ msgstr "Ansichten die den Benutzern auf dem Kalender zur verfügung stehen."
 msgid "Waitinglist"
 msgstr "Warteliste"
 
-#: ./utils.py:786
+#: ./utils.py:788
 msgid "Waitinglist is Free"
 msgstr "Warteliste Frei"
 
@@ -1183,11 +1182,11 @@ msgstr "Wochenansicht"
 
 #: ./exports/reservations.py:50
 #: ./interfaces.py:485
-#: ./resource.py:469
+#: ./resource.py:475
 msgid "Whole Day"
 msgstr "Ganztägig"
 
-#: ./search.py:60
+#: ./search.py:31
 msgid "Whole day"
 msgstr "Ganztägig"
 
@@ -1212,4 +1211,9 @@ msgstr "Sie möchten 'Immer ein bestimmtes Datum anzeigen' haben aber kein Datum
 #: ./templates/your_reservations_viewlet.pt:10
 msgid "Your reservations"
 msgstr "Ihre Reservationen"
+
+#. Default: "Search"
+#: ./templates/macros.pt:247
+msgid "search_noun"
+msgstr "Suche"
 

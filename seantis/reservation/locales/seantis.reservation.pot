@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-07-17 08:44+0000\n"
+"POT-Creation-Date: 2014-07-17 15:09+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,19 +25,19 @@ msgstr ""
 msgid "%(reason)s - reason for revocation<br>"
 msgstr ""
 
-#: ./utils.py:790
+#: ./utils.py:792
 msgid "%i People Waiting"
 msgstr ""
 
-#: ./utils.py:771
+#: ./utils.py:773
 msgid "%i%% Free"
 msgstr ""
 
-#: ./utils.py:778
+#: ./utils.py:780
 msgid "%i/%i Spot Available"
 msgstr ""
 
-#: ./utils.py:774
+#: ./utils.py:776
 msgid "%i/%i Spots Available"
 msgstr ""
 
@@ -53,7 +53,7 @@ msgstr ""
 msgid "&raquo; Edit Formdata"
 msgstr ""
 
-#: ./templates/resource.pt:73
+#: ./templates/resource.pt:77
 msgid "(shaded)"
 msgstr ""
 
@@ -175,12 +175,16 @@ msgstr ""
 msgid "Available Views"
 msgstr ""
 
-#: ./search.py:100
+#: ./search.py:64
 msgid "Available only"
 msgstr ""
 
 #: ./export.py:62
 msgid "CSV Format"
+msgstr ""
+
+#: ./templates/macros.pt:237
+msgid "Calendar"
 msgstr ""
 
 #: ./interfaces.py:361
@@ -193,7 +197,7 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: ./templates/resource.pt:118
+#: ./templates/resource.pt:122
 msgid "Click on a calendar block to reserve it."
 msgstr ""
 
@@ -226,7 +230,7 @@ msgid "Daily"
 msgstr ""
 
 #: ./interfaces.py:56
-#: ./resource.py:428
+#: ./resource.py:434
 msgid "Daily View"
 msgstr ""
 
@@ -239,7 +243,7 @@ msgid "Day"
 msgstr ""
 
 #: ./interfaces.py:512
-#: ./search.py:76
+#: ./search.py:47
 msgid "Days"
 msgstr ""
 
@@ -304,7 +308,7 @@ msgstr ""
 
 #: ./allocate.py:246
 #: ./mail.py:566
-#: ./resource.py:402
+#: ./resource.py:408
 msgid "Edit"
 msgstr ""
 
@@ -399,7 +403,7 @@ msgstr ""
 msgid "End"
 msgstr ""
 
-#: ./search.py:55
+#: ./search.py:26
 msgid "End date"
 msgstr ""
 
@@ -407,11 +411,11 @@ msgstr ""
 msgid "End date before start date"
 msgstr ""
 
-#: ./search.py:71
+#: ./search.py:42
 msgid "End time"
 msgstr ""
 
-#: ./resource.py:399
+#: ./resource.py:405
 msgid "Entry"
 msgstr ""
 
@@ -467,7 +471,7 @@ msgstr ""
 msgid "Fr"
 msgstr ""
 
-#: ./search.py:94
+#: ./search.py:59
 msgid "Free spots"
 msgstr ""
 
@@ -475,7 +479,7 @@ msgstr ""
 msgid "From"
 msgstr ""
 
-#: ./templates/resource.pt:56
+#: ./templates/resource.pt:60
 msgid "Fully available"
 msgstr ""
 
@@ -483,7 +487,7 @@ msgstr ""
 msgid "General Information"
 msgstr ""
 
-#: ./templates/resource.pt:78
+#: ./templates/resource.pt:82
 msgid "Has a waitinglist"
 msgstr ""
 
@@ -556,11 +560,11 @@ msgstr ""
 msgid "Like the normal reservations export, but with group-reservations spanning multiple days merged into single records."
 msgstr ""
 
-#: ./resource.py:416
+#: ./resource.py:422
 msgid "List"
 msgstr ""
 
-#: ./resource.py:393
+#: ./resource.py:399
 msgid "Manage"
 msgstr ""
 
@@ -663,7 +667,7 @@ msgstr ""
 msgid "Number of times an allocation may be reserved at the same time. e.g. 3 spots in a daycare center, 2 available cars, 1 meeting room. "
 msgstr ""
 
-#: ./templates/resource.pt:73
+#: ./templates/resource.pt:77
 msgid "Occupied"
 msgstr ""
 
@@ -675,7 +679,7 @@ msgstr ""
 msgid "Once"
 msgstr ""
 
-#: ./utils.py:788
+#: ./utils.py:790
 msgid "One Person Waiting"
 msgstr ""
 
@@ -683,7 +687,7 @@ msgstr ""
 msgid "Optional reason for the revocation. Sent to the reservee. e.g. 'Your reservation has to be cancelled because the lecturer is ill'."
 msgstr ""
 
-#: ./search.py:83
+#: ./search.py:54
 msgid "Options"
 msgstr ""
 
@@ -696,7 +700,7 @@ msgid "Partly Available Threshold (%)"
 msgstr ""
 
 #: ./interfaces.py:263
-#: ./templates/resource.pt:61
+#: ./templates/resource.pt:65
 msgid "Partly available"
 msgstr ""
 
@@ -750,11 +754,11 @@ msgstr ""
 msgid "Recurrence View"
 msgstr ""
 
-#: ./resource.py:413
+#: ./resource.py:419
 msgid "Recurrences"
 msgstr ""
 
-#: ./resource.py:406
+#: ./resource.py:412
 #: ./templates/your_reservations_viewlet.pt:16
 msgid "Remove"
 msgstr ""
@@ -799,7 +803,7 @@ msgstr ""
 msgid "Reservation revoked"
 msgstr ""
 
-#: ./resource.py:374
+#: ./resource.py:380
 #: ./templates/reservations.pt:32
 msgid "Reservations"
 msgstr ""
@@ -817,7 +821,7 @@ msgid "Reservations can't be made for more than 24 hours at a time"
 msgstr ""
 
 #: ./reserve.py:494
-#: ./resource.py:377
+#: ./resource.py:383
 msgid "Reserve"
 msgstr ""
 
@@ -834,7 +838,6 @@ msgstr ""
 msgid "Resource reservation"
 msgstr ""
 
-#: ./search.py:88
 #: ./templates/macros.pt:32
 msgid "Resources"
 msgstr ""
@@ -870,12 +873,8 @@ msgstr ""
 msgid "Seantis Reservation Settings"
 msgstr ""
 
-#: ./search.py:135
+#: ./search.py:105
 msgid "Search"
-msgstr ""
-
-#: ./templates/search_and_reserve.pt:14
-msgid "Search &amp; Reserve"
 msgstr ""
 
 #: ./interfaces.py:74
@@ -963,11 +962,11 @@ msgstr ""
 msgid "Start"
 msgstr ""
 
-#: ./search.py:50
+#: ./search.py:21
 msgid "Start date"
 msgstr ""
 
-#: ./search.py:66
+#: ./search.py:37
 msgid "Start time"
 msgstr ""
 
@@ -1140,7 +1139,7 @@ msgstr ""
 msgid "Tu"
 msgstr ""
 
-#: ./templates/resource.pt:66
+#: ./templates/resource.pt:70
 msgid "Unavailable"
 msgstr ""
 
@@ -1164,7 +1163,7 @@ msgstr ""
 msgid "Waitinglist"
 msgstr ""
 
-#: ./utils.py:786
+#: ./utils.py:788
 msgid "Waitinglist is Free"
 msgstr ""
 
@@ -1186,11 +1185,11 @@ msgstr ""
 
 #: ./exports/reservations.py:50
 #: ./interfaces.py:485
-#: ./resource.py:469
+#: ./resource.py:475
 msgid "Whole Day"
 msgstr ""
 
-#: ./search.py:60
+#: ./search.py:31
 msgid "Whole day"
 msgstr ""
 
@@ -1214,5 +1213,10 @@ msgstr ""
 #: ./templates/your_reservations.pt:14
 #: ./templates/your_reservations_viewlet.pt:10
 msgid "Your reservations"
+msgstr ""
+
+#. Default: "Search"
+#: ./templates/macros.pt:247
+msgid "search_noun"
 msgstr ""
 

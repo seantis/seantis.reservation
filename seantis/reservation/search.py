@@ -10,6 +10,7 @@ from plone.autoform.form import AutoExtensibleForm
 from seantis.reservation import _
 from seantis.reservation import utils
 from seantis.reservation.form import BaseForm
+from seantis.reservation.resource import YourReservationsViewlet
 from seantis.reservation.interfaces import IResourceBase, days as weekdays
 
 
@@ -78,22 +79,25 @@ def end_default(data):
     return date.today()
 
 
-class SearchAndReserve(BaseForm, AutoExtensibleForm):
+class SearchForm(BaseForm, AutoExtensibleForm, YourReservationsViewlet):
     permission = 'zope2.View'
 
     grok.context(IResourceBase)
     grok.require(permission)
-    grok.name('search-and-reserve')
+    grok.name('search')
 
     ignoreContext = True
 
-    template = grok.PageTemplateFile('templates/search_and_reserve.pt')
+    template = grok.PageTemplateFile('templates/search.pt')
     schema = ISearchAndReserveForm
 
     enable_form_tabbing = False
 
     results = None
     searched = False
+
+    # show the seantis.dir.facility viewlet if it's present
+    show_facility_viewlet = True
 
     @property
     def available_actions(self):
