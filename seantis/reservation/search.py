@@ -1,17 +1,17 @@
 import isodate
 import json
 
-from copy import copy
 from datetime import date
 from five import grok
 from plone.directives import form
-from z3c.form import field
+from plone.supermodel import model
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
-from z3c.form.browser.radio import RadioFieldWidget
 from zope import schema
 from zope.interface import Interface
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+
+from plone.autoform.form import AutoExtensibleForm
 
 from seantis.reservation import _
 from seantis.reservation import db
@@ -43,16 +43,7 @@ def resource_choices(context):
     return SimpleVocabulary(choices)
 
 
-whole_day = SimpleVocabulary(
-    [
-        SimpleTerm(value='any', title=_(u'Any')),
-        SimpleTerm(value='yes', title=_(u'Yes')),
-        SimpleTerm(value='no', title=_(u'No')),
-    ]
-)
-
-
-class ISearchAndReserveForm(form.Schema):
+class ISearchAndReserveForm(model.Schema):
     """ Search form for search & reserve view. """
 
     recurrence_start = schema.Date(
@@ -65,14 +56,20 @@ class ISearchAndReserveForm(form.Schema):
         required=True
     )
 
+    whole_day = schema.Bool(
+        title=_(u"Whole day"),
+        required=False,
+        default=False
+    )
+
     start_time = schema.Time(
         title=_(u"Start time"),
-        required=True
+        required=False
     )
 
     end_time = schema.Time(
-        title=_(u"End"),
-        required=True
+        title=_(u"End time"),
+        required=False
     )
 
     days = schema.List(
@@ -81,16 +78,22 @@ class ISearchAndReserveForm(form.Schema):
         required=False,
     )
 
+    model.fieldset(
+        'options',
+        label=_(u"Options"),
+        fields=['resources', 'free_spots', 'available_only']
+    )
+
     resources = schema.Choice(
         title=_(u"Resources"),
         source=resource_choices,
         required=True,
     )
 
-    whole_day = schema.List(
-        title=_(u"Whole days"),
-        value_type=schema.Choice(vocabulary=whole_day),
+    free_spots = schema.Int(
+        title=_(u"Free spots"),
         required=False,
+        default=1
     )
 
     available_only = schema.Bool(
@@ -99,11 +102,8 @@ class ISearchAndReserveForm(form.Schema):
         default=False
     )
 
-    reservable_spots = schema.Int(
-        title=_(u"Reservable spots"),
-        required=False,
-        default=1
-    )
+    form.widget(days=CheckBoxFieldWidget)
+    form.widget(resources=CheckBoxFieldWidget)
 
 
 @form.default_value(field=ISearchAndReserveForm['recurrence_start'])
@@ -116,7 +116,7 @@ def end_default(data):
     return date.today()
 
 
-class SearchAndReserve(BaseForm):
+class SearchAndReserve(BaseForm, AutoExtensibleForm):
     permission = 'zope2.View'
 
     grok.context(Interface)
@@ -126,23 +126,8 @@ class SearchAndReserve(BaseForm):
     ignoreContext = True
 
     template = grok.PageTemplateFile('templates/search_and_reserve.pt')
-
-    @property
-    def fields(self):
-        fields = field.Fields(ISearchAndReserveForm)
-
-        # this won't work using plone.directives - with Plone I kind of
-        # stopped caring and just work around these issues.
-        self.set_field_widget(fields, 'days', CheckBoxFieldWidget)
-        self.set_field_widget(fields, 'resources', CheckBoxFieldWidget)
-        self.set_field_widget(fields, 'whole_day', RadioFieldWidget)
-
-        return fields
-
-    def set_field_widget(self, fields, name, widget):
-        f = fields[name]
-        f.field = copy(f.field)
-        f.widgetFactory = widget
+    schema = ISearchAndReserveForm
+    enable_form_tabbing = False
 
     @property
     def available_actions(self):
