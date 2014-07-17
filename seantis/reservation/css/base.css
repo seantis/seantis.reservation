@@ -341,3 +341,9 @@ body .event-unavailable .fc-event-time {
     margin-left: auto;
     margin-right: auto;
 }
+
+
+/* hide the above-content viewlet in the thank you page */
+.template-thank-you-for-reserving .documentDescription {
+    display: none;
+}

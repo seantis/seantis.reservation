@@ -5,7 +5,8 @@ Changelog
 1.0.25 (unreleased)
 -------------------
 
-Nothing yet.
+- Remove resource description from thankyou-page.
+  [href]
 
 1.0.24 (2014-07-16)
 -------------------
