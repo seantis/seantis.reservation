@@ -16,6 +16,30 @@
         <div class="searchbox always-show-days">
           <metal:block use-macro="context/@@ploneform-macros/titlelessform" />
         </div>
+        <tal:block condition="view/searched">
+          <div class="searchresults" tal:condition="view/results">
+            <div class="resultinfo">Found the following results:</div>
+
+            <div class="searchresult" tal:repeat="result view/results">
+              <div class="result-resource">
+                <a tal:attributes="href result/resource/url" tal:content="result/resource/title" />
+              </div>
+              <div tal:attributes="
+                  class python: 'result-allocation {}'.format(result['allocation']['class']);
+                  data-id result/allocation/id;
+                  data-resource result/resource/uuid
+              ">
+                <span tal:content="result/allocation/date"></span>
+              </div>
+              <div class="result-text">
+                <span tal:content="result/allocation/text"></span>
+              </div>
+            </div>
+          </div>
+          <div class="noresults" tal:condition="not: view/results">
+            <div class="resultinfo">No results found.</div>
+          </div>
+        </tal:block>
     </metal:main>
   </body>
 </html>

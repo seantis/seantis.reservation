@@ -237,7 +237,9 @@ def search_allocations(resources, start, end, options={}, is_included=None):
             'su': 6
         }
 
-        days = set(days_map[day] for day in days)
+        # get the day from the map - if impossible take the verbatim value
+        # this allows for using strings or integers
+        days = set(days_map.get(day, day) for day in days)
 
     query = all_allocations_in_range(start, end)
 
@@ -270,16 +272,24 @@ def search_allocations(resources, start, end, options={}, is_included=None):
                 if whole_day == 'no' and allocation.whole_day:
                     continue
 
+            if reservable_spots != 0:
+                if reservable_spots > allocation.reservation_quota_limit:
+                    continue
+
             if available_only or reservable_spots != 0:
-                availability = allocation.availability
+
+                availability = availability_by_range(
+                    allocation.start,
+                    allocation.end,
+                    [allocation.resource],
+                    is_included
+                )
+                allocation._cached_availability = availability
 
                 if available_only:
-
                     if available_only and availability == 0.0:
                         continue
-
-                if reservable_spots >= 1:
-
+                else:
                     required_availability = (
                         reservable_spots / float(allocation.quota) * 100.0
                     )

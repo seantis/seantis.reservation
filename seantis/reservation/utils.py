@@ -755,15 +755,21 @@ def allocation_class(allocation):
         return 'approve-automatically'
 
 
-def event_availability(context, request, scheduler, allocation):
+def event_availability(
+    context, request, allocation, scheduler=None, availability=None
+):
     """Returns the availability, the text with the availability and the class
     for the availability to display on the calendar view.
+
+    Either provide the scheduler or the availability.
 
     """
     a = allocation
     translate = translator(context, request)
 
-    availability = scheduler.availability(a.start, a.end)
+    if availability is None:
+        availability = scheduler.availability(a.start, a.end)
+
     spots = int(round(allocation.quota * availability / 100))
 
     # get the title shown on the calendar block

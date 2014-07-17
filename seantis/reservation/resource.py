@@ -455,7 +455,7 @@ class Slots(BaseView, CalendarRequest):
 
             # calculate the availability for title and class
             availability, title, klass = utils.event_availability(
-                resource, self.request, scheduler, alloc
+                resource, self.request, alloc, scheduler=scheduler
             )
 
             if alloc.partly_available:

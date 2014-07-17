@@ -1,7 +1,7 @@
 import isodate
 import json
 
-from datetime import date
+from datetime import date, datetime, time
 from five import grok
 from plone.directives import form
 from plone.supermodel import model
@@ -75,7 +75,7 @@ class ISearchAndReserveForm(model.Schema):
     days = schema.List(
         title=_(u"Days"),
         value_type=schema.Choice(vocabulary=interfaces.days),
-        required=False,
+        required=False
     )
 
     model.fieldset(
@@ -84,16 +84,16 @@ class ISearchAndReserveForm(model.Schema):
         fields=['resources', 'free_spots', 'available_only']
     )
 
-    resources = schema.Choice(
+    resources = schema.List(
         title=_(u"Resources"),
-        source=resource_choices,
+        value_type=schema.Choice(source=resource_choices),
         required=True,
+        constraint=interfaces.select_at_least_one
     )
 
     free_spots = schema.Int(
         title=_(u"Free spots"),
-        required=False,
-        default=1
+        required=False
     )
 
     available_only = schema.Bool(
@@ -127,7 +127,11 @@ class SearchAndReserve(BaseForm, AutoExtensibleForm):
 
     template = grok.PageTemplateFile('templates/search_and_reserve.pt')
     schema = ISearchAndReserveForm
+
     enable_form_tabbing = False
+
+    results = None
+    searched = False
 
     @property
     def available_actions(self):
@@ -136,7 +140,87 @@ class SearchAndReserve(BaseForm, AutoExtensibleForm):
         ]
 
     def handle_search(self):
-        pass
+        self.searched = True
+        self.results = self.search()
+
+    def search(self):
+        params = self.parameters
+
+        if not params:
+            return None
+
+        resources = {}
+
+        for resource in params['resources']:
+            r = utils.get_resource_by_uuid(resource)
+
+            resources[resource] = {
+                'title': utils.get_resource_title(r.getObject()),
+                'uuid': utils.string_uuid(resource),
+                'url': r.getURL()
+            }
+
+        is_exposed = exposure.for_allocations(
+            self.context, params['resources']
+        )
+
+        options = {}
+
+        options['days'] = [d.weekday for d in params['days']]
+        options['reservable_spots'] = params['free_spots'] or 0
+        options['available_only'] = params['available_only']
+        options['whole_day'] = params['whole_day'] and 'yes' or 'any'
+
+        if options['whole_day'] == 'yes':
+            start = datetime.combine(params['recurrence_start'], time(0, 0))
+            end = datetime.combine(
+                params['recurrence_end'], time(23, 59, 59, 999999)
+            )
+        else:
+            start_time = params['start_time'] or time(0, 0)
+            end_time = params['end_time'] or time(23, 59, 59, 999999)
+
+            start = datetime.combine(params['recurrence_start'], start_time)
+            end = datetime.combine(params['recurrence_end'], end_time)
+
+        found = db.search_allocations(
+            params['resources'], start, end,
+            options=options, is_included=is_exposed
+        )
+
+        result = []
+
+        for allocation in found:
+            if hasattr(allocation, '_cached_availability'):
+                availability = allocation._cached_availability
+            else:
+                availability = db.availability_by_range(
+                    allocation.start,
+                    allocation.end,
+                    [allocation.resource],
+                    is_exposed
+                )
+
+            availability, text, allocation_class = utils.event_availability(
+                self.context,
+                self.request,
+                allocation,
+                availability=availability
+            )
+
+            result.append({
+                'resource': resources[utils.string_uuid(allocation.resource)],
+                'allocation': {
+                    'id': allocation.id,
+                    'date': utils.display_date(
+                        allocation.start, allocation.end
+                    ),
+                    'class': utils.event_class(availability),
+                    'text': ', '.join(text.split('\n'))
+                }
+            })
+
+        return result
 
 
 class SearchAllocations(BaseView):

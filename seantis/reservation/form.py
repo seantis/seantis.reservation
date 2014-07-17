@@ -362,8 +362,8 @@ class AllocationGroupView(object):
         return utils.event_availability(
             self.context,
             self.request,
-            self.context.scheduler(),
-            allocation
+            allocation,
+            scheduler=self.context.scheduler()
         )
 
     def event_class(self, allocation):
