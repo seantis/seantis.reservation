@@ -165,147 +165,6 @@ def availability_by_day(start, end, resources, is_exposed):
     return days
 
 
-def search_allocations(resources, start, end, options={}, is_included=None):
-    """ Search allocations using a number of options. The date is split
-    into date/time. All allocations between start and end date within
-    the given time (on each day) are included.
-
-    For example, start=01.01.2012 12:00 end=31.01.2012 14:00 will include
-    all allocaitons in January 2012 which OVERLAP the given times. For example
-    an allocation starting at 11:00 and ending at 12:00 will be included!
-
-    :resources:
-        A single resource or a list of resources to search.
-
-    :start:
-        Include allocations starting on or after this date.
-
-    :end:
-        Include allocations ending on or before this date.
-
-    :options:
-        A dictionary with a number of options relating to the search:
-
-        :days:
-            List of days which should be considered, a subset of:
-            (['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'])
-
-            If left out, all days are included.
-
-        :reservable_spots:
-            Minimum number of spots reservable. Only considered if the spots
-            are available and reservable in a single reservation.
-
-            If left out, allocations with no spots available are returned also.
-
-        :available_only:
-            If True, unavailable allocations are left out (0% availability).
-            Default is False.
-
-        :whole_day:
-            May have one of the following values: 'yes', 'no', 'any'
-
-            If yes, only whole_day allocations are returned.
-            If no, whole_day allocations are filtered out.
-            If any (default), all allocations are included.
-
-            Any is the same as leaving the option out.
-
-    :is_included:
-        An optional callback function called with the allocation which may
-        return False if the allocaiton should not be included.
-
-    """
-
-    assert resources
-    assert start
-    assert end
-
-    days = options.get('days', 'all')
-    reservable_spots = options.get('reservable_spots', 1)
-    available_only = options.get('available_only', False)
-    whole_day = options.get('whole_day', 'any')
-
-    if days:
-        days_map = {
-            'mo': 0,
-            'tu': 1,
-            'we': 2,
-            'th': 3,
-            'fr': 4,
-            'sa': 5,
-            'su': 6
-        }
-
-        # get the day from the map - if impossible take the verbatim value
-        # this allows for using strings or integers
-        days = set(days_map.get(day, day) for day in days)
-
-    query = all_allocations_in_range(start, end)
-
-    if isinstance(resources, basestring):
-        query = query.filter(Allocation.resource == resources)
-    else:
-        query = query.filter(Allocation.resource.in_(resources))
-
-    query = query.order_by(Allocation._start, Allocation.resource)
-
-    def results():
-        for allocation in query:
-
-            s = datetime.combine(allocation.display_start.date(), start.time())
-            e = datetime.combine(allocation.display_end.date(), end.time())
-
-            if not allocation.overlaps(s, e):
-                continue
-
-            if callable(is_included) and not is_included(allocation):
-                continue
-
-            if days:
-                if allocation.display_start.weekday() not in days:
-                    continue
-
-            if whole_day != 'any':
-                if whole_day == 'yes' and not allocation.whole_day:
-                    continue
-                if whole_day == 'no' and allocation.whole_day:
-                    continue
-
-            if reservable_spots != 0:
-                if reservable_spots > allocation.reservation_quota_limit:
-                    continue
-
-            if available_only or reservable_spots != 0:
-
-                availability = availability_by_range(
-                    allocation.start,
-                    allocation.end,
-                    [allocation.resource],
-                    is_included
-                )
-                allocation._cached_availability = availability
-
-                if available_only:
-                    if available_only and availability == 0.0:
-                        continue
-                else:
-                    required_availability = (
-                        reservable_spots / float(allocation.quota) * 100.0
-                    )
-
-                    if required_availability > availability:
-                        continue
-
-                    quota_limit = allocation.reservation_quota_limit
-                    if quota_limit and reservable_spots > quota_limit:
-                        continue
-
-            yield allocation
-
-    return list(results())
-
-
 def reservations_by_session(session_id):
 
     # be sure to not query for all reservations. since a query should be
@@ -1233,6 +1092,130 @@ class Scheduler(object):
                 tries -= 1
             else:
                 return None
+
+    def search_allocations(self, start, end, options={}):
+        """ Search allocations using a number of options. The date is split
+        into date/time. All allocations between start and end date within
+        the given time (on each day) are included.
+
+        For example, start=01.01.2012 12:00 end=31.01.2012 14:00 will include
+        all allocaitons in January 2012 which OVERLAP the given times. So an
+        allocation starting at 11:00 and ending at 12:00 will be included!
+
+        :start:
+            Include allocations starting on or after this date.
+
+        :end:
+            Include allocations ending on or before this date.
+
+        :options:
+            A dictionary with a number of options relating to the search:
+
+            :days:
+                List of days which should be considered, a subset of:
+                (['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'])
+
+                If left out, all days are included.
+
+            :reservable_spots:
+                Minimum number of spots reservable. Only considered if the
+                spots are available and reservable in a single reservation.
+
+                If left out, allocations with no spots available are returned
+                also.
+
+            :available_only:
+                If True, unavailable allocations are left out
+                (0% availability). Default is False.
+
+            :whole_day:
+                May have one of the following values: 'yes', 'no', 'any'
+
+                If yes, only whole_day allocations are returned.
+                If no, whole_day allocations are filtered out.
+                If any (default), all allocations are included.
+
+                Any is the same as leaving the option out.
+
+        """
+
+        assert start
+        assert end
+
+        days = options.get('days', 'all')
+        reservable_spots = options.get('reservable_spots', 1)
+        available_only = options.get('available_only', False)
+        whole_day = options.get('whole_day', 'any')
+
+        if days:
+            days_map = {
+                'mo': 0,
+                'tu': 1,
+                'we': 2,
+                'th': 3,
+                'fr': 4,
+                'sa': 5,
+                'su': 6
+            }
+
+            # get the day from the map - if impossible take the verbatim value
+            # this allows for using strings or integers
+            days = set(days_map.get(day, day) for day in days)
+
+        query = self.allocations_in_range(start, end)
+        query = query.order_by(Allocation._start)
+
+        allocations = []
+
+        for allocation in query:
+
+            if not self.is_exposed(allocation):
+                continue
+
+            s = datetime.combine(allocation.display_start.date(), start.time())
+            e = datetime.combine(allocation.display_end.date(), end.time())
+
+            if not allocation.overlaps(s, e):
+                continue
+
+            if days:
+                if allocation.display_start.weekday() not in days:
+                    continue
+
+            if whole_day != 'any':
+                if whole_day == 'yes' and not allocation.whole_day:
+                    continue
+                if whole_day == 'no' and allocation.whole_day:
+                    continue
+
+            if reservable_spots != 0:
+                if reservable_spots > allocation.reservation_quota_limit:
+                    continue
+
+            if available_only or reservable_spots != 0:
+
+                availability = self.availability(
+                    allocation.start, allocation.end
+                )
+
+                if available_only and availability == 0.0:
+                    continue
+
+                required_availability = (
+                    reservable_spots / float(allocation.quota) * 100.0
+                )
+
+                if required_availability > availability:
+                    continue
+
+                quota_limit = allocation.reservation_quota_limit
+
+                if quota_limit and reservable_spots > quota_limit:
+                    continue
+
+            allocations.append(allocation)
+
+        return allocations
 
     def free_allocations_count(self, master_allocation, start, end):
         """ Returns the number of free allocations between master_allocation

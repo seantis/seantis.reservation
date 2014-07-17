@@ -20,19 +20,15 @@
           <div class="searchresults" tal:condition="view/results">
             <div class="resultinfo">Found the following results:</div>
 
-            <div class="searchresult" tal:repeat="result view/results">
-              <div class="result-resource">
-                <a tal:attributes="href result/resource/url" tal:content="result/resource/title" />
-              </div>
+            <div class="searchresult" tal:repeat="allocation view/results">
               <div tal:attributes="
-                  class python: 'result-allocation {}'.format(result['allocation']['class']);
-                  data-id result/allocation/id;
-                  data-resource result/resource/uuid
+                  class python: 'result-allocation {}'.format(allocation['class']);
+                  data-id allocation/id;
               ">
-                <span tal:content="result/allocation/date"></span>
+                <span tal:content="allocation/date"></span>
               </div>
               <div class="result-text">
-                <span tal:content="result/allocation/text"></span>
+                <span tal:content="allocation/text"></span>
               </div>
             </div>
           </div>

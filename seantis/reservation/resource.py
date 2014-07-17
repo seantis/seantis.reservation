@@ -53,6 +53,9 @@ class Resource(Container):
     def timeframes(self):
         return timeframes_by_context(self)
 
+    def resource_title(self):
+        return utils.get_resource_title(self)
+
 
 @grok.subscribe(IResourceBase, IObjectRemovedEvent)
 def on_removed_resource(resource, event):
@@ -455,7 +458,7 @@ class Slots(BaseView, CalendarRequest):
 
             # calculate the availability for title and class
             availability, title, klass = utils.event_availability(
-                resource, self.request, alloc, scheduler=scheduler
+                resource, self.request, scheduler, alloc
             )
 
             if alloc.partly_available:
