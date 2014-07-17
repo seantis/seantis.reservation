@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-07-15 09:44+0000\n"
+"POT-Creation-Date: 2014-07-17 08:44+0000\n"
 "PO-Revision-Date: 2012-09-06 11:33+0100\n"
 "Last-Translator: Fabian Reinhard <fabian.reinhard@seantis.ch>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -172,6 +172,10 @@ msgstr "Verfügbar-Schwellenwert (%)"
 msgid "Available Views"
 msgstr "Verfügbare Ansichten"
 
+#: ./search.py:100
+msgid "Available only"
+msgstr "Nur wenn Verfügbar"
+
 #: ./export.py:62
 msgid "CSV Format"
 msgstr "CSV Format"
@@ -232,6 +236,7 @@ msgid "Day"
 msgstr "Tag"
 
 #: ./interfaces.py:512
+#: ./search.py:76
 msgid "Days"
 msgstr "Tage"
 
@@ -391,9 +396,17 @@ msgstr "Email Text für Abgesagte Reservationen"
 msgid "End"
 msgstr "Ende"
 
+#: ./search.py:55
+msgid "End date"
+msgstr "Bis-Datum"
+
 #: ./interfaces.py:565
 msgid "End date before start date"
 msgstr "Ende vor Start"
+
+#: ./search.py:71
+msgid "End time"
+msgstr "Bis Uhrzeit"
 
 #: ./resource.py:399
 msgid "Entry"
@@ -450,6 +463,10 @@ msgstr "Teilformulare"
 #: ./interfaces.py:39
 msgid "Fr"
 msgstr "Fr"
+
+#: ./search.py:94
+msgid "Free spots"
+msgstr "Freie Plätze"
 
 #: ./interfaces.py:504
 msgid "From"
@@ -663,6 +680,10 @@ msgstr "Eine Person wartet"
 msgid "Optional reason for the revocation. Sent to the reservee. e.g. 'Your reservation has to be cancelled because the lecturer is ill'."
 msgstr "Optionaler Grund für die Absage. Wird an den Reservierenden gesendet. Z.B. 'Ihre Reservation muss abesagt werden, weil der Dozent krank ist'."
 
+#: ./search.py:83
+msgid "Options"
+msgstr "Optionen"
+
 #: ./exports/reservations.py:44
 msgid "Parent"
 msgstr "Übergeordnetes Element"
@@ -810,6 +831,7 @@ msgstr "Ressource"
 msgid "Resource reservation"
 msgstr "Reservation"
 
+#: ./search.py:88
 #: ./templates/macros.pt:32
 msgid "Resources"
 msgstr "Ressourcen"
@@ -844,6 +866,14 @@ msgstr "Seantis Reservation Kontrollzentrum"
 #: ./profiles/default/controlpanel.xml
 msgid "Seantis Reservation Settings"
 msgstr "Seantis Reservation Einstellungen"
+
+#: ./search.py:135
+msgid "Search"
+msgstr "Suchen"
+
+#: ./templates/search_and_reserve.pt:14
+msgid "Search &amp; Reserve"
+msgstr "Suchen &amp; Reservieren"
 
 #: ./interfaces.py:74
 msgid "Select at least one value"
@@ -929,6 +959,14 @@ msgstr "Bestimmtes Datum"
 #: ./interfaces.py:465
 msgid "Start"
 msgstr "Start"
+
+#: ./search.py:50
+msgid "Start date"
+msgstr "Von-Datum"
+
+#: ./search.py:66
+msgid "Start time"
+msgstr "Ab Uhrzeit"
 
 #: ./exports/reservations.py:51
 msgid "Status"
@@ -1034,11 +1072,11 @@ msgstr "Die resultierende Einteilung wäre Ungültig."
 msgid "The selected view must be one of the available views."
 msgstr "Die ausgewählte Ansicht muss eine verfügbare Ansicht sein."
 
-#: ./form.py:575
+#: ./form.py:590
 msgid "There are ${nb} reservations being entered for this resource."
 msgstr "${nb} Reservationen werden gerade eingegeben."
 
-#: ./form.py:571
+#: ./form.py:586
 msgid "There is one reservation being entered for this resource."
 msgstr "Eine Reservation wird gerade eingegeben."
 
@@ -1147,6 +1185,10 @@ msgstr "Wochenansicht"
 #: ./interfaces.py:485
 #: ./resource.py:469
 msgid "Whole Day"
+msgstr "Ganztägig"
+
+#: ./search.py:60
+msgid "Whole day"
 msgstr "Ganztägig"
 
 #: ./export.py:144

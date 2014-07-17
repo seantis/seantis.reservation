@@ -9,14 +9,13 @@
   <head><title></title></head>
 
   <body>
-    <metal:content-title fill-slot="content-title">
-      <h1 class="documentFirstHeading" i18n:translate="">Search and Reserve</h1>
-    </metal:content-title>
-    <metal:content-core fill-slot="content-core">
-      <div class="searchbox always-show-days">
-        <metal:block use-macro="context/@@ploneform-macros/titlelessform" />
-      </div>
-    </metal:content-core>
-
+    <metal:main fill-slot="main">
+        <div class="documentContent">
+          <h1 class="documentFirstHeading" i18n:translate="">Search &amp; Reserve</h1>
+        </div>
+        <div class="searchbox always-show-days">
+          <metal:block use-macro="context/@@ploneform-macros/titlelessform" />
+        </div>
+    </metal:main>
   </body>
 </html>

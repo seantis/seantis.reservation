@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-07-15 09:44+0000\n"
+"POT-Creation-Date: 2014-07-17 08:44+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -175,6 +175,10 @@ msgstr ""
 msgid "Available Views"
 msgstr ""
 
+#: ./search.py:100
+msgid "Available only"
+msgstr ""
+
 #: ./export.py:62
 msgid "CSV Format"
 msgstr ""
@@ -235,6 +239,7 @@ msgid "Day"
 msgstr ""
 
 #: ./interfaces.py:512
+#: ./search.py:76
 msgid "Days"
 msgstr ""
 
@@ -394,8 +399,16 @@ msgstr ""
 msgid "End"
 msgstr ""
 
+#: ./search.py:55
+msgid "End date"
+msgstr ""
+
 #: ./interfaces.py:565
 msgid "End date before start date"
+msgstr ""
+
+#: ./search.py:71
+msgid "End time"
 msgstr ""
 
 #: ./resource.py:399
@@ -452,6 +465,10 @@ msgstr ""
 
 #: ./interfaces.py:39
 msgid "Fr"
+msgstr ""
+
+#: ./search.py:94
+msgid "Free spots"
 msgstr ""
 
 #: ./interfaces.py:504
@@ -666,6 +683,10 @@ msgstr ""
 msgid "Optional reason for the revocation. Sent to the reservee. e.g. 'Your reservation has to be cancelled because the lecturer is ill'."
 msgstr ""
 
+#: ./search.py:83
+msgid "Options"
+msgstr ""
+
 #: ./exports/reservations.py:44
 msgid "Parent"
 msgstr ""
@@ -813,6 +834,7 @@ msgstr ""
 msgid "Resource reservation"
 msgstr ""
 
+#: ./search.py:88
 #: ./templates/macros.pt:32
 msgid "Resources"
 msgstr ""
@@ -846,6 +868,14 @@ msgstr ""
 
 #: ./profiles/default/controlpanel.xml
 msgid "Seantis Reservation Settings"
+msgstr ""
+
+#: ./search.py:135
+msgid "Search"
+msgstr ""
+
+#: ./templates/search_and_reserve.pt:14
+msgid "Search &amp; Reserve"
 msgstr ""
 
 #: ./interfaces.py:74
@@ -931,6 +961,14 @@ msgstr ""
 #: ./exports/reservations.py:48
 #: ./interfaces.py:465
 msgid "Start"
+msgstr ""
+
+#: ./search.py:50
+msgid "Start date"
+msgstr ""
+
+#: ./search.py:66
+msgid "Start time"
 msgstr ""
 
 #: ./exports/reservations.py:51
@@ -1037,11 +1075,11 @@ msgstr ""
 msgid "The selected view must be one of the available views."
 msgstr ""
 
-#: ./form.py:575
+#: ./form.py:590
 msgid "There are ${nb} reservations being entered for this resource."
 msgstr ""
 
-#: ./form.py:571
+#: ./form.py:586
 msgid "There is one reservation being entered for this resource."
 msgstr ""
 
@@ -1150,6 +1188,10 @@ msgstr ""
 #: ./interfaces.py:485
 #: ./resource.py:469
 msgid "Whole Day"
+msgstr ""
+
+#: ./search.py:60
+msgid "Whole day"
 msgstr ""
 
 #: ./export.py:144
