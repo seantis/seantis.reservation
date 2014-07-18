@@ -3,7 +3,7 @@
 
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       metal:use-macro="context/main_template/macros/master"
-      
+
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       i18n:domain="seantis.reservation"
 
@@ -29,11 +29,11 @@
             <div tal:replace="structure provider:plone.abovecontenttitle" />
 
             <h1 tal:content="title" class="documentFirstHeading"></h1>
-            
+
             <div tal:replace="structure provider:plone.belowcontenttitle" />
 
             <div tal:replace="structure provider:plone.abovecontentbody" />
-            
+
             <div class="your-reservations-container">
                 <tal:block content="structure view/your_reservations">
                     Your reservations
@@ -43,11 +43,29 @@
             <tal:block define="selected_view string:search">
               <metal:block use-macro="context/@@seantis-reservation-macros/resource-tabs" />
             </tal:block>
-        
+
             <div class="searchbox always-show-days">
               <metal:block use-macro="context/@@ploneform-macros/titlelessform" />
             </div>
+
+            <tal:comment replace="nothing">
+              No search has been done yet, show information.
+            </tal:comment>
+            <div tal:condition="not:view/searched" class="searchhelp">
+              <ol>
+                <li>Use the search form to see what's available.</li>
+                <li>Choose what you want to reserve</li>
+              </ol>
+            </div>
+
+            <tal:comment replace="nothing">
+              A search has been done, show results.
+            </tal:comment>
             <tal:block condition="view/searched">
+              <div class="searchresults" tal:condition="not:view/results">
+                <div class="noresults resultinfo" tal:condition="not: view/results">No results found.</div>
+              </div>
+
               <div class="searchresults" tal:condition="view/results">
                 <div class="resultinfo">Found the following results:</div>
 
@@ -62,9 +80,6 @@
                     <span tal:content="allocation/text"></span>
                   </div>
                 </div>
-              </div>
-              <div class="noresults" tal:condition="not: view/results">
-                <div class="resultinfo">No results found.</div>
               </div>
             </tal:block>
           </div>
