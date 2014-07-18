@@ -21,6 +21,11 @@
             description context/description;
           " class="reservation-search">
 
+            <tal:comment replace="nothing">
+              If a search was performed the days should not be preselected on load.
+            </tal:comment>
+            <div id="autoselect-days-on-load" tal:condition="view/searched" />
+
             <div tal:replace="structure provider:plone.abovecontenttitle" />
 
             <h1 tal:content="title" class="documentFirstHeading"></h1>
