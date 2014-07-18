@@ -1,5 +1,3 @@
-import json
-from datetime import date
 from dateutil import rrule
 
 from five import grok
@@ -81,7 +79,7 @@ class AllocationAddForm(AllocationForm):
             'group': u'',
             'recurrence_start': recurrence_start,
             'recurrence_end': recurrence_end,
-            'timeframes': self.json_timeframes(),
+            'timeframes': self.context.json_timeframes(),
             'quota': self.context.quota,
             'approve_manually': self.context.approve_manually,
             'raster': self.context.raster,
@@ -89,20 +87,6 @@ class AllocationAddForm(AllocationForm):
             'reservation_quota_limit': self.context.reservation_quota_limit,
             'whole_day': self.whole_day
         }
-
-    def timeframes(self):
-        return self.context.timeframes()
-
-    def json_timeframes(self):
-        results = []
-        for frame in self.timeframes():
-            results.append(
-                dict(title=frame.title, start=frame.start, end=frame.end)
-            )
-
-        dthandler = lambda obj: \
-            obj.isoformat() if isinstance(obj, date) else None
-        return unicode(json.dumps(results, default=dthandler))
 
     def default_recurrence(self):
         start = self.start and self.start.date() or None
@@ -114,7 +98,7 @@ class AllocationAddForm(AllocationForm):
         if self.whole_day:
             start, end
 
-        for frame in sorted(self.timeframes(), key=lambda f: f.start):
+        for frame in sorted(self.context.timeframes(), key=lambda f: f.start):
             if frame.start <= start and start <= frame.end:
                 return (frame.start, frame.end)
 

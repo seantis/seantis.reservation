@@ -4,7 +4,7 @@ log = getLogger('seantis.reservation')
 import json
 import pytz
 
-from datetime import datetime
+from datetime import datetime, date
 
 from Products.ATContentTypes.interface import IATFolder
 
@@ -52,6 +52,17 @@ class Resource(Container):
 
     def timeframes(self):
         return timeframes_by_context(self)
+
+    def json_timeframes(self):
+        results = []
+        for frame in self.timeframes():
+            results.append(
+                dict(title=frame.title, start=frame.start, end=frame.end)
+            )
+
+        dthandler = lambda obj: \
+            obj.isoformat() if isinstance(obj, date) else None
+        return unicode(json.dumps(results, default=dthandler))
 
     def resource_title(self):
         return utils.get_resource_title(self)
