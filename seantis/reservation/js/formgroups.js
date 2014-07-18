@@ -304,7 +304,11 @@ seantis.formgroups.init = function(el) {
 
     seantis.formgroups.add_utility_links();
     seantis.formgroups.add_recurrency_helper();
-    seantis.formgroups.autoselect_days();
+
+    // don't autoselect days on load, if a specific id exists
+    if ($(document).find('#autoselect-days-on-load').length === 0) {
+        seantis.formgroups.autoselect_days();
+    }
 };
 
 (function($) {
