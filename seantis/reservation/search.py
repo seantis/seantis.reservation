@@ -1,11 +1,11 @@
 from datetime import date, datetime, time
 from five import grok
+from plone import api
+from plone.autoform.form import AutoExtensibleForm
 from plone.directives import form
 from plone.supermodel import model
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from zope import schema
-
-from plone.autoform.form import AutoExtensibleForm
 
 from seantis.reservation import _
 from seantis.reservation import utils
@@ -147,7 +147,31 @@ class SearchForm(BaseForm, AutoExtensibleForm, YourReservationsViewlet):
         if not self.options:
             return
 
+        days = {
+            0: _(u'Monday'),
+            1: _(u'Tuesday'),
+            2: _(u'Wednesday'),
+            3: _(u'Thursday'),
+            4: _(u'Friday'),
+            5: _(u'Saturday'),
+            6: _(u'Sunday')
+        }
+
         scheduler = self.context.scheduler()
+        whole_day_text = self.translate(_(u'Whole day'))
+
+        def get_time_text(allocation):
+            if allocation.whole_day:
+                return whole_day_text
+            else:
+                return ' - '.join((
+                    api.portal.get_localized_time(
+                        allocation.display_start, time_only=True
+                    ),
+                    api.portal.get_localized_time(
+                        allocation.display_end, time_only=True
+                    ),
+                ))
 
         for allocation in scheduler.search_allocations(**self.options):
 
@@ -155,14 +179,17 @@ class SearchForm(BaseForm, AutoExtensibleForm, YourReservationsViewlet):
                 self.context, self.request, scheduler, allocation
             )
 
-            date_text = utils.display_date(allocation.start, allocation.end)
-
-            if allocation.whole_day:
-                date_text += u' {}'.format(self.translate(_(u'Whole day')))
+            day = ', '.join((
+                days[allocation.display_start.weekday()],
+                api.portal.get_localized_time(
+                    allocation.display_start, long_format=False
+                )
+            ))
 
             yield {
                 'id': allocation.id,
-                'date': date_text,
+                'day': day,
+                'time': get_time_text(allocation),
                 'class': utils.event_class(availability),
                 'text': ', '.join(text.split('\n'))
             }
