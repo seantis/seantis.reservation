@@ -155,9 +155,14 @@ class SearchForm(BaseForm, AutoExtensibleForm, YourReservationsViewlet):
                 self.context, self.request, scheduler, allocation
             )
 
+            date_text = utils.display_date(allocation.start, allocation.end)
+
+            if allocation.whole_day:
+                date_text += u' {}'.format(self.translate(_(u'Whole day')))
+
             yield {
                 'id': allocation.id,
-                'date': utils.display_date(allocation.start, allocation.end),
+                'date': date_text,
                 'class': utils.event_class(availability),
                 'text': ', '.join(text.split('\n'))
             }
