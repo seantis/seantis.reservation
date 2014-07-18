@@ -1093,7 +1093,13 @@ class Scheduler(object):
             else:
                 return None
 
-    def search_allocations(self, start, end, options={}):
+    def search_allocations(
+        self, start, end,
+        days=None,
+        minspots=0,
+        available_only=False,
+        whole_day='any'
+    ):
         """ Search allocations using a number of options. The date is split
         into date/time. All allocations between start and end date within
         the given time (on each day) are included.
@@ -1108,44 +1114,32 @@ class Scheduler(object):
         :end:
             Include allocations ending on or before this date.
 
-        :options:
-            A dictionary with a number of options relating to the search:
+        :days:
+            List of days which should be considered, a subset of:
+            (['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'])
 
-            :days:
-                List of days which should be considered, a subset of:
-                (['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'])
+            If left out, all days are included.
 
-                If left out, all days are included.
+        :minspots:
+            Minimum number of spots reservable.
 
-            :reservable_spots:
-                Minimum number of spots reservable. Only considered if the
-                spots are available and reservable in a single reservation.
+        :available_only:
+            If True, unavailable allocations are left out
+            (0% availability). Default is False.
 
-                If left out, allocations with no spots available are returned
-                also.
+        :whole_day:
+            May have one of the following values: 'yes', 'no', 'any'
 
-            :available_only:
-                If True, unavailable allocations are left out
-                (0% availability). Default is False.
+            If yes, only whole_day allocations are returned.
+            If no, whole_day allocations are filtered out.
+            If any (default), all allocations are included.
 
-            :whole_day:
-                May have one of the following values: 'yes', 'no', 'any'
-
-                If yes, only whole_day allocations are returned.
-                If no, whole_day allocations are filtered out.
-                If any (default), all allocations are included.
-
-                Any is the same as leaving the option out.
+            Any is the same as leaving the option out.
 
         """
 
         assert start
         assert end
-
-        days = options.get('days', 'all')
-        reservable_spots = options.get('reservable_spots', 1)
-        available_only = options.get('available_only', False)
-        whole_day = options.get('whole_day', 'any')
 
         if days:
             days_map = {
@@ -1188,11 +1182,7 @@ class Scheduler(object):
                 if whole_day == 'no' and allocation.whole_day:
                     continue
 
-            if reservable_spots != 0:
-                if reservable_spots > allocation.reservation_quota_limit:
-                    continue
-
-            if available_only or reservable_spots != 0:
+            if available_only or minspots:
 
                 availability = self.availability(
                     allocation.start, allocation.end
@@ -1201,16 +1191,7 @@ class Scheduler(object):
                 if available_only and availability == 0.0:
                     continue
 
-                required_availability = (
-                    reservable_spots / float(allocation.quota) * 100.0
-                )
-
-                if required_availability > availability:
-                    continue
-
-                quota_limit = allocation.reservation_quota_limit
-
-                if quota_limit and reservable_spots > quota_limit:
+                if (minspots / float(allocation.quota) * 100.0) > availability:
                     continue
 
             allocations.append(allocation)

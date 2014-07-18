@@ -9,6 +9,7 @@ from plone.autoform.form import AutoExtensibleForm
 
 from seantis.reservation import _
 from seantis.reservation import utils
+from seantis.reservation.utils import cached_property
 from seantis.reservation.form import BaseForm
 from seantis.reservation.resource import YourReservationsViewlet
 from seantis.reservation.interfaces import IResourceBase, days as weekdays
@@ -49,8 +50,8 @@ class ISearchAndReserveForm(model.Schema):
         required=False
     )
 
-    free_spots = schema.Int(
-        title=_(u"Free spots"),
+    minspots = schema.Int(
+        title=_(u"Spots"),
         required=False
     )
 
@@ -95,15 +96,10 @@ class SearchForm(BaseForm, AutoExtensibleForm, YourReservationsViewlet):
 
     @property
     def available_actions(self):
-        return [
-            dict(name='search', title=_(u'Search'), css_class='context'),
-        ]
+        yield dict(name='search', title=_(u'Search'), css_class='context')
 
-    def handle_search(self):
-        self.searched = True
-        self.results = self.search()
-
-    def search(self):
+    @cached_property
+    def options(self):
         params = self.parameters
 
         if not params:
@@ -111,8 +107,8 @@ class SearchForm(BaseForm, AutoExtensibleForm, YourReservationsViewlet):
 
         options = {}
 
-        options['days'] = [d.weekday for d in params['days']]
-        options['reservable_spots'] = params['free_spots'] or 0
+        options['days'] = tuple(d.weekday for d in params['days'])
+        options['minspots'] = params['minspots'] or 0
         options['available_only'] = params['available_only']
         options['whole_day'] = params['whole_day'] and 'yes' or 'any'
 
@@ -128,30 +124,30 @@ class SearchForm(BaseForm, AutoExtensibleForm, YourReservationsViewlet):
             start = datetime.combine(params['recurrence_start'], start_time)
             end = datetime.combine(params['recurrence_end'], end_time)
 
+        options['start'] = start
+        options['end'] = end
+
+        return options
+
+    def handle_search(self):
+        self.searched = True
+        self.results = tuple(self.search())
+
+    def search(self):
+        if not self.options:
+            return
+
         scheduler = self.context.scheduler()
 
-        found = scheduler.search_allocations(
-            start, end, options=options
-        )
-
-        result = []
-
-        for allocation in found:
+        for allocation in scheduler.search_allocations(**self.options):
 
             availability, text, allocation_class = utils.event_availability(
-                self.context,
-                self.request,
-                scheduler,
-                allocation
+                self.context, self.request, scheduler, allocation
             )
 
-            result.append({
+            yield {
                 'id': allocation.id,
-                'date': utils.display_date(
-                    allocation.start, allocation.end
-                ),
+                'date': utils.display_date(allocation.start, allocation.end),
                 'class': utils.event_class(availability),
                 'text': ', '.join(text.split('\n'))
-            })
-
-        return result
+            }
