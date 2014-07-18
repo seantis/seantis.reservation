@@ -75,23 +75,19 @@ class AllocationAddForm(AllocationForm):
         ))
 
     def defaults(self):
-
         recurrence_start, recurrence_end = self.default_recurrence()
-        recurring = recurrence_start != recurrence_end
 
-        ctx = self.context
         return {
             'group': u'',
             'recurrence_start': recurrence_start,
             'recurrence_end': recurrence_end,
             'timeframes': self.json_timeframes(),
-            'quota': ctx.quota,
-            'approve_manually': ctx.approve_manually,
-            'raster': ctx.raster,
-            'partly_available': ctx.partly_available,
-            'reservation_quota_limit': ctx.reservation_quota_limit,
-            'whole_day': self.whole_day,
-            'recurring': recurring
+            'quota': self.context.quota,
+            'approve_manually': self.context.approve_manually,
+            'raster': self.context.raster,
+            'partly_available': self.context.partly_available,
+            'reservation_quota_limit': self.context.reservation_quota_limit,
+            'whole_day': self.whole_day
         }
 
     def timeframes(self):
