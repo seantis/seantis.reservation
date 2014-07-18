@@ -49,12 +49,6 @@ class ISearchAndReserveForm(model.Schema):
         required=False
     )
 
-    model.fieldset(
-        'options',
-        label=_(u"Options"),
-        fields=['free_spots', 'available_only']
-    )
-
     free_spots = schema.Int(
         title=_(u"Free spots"),
         required=False
