@@ -5,6 +5,10 @@ Changelog
 1.0.25 (unreleased)
 -------------------
 
+- Hide the timeframes selection in the allocation and search form, inside
+  an icon close to the dates.
+  [href]
+
 - Make sure following the documentation under Ubuntu 14.04 works and clarify
   some things. Fixes #159.
   [href]
