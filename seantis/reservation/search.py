@@ -18,6 +18,13 @@ from seantis.reservation.interfaces import IResourceBase, days as weekdays
 class ISearchAndReserveForm(model.Schema):
     """ Search form for search & reserve view. """
 
+    form.mode(timeframes='hidden')
+    timeframes = schema.Text(
+        title=_(u'Timeframes'),
+        default=u'',
+        required=False
+    )
+
     recurrence_start = schema.Date(
         title=_(u"Start date"),
         required=True
@@ -44,6 +51,7 @@ class ISearchAndReserveForm(model.Schema):
         required=False
     )
 
+    form.widget(days=CheckBoxFieldWidget)
     days = schema.List(
         title=_(u"Days"),
         value_type=schema.Choice(vocabulary=weekdays),
@@ -60,8 +68,6 @@ class ISearchAndReserveForm(model.Schema):
         required=False,
         default=False
     )
-
-    form.widget(days=CheckBoxFieldWidget)
 
 
 @form.default_value(field=ISearchAndReserveForm['recurrence_start'])
@@ -93,6 +99,10 @@ class SearchForm(BaseForm, AutoExtensibleForm, YourReservationsViewlet):
 
     # show the seantis.dir.facility viewlet if it's present
     show_facility_viewlet = True
+
+    def update(self):
+        super(SearchForm, self).update()
+        self.widgets['timeframes'].value = self.context.json_timeframes()
 
     @property
     def available_actions(self):
