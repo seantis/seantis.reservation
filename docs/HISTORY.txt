@@ -5,6 +5,10 @@ Changelog
 1.0.25 (unreleased)
 -------------------
 
+- Hide the timeframes selection in the allocation and search form inside
+  an icon close to the dates.
+  [href]
+
 - Remove resource description from thankyou-page.
   [href]
 
