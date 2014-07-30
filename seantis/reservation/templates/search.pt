@@ -71,23 +71,23 @@
 
                 <table class="searchresult">
                   <tal:block repeat="allocation view/results">
-                    <tr class="day-group" tal:condition="repeat/allocation/first/day">
-                      <td colspan="2">
-                        <div class="result-day" tal:content="allocation/day" />
+                    <tr tal:attributes="class python: repeat['allocation'].first('is_odd') and 'new-day' or ''">
+                      <td>
+                        <div class="result-day" tal:content="allocation/day" tal:condition="repeat/allocation/first/day" />
                       </td>
-                    </tr>
-                    <tr>
+                      <td>
+                        <input type="checkbox" checked="checked" />
+                      </td>
                       <td>
                         <div 
-                          tal:content="allocation/time"
                           tal:attributes="
                             class python: 'result-time {}'.format(allocation['class']);
                             data-id allocation/id;
                           "
-                        />
-                      </td>
-                      <td>
-                        <div class="result-text" tal:content="allocation/text" />
+                        >
+                          <span tal:content="allocation/time" />
+                          <span tal:content="allocation/text" />
+                        </div>
                       </td>
                     </tr>
                   </tal:block>

@@ -87,6 +87,8 @@ class SearchForm(BaseForm, AutoExtensibleForm, YourReservationsViewlet):
     grok.require(permission)
     grok.name('search')
 
+    method = 'get'
+
     ignoreContext = True
 
     template = grok.PageTemplateFile('templates/search.pt')
@@ -148,13 +150,13 @@ class SearchForm(BaseForm, AutoExtensibleForm, YourReservationsViewlet):
             return
 
         days = {
-            0: _(u'Monday'),
-            1: _(u'Tuesday'),
-            2: _(u'Wednesday'),
-            3: _(u'Thursday'),
-            4: _(u'Friday'),
-            5: _(u'Saturday'),
-            6: _(u'Sunday')
+            0: _(u'MO'),
+            1: _(u'DI'),
+            2: _(u'WE'),
+            3: _(u'TH'),
+            4: _(u'FR'),
+            5: _(u'SA'),
+            6: _(u'SU')
         }
 
         scheduler = self.context.scheduler()
@@ -173,6 +175,9 @@ class SearchForm(BaseForm, AutoExtensibleForm, YourReservationsViewlet):
                     ),
                 ))
 
+        prev_date = None
+        is_odd = False
+
         for allocation in scheduler.search_allocations(**self.options):
 
             availability, text, allocation_class = utils.event_availability(
@@ -186,10 +191,16 @@ class SearchForm(BaseForm, AutoExtensibleForm, YourReservationsViewlet):
                 )
             ))
 
+            if prev_date != date:
+                is_odd = not is_odd
+
+            prev_date = date
+
             yield {
                 'id': allocation.id,
                 'day': day,
                 'time': get_time_text(allocation),
                 'class': utils.event_class(availability),
-                'text': ', '.join(text.split('\n'))
+                'is_odd': is_odd,
+                'text': ', '.join(text.split('\n')),
             }
