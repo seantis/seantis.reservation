@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-07-18 11:55+0000\n"
+"POT-Creation-Date: 2014-07-30 14:58+0000\n"
 "PO-Revision-Date: 2012-09-06 11:33+0100\n"
 "Last-Translator: Fabian Reinhard <fabian.reinhard@seantis.ch>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -82,7 +82,7 @@ msgstr "Belegungsperiode hinzufügen"
 msgid "Added reservation to your list. You have 15 minutes to confirm your reservations."
 msgstr "Die Reservation wurde zu Ihrer Liste hinzugefügt. Sie haben 15 Minuten Zeit um die Reservation zu bestätigen."
 
-#: ./allocate.py:56
+#: ./allocate.py:54
 msgid "Advanced Settings"
 msgstr "Erweiterte Einstellungen"
 
@@ -90,23 +90,23 @@ msgstr "Erweiterte Einstellungen"
 msgid "All"
 msgstr "Alle"
 
-#: ./allocate.py:152
+#: ./allocate.py:132
 msgid "Allocate"
 msgstr "Einteilen"
 
-#: ./allocate.py:47
+#: ./allocate.py:45
 msgid "Allocation"
 msgstr "Einteilung"
 
-#: ./allocate.py:169
+#: ./allocate.py:149
 msgid "Allocation added"
 msgstr "Einteilung hinzugefügt"
 
-#: ./allocate.py:311
+#: ./allocate.py:291
 msgid "Allocation removed"
 msgstr "Einteilung entfernt"
 
-#: ./allocate.py:274
+#: ./allocate.py:254
 msgid "Allocation saved"
 msgstr "Einteilung gespeichert"
 
@@ -172,7 +172,7 @@ msgstr "Verfügbar-Schwellenwert (%)"
 msgid "Available Views"
 msgstr "Verfügbare Ansichten"
 
-#: ./search.py:59
+#: ./search.py:67
 msgid "Available only"
 msgstr "Nur wenn Verfügbar"
 
@@ -188,11 +188,15 @@ msgstr "Kalendar"
 msgid "Calendar date shown when opening the calendar."
 msgstr "Das Datum das beim Öffnen des Kalenders angezeigt wird."
 
-#: ./allocate.py:173
+#: ./allocate.py:153
 #: ./export.py:209
 #: ./reserve.py:526
 msgid "Cancel"
 msgstr "Abbrechen"
+
+#: ./templates/search.pt:57
+msgid "Choose what you want to reserve."
+msgstr "Treffen Sie Ihre Auswahl."
 
 #: ./templates/resource.pt:122
 msgid "Click on a calendar block to reserve it."
@@ -227,11 +231,11 @@ msgid "Daily"
 msgstr "Täglich"
 
 #: ./interfaces.py:56
-#: ./resource.py:434
+#: ./resource.py:445
 msgid "Daily View"
 msgstr "Tagesansicht"
 
-#: ./allocate.py:50
+#: ./allocate.py:48
 msgid "Date"
 msgstr "Datum"
 
@@ -240,7 +244,7 @@ msgid "Day"
 msgstr "Tag"
 
 #: ./interfaces.py:512
-#: ./search.py:48
+#: ./search.py:56
 msgid "Days"
 msgstr "Tage"
 
@@ -256,7 +260,7 @@ msgstr "Standard Einteilungswerte"
 msgid "Defines the minimum length of any given reservation as well as the alignment of the start / end of the allocation. E.g. a raster of 30 minutes means that the allocation can only start at xx:00 and xx:30 respectively"
 msgstr "Definiert die Mindestlänge der Reservationen für diese Einteilung, sowie die automatische Anpassung der Start- bzw. Endzeit. Ein Raster von 30 Minuten bedeuted beispielsweise, dass die Einteilung nur um xx:00 Uhr und xx:30 Uhr beginnen kann."
 
-#: ./allocate.py:300
+#: ./allocate.py:280
 #: ./mail.py:567
 #: ./timeframe.py:201
 msgid "Delete"
@@ -303,9 +307,9 @@ msgstr "Möchten Sie die folgende Reservation wirklich absagen?"
 msgid "Do you want to reserve the following allocations?"
 msgstr "Möchten Sie die folgenden Einteilungen reservieren?"
 
-#: ./allocate.py:246
+#: ./allocate.py:226
 #: ./mail.py:566
-#: ./resource.py:408
+#: ./resource.py:419
 msgid "Edit"
 msgstr "Bearbeiten"
 
@@ -313,7 +317,7 @@ msgstr "Bearbeiten"
 msgid "Edit Formdata"
 msgstr "Formdaten Bearbeiten"
 
-#: ./allocate.py:196
+#: ./allocate.py:176
 msgid "Edit allocation"
 msgstr "Einteilung bearbeiten"
 
@@ -400,7 +404,7 @@ msgstr "Email Text für Abgesagte Reservationen"
 msgid "End"
 msgstr "Ende"
 
-#: ./search.py:27
+#: ./search.py:34
 msgid "End date"
 msgstr "Bis-Datum"
 
@@ -408,11 +412,11 @@ msgstr "Bis-Datum"
 msgid "End date before start date"
 msgstr "Ende vor Start"
 
-#: ./search.py:43
+#: ./search.py:50
 msgid "End time"
 msgstr "Bis Uhrzeit"
 
-#: ./resource.py:405
+#: ./resource.py:416
 msgid "Entry"
 msgstr "Eintrag"
 
@@ -440,6 +444,10 @@ msgstr "Export"
 msgid "Export Reservations"
 msgstr "Reservationen exportieren"
 
+#: ./search.py:157
+msgid "FR"
+msgstr "FR"
+
 #: ./export.py:100
 msgid "February"
 msgstr "Februar"
@@ -463,6 +471,10 @@ msgstr "Formdaten aktualisiert"
 #: ./interfaces.py:394
 msgid "Formsets"
 msgstr "Teilformulare"
+
+#: ./templates/search.pt:70
+msgid "Found the following results:"
+msgstr "Suchresultat:"
 
 #: ./interfaces.py:39
 msgid "Fr"
@@ -553,11 +565,15 @@ msgstr "Neueste Reservationen"
 msgid "Like the normal reservations export, but with group-reservations spanning multiple days merged into single records."
 msgstr "Mehrtägige Gruppen Reservationen werden bei diesem Export auf eine Zeile zusammengezogen."
 
-#: ./resource.py:422
+#: ./resource.py:433
 msgid "List"
 msgstr "Auflisten"
 
-#: ./resource.py:399
+#: ./search.py:153
+msgid "MO"
+msgstr "MO"
+
+#: ./resource.py:410
 msgid "Manage"
 msgstr "Verwalten"
 
@@ -643,6 +659,10 @@ msgstr "Der gewünschte Zeitbereich ist bereits besetzt."
 #: ./templates/your_reservations.pt:17
 msgid "No reservations to confirm."
 msgstr "Keine Reservationen zur Bestätigung gefunden."
+
+#: ./templates/search.pt:66
+msgid "No results found."
+msgstr "Die Suche war erfolglos."
 
 #: ./reserve.py:731
 msgid "No such reservation"
@@ -743,16 +763,16 @@ msgstr "Wiederholung"
 msgid "Recurrence View"
 msgstr "Auflistung der Wiederholung"
 
-#: ./resource.py:419
+#: ./resource.py:430
 msgid "Recurrences"
 msgstr "Wiederholungen"
 
-#: ./resource.py:412
+#: ./resource.py:423
 #: ./templates/your_reservations_viewlet.pt:16
 msgid "Remove"
 msgstr "Entfernen"
 
-#: ./allocate.py:295
+#: ./allocate.py:275
 msgid "Remove allocations"
 msgstr "Einteilungen entfernen"
 
@@ -792,7 +812,7 @@ msgstr "Limit der Anzahl Reservationen muss Null oder grösser sein"
 msgid "Reservation revoked"
 msgstr "Reservation abgesagt"
 
-#: ./resource.py:380
+#: ./resource.py:391
 #: ./templates/reservations.pt:32
 msgid "Reservations"
 msgstr "Reservationen"
@@ -810,13 +830,17 @@ msgid "Reservations can't be made for more than 24 hours at a time"
 msgstr "Reservationen können nicht über mehr als 24 Stunden gemacht werden"
 
 #: ./reserve.py:494
-#: ./resource.py:383
+#: ./resource.py:394
 msgid "Reserve"
 msgstr "Reservieren"
 
 #: ./reserve.py:650
 msgid "Reserve More"
 msgstr "Weitere Reservationen"
+
+#: ./templates/search.pt:96
+msgid "Reserve selected"
+msgstr "Auswahl reservieren"
 
 #: ./exports/reservations.py:45
 #: ./profiles/default/types/seantis.reservation.resource.xml
@@ -844,6 +868,14 @@ msgstr "Reservation absagen"
 msgid "Run custom validation code for reservations. This is for advanced users only and may disable the reservations process. For documentation study the source code at Github."
 msgstr "Spezifischer Validierungscode für Reservationen. Dies ist für erfahrene Benutzer gedacht und kann zu Problemen bei der Reservierung führen. Die genaue Dokumentation findet sich im Source Code auf Github."
 
+#: ./search.py:158
+msgid "SA"
+msgstr "SA"
+
+#: ./search.py:159
+msgid "SU"
+msgstr "SO"
+
 #: ./interfaces.py:40
 msgid "Sa"
 msgstr "Sa"
@@ -862,7 +894,7 @@ msgstr "Seantis Reservation Kontrollzentrum"
 msgid "Seantis Reservation Settings"
 msgstr "Seantis Reservation Einstellungen"
 
-#: ./search.py:99
+#: ./search.py:111
 msgid "Search"
 msgstr "Suchen"
 
@@ -930,7 +962,7 @@ msgstr "Separat reservierbar"
 msgid "September"
 msgstr "September"
 
-#: ./allocate.py:207
+#: ./allocate.py:187
 msgid "Settings"
 msgstr "Einstellungen"
 
@@ -946,7 +978,7 @@ msgstr "Wird dem Benutzer angezeigt wenn die Reservation abgeschlossen wurde. Di
 msgid "Specific Date"
 msgstr "Bestimmtes Datum"
 
-#: ./search.py:54
+#: ./search.py:62
 msgid "Spots"
 msgstr "Plätze"
 
@@ -955,11 +987,11 @@ msgstr "Plätze"
 msgid "Start"
 msgstr "Start"
 
-#: ./search.py:22
+#: ./search.py:29
 msgid "Start date"
 msgstr "Von-Datum"
 
-#: ./search.py:38
+#: ./search.py:45
 msgid "Start time"
 msgstr "Ab Uhrzeit"
 
@@ -982,6 +1014,14 @@ msgstr "Unterformulare die ausgefüllt werden müssen um eine Reservation zu mac
 #: ./reserve.py:633
 msgid "Submit Reservations"
 msgstr "Bestätigen und abschliessen"
+
+#: ./search.py:156
+msgid "TH"
+msgstr "DO"
+
+#: ./search.py:154
+msgid "TU"
+msgstr "DI"
 
 #: ./interfaces.py:38
 msgid "Th"
@@ -1104,6 +1144,7 @@ msgid "Timeframe overlaps with '${overlap}' in the current folder"
 msgstr "Die Belegungsperiod überschneidet sich mit '${overlap}' in diesem Ordner"
 
 #: ./interfaces.py:459
+#: ./search.py:23
 #: ./templates/timeframes.pt:4
 msgid "Timeframes"
 msgstr "Belegungsperioden"
@@ -1144,6 +1185,10 @@ msgstr "Es wurden unveränderbare Formdaten gefunden!"
 msgid "Until"
 msgstr "Bis"
 
+#: ./templates/search.pt:56
+msgid "Use the search form to see what's available."
+msgstr "Nutzen Sie das Suchformular um zu sehen was verfügbar ist."
+
 #: ./templates/utils.pt:4
 msgid "Utils"
 msgstr "Hilfsmittel"
@@ -1151,6 +1196,10 @@ msgstr "Hilfsmittel"
 #: ./interfaces.py:340
 msgid "Views available to the user on the calendar."
 msgstr "Ansichten die den Benutzern auf dem Kalender zur verfügung stehen."
+
+#: ./search.py:155
+msgid "WE"
+msgstr "MI"
 
 #: ./templates/reservations.pt:48
 msgid "Waitinglist"
@@ -1178,11 +1227,11 @@ msgstr "Wochenansicht"
 
 #: ./exports/reservations.py:50
 #: ./interfaces.py:485
-#: ./resource.py:475
+#: ./resource.py:486
 msgid "Whole Day"
 msgstr "Ganztägig"
 
-#: ./search.py:32
+#: ./search.py:39
 msgid "Whole day"
 msgstr "Ganztägig"
 

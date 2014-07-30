@@ -53,8 +53,8 @@
             </tal:comment>
             <div tal:condition="not:view/searched" class="searchhelp">
               <ol>
-                <li>Use the search form to see what's available.</li>
-                <li>Choose what you want to reserve</li>
+                <li i18n:translate="">Use the search form to see what's available.</li>
+                <li i18n:translate="">Choose what you want to reserve.</li>
               </ol>
             </div>
 
@@ -63,35 +63,40 @@
             </tal:comment>
             <tal:block condition="view/searched">
               <div class="searchresults" tal:condition="not:view/results">
-                <div class="noresults resultinfo" tal:condition="not: view/results">No results found.</div>
+                <div class="noresults resultinfo" tal:condition="not: view/results" i18n:translate="">No results found.</div>
               </div>
 
               <div class="searchresults" tal:condition="view/results">
-                <div class="resultinfo">Found the following results:</div>
+                <div class="resultinfo" i18n:translate="">Found the following results:</div>
 
-                <table class="searchresult">
-                  <tal:block repeat="allocation view/results">
-                    <tr tal:attributes="class python: repeat['allocation'].first('is_odd') and 'new-day' or ''">
-                      <td>
-                        <div class="result-day" tal:content="allocation/day" tal:condition="repeat/allocation/first/day" />
-                      </td>
-                      <td>
-                        <input type="checkbox" checked="checked" />
-                      </td>
-                      <td>
-                        <div 
-                          tal:attributes="
-                            class python: 'result-time {}'.format(allocation['class']);
-                            data-id allocation/id;
-                          "
-                        >
-                          <span tal:content="allocation/time" />
-                          <span tal:content="allocation/text" />
-                        </div>
-                      </td>
-                    </tr>
-                  </tal:block>
-              </table>
+                <form action="./reserve-selection" method="post">
+                  <input type="hidden" name="start_time" tal:attributes="value python: view.options['start'].time()" />
+                  <input type="hidden" name="end_time" tal:attributes="value python: view.options['end'].time()" />
+                  <table class="searchresult">
+                    <tal:block repeat="allocation view/results">
+                      <tr tal:attributes="class python: repeat['allocation'].first('is_odd') and 'new-day' or ''">
+                        <td>
+                          <div class="result-day" tal:content="allocation/day" tal:condition="repeat/allocation/first/day" />
+                        </td>
+                        <td>
+                          <input type="checkbox" checked="checked" name="allocation_id" tal:attributes="value allocation/id" />
+                        </td>
+                        <td>
+                          <div 
+                            tal:attributes="
+                              class python: 'result-time {}'.format(allocation['class']);
+                              data-id allocation/id;
+                            "
+                          >
+                            <span tal:content="allocation/time" />
+                            <span tal:content="allocation/text" />
+                          </div>
+                        </td>
+                      </tr>
+                    </tal:block>
+                  </table>
+                  <input type="submit" value="Reserve selected" i18n:attributes="value" />
+                </form>
               </div>
             </tal:block>
           </div>

@@ -151,7 +151,7 @@ class SearchForm(BaseForm, AutoExtensibleForm, YourReservationsViewlet):
 
         days = {
             0: _(u'MO'),
-            1: _(u'DI'),
+            1: _(u'TU'),
             2: _(u'WE'),
             3: _(u'TH'),
             4: _(u'FR'),
