@@ -108,19 +108,23 @@ Install Postgresql
 
 Run the installer ::
 
-    sudo apt-get install postgresql-9.1
-    sudo apt-get install postgresql-9.1-dev
+    sudo apt-get install postgresql-9.3
+    sudo apt-get install postgresql-9.3-dev
+
+If 9.3 is not found try 9.2 or 9.1.
 
 If the dev package cannot be found try ::
 
     sudo apt-get install postgresql-server-dev-all
 
 Create a database user (replace ``your_password`` with your own). This
-password is needed later! ::
+password is needed later!::
 
     sudo -u postgres psql -c "CREATE USER reservation WITH PASSWORD 'your_password'"
 
-Create the reservations database ::
+Create a database for your plone site. Each plone site should have its own
+database with the same name as the plone site id. Here we'll later use 'reservations' as the
+plone site id::
 
     sudo -u postgres psql -c "CREATE DATABASE reservations ENCODING 'UTF8' TEMPLATE template0"
 
@@ -143,6 +147,15 @@ Or if you don't have wget (like on OSX): ::
 Edit your database connection settings in the database.cfg file. ::
 
     nano database.cfg
+
+Usually you would want to use the following setting in the database.cfg. Be sure
+to change your user and password to the values entered above in the "Install Postgresql" step.
+
+  dsn postgresql+psycopg2://user:password@localhost:5432/{*}
+
+This will use the database with the same name as the plone site id. So if your
+plone site's id is demo (i.e. being served unter localhost:8000/demo), then
+the database name will be assumed to be 'demo' as well.
 
 Download the boostrap script ::
 

@@ -5,6 +5,10 @@ Changelog
 1.0.25 (unreleased)
 -------------------
 
+- Make sure following the documentation under Ubuntu 14.04 works and clarify
+  some things. Fixes #159.
+  [href]
+
 - Remove resource description from thankyou-page.
   [href]
 
