@@ -725,12 +725,18 @@ class IReservation(Interface):
     )
 
 
-class IReservationIdForm(Interface):
-    """ Describes a form with a hidden reservation-id field. Use with
-    seantis.reservation.reserve.ReservationIdForm. """
+class IReservationTargetForm(Interface):
+    """ Describes a form with a hidden reservation-token and an optional
+    reservation-id field.
+    """
 
-    reservation = schema.Text(
-        title=_(u'Reservation'),
+    token = schema.Text(
+        title=_(u'Token'),
+        required=False
+    )
+
+    id = schema.Text(
+        title=_(u'Id'),
         required=False
     )
 
@@ -786,7 +792,7 @@ class ISelectionReservation(Interface):
     )
 
 
-class IRevokeReservation(IReservationIdForm):
+class IRevokeReservation(IReservationTargetForm):
     """ For the reservation revocation form. """
 
     send_email = schema.Bool(

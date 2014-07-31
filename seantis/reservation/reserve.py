@@ -29,7 +29,7 @@ from seantis.reservation.interfaces import (
     IGroupReservation,
     ISelectionReservation,
     IRevokeReservation,
-    IReservationIdForm,
+    IReservationTargetForm,
     ISeantisReservationSpecific
 )
 
@@ -57,32 +57,34 @@ class ReservationUrls(object):
     def revoke_all_url(self, token, context=None):
         context = context or self.context
         base = context.absolute_url()
-        return base + u'/revoke-reservation?reservation=%s' % token
+        return base + u'/revoke-reservation?token={}'.format(token)
 
     def approve_all_url(self, token, context=None):
         context = context or self.context
         base = context.absolute_url()
-        return base + u'/approve-reservation?reservation=%s' % token
+        return base + u'/approve-reservation?token={}'.format(token)
 
     def deny_all_url(self, token, context=None):
         context = context or self.context
         base = context.absolute_url()
-        return base + u'/deny-reservation?reservation=%s' % token
+        return base + u'/deny-reservation?token={}'.format(token)
 
-    def update_all_url(self, token, context=None):
+    def update_all_url(self, token, id, context=None):
         context = context or self.context
         base = context.absolute_url()
-        return base + u'/update-reservation-data?reservation=%s' % token
+        return base + u'/update-reservation-data?token={}&id={}'.format(
+            token, id
+        )
 
     def print_all_url(self, token, context):
         context = context or self.context
         base = context.absolute_url()
-        return base + u'/reservations?reservation={}&print=1'.format(token)
+        return base + u'/reservations?token={}&print=1'.format(token)
 
     def show_all_url(self, token, context):
         context = context or self.contex
         base = context.absolute_url()
-        return base + u'/reservations?reservation={}'.format(token)
+        return base + u'/reservations?token={}'.format(token)
 
 
 class ReservationSchemata(object):
@@ -348,7 +350,7 @@ class ReservationBaseForm(ResourceBaseForm):
         token = throttled(run, 'reserve')()
 
         if not approve_manually:
-            self.scheduler.approve_reservation(token)
+            self.scheduler.approve_reservations(token)
 
         self.flash(
             _(
@@ -785,31 +787,46 @@ class YourReservationsViewlet(BaseViewlet, YourReservationsData):
         return self.context.absolute_url() + '/your-reservations'
 
 
-class ReservationIdForm(ResourceBaseForm):
+class ReservationTargetForm(ResourceBaseForm):
     """ Describes a form with a hidden reservation field and the ability to
     set the reservation using a query parameter:
 
-    example-form?reservation=298c6de470f94c64928c14246f3ee9e5
+    example-form?token=298c6de470f94c64928c14246f3ee9e5
+
+    Optionally, an id can be given to select a specific reservation out
+    of many possible reservations belonging to one token:
+
+    example-form?token=298c6de470f94c64928c14246f3ee9e5&id=123
 
     """
 
     grok.baseclass()
-    fields = field.Fields(IReservationIdForm)
-    hidden_fields = ('reservation', )
+    fields = field.Fields(IReservationTargetForm)
+    hidden_fields = ('token', 'id')
     extracted_data = {}
 
     @property
-    def reservation(self):
+    def token(self):
         return self.request.get(
-            'reservation', self.extracted_data.get('reservation')
+            'token', self.extracted_data.get('token')
         )
 
+    @property
+    def id(self):
+        id = self.request.get(
+            'id', self.extracted_data.get('id')
+        )
+        return int(id) if id else None
+
     def defaults(self):
-        return dict(reservation=self.reservation)
+        return dict(token=self.token, id=self.id)
 
 
-class ReservationDecisionForm(ReservationIdForm, ReservationListView,
-                              ReservationUrls):
+class ReservationDecisionForm(
+    ReservationTargetForm,
+    ReservationListView,
+    ReservationUrls
+):
     """ Base class for admin's approval / denial forms. """
 
     grok.baseclass()
@@ -844,7 +861,7 @@ class ReservationApprovalForm(ReservationDecisionForm):
     def approve(self, data):
 
         def approve():
-            self.scheduler.approve_reservation(data['reservation'])
+            self.scheduler.approve_reservations(data['token'])
             self.flash(_(u'Reservation approved'))
 
         utils.handle_action(action=approve, success=self.redirect_to_context)
@@ -878,7 +895,7 @@ class ReservationDenialForm(ReservationDecisionForm):
     def deny(self, data):
 
         def deny():
-            self.scheduler.deny_reservation(data['reservation'])
+            self.scheduler.deny_reservation(data['token'])
             self.flash(_(u'Reservation denied'))
 
         utils.handle_action(action=deny, success=self.redirect_to_context)
@@ -889,7 +906,7 @@ class ReservationDenialForm(ReservationDecisionForm):
 
 
 class ReservationRevocationForm(
-    ReservationIdForm,
+    ReservationTargetForm,
     ReservationListView,
     ReservationUrls
 ):
@@ -912,7 +929,7 @@ class ReservationRevocationForm(
 
     @property
     def hint(self):
-        if not (self.reservation or self.approved_reservations()):
+        if not (self.token or self.approved_reservations()):
             return _(u'No such reservation')
 
         return _(
@@ -925,7 +942,7 @@ class ReservationRevocationForm(
 
         def revoke():
             self.scheduler.revoke_reservation(
-                data['reservation'], data['reason'], data['send_email']
+                data['token'], data['reason'], data['send_email']
             )
             self.flash(_(u'Reservation revoked'))
 
@@ -959,9 +976,9 @@ class ReservationList(BaseView, ReservationListView, ReservationUrls):
             return u''
 
     @property
-    def reservation(self):
+    def token(self):
         """ Limits the list to the given reservation. """
-        return self.request.get('reservation', None)
+        return self.request.get('token', None)
 
     @property
     def print_site(self):
@@ -974,7 +991,7 @@ class ReservationList(BaseView, ReservationListView, ReservationUrls):
             return ['single-reservation-view']
 
 
-class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
+class ReservationDataEditForm(ReservationTargetForm, ReservationSchemata):
 
     permission = "seantis.reservation.EditReservations"
 
@@ -1036,13 +1053,13 @@ class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
         return working, broken
 
     def get_reservation_data(self):
-        if not self.reservation:
+        if not self.token and self.id:
             return {}
 
         if not hasattr(self, 'reservation_data'):
             try:
-                query = self.scheduler.reservation_by_token(self.reservation)
-                self.reservation_data = query.one().data
+                reservation = self.scheduler.reservation_by_id(self.id).one()
+                self.reservation_data = reservation.data
             except DirtyReadOnlySession:
                 self.reservation_data = {}
 
@@ -1105,7 +1122,7 @@ class ReservationDataEditForm(ReservationIdForm, ReservationSchemata):
 
         def save():
             self.scheduler.update_reservation_data(
-                self.reservation, self.additional_data
+                self.id, self.additional_data
             )
             self.flash(_(u'Formdata updated'))
 

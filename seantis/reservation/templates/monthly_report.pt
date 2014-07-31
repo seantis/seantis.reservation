@@ -99,6 +99,7 @@
                                             context python: reservation['resource'];
                                             data reservation/data;
                                             token reservation/token;
+                                            id reservation/id;
                                             show_actions python: True;
                                             status rtype;
                                         ">

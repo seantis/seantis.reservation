@@ -766,7 +766,7 @@ class TestBrowser(FunctionalTestCase):
         keeper.allocate(dates, raster=15)
 
         token = keeper.reserve(u'test@example.com', dates)
-        keeper.approve_reservation(token)
+        keeper.approve_reservations(token)
 
         transaction.commit()  # delete_confirmation will rollback
                               # dropping all SQL statements

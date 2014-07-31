@@ -152,7 +152,7 @@ def latest_reservations(resources, daterange, reservations='*'):
     result = utils.OrderedDict()
     for reservation in query.all():
         if reservation.token in result:
-            result.append(reservation)
+            result[reservation.token].append(reservation)
         else:
             result[reservation.token] = [reservation]
 

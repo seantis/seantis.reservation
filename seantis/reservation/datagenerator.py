@@ -164,7 +164,7 @@ class DataGeneratorView(BaseView):
                     print 'r @', start, end
                     token = scheduler.reserve(email, dates=(start, end))
                     if not allocation.approve_manually:
-                        scheduler.approve_reservation(token)
+                        scheduler.approve_reservations(token)
                 except ReservationError:
                     break
 

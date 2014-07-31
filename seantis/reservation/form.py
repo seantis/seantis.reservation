@@ -457,7 +457,7 @@ class ReservationListView(object):
     show_links = True
 
     @property
-    def reservation(self):
+    def token(self):
         return None
 
     @property
@@ -483,12 +483,13 @@ class ReservationListView(object):
         # must be visible. The allocations are not that interesting here,
         # because there's not a real link between a pending reservation and
         # an allocation.
-        if self.reservation:
-            reservation = self.context.scheduler().reservation_by_token(
-                self.reservation
-            ).first()
+        if self.token:
+            query = self.context.scheduler().reservations_by_token(
+                self.token
+            )
+            query = query.filter(Reservation.status == 'pending')
 
-            if reservation and reservation.status == 'pending':
+            if query.first():
                 return False
 
         all_allocations = self.all_allocations()
@@ -508,41 +509,41 @@ class ReservationListView(object):
 
         return True
 
-    def reservation_by_token(self, token):
+    def reservations_by_token(self, token):
         if token in self.pending_reservations():
-            return self.pending_reservations()[token][0]
+            return self.pending_reservations()[token]
 
         if token in self.approved_reservations():
-            return self.approved_reservations()[token][0]
+            return self.approved_reservations()[token]
 
         return None
 
-    def reservation_info(self, token):
+    def reservations_info(self, token):
         """ Returns the registration information to be printed
         on the header of the reservation.
 
         """
 
-        reservation = self.reservation_by_token(token)
+        reservation = self.reservations_by_token(token).first()
         return reservation and reservation.title or u''
 
     def all_reservations(self):
         scheduler = self.context.scheduler()
 
-        if self.reservation:
-            return scheduler.reservation_by_token(self.reservation)
         if self.id:
             return scheduler.reservations_by_allocation(self.id)
         if self.group:
             return scheduler.reservations_by_group(self.group)
+        if self.token:
+            return scheduler.reservations_by_token(self.token)
 
         return None
 
     def all_allocations(self):
         scheduler = self.context.scheduler()
 
-        if self.reservation:
-            return scheduler.allocations_by_reservation(self.reservation)
+        if self.token:
+            return scheduler.allocations_by_reservation(self.token)
         if self.id:
             return [scheduler.allocation_by_id(self.id)]
         if self.group:

@@ -80,6 +80,7 @@
             <tal:block define="
                 data python: reservation.data;
                 timespans python: reservation.timespans();
+                id python: reservation.id;
               ">
                 <metal:use use-macro="context/@@seantis-reservation-macros/reservation-data" />
                 <metal:use use-macro="context/@@seantis-reservation-macros/reservation-timespans" />
@@ -165,6 +166,7 @@
 
     context -> the resource the reservation belongs to
     token -> token of the reservation
+    id -> id of the reservation
     data -> reservation data to display
     show_actions -> displays links leading to different actions (default False)
 
@@ -186,7 +188,7 @@
         </tal:block>
 
         <span tal:condition="show_actions | nothing" class="reservation-urls">
-          <a tal:condition="show_actions | nothing" tal:attributes="href python: macro.update_all_url(token, context)"
+          <a tal:condition="show_actions | nothing" tal:attributes="href python: macro.update_all_url(token, id, context)"
             class="reservation-data-update" i18n:translate="">
             &raquo; Edit Formdata
           </a>

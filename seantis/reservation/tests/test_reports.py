@@ -77,9 +77,9 @@ class TestReports(IntegrationTestCase):
         sc.allocate(today, quota=2)
         sc.allocate(tomorrow, quota=1)
 
-        sc.approve_reservation(sc.reserve(reservation_email, today))
-        sc.approve_reservation(sc.reserve(reservation_email, today))
-        sc.approve_reservation(sc.reserve(reservation_email, tomorrow))
+        sc.approve_reservations(sc.reserve(reservation_email, today))
+        sc.approve_reservations(sc.reserve(reservation_email, today))
+        sc.approve_reservations(sc.reserve(reservation_email, tomorrow))
 
         report = monthly_report(2013, 9, {resource.uuid(): resource})
 
@@ -168,8 +168,8 @@ class TestReports(IntegrationTestCase):
         sc.allocate(today, quota=1)
         sc.allocate(tomorrow, quota=1)
 
-        sc.approve_reservation(sc.reserve(reservation_email, today))
-        sc.approve_reservation(sc.reserve(reservation_email, tomorrow))
+        sc.approve_reservations(sc.reserve(reservation_email, today))
+        sc.approve_reservations(sc.reserve(reservation_email, tomorrow))
 
         now = datetime.utcnow().replace(tzinfo=pytz.utc)
 

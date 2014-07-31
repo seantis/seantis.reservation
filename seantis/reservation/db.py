@@ -6,7 +6,8 @@ from uuid import uuid1 as new_uuid
 from datetime import datetime, timedelta, MINYEAR, MAXYEAR
 from itertools import groupby
 
-from zope.event import notify
+#from zope.event import notify
+notify = lambda *args, **kwargs: None
 
 from sqlalchemy.sql import and_, or_
 from sqlalchemy.orm import joinedload, exc
@@ -980,16 +981,7 @@ class Scheduler(object):
         return token
 
     @serialized
-    def approve_reservation(self, token):
-        """ This function approves an existing reservation and writes the
-        reserved slots accordingly.
-
-        Returns a list with the reserved slots.
-
-        """
-
-        reservation = self.reservation_by_token(token).one()
-
+    def _approve_reservation_record(self, reservation):
         # write out the slots
         slots_to_reserve = []
 
@@ -1013,7 +1005,7 @@ class Scheduler(object):
                     slot.start = slot_start
                     slot.end = slot_end
                     slot.resource = allocation.resource
-                    slot.reservation_token = token
+                    slot.reservation_token = reservation.token
 
                     # the slots are written with the allocation
                     allocation.reserved_slots.append(slot)
@@ -1029,7 +1021,27 @@ class Scheduler(object):
         if not slots_to_reserve:
             raise NotReservableError
 
-        notify(ReservationApprovedEvent(reservation, self.language))
+        return slots_to_reserve
+
+    @serialized
+    def approve_reservations(self, token):
+        """ This function approves an existing reservation and writes the
+        reserved slots accordingly.
+
+        Returns a list with the reserved slots.
+
+        """
+
+        slots_to_reserve = []
+
+        reservations = self.reservations_by_token(token).all()
+
+        for reservation in reservations:
+            slots_to_reserve.extend(
+                self._approve_reservation_record(reservation)
+            )
+
+        notify(ReservationApprovedEvent(reservations, self.language))
 
         return slots_to_reserve
 
@@ -1040,13 +1052,14 @@ class Scheduler(object):
 
         """
 
-        query = self.reservation_by_token(token)
-        query.filter(Reservation.status == u'pending')
+        query = self.reservations_by_token(token)
+        query = query.filter(Reservation.status == u'pending')
 
-        reservation = query.one()
-        Session.delete(reservation)
+        reservations = query.all()
 
-        notify(ReservationDeniedEvent(reservation, self.language))
+        query.delete()
+
+        notify(ReservationDeniedEvent(reservations, self.language))
 
     @serialized
     def revoke_reservation(self, token, reason, send_email=True):
@@ -1056,9 +1069,10 @@ class Scheduler(object):
 
         # sending the email first is no problem as it won't work if
         # an exception triggers later in the request
-        reservation = self.reservation_by_token(token).one()
+        reservations = self.reservations_by_token(token).all()
+
         notify(ReservationRevokedEvent(
-            reservation, self.language, reason, send_email
+            reservations, self.language, reason, send_email
         ))
 
         self.remove_reservation(token)
@@ -1080,13 +1094,17 @@ class Scheduler(object):
         for slot in slots:
             Session.delete(slot)
 
-        self.reservation_by_token(token).delete()
+        self.reservations_by_token(token).delete()
 
     @serialized
-    def update_reservation_data(self, token, data):
+    def update_reservations_data(self, token, data):
 
-        reservation = self.reservation_by_token(token).one()
-        reservation.data = data
+        for reservation in self.reservations_by_token(token).all():
+            reservation.data = data
+
+    @serialized
+    def update_reservation_data(self, id, data):
+        self.reservation_by_id(id).one().data = data
 
     def find_spot(self, master_allocation, start, end):
         """ Returns the first free allocation spot amongst the master and the
@@ -1307,16 +1325,14 @@ class Scheduler(object):
 
         return query
 
-    def reservation_by_token(self, token):
+    def reservations_by_token(self, token):
         query = self.managed_reservations()
         query = query.filter(Reservation.token == token)
 
         try:
-            query.one()
+            query.first()
         except exc.NoResultFound:
             raise InvalidReservationToken
-        except exc.MultipleResultsFound:
-            raise NotImplementedError
 
         return query
 
@@ -1330,3 +1346,9 @@ class Scheduler(object):
         master = self.allocation_by_id(allocation_id)
 
         return self.reservations_by_group(master.group)
+
+    def reservation_by_id(self, reservation_id):
+        query = self.managed_reservations()
+        query = query.filter(Reservation.id == reservation_id)
+
+        return query
