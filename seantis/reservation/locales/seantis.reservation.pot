@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-07-30 14:58+0000\n"
+"POT-Creation-Date: 2014-07-31 09:23+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -81,7 +81,7 @@ msgstr ""
 msgid "Add timeframe"
 msgstr ""
 
-#: ./reserve.py:344
+#: ./reserve.py:346
 msgid "Added reservation to your list. You have 15 minutes to confirm your reservations."
 msgstr ""
 
@@ -145,12 +145,12 @@ msgstr ""
 msgid "An existing reservation would be affected by the requested change."
 msgstr ""
 
-#: ./reserve.py:735
+#: ./reserve.py:820
 #: ./templates/macros.pt:125
 msgid "Approve"
 msgstr ""
 
-#: ./reserve.py:726
+#: ./reserve.py:811
 msgid "Approve reservation"
 msgstr ""
 
@@ -175,7 +175,7 @@ msgstr ""
 msgid "Available Views"
 msgstr ""
 
-#: ./search.py:67
+#: ./search.py:65
 msgid "Available only"
 msgstr ""
 
@@ -193,12 +193,12 @@ msgstr ""
 
 #: ./allocate.py:153
 #: ./export.py:209
-#: ./reserve.py:526
+#: ./reserve.py:528
 msgid "Cancel"
 msgstr ""
 
 #: ./templates/search.pt:57
-msgid "Choose what you want to reserve"
+msgid "Choose what you want to reserve."
 msgstr ""
 
 #: ./templates/resource.pt:122
@@ -247,7 +247,7 @@ msgid "Day"
 msgstr ""
 
 #: ./interfaces.py:512
-#: ./search.py:56
+#: ./search.py:54
 msgid "Days"
 msgstr ""
 
@@ -269,12 +269,12 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-#: ./reserve.py:769
+#: ./reserve.py:854
 #: ./templates/macros.pt:129
 msgid "Deny"
 msgstr ""
 
-#: ./reserve.py:760
+#: ./reserve.py:845
 msgid "Deny reservation"
 msgstr ""
 
@@ -290,11 +290,11 @@ msgstr ""
 msgid "Do not send manager emails"
 msgstr ""
 
-#: ./reserve.py:733
+#: ./reserve.py:818
 msgid "Do you really want to approve the following reservations?"
 msgstr ""
 
-#: ./reserve.py:767
+#: ./reserve.py:852
 msgid "Do you really want to deny the following reservations?"
 msgstr ""
 
@@ -302,11 +302,12 @@ msgstr ""
 msgid "Do you really want to remove the following allocations?"
 msgstr ""
 
-#: ./reserve.py:811
+#: ./reserve.py:896
 msgid "Do you really want to revoke the following reservations?"
 msgstr ""
 
 #: ./templates/reserve_group.pt:14
+#: ./templates/reserve_selection.pt:14
 msgid "Do you want to reserve the following allocations?"
 msgstr ""
 
@@ -316,7 +317,7 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-#: ./reserve.py:893
+#: ./reserve.py:978
 msgid "Edit Formdata"
 msgstr ""
 
@@ -407,7 +408,7 @@ msgstr ""
 msgid "End"
 msgstr ""
 
-#: ./search.py:34
+#: ./search.py:32
 msgid "End date"
 msgstr ""
 
@@ -415,7 +416,7 @@ msgstr ""
 msgid "End date before start date"
 msgstr ""
 
-#: ./search.py:50
+#: ./search.py:48
 msgid "End time"
 msgstr ""
 
@@ -447,7 +448,7 @@ msgstr ""
 msgid "Export Reservations"
 msgstr ""
 
-#: ./search.py:157
+#: ./macros.py:26
 msgid "FR"
 msgstr ""
 
@@ -467,7 +468,7 @@ msgstr ""
 msgid "Format"
 msgstr ""
 
-#: ./reserve.py:1003
+#: ./reserve.py:1088
 msgid "Formdata updated"
 msgstr ""
 
@@ -491,7 +492,7 @@ msgstr ""
 msgid "Fully available"
 msgstr ""
 
-#: ./reserve.py:372
+#: ./reserve.py:374
 msgid "General Information"
 msgstr ""
 
@@ -505,6 +506,10 @@ msgstr ""
 
 #: ./interfaces.py:447
 msgid "Id"
+msgstr ""
+
+#: ./interfaces.py:763
+msgid "Ids"
 msgstr ""
 
 #: ./interfaces.py:254
@@ -531,7 +536,7 @@ msgstr ""
 msgid "Invalid last hour"
 msgstr ""
 
-#: ./reserve.py:458
+#: ./reserve.py:460
 msgid "Invalid reservation request"
 msgstr ""
 
@@ -572,7 +577,7 @@ msgstr ""
 msgid "List"
 msgstr ""
 
-#: ./search.py:153
+#: ./macros.py:22
 msgid "MO"
 msgstr ""
 
@@ -650,7 +655,7 @@ msgstr ""
 msgid "No"
 msgstr ""
 
-#: ./reserve.py:895
+#: ./reserve.py:980
 msgid "No Formdata to edit"
 msgstr ""
 
@@ -667,7 +672,7 @@ msgstr ""
 msgid "No results found."
 msgstr ""
 
-#: ./reserve.py:731
+#: ./reserve.py:816
 msgid "No such reservation"
 msgstr ""
 
@@ -699,7 +704,7 @@ msgstr ""
 msgid "One Person Waiting"
 msgstr ""
 
-#: ./interfaces.py:771
+#: ./interfaces.py:802
 msgid "Optional reason for the revocation. Sent to the reservee. e.g. 'Your reservation has to be cancelled because the lecturer is ill'."
 msgstr ""
 
@@ -750,11 +755,11 @@ msgstr ""
 msgid "Raster"
 msgstr ""
 
-#: ./interfaces.py:770
+#: ./interfaces.py:801
 msgid "Reason"
 msgstr ""
 
-#: ./reserve.py:565
+#: ./reserve.py:567
 msgid "Recurrance reservation"
 msgstr ""
 
@@ -795,15 +800,15 @@ msgstr ""
 msgid "Reservation Throttling"
 msgstr ""
 
-#: ./reserve.py:741
+#: ./reserve.py:826
 msgid "Reservation approved"
 msgstr ""
 
-#: ./reserve.py:775
+#: ./reserve.py:860
 msgid "Reservation denied"
 msgstr ""
 
-#: ./reserve.py:454
+#: ./reserve.py:456
 msgid "Reservation out of bounds"
 msgstr ""
 
@@ -811,7 +816,7 @@ msgstr ""
 msgid "Reservation quota limit must zero or a positive number"
 msgstr ""
 
-#: ./reserve.py:823
+#: ./reserve.py:908
 msgid "Reservation revoked"
 msgstr ""
 
@@ -832,16 +837,17 @@ msgstr ""
 msgid "Reservations can't be made for more than 24 hours at a time"
 msgstr ""
 
-#: ./reserve.py:494
+#: ./reserve.py:496
 #: ./resource.py:394
 msgid "Reserve"
 msgstr ""
 
-#: ./reserve.py:650
+#: ./reserve.py:735
 msgid "Reserve More"
 msgstr ""
 
-#: ./templates/search.pt:96
+#: ./reserve.py:634
+#: ./templates/search.pt:79
 msgid "Reserve selected"
 msgstr ""
 
@@ -850,7 +856,7 @@ msgstr ""
 msgid "Resource"
 msgstr ""
 
-#: ./reserve.py:366
+#: ./reserve.py:368
 msgid "Resource reservation"
 msgstr ""
 
@@ -858,12 +864,12 @@ msgstr ""
 msgid "Resources"
 msgstr ""
 
-#: ./reserve.py:815
+#: ./reserve.py:900
 #: ./templates/macros.pt:118
 msgid "Revoke"
 msgstr ""
 
-#: ./reserve.py:802
+#: ./reserve.py:887
 msgid "Revoke reservation"
 msgstr ""
 
@@ -871,11 +877,11 @@ msgstr ""
 msgid "Run custom validation code for reservations. This is for advanced users only and may disable the reservations process. For documentation study the source code at Github."
 msgstr ""
 
-#: ./search.py:158
+#: ./macros.py:27
 msgid "SA"
 msgstr ""
 
-#: ./search.py:159
+#: ./macros.py:28
 msgid "SU"
 msgstr ""
 
@@ -884,7 +890,7 @@ msgid "Sa"
 msgstr ""
 
 #: ./mail.py:509
-#: ./reserve.py:985
+#: ./reserve.py:1070
 #: ./timeframe.py:96
 msgid "Save"
 msgstr ""
@@ -897,7 +903,7 @@ msgstr ""
 msgid "Seantis Reservation Settings"
 msgstr ""
 
-#: ./search.py:111
+#: ./search.py:109
 msgid "Search"
 msgstr ""
 
@@ -917,11 +923,11 @@ msgstr ""
 msgid "Selected view when opening the calendar."
 msgstr ""
 
-#: ./interfaces.py:762
+#: ./interfaces.py:793
 msgid "Send Email"
 msgstr ""
 
-#: ./interfaces.py:763
+#: ./interfaces.py:794
 msgid "Send an email to the reservee informing him of the revocation"
 msgstr ""
 
@@ -981,7 +987,7 @@ msgstr ""
 msgid "Specific Date"
 msgstr ""
 
-#: ./search.py:62
+#: ./search.py:60
 msgid "Spots"
 msgstr ""
 
@@ -990,11 +996,11 @@ msgstr ""
 msgid "Start"
 msgstr ""
 
-#: ./search.py:29
+#: ./search.py:27
 msgid "Start date"
 msgstr ""
 
-#: ./search.py:45
+#: ./search.py:43
 msgid "Start time"
 msgstr ""
 
@@ -1014,15 +1020,15 @@ msgstr ""
 msgid "Subforms that need to be filled out to make a reservation. Forms can currently only be created by a site-administrator."
 msgstr ""
 
-#: ./reserve.py:633
+#: ./reserve.py:718
 msgid "Submit Reservations"
 msgstr ""
 
-#: ./search.py:156
+#: ./macros.py:25
 msgid "TH"
 msgstr ""
 
-#: ./search.py:154
+#: ./macros.py:23
 msgid "TU"
 msgstr ""
 
@@ -1079,7 +1085,8 @@ msgid "The number of minutes a user needs to wait between reservations, use 0 if
 msgstr ""
 
 #: ./templates/remove_allocation.pt:18
-msgid "The requested allocations could not be found"
+#: ./templates/reserve_selection.pt:18
+msgid "The requested allocations could not be found."
 msgstr ""
 
 #: ./error.py:136
@@ -1095,7 +1102,7 @@ msgid "The requested quota is invalid (must be at least one)."
 msgstr ""
 
 #: ./templates/reserve_group.pt:18
-msgid "The requested recurrence could not be found"
+msgid "The requested recurrence could not be found."
 msgstr ""
 
 #: ./error.py:104
@@ -1110,11 +1117,11 @@ msgstr ""
 msgid "The selected view must be one of the available views."
 msgstr ""
 
-#: ./form.py:590
+#: ./form.py:595
 msgid "There are ${nb} reservations being entered for this resource."
 msgstr ""
 
-#: ./form.py:586
+#: ./form.py:591
 msgid "There is one reservation being entered for this resource."
 msgstr ""
 
@@ -1147,7 +1154,7 @@ msgid "Timeframe overlaps with '${overlap}' in the current folder"
 msgstr ""
 
 #: ./interfaces.py:459
-#: ./search.py:23
+#: ./search.py:21
 #: ./templates/timeframes.pt:4
 msgid "Timeframes"
 msgstr ""
@@ -1200,7 +1207,7 @@ msgstr ""
 msgid "Views available to the user on the calendar."
 msgstr ""
 
-#: ./search.py:155
+#: ./macros.py:24
 msgid "WE"
 msgstr ""
 
@@ -1234,7 +1241,8 @@ msgstr ""
 msgid "Whole Day"
 msgstr ""
 
-#: ./search.py:39
+#: ./macros.py:47
+#: ./search.py:37
 msgid "Whole day"
 msgstr ""
 

@@ -1,6 +1,5 @@
 from datetime import date, datetime, time
 from five import grok
-from plone import api
 from plone.autoform.form import AutoExtensibleForm
 from plone.directives import form
 from plone.supermodel import model
@@ -8,7 +7,6 @@ from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from zope import schema
 
 from seantis.reservation import _
-from seantis.reservation import utils
 from seantis.reservation.utils import cached_property
 from seantis.reservation.form import BaseForm
 from seantis.reservation.resource import YourReservationsViewlet
@@ -143,64 +141,10 @@ class SearchForm(BaseForm, AutoExtensibleForm, YourReservationsViewlet):
 
     def handle_search(self):
         self.searched = True
-        self.results = tuple(self.search())
 
-    def search(self):
         if not self.options:
-            return
-
-        days = {
-            0: _(u'MO'),
-            1: _(u'TU'),
-            2: _(u'WE'),
-            3: _(u'TH'),
-            4: _(u'FR'),
-            5: _(u'SA'),
-            6: _(u'SU')
-        }
-
-        scheduler = self.context.scheduler()
-        whole_day_text = self.translate(_(u'Whole day'))
-
-        def get_time_text(allocation):
-            if allocation.whole_day:
-                return whole_day_text
-            else:
-                return ' - '.join((
-                    api.portal.get_localized_time(
-                        allocation.display_start, time_only=True
-                    ),
-                    api.portal.get_localized_time(
-                        allocation.display_end, time_only=True
-                    ),
-                ))
-
-        prev_date = None
-        is_odd = False
-
-        for allocation in scheduler.search_allocations(**self.options):
-
-            availability, text, allocation_class = utils.event_availability(
-                self.context, self.request, scheduler, allocation
+            self.results = tuple()
+        else:
+            self.results = self.context.scheduler().search_allocations(
+                **self.options
             )
-
-            day = ', '.join((
-                days[allocation.display_start.weekday()],
-                api.portal.get_localized_time(
-                    allocation.display_start, long_format=False
-                )
-            ))
-
-            if prev_date != date:
-                is_odd = not is_odd
-
-            prev_date = date
-
-            yield {
-                'id': allocation.id,
-                'day': day,
-                'time': get_time_text(allocation),
-                'class': utils.event_class(availability),
-                'is_odd': is_odd,
-                'text': ', '.join(text.split('\n')),
-            }

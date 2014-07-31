@@ -647,6 +647,12 @@ class Scheduler(object):
         query = query.filter(Allocation.id == id)
         return query.one()
 
+    def allocations_by_ids(self, ids):
+        query = self.managed_allocations()
+        query = query.filter(Allocation.id.in_(ids))
+        query = query.order_by(Allocation._start)
+        return query
+
     def allocations_by_group(self, group, masters_only=True):
         query = self.managed_allocations()
         query = query.filter(Allocation.group == group)

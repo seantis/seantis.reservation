@@ -12,16 +12,19 @@
         <h1 class="documentFirstHeading" tal:content="view/label | nothing" />
 
         <p tal:condition="python: len(view.allocations()) > 0" i18n:translate="">
-        Do you really want to remove the following allocations?
+        Do you want to reserve the following allocations?
         </p>
         
         <p tal:condition="python: len(view.allocations()) == 0" i18n:translate="">
         The requested allocations could not be found.
         </p>
         
-        <div class="limitedList">
-          <metal:block use-macro="context/@@group/macros/grouplist" />
+        <div class="limitedList reservation-search" tal:define="allocations view/allocations">
+            <div class="searchresults">
+              <metal:block use-macro="context/@@seantis-reservation-macros/found-allocations" />
+            </div>
         </div>
+
         <metal:block use-macro="context/@@ploneform-macros/titlelessform" />
 
     </tal:main-macro>

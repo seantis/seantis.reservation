@@ -6,6 +6,7 @@ log = getLogger('seantis.reservation')
 from copy import copy
 from datetime import time
 from DateTime import DateTime
+from isodate import parse_time
 from five import grok
 
 from plone.dexterity.interfaces import IDexterityFTI
@@ -26,6 +27,7 @@ from seantis.reservation.interfaces import (
     IResourceBase,
     IReservation,
     IGroupReservation,
+    ISelectionReservation,
     IRevokeReservation,
     IReservationIdForm,
     ISeantisReservationSpecific
@@ -612,6 +614,89 @@ class GroupReservationForm(
     @button.buttonAndHandler(_(u'Cancel'))
     def cancel(self, action):
         self.redirect_to_context()
+
+
+class SelectionReservationForm(
+        ReservationForm,
+        AllocationGroupView,
+        SessionFormdataMixin,
+        YourReservationsData
+):
+    permission = 'seantis.reservation.SubmitReservation'
+
+    grok.name('reserve-selection')
+    grok.require(permission)
+
+    context_buttons = ('reserve', )
+    standalone_buttons = ('cancel', )
+
+    fields = field.Fields(ISelectionReservation)
+    label = _(u'Reserve selected')
+
+    template = ViewPageTemplateFile('templates/reserve_selection.pt')
+
+    ignore_requirements = True
+
+    autoGroups = True
+    enable_form_tabbing = True
+    default_fieldset_label = _(u'General Information')
+
+    hidden_fields = ['ids']
+
+    @property
+    def start_time(self):
+        if self.request.get('start_time'):
+            return parse_time(self.request.get('start_time'))
+        else:
+            return None
+
+    @property
+    def end_time(self):
+        if self.request.get('end_time'):
+            return parse_time(self.request.get('end_time'))
+        else:
+            return None
+
+    @property
+    def ids(self):
+        ids = (
+            self.request.get('allocation_id')
+            or
+            self.request.get('form.widgets.ids')
+        )
+
+        if not ids:
+            return tuple()
+
+        if isinstance(ids, basestring):
+            ids = ids.split(',')
+
+        return ids
+
+    def defaults(self, **kwargs):
+        defaults = {
+            'ids': ','.join(self.ids)
+        }
+
+        s, e = self.start_time, self.end_time
+
+        if s or e and not utils.whole_day(s, e):
+            defaults['start_time'] = s
+            defaults['end_time'] = e
+
+        return self.your_reservation_defaults(defaults)
+
+    def allocations(self):
+        return self.context.scheduler().allocations_by_ids(self.ids).all()
+
+    @button.buttonAndHandler(_(u'Reserve'))
+    @extract_action_data
+    def reserve(self, data):
+        pass
+
+    @button.buttonAndHandler(_(u'Cancel'))
+    def cancel(self, action):
+        self.redirect_to_context(view='search')
 
 
 class YourReservations(ResourceBaseForm, YourReservationsData):

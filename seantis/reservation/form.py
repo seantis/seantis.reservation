@@ -236,9 +236,14 @@ class ResourceBaseForm(GroupForm, form.Form):
                 if hasattr(widget, 'years_range'):
                     widget.years_range = sane_range
 
-    def redirect_to_context(self):
+    def redirect_to_context(self, view=None):
         """ Redirect to the url of the resource. """
-        self.request.response.redirect(self.context.absolute_url())
+        if view:
+            url = '/'.join((self.context.absolute_url(), view))
+        else:
+            url = self.context.absolute_url()
+
+        self.request.response.redirect(url)
 
     @property
     @utils.memoize

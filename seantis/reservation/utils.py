@@ -1059,6 +1059,12 @@ def whole_day(start, end):
 
     assert start <= end, "The end needs to be equal or greater than the start"
 
+    if isinstance(start, datetime_time):
+        start = datetime(2000, 1, 1, start.hour, start.minute, start.second)
+
+    if isinstance(end, datetime_time):
+        end = datetime(2000, 1, 1, end.hour, end.minute, end.second)
+
     if (start.hour, start.minute, start.second) != (0, 0, 0):
         return False
 

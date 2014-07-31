@@ -69,32 +69,13 @@
               <div class="searchresults" tal:condition="view/results">
                 <div class="resultinfo" i18n:translate="">Found the following results:</div>
 
-                <form action="./reserve-selection" method="post">
-                  <input type="hidden" name="start_time" tal:attributes="value python: view.options['start'].time()" />
-                  <input type="hidden" name="end_time" tal:attributes="value python: view.options['end'].time()" />
-                  <table class="searchresult">
-                    <tal:block repeat="allocation view/results">
-                      <tr tal:attributes="class python: repeat['allocation'].first('is_odd') and 'new-day' or ''">
-                        <td>
-                          <div class="result-day" tal:content="allocation/day" tal:condition="repeat/allocation/first/day" />
-                        </td>
-                        <td>
-                          <input type="checkbox" checked="checked" name="allocation_id" tal:attributes="value allocation/id" />
-                        </td>
-                        <td>
-                          <div 
-                            tal:attributes="
-                              class python: 'result-time {}'.format(allocation['class']);
-                              data-id allocation/id;
-                            "
-                          >
-                            <span tal:content="allocation/time" />
-                            <span tal:content="allocation/text" />
-                          </div>
-                        </td>
-                      </tr>
-                    </tal:block>
-                  </table>
+                <form action="./reserve-selection" method="post" tal:define="
+                  allocations view/results;
+                  show_checkboxes python: True;
+                ">
+                  <input type="hidden" name="start_time" tal:attributes="value python: view.options['start'].time().isoformat()" />
+                  <input type="hidden" name="end_time" tal:attributes="value python: view.options['end'].time().isoformat()"/>
+                  <metal:block use-macro="context/@@seantis-reservation-macros/found-allocations" />
                   <input type="submit" value="Reserve selected" i18n:attributes="value" />
                 </form>
               </div>

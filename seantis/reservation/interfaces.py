@@ -755,6 +755,37 @@ class IGroupReservation(Interface):
     )
 
 
+class ISelectionReservation(Interface):
+    """ A reservation of a selected number of allocations. """
+
+    # hidden
+    ids = schema.TextLine(
+        title=_(u'Ids'),
+        required=False
+    )
+
+    start_time = schema.Time(
+        title=_(u'Start'),
+        required=False
+    )
+
+    end_time = schema.Time(
+        title=_(u'End'),
+        required=False
+    )
+
+    quota = schema.Int(
+        title=_(u'Number of Reservations'),
+        required=False,
+        default=1
+    )
+
+    email = Email(
+        title=_(u'Email'),
+        required=True
+    )
+
+
 class IRevokeReservation(IReservationIdForm):
     """ For the reservation revocation form. """
 

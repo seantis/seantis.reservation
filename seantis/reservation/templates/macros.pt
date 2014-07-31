@@ -251,5 +251,38 @@
 
     </metal:define>
 
+    <tal:comment replace="nothing">
+    Renders a table of allocations found by searching. Expects the following:
+
+    allocations -> a list of allocations
+    show_checkboxes -> true if a column with checkboxes should be added
+                       (default is False)
+    </tal:comment>
+
+    <metal:define define-macro="found-allocations" tal:define="macro python: context.unrestrictedTraverse('@@seantis-reservation-macros')">
+      <table class="searchresult" tal:condition="allocations">
+        <tal:block repeat="allocation python: macro.found_allocations(allocations)">
+          <tr tal:attributes="class python: allocation['is_first_of_date'] and 'new-day' or ''">
+            <td>
+              <div class="result-day" tal:content="allocation/date" tal:condition="allocation/is_first_of_date" />
+            </td>
+            <td tal:condition="show_checkboxes | nothing">
+              <input type="checkbox" checked="checked" name="allocation_id" tal:attributes="value allocation/id" />
+            </td>
+            <td>
+              <div 
+                tal:attributes="
+                  class python: 'result-time {}'.format(allocation['class']);
+                  data-id allocation/id;
+                "
+              >
+                <span tal:content="allocation/time" />
+                <span tal:content="allocation/text" />
+              </div>
+            </td>
+          </tr>
+        </tal:block>
+      </table>
+    </metal:define>
   </body>
 </html>
