@@ -85,8 +85,6 @@ class SearchForm(BaseForm, AutoExtensibleForm, YourReservationsViewlet):
     grok.require(permission)
     grok.name('search')
 
-    method = 'get'
-
     ignoreContext = True
 
     template = grok.PageTemplateFile('templates/search.pt')

@@ -641,7 +641,7 @@ class SelectionReservationForm(
     enable_form_tabbing = True
     default_fieldset_label = _(u'General Information')
 
-    hidden_fields = ['ids']
+    hidden_fields = ['ids', 'start_time', 'end_time']
 
     @property
     def start_time(self):
