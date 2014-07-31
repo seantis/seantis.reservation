@@ -120,7 +120,7 @@ class TestScheduler(IntegrationTestCase):
 
         def reserve():
             token = sc.reserve(u'test@example.com', group=group)
-            reservation = sc.reservation_by_token(token).one()
+            reservation = sc.reservations_by_token(token).one()
 
             targets = reservation._target_allocations().all()
             self.assertEqual(len(targets), 2)
@@ -240,7 +240,7 @@ class TestScheduler(IntegrationTestCase):
         # reservation should work
         approval_token = sc.reserve(reservation_email, dates)
         self.assertFalse(
-            sc.reservation_by_token(approval_token).one().autoapprovable
+            sc.reservations_by_token(approval_token).one().autoapprovable
         )
         self.assertTrue(allocation.is_available(start, end))
         self.assertEqual(allocation.waitinglist_length, 1)
@@ -319,7 +319,7 @@ class TestScheduler(IntegrationTestCase):
         # reserving groups is no different than single allocations
         maintoken = sc.reserve(reservation_email, group=group)
         self.assertFalse(
-            sc.reservation_by_token(maintoken).one().autoapprovable
+            sc.reservations_by_token(maintoken).one().autoapprovable
         )
         for allocation in allocations:
             self.assertEqual(allocation.waitinglist_length, 1)
@@ -426,7 +426,7 @@ class TestScheduler(IntegrationTestCase):
         # no reservation
 
         token = sc.reserve(reservation_email, dates)
-        self.assertTrue(sc.reservation_by_token(token).one().autoapprovable)
+        self.assertTrue(sc.reservations_by_token(token).one().autoapprovable)
         sc.approve_reservations(token)
 
         # it is now that we should have a problem reserving
@@ -755,7 +755,7 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(sc.allocations_by_reservation(token).all(), [])
 
         # on the reservation itself, the target can be found however
-        reservation = sc.reservation_by_token(token).one()
+        reservation = sc.reservations_by_token(token).one()
         self.assertEqual(reservation._target_allocations().all(), allocations)
 
         # note how this changes once the reservation is approved
@@ -1041,12 +1041,12 @@ class TestScheduler(IntegrationTestCase):
 
         sc.allocate((start, end), quota=10)
         token = sc.reserve(reservation_email, (start, end), data=data)
-        db_data = sc.reservation_by_token(token).one().data
+        db_data = sc.reservations_by_token(token).one().data
 
         self.assertEqual(db_data, data)
 
         token = sc.reserve(reservation_email, (start, end), data=None)
-        db_data = sc.reservation_by_token(token).one().data
+        db_data = sc.reservations_by_token(token).one().data
 
         self.assertEqual(db_data, None)
 

@@ -789,7 +789,7 @@ class TestBrowser(FunctionalTestCase):
             scheduler.allocate(dates, raster=15)
 
             token = scheduler.reserve(u'test@example.com', dates)
-            scheduler.approve_reservation(token)
+            scheduler.approve_reservations(token)
 
             transaction.commit()  # delete_confirmation will rollback
                                   # dropping all SQL statements
