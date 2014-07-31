@@ -709,6 +709,22 @@ class Scheduler(object):
 
         return query.all()
 
+    def dates_by_allocation_ids(self, ids, start_time=None, end_time=None):
+        for allocation in self.allocations_by_ids(ids).all():
+            start_time = start_time or allocation.display_start.time()
+            end_time = end_time or allocation.display_end.time()
+
+            s, e = allocation.limit_timespan(start_time, end_time)
+
+            yield s, e - timedelta(microseconds=1)
+
+    def manual_approval_required(self, ids):
+        """ Returns True if any of the allocations require manual approval. """
+        query = self.allocations_by_ids(ids)
+        query = query.filter(Allocation.approve_manually == True)
+
+        return query.first() and True or False
+
     def render_allocation(self, allocation):
         return self.is_exposed(allocation)
 

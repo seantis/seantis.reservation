@@ -306,11 +306,14 @@ class ReservationBaseForm(ResourceBaseForm):
         return defaults
 
     def run_reserve(
-        self, data, approve_manually, start=None, end=None, group=None, quota=1
+        self, data, approve_manually,
+        start=None, end=None,
+        group=None, quota=1,
+        dates=None
     ):
 
-        assert (start and end) or group
-        assert not (start and end and group)
+        assert (start and end) or group or dates
+        assert not (start and end and group and dates)
 
         email = self.email(data)
         additional_data = self.additional_data(data, add_manager_defaults=True)
@@ -331,9 +334,14 @@ class ReservationBaseForm(ResourceBaseForm):
                     email, (start, end),
                     data=additional_data, session_id=session_id, quota=quota
                 )
-            else:
+            elif group:
                 return self.scheduler.reserve(
                     email, group=group,
+                    data=additional_data, session_id=session_id, quota=quota
+                )
+            else:
+                return self.scheduler.reserve(
+                    email, dates,
                     data=additional_data, session_id=session_id, quota=quota
                 )
 
@@ -687,12 +695,26 @@ class SelectionReservationForm(
         return self.your_reservation_defaults(defaults)
 
     def allocations(self):
-        return self.context.scheduler().allocations_by_ids(self.ids).all()
+        return self.scheduler.allocations_by_ids(self.ids).all()
 
     @button.buttonAndHandler(_(u'Reserve'))
     @extract_action_data
     def reserve(self, data):
-        pass
+        approve_manually = self.scheduler.manual_approval_required(self.ids)
+
+        def reserve():
+            dates = list(self.scheduler.dates_by_allocation_ids(
+                self.ids, data['start_time'], data['end_time']
+            ))
+            self.run_reserve(
+                data=data, approve_manually=approve_manually,
+                dates=dates,
+                quota=data['quota']
+            )
+
+        utils.handle_action(
+            action=reserve, success=self.redirect_to_your_reservations
+        )
 
     @button.buttonAndHandler(_(u'Cancel'))
     def cancel(self, action):

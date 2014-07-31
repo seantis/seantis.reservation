@@ -220,6 +220,9 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
         - on a non-partly available allocation return the start/end date of
           the allocation itself.
 
+        The resulting times are combined with the allocations start/end date
+        to form a datetime.
+
         """
         if self.partly_available:
             assert isinstance(start, time)
