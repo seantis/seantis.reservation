@@ -35,7 +35,7 @@ class View(BaseView, ReservationUrls, ReservationDataView):
     def utils(self):
         return utils
 
-    def found_allocations(self, allocations):
+    def found_allocations(self, allocations, start_time=None, end_time=None):
         """ Prepares the given allocations for the found-allocations table.
         Only works on IResourceBase contexts.
         """
@@ -46,17 +46,13 @@ class View(BaseView, ReservationUrls, ReservationDataView):
         scheduler = self.context.scheduler()
         whole_day_text = self.translate(_(u'Whole day'))
 
-        def get_time_text(allocation):
-            if allocation.whole_day:
+        def get_time_text(start, end):
+            if utils.whole_day(start, end):
                 return whole_day_text
             else:
                 return ' - '.join((
-                    api.portal.get_localized_time(
-                        allocation.display_start, time_only=True
-                    ),
-                    api.portal.get_localized_time(
-                        allocation.display_end, time_only=True
-                    ),
+                    api.portal.get_localized_time(start, time_only=True),
+                    api.portal.get_localized_time(end, time_only=True),
                 ))
 
         prev_date = None
@@ -76,10 +72,22 @@ class View(BaseView, ReservationUrls, ReservationDataView):
                 )
             ))
 
+            if start_time or end_time:
+                s = start_time or allocation.display_start.time()
+                e = end_time or allocation.display_end.time()
+
+                s, e = allocation.limit_timespan(s, e)
+
+                time_text = get_time_text(s, e)
+            else:
+                time_text = get_time_text(
+                    allocation.display_start, allocation.display_end
+                )
+
             result.append({
                 'id': allocation.id,
                 'date': date,
-                'time': get_time_text(allocation),
+                'time': time_text,
                 'class': utils.event_class(availability),
                 'is_first_of_date': prev_date != date,
                 'text': ', '.join(text.split('\n')),

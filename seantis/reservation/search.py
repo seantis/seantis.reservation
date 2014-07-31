@@ -95,6 +95,9 @@ class SearchForm(BaseForm, AutoExtensibleForm, YourReservationsViewlet):
     results = None
     searched = False
 
+    start_time = None
+    end_time = None
+
     # show the seantis.dir.facility viewlet if it's present
     show_facility_viewlet = True
 
@@ -126,11 +129,15 @@ class SearchForm(BaseForm, AutoExtensibleForm, YourReservationsViewlet):
                 params['recurrence_end'], time(23, 59, 59, 999999)
             )
         else:
-            start_time = params['start_time'] or time(0, 0)
-            end_time = params['end_time'] or time(23, 59, 59, 999999)
+            self.start_time = params['start_time'] or time(0, 0)
+            self.end_time = params['end_time'] or time(23, 59, 59, 999999)
 
-            start = datetime.combine(params['recurrence_start'], start_time)
-            end = datetime.combine(params['recurrence_end'], end_time)
+            start = datetime.combine(
+                params['recurrence_start'], self.start_time
+            )
+            end = datetime.combine(
+                params['recurrence_end'], self.end_time
+            )
 
         options['start'] = start
         options['end'] = end

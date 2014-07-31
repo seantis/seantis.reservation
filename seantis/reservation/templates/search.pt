@@ -72,6 +72,8 @@
                 <form action="./reserve-selection" method="post" tal:define="
                   allocations view/results;
                   show_checkboxes python: True;
+                  start_time view/start_time;
+                  end_time view/end_time;
                 ">
                   <input type="hidden" name="start_time" tal:attributes="value python: view.options['start'].time().isoformat()" />
                   <input type="hidden" name="end_time" tal:attributes="value python: view.options['end'].time().isoformat()"/>

@@ -257,11 +257,14 @@
     allocations -> a list of allocations
     show_checkboxes -> true if a column with checkboxes should be added
                        (default is False)
+    start_time, end_time -> time to which the allocations should be limited
+                            if possible 
+                            (default is None, see allocation.limit_timespan)
     </tal:comment>
 
     <metal:define define-macro="found-allocations" tal:define="macro python: context.unrestrictedTraverse('@@seantis-reservation-macros')">
-      <table class="searchresult" tal:condition="allocations">
-        <tal:block repeat="allocation python: macro.found_allocations(allocations)">
+      <table class="searchresult" tal:condition="allocations" tal:define="start start_time | nothing; end end_time | nothing">
+        <tal:block repeat="allocation python: macro.found_allocations(allocations, start, end)">
           <tr tal:attributes="class python: allocation['is_first_of_date'] and 'new-day' or ''">
             <td>
               <div class="result-day" tal:content="allocation/date" tal:condition="allocation/is_first_of_date" />

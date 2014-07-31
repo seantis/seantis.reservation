@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, datetime, time
 from itertools import groupby
 
 from sqlalchemy import types
@@ -201,7 +201,7 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
         if not (start and end):
             start, end = self.start, self.end
 
-        assert(self.overlaps(start, end))
+        assert self.overlaps(start, end)
 
         reserved = [slot.start for slot in self.reserved_slots]
         for start, end in self.all_slots(start, end):
@@ -209,6 +209,29 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
                 return False
 
         return True
+
+    def limit_timespan(self, start, end):
+        """ Takes the given timespan and moves the start/end date to
+        the closest reservable slot. So if 10:00 - 11:00 is requested it will
+
+        - on a partly available allocation return 10:00 - 11:00 if the raster
+          allows for that
+
+        - on a non-partly available allocation return the start/end date of
+          the allocation itself.
+
+        """
+        if self.partly_available:
+            assert isinstance(start, time)
+            assert isinstance(end, time)
+
+            s = datetime.combine(self.display_start, start)
+            e = datetime.combine(self.display_end, end)
+
+            s, e = rasterize_span(s, e, self.raster)
+            return s, e + timedelta(microseconds=1)
+        else:
+            return self.display_start, self.display_end
 
     @property
     def pending_reservations(self):

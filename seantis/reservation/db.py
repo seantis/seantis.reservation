@@ -1188,14 +1188,14 @@ class Scheduler(object):
                 if whole_day == 'no' and allocation.whole_day:
                     continue
 
-            if available_only or minspots:
+            if available_only:
+                if not self.find_spot(allocation, s, e):
+                    continue
 
+            if minspots:
                 availability = self.availability(
                     allocation.start, allocation.end
                 )
-
-                if available_only and availability == 0.0:
-                    continue
 
                 if (minspots / float(allocation.quota) * 100.0) > availability:
                     continue
