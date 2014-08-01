@@ -113,7 +113,7 @@ seantis.formgroups.add_utility_links = function() {
         var id = _.uniqueId('timeframe');
 
         content.push(
-            link({id: id, title: frame.title.replace(' ', '&nbsp;')})
+            link({id: id, title: frame.title.replace(/ /g, '&nbsp;')})
         );
     });
 
@@ -148,6 +148,7 @@ seantis.formgroups.add_utility_links = function() {
             aHide: true,
             fadeIn: 100,
             fadeOut: 100,
+            maxW: '333px',
             render: render_menu
         });
     });
