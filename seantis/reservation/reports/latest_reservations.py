@@ -10,7 +10,7 @@ from seantis.reservation import Session
 from seantis.reservation import db
 from seantis.reservation import _
 from seantis.reservation import utils
-from seantis.reservation.form import combine_reservations
+from seantis.reservation.reservations import combine_reservations
 from seantis.reservation.models import Reservation
 from seantis.reservation.base import BaseView
 from seantis.reservation.reports import GeneralReportParametersMixin

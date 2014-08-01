@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from sqlalchemy import types
+from sqlalchemy.orm import deferred
 from sqlalchemy.schema import Column
 from sqlalchemy.schema import Index
 
@@ -59,9 +60,11 @@ class Reservation(TimestampMixin, ORMBase, OtherModels):
         nullable=False
     )
 
-    data = Column(
-        customtypes.JSONEncodedDict(),
-        nullable=True
+    data = deferred(
+        Column(
+            customtypes.JSONEncodedDict(),
+            nullable=True
+        )
     )
 
     email = Column(
