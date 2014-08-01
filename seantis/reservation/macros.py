@@ -66,7 +66,9 @@ class View(BaseView, ReservationUrls, ReservationDataView):
             )
 
             date = ', '.join((
-                self.short_days[allocation.display_start.weekday()],
+                self.translate(
+                    self.short_days[allocation.display_start.weekday()]
+                ),
                 api.portal.get_localized_time(
                     allocation.display_start, long_format=False
                 )
