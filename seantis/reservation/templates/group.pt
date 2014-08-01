@@ -22,30 +22,9 @@
 
         <div class="limitedList">
             <div metal:define-macro="grouplist">
-                <div tal:repeat="alloc view/allocations">
-                    <tal:block define="
-                        day python: view.date_as_day(alloc.display_start);
-                        start python: view.date_as_time(alloc.display_start);
-                        end python: view.date_as_time(alloc.display_end);
-                        time string: ${start} - ${end};
-                        title python: view.event_title(alloc);
-                        eventclass python: view.event_class(alloc);
-                    ">
-
-                    <div class="groupListDay" tal:content="day"></div>
-                    
-                    <div tal:attributes="class eventclass">    
-                        
-                        <span class="fc-event-time" tal:condition="not: alloc/whole_day" tal:content="time"></span>
-                        <span class="fc-event-time" tal:condition="alloc/whole_day" i18n:translate="">Whole Day</span>
-                        <span class="fc-event-title" tal:content="title"></span>
-                        
-                    </div>
-
-                    <div style="clear:both;"></div>
-                    
-                    </tal:block>
-                </div>
+                <tal:block define="allocations view/allocations">
+                    <metal:use use-macro="context/@@seantis-reservation-macros/allocations-table" />
+                </tal:block>
             </div>
         </div>
 

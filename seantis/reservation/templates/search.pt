@@ -77,7 +77,7 @@
                 ">
                   <input type="hidden" name="start_time" tal:attributes="value python: view.options['start'].time().isoformat()" />
                   <input type="hidden" name="end_time" tal:attributes="value python: view.options['end'].time().isoformat()"/>
-                  <metal:block use-macro="context/@@seantis-reservation-macros/found-allocations" />
+                  <metal:block use-macro="context/@@seantis-reservation-macros/allocations-table" />
                   <input type="submit" value="Reserve selected" i18n:attributes="value" />
                 </form>
               </div>
