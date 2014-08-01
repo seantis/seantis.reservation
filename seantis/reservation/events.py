@@ -1,12 +1,13 @@
 from zope.interface import implements
 
+from seantis.reservation.reservations import combine_reservations
 from seantis.reservation.interfaces import (
     IResourceViewedEvent,
-    IReservationBaseEvent,
-    IReservationMadeEvent,
-    IReservationApprovedEvent,
-    IReservationDeniedEvent,
-    IReservationRevokedEvent,
+    IReservationsBaseEvent,
+    IReservationsMadeEvent,
+    IReservationsApprovedEvent,
+    IReservationsDeniedEvent,
+    IReservationsRevokedEvent,
     IReservationsConfirmedEvent
 )
 
@@ -18,31 +19,35 @@ class ResourceViewedEvent(object):
         self.context = context
 
 
-class ReservationBaseEvent(object):
-    implements(IReservationBaseEvent)
+class ReservationsBaseEvent(object):
+    implements(IReservationsBaseEvent)
 
-    def __init__(self, reservation, language):
-        self.reservation = reservation
+    def __init__(self, reservations, language):
+        self.reservations = reservations
         self.language = language
 
-
-class ReservationMadeEvent(ReservationBaseEvent):
-    implements(IReservationMadeEvent)
-
-
-class ReservationApprovedEvent(ReservationBaseEvent):
-    implements(IReservationApprovedEvent)
+        combined = tuple(combine_reservations(reservations))
+        assert len(combined) == 1
+        self.reservation = combined[0]
 
 
-class ReservationDeniedEvent(ReservationBaseEvent):
-    implements(IReservationDeniedEvent)
+class ReservationsMadeEvent(ReservationsBaseEvent):
+    implements(IReservationsMadeEvent)
 
 
-class ReservationRevokedEvent(ReservationBaseEvent):
-    implements(IReservationRevokedEvent)
+class ReservationsApprovedEvent(ReservationsBaseEvent):
+    implements(IReservationsApprovedEvent)
 
-    def __init__(self, reservation, language, reason, send_email):
-        super(ReservationRevokedEvent, self).__init__(reservation, language)
+
+class ReservationsDeniedEvent(ReservationsBaseEvent):
+    implements(IReservationsDeniedEvent)
+
+
+class ReservationsRevokedEvent(ReservationsBaseEvent):
+    implements(IReservationsRevokedEvent)
+
+    def __init__(self, reservations, language, reason, send_email):
+        super(ReservationsRevokedEvent, self).__init__(reservations, language)
         self.reason = reason
         self.send_email = send_email
 

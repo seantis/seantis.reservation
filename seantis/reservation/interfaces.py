@@ -824,29 +824,34 @@ class IResourceViewedEvent(Interface):
     context = Attribute("The IResourceBase context object")
 
 
-class IReservationBaseEvent(Interface):
+class IReservationsBaseEvent(Interface):
     """ Base Interface for reservation events (not actually fired). """
 
-    reservation = Attribute("The reservation record associated with the event")
-    language = Attribute("The language of the site or current request")
+    reservations = Attribute(
+        "The reservation records associated with the event"
+    )
+    language = Attribute(
+        "The language of the site or current request"
+    )
 
 
-class IReservationMadeEvent(IReservationBaseEvent):
+class IReservationsMadeEvent(IReservationsBaseEvent):
     """ Event triggered when a reservation is made (autoapproved or
-        added to the pending reservation list).
+        added to the pending reservation list). A reservation may
+        consist of multiple reservation records with the same token.
 
     """
 
 
-class IReservationApprovedEvent(IReservationBaseEvent):
+class IReservationsApprovedEvent(IReservationsBaseEvent):
     """ Event triggered when a reservation is approved. """
 
 
-class IReservationDeniedEvent(IReservationBaseEvent):
+class IReservationsDeniedEvent(IReservationsBaseEvent):
     """ Event triggered when a reservation is denied. """
 
 
-class IReservationRevokedEvent(IReservationBaseEvent):
+class IReservationsRevokedEvent(IReservationsBaseEvent):
     """ Event triggered when a reservation is revoked. """
 
     reason = Attribute("""

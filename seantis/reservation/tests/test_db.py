@@ -939,15 +939,15 @@ class TestScheduler(IntegrationTestCase):
     def test_events(self):
 
         # hookup test event subscribers
-        reservation_made_event = self.subscribe(events.ReservationMadeEvent)
+        reservation_made_event = self.subscribe(events.ReservationsMadeEvent)
         reservation_approved_event = self.subscribe(
-            events.ReservationApprovedEvent
+            events.ReservationsApprovedEvent
         )
         reservation_denied_event = self.subscribe(
-            events.ReservationDeniedEvent
+            events.ReservationsDeniedEvent
         )
         reservation_revoked_event = self.subscribe(
-            events.ReservationRevokedEvent
+            events.ReservationsRevokedEvent
         )
 
         self.assertFalse(reservation_made_event.was_fired())

@@ -17,20 +17,23 @@ from Products.CMFCore.utils import getToolByName
 from z3c.form import button
 from zope.schema import getFields
 
-from seantis.reservation.form import ReservationDataView
-from seantis.reservation.reserve import ReservationUrls
-from seantis.reservation.base import BaseViewlet
-from seantis.reservation.interfaces import IReservationsConfirmedEvent
-from seantis.reservation.interfaces import IReservationApprovedEvent
-from seantis.reservation.interfaces import IReservationDeniedEvent
-from seantis.reservation.interfaces import IReservationRevokedEvent
-from seantis.reservation.interfaces import OverviewletManager
-from seantis.reservation.interfaces import IEmailTemplate
-from seantis.reservation.interfaces import ISeantisReservationSpecific
-from seantis.reservation.mail_templates import templates
-from seantis.reservation import utils
-from seantis.reservation import settings
 from seantis.reservation import _
+from seantis.reservation import settings
+from seantis.reservation import utils
+from seantis.reservation.base import BaseViewlet
+from seantis.reservation.form import ReservationDataView
+from seantis.reservation.interfaces import IEmailTemplate
+from seantis.reservation.interfaces import IReservationsApprovedEvent
+from seantis.reservation.interfaces import IReservationsConfirmedEvent
+from seantis.reservation.interfaces import IReservationsDeniedEvent
+from seantis.reservation.interfaces import IReservationsRevokedEvent
+from seantis.reservation.interfaces import ISeantisReservationSpecific
+from seantis.reservation.interfaces import OverviewletManager
+from seantis.reservation.mail_templates import templates
+from seantis.reservation.reservations import (
+    combine_reservations, CombinedReservations
+)
+from seantis.reservation.reserve import ReservationUrls
 
 
 @grok.subscribe(IReservationsConfirmedEvent)
@@ -42,7 +45,7 @@ def on_reservations_confirmed(event):
 
     # send many mails to the admins
     if settings.get('send_email_to_managers') != 'never':
-        for reservation in event.reservations:
+        for reservation in combine_reservations(event.reservations):
 
             if reservation.autoapprovable:
                 send_reservation_mail(
@@ -56,28 +59,28 @@ def on_reservations_confirmed(event):
                 )
 
 
-@grok.subscribe(IReservationApprovedEvent)
-def on_reservation_approved(event):
+@grok.subscribe(IReservationsApprovedEvent)
+def on_reservations_approved(event):
     if not settings.get('send_email_to_reservees'):
         return
     if not event.reservation.autoapprovable:
         send_reservation_mail(
-            event.reservation, 'reservation_approved', event.language
+            event.reservations, 'reservation_approved', event.language
         )
 
 
-@grok.subscribe(IReservationDeniedEvent)
-def on_reservation_denied(event):
+@grok.subscribe(IReservationsDeniedEvent)
+def on_reservations_denied(event):
     if not settings.get('send_email_to_reservees'):
         return
     if not event.reservation.autoapprovable:
         send_reservation_mail(
-            event.reservation, 'reservation_denied', event.language
+            event.reservations, 'reservation_denied', event.language
         )
 
 
-@grok.subscribe(IReservationRevokedEvent)
-def on_reservation_revoked(event):
+@grok.subscribe(IReservationsRevokedEvent)
+def on_reservations_revoked(event):
     if not settings.get('send_email_to_reservees'):
         return
 
@@ -85,7 +88,7 @@ def on_reservation_revoked(event):
         return
 
     send_reservation_mail(
-        event.reservation, 'reservation_revoked', event.language,
+        event.reservations, 'reservation_revoked', event.language,
         to_managers=False, revocation_reason=event.reason
     )
 
@@ -221,7 +224,7 @@ def send_reservations_confirmed(reservations, language):
 
         lines = []
 
-        for reservation in grouped_reservations:
+        for reservation in combine_reservations(grouped_reservations):
 
             resource = resources[reservation.resource]
 
@@ -254,8 +257,13 @@ def send_reservations_confirmed(reservations, language):
             send_mail(resource, mail)
 
 
-def send_reservation_mail(reservation, email_type, language,
+def send_reservation_mail(reservations, email_type, language,
                           to_managers=False, revocation_reason=u''):
+
+    if isinstance(reservations, CombinedReservations):
+        reservation = reservations
+    else:
+        reservation = tuple(combine_reservations(reservations))[0]
 
     resource = utils.get_resource_by_uuid(reservation.resource)
 

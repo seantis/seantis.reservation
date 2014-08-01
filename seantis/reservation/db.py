@@ -6,18 +6,17 @@ from uuid import uuid1 as new_uuid
 from datetime import datetime, timedelta, MINYEAR, MAXYEAR
 from itertools import groupby
 
-#from zope.event import notify
-notify = lambda *args, **kwargs: None
+from zope.event import notify
 
 from sqlalchemy.sql import and_, or_
 from sqlalchemy.orm import joinedload, exc
 from sqlalchemy import func, null
 
 from seantis.reservation.events import (
-    ReservationMadeEvent,
-    ReservationApprovedEvent,
-    ReservationDeniedEvent,
-    ReservationRevokedEvent,
+    ReservationsMadeEvent,
+    ReservationsApprovedEvent,
+    ReservationsDeniedEvent,
+    ReservationsRevokedEvent,
     ReservationsConfirmedEvent
 )
 
@@ -921,6 +920,7 @@ class Scheduler(object):
         # ok, we're good to go
         token = new_uuid()
         found = 0
+        reservations = []
 
         # groups are reserved by group-identifier - so all members of a group
         # or none of them. As such there's no start / end date which is defined
@@ -938,6 +938,8 @@ class Scheduler(object):
             reservation.email = email.strip()
             reservation.quota = quota
             Session.add(reservation)
+
+            reservations.append(reservation)
         else:
             groups = []
 
@@ -965,6 +967,7 @@ class Scheduler(object):
                     reservation.quota = quota
                     Session.add(reservation)
 
+                    reservations.append(reservation)
                     groups.append(allocation.group)
 
             # check if no group reservation is made with this request.
@@ -974,7 +977,7 @@ class Scheduler(object):
                 'wrongly trying to reserve a group'
 
         if found:
-            notify(ReservationMadeEvent(reservation, self.language))
+            notify(ReservationsMadeEvent(reservations, self.language))
         else:
             raise InvalidReservationError
 
@@ -1041,7 +1044,7 @@ class Scheduler(object):
                 self._approve_reservation_record(reservation)
             )
 
-        notify(ReservationApprovedEvent(reservations, self.language))
+        notify(ReservationsApprovedEvent(reservations, self.language))
 
         return slots_to_reserve
 
@@ -1059,7 +1062,7 @@ class Scheduler(object):
 
         query.delete()
 
-        notify(ReservationDeniedEvent(reservations, self.language))
+        notify(ReservationsDeniedEvent(reservations, self.language))
 
     @serialized
     def revoke_reservation(self, token, reason, send_email=True):
@@ -1071,7 +1074,7 @@ class Scheduler(object):
         # an exception triggers later in the request
         reservations = self.reservations_by_token(token).all()
 
-        notify(ReservationRevokedEvent(
+        notify(ReservationsRevokedEvent(
             reservations, self.language, reason, send_email
         ))
 
