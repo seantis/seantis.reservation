@@ -623,7 +623,7 @@ class TestBrowser(FunctionalTestCase):
 
         browser.open(menu['reserve'])
 
-        self.assertEqual(browser.query('.fc-event').length, 4)
+        self.assertEqual(browser.query('.result-time').length, 4)
 
         browser.getControl('Email').value = 'test@example.org'
         browser.getControl('Reserve').click()

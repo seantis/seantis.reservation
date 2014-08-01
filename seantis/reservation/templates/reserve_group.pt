@@ -19,8 +19,8 @@
         The requested recurrence could not be found.
         </p>
         
-        <div class="limitedList">
-            <metal:block use-macro="context/@@group/macros/grouplist" />
+        <div class="limitedList" tal:define="allocations view/allocations">
+            <metal:block use-macro="context/@@seantis-reservation-macros/allocations-table" />
         </div>
 
         <metal:block use-macro="context/@@ploneform-macros/titlelessform" />

@@ -21,11 +21,9 @@
         <div tal:replace="structure provider:plone.abovecontentbody" />
 
         <div class="limitedList">
-            <div metal:define-macro="grouplist">
-                <tal:block define="allocations view/allocations">
-                    <metal:use use-macro="context/@@seantis-reservation-macros/allocations-table" />
-                </tal:block>
-            </div>
+          <tal:block define="allocations view/allocations">
+              <metal:use use-macro="context/@@seantis-reservation-macros/allocations-table" />
+          </tal:block>
         </div>
 
         <div tal:replace="structure provider:plone.belowcontentbody" />

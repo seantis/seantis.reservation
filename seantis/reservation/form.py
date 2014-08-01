@@ -2,7 +2,6 @@ from datetime import datetime
 from functools import wraps
 
 from five import grok
-from plone import api
 from plone.directives import form
 from zope.component import getMultiAdapter
 from z3c.form import interfaces
@@ -348,7 +347,11 @@ class AllocationGroupView(object):
 
     Use the following macro to display:
 
-    <metal:block use-macro="context/@@group/macros/grouplist" />
+    <tal:block define="allocations view/allocations">
+        <metal:use
+            use-macro="context/@@seantis-reservation-macros/allocations-table"
+        />
+    </tal:block>
 
     """
 
@@ -362,28 +365,6 @@ class AllocationGroupView(object):
             return [self.context.scheduler().allocation_by_id(self.id)]
         else:
             return []
-
-    @utils.memoize
-    def event_availability(self, allocation):
-        return utils.event_availability(
-            self.context,
-            self.request,
-            self.context.scheduler(),
-            allocation
-        )
-
-    def event_class(self, allocation):
-        base = 'fc-event fc-event-inner fc-event-skin groupListTime'
-        return base + ' ' + self.event_availability(allocation)[2]
-
-    def event_title(self, allocation):
-        return self.event_availability(allocation)[1]
-
-    def date_as_day(self, date):
-        return api.portal.get_localized_time(date, long_format=False)
-
-    def date_as_time(self, date):
-        return api.portal.get_localized_time(date, time_only=False)
 
 
 class ReservationDataView(object):
