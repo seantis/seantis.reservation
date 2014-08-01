@@ -35,7 +35,7 @@
       <tal:block tal:repeat="group python: view.approved_reservations().items()">
         <tal:block define="
             token python: group[0];
-            reservations python: group[1];
+            reservations python: view.unique(group[1]);
           ">
           <metal:use use-macro="context/@@seantis-reservation-macros/reservation-block" />
         </tal:block>
@@ -51,7 +51,7 @@
       <tal:block tal:repeat="group python: view.pending_reservations().items()">
           <tal:block define="
               token python: group[0];
-              reservations python: group[1];
+              reservations python: view.unique(group[1]);
             ">
               <metal:use use-macro="context/@@seantis-reservation-macros/reservation-block" />
           </tal:block>

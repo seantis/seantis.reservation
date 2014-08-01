@@ -69,12 +69,10 @@ class ReservationUrls(object):
         base = context.absolute_url()
         return base + u'/deny-reservation?token={}'.format(token)
 
-    def update_all_url(self, token, id, context=None):
+    def update_all_url(self, token, context=None):
         context = context or self.context
         base = context.absolute_url()
-        return base + u'/update-reservation-data?token={}&id={}'.format(
-            token, id
-        )
+        return base + u'/update-reservation-data?token={}'.format(token)
 
     def print_all_url(self, token, context):
         context = context or self.context
@@ -1058,8 +1056,8 @@ class ReservationDataEditForm(ReservationTargetForm, ReservationSchemata):
 
         if not hasattr(self, 'reservation_data'):
             try:
-                reservation = self.scheduler.reservation_by_id(self.id).one()
-                self.reservation_data = reservation.data
+                reservations = self.scheduler.reservations_by_token(self.token)
+                self.reservation_data = reservations.first().data
             except DirtyReadOnlySession:
                 self.reservation_data = {}
 
@@ -1121,8 +1119,8 @@ class ReservationDataEditForm(ReservationTargetForm, ReservationSchemata):
             self.additional_data = working
 
         def save():
-            self.scheduler.update_reservation_data(
-                self.id, self.additional_data
+            self.scheduler.update_reservations_data(
+                self.token, self.additional_data
             )
             self.flash(_(u'Formdata updated'))
 

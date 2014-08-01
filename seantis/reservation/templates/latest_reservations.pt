@@ -43,7 +43,7 @@
             <tal:block repeat="reservation python: results.items()">
               <tal:block define="
                 token python: reservation[0];
-                reservations python: reservation[1];
+                reservations python: view.unique(reservation[1]);
                 first_reservation python: reservation[1][0];
                 show_actions python: True;
               ">

@@ -1102,10 +1102,6 @@ class Scheduler(object):
         for reservation in self.reservations_by_token(token).all():
             reservation.data = data
 
-    @serialized
-    def update_reservation_data(self, id, data):
-        self.reservation_by_id(id).one().data = data
-
     def find_spot(self, master_allocation, start, end):
         """ Returns the first free allocation spot amongst the master and the
         mirrors. Honors the quota set on the master and will only try the
@@ -1346,9 +1342,3 @@ class Scheduler(object):
         master = self.allocation_by_id(allocation_id)
 
         return self.reservations_by_group(master.group)
-
-    def reservation_by_id(self, reservation_id):
-        query = self.managed_reservations()
-        query = query.filter(Reservation.id == reservation_id)
-
-        return query

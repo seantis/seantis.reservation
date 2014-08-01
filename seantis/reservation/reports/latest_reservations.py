@@ -10,6 +10,7 @@ from seantis.reservation import Session
 from seantis.reservation import db
 from seantis.reservation import _
 from seantis.reservation import utils
+from seantis.reservation.form import combine_reservations
 from seantis.reservation.models import Reservation
 from seantis.reservation.base import BaseView
 from seantis.reservation.reports import GeneralReportParametersMixin
@@ -132,6 +133,9 @@ class LatestReservationsReportView(BaseView, GeneralReportParametersMixin):
             self.context, self.request, human_date(reservation.created)
         )
         return '{} - {}'.format(human_date_text, reservation.title)
+
+    def unique(self, reservations):
+        return tuple(combine_reservations(reservations))
 
 
 def latest_reservations(resources, daterange, reservations='*'):

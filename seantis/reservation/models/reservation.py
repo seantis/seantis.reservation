@@ -103,7 +103,7 @@ class Reservation(TimestampMixin, ORMBase, OtherModels):
 
         return query
 
-    def timespans(self, start=None, end=None):
+    def timespans(self):
 
         if self.target_type == u'allocation':
             return [(self.start, self.end + timedelta(microseconds=1))]
