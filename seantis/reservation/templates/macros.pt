@@ -270,7 +270,10 @@
               <div class="result-day" tal:content="allocation/date" tal:condition="allocation/is_first_of_date" />
             </td>
             <td tal:condition="show_checkboxes | nothing">
-              <input type="checkbox" checked="checked" name="allocation_id" tal:attributes="value allocation/id" />
+              <input type="checkbox" name="allocation_id" tal:attributes="
+                value allocation/id;
+                checked python: 'unavailable' not in allocation['class'] and 'checked' or '';
+              " />
             </td>
             <td>
               <div 
