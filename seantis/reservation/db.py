@@ -919,67 +919,76 @@ class Scheduler(object):
 
         # ok, we're good to go
         token = new_uuid()
-        found = 0
         reservations = []
 
         # groups are reserved by group-identifier - so all members of a group
         # or none of them. As such there's no start / end date which is defined
         # implicitly by the allocation
-        if group:
-            found = 1
-            reservation = Reservation()
-            reservation.token = token
-            reservation.target = group
-            reservation.status = u'pending'
-            reservation.target_type = u'group'
-            reservation.resource = self.uuid
-            reservation.data = data
-            reservation.session_id = session_id
-            reservation.email = email.strip()
-            reservation.quota = quota
-            Session.add(reservation)
+        def new_reservations_by_group(group):
+            if group:
+                reservation = Reservation()
+                reservation.token = token
+                reservation.target = group
+                reservation.status = u'pending'
+                reservation.target_type = u'group'
+                reservation.resource = self.uuid
+                reservation.data = data
+                reservation.session_id = session_id
+                reservation.email = email.strip()
+                reservation.quota = quota
 
-            reservations.append(reservation)
-        else:
-            groups = []
+                yield reservation
+
+        # all other reservations are reserved by start/end date
+        def new_reservations_by_dates(dates):
+            already_reserved_groups = set()
 
             for start, end in dates:
-
                 for allocation in self.allocations_in_range(start, end):
+                    if allocation.group in already_reserved_groups:
+                        continue
 
                     if not allocation.overlaps(start, end):
                         continue
 
-                    found += 1
+                    # automatically reserve the whole group if the allocation
+                    # is part of a group
+                    if allocation.in_group:
+                        already_reserved_groups.add(allocation.group)
 
-                    reservation = Reservation()
-                    reservation.token = token
-                    reservation.start, reservation.end = rasterize_span(
-                        start, end, allocation.raster
-                    )
-                    reservation.target = allocation.group
-                    reservation.status = u'pending'
-                    reservation.target_type = u'allocation'
-                    reservation.resource = self.uuid
-                    reservation.data = data
-                    reservation.session_id = session_id
-                    reservation.email = email.strip()
-                    reservation.quota = quota
-                    Session.add(reservation)
+                        # I really want to use 'yield from'. Python 3 ftw!
+                        for r in new_reservations_by_group(allocation.group):
+                            yield r
+                    else:
+                        reservation = Reservation()
+                        reservation.token = token
+                        reservation.start, reservation.end = rasterize_span(
+                            start, end, allocation.raster
+                        )
+                        reservation.target = allocation.group
+                        reservation.status = u'pending'
+                        reservation.target_type = u'allocation'
+                        reservation.resource = self.uuid
+                        reservation.data = data
+                        reservation.session_id = session_id
+                        reservation.email = email.strip()
+                        reservation.quota = quota
 
-                    reservations.append(reservation)
-                    groups.append(allocation.group)
+                        yield reservation
 
-            # check if no group reservation is made with this request.
-            # reserve by group in this case (or make this function
-            # do that automatically)
-            assert len(groups) == len(set(groups)), \
-                'wrongly trying to reserve a group'
-
-        if found:
-            notify(ReservationsMadeEvent(reservations, self.language))
+        # create the reservations
+        if group:
+            reservations = tuple(new_reservations_by_group(group))
         else:
+            reservations = tuple(new_reservations_by_dates(dates))
+
+        if not reservations:
             raise InvalidReservationError
+
+        for reservation in reservations:
+            Session.add(reservation)
+
+        notify(ReservationsMadeEvent(reservations, self.language))
 
         return token
 
