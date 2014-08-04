@@ -85,7 +85,8 @@ class AllocationAddForm(AllocationForm):
             'raster': self.context.raster,
             'partly_available': self.context.partly_available,
             'reservation_quota_limit': self.context.reservation_quota_limit,
-            'whole_day': self.whole_day
+            'whole_day': self.whole_day,
+            'recurring': self.start != self.end
         }
 
     def default_recurrence(self):
@@ -94,13 +95,6 @@ class AllocationAddForm(AllocationForm):
 
         if not all((start, end)):
             return None, None
-
-        if self.whole_day:
-            start, end
-
-        for frame in sorted(self.context.timeframes(), key=lambda f: f.start):
-            if frame.start <= start and start <= frame.end:
-                return (frame.start, frame.end)
 
         return start, end
 
