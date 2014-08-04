@@ -1230,6 +1230,17 @@ class Scheduler(object):
                 if whole_day == 'no' and allocation.whole_day:
                     continue
 
+            # minspots means that we don't show allocations which cannot
+            # be reserved with the required spots in one reservation
+            # so we can disregard all allocations with a lower quota limit.
+            #
+            # the spots are later checked again for actual availability, but
+            # that is a heavier check, so it doesn't belong here.
+            if minspots:
+                if allocation.reservation_quota_limit > 0:
+                    if allocation.reservation_quota_limit < minspots:
+                        continue
+
             if available_only:
                 if not self.find_spot(allocation, s, e):
                     continue

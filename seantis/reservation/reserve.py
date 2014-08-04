@@ -666,6 +666,13 @@ class SelectionReservationForm(
             return None
 
     @property
+    def quota(self):
+        try:
+            return int(self.request.get('quota', 0))
+        except (TypeError, ValueError):
+            return None
+
+    @property
     def ids(self):
         ids = (
             self.request.get('allocation_id')
@@ -691,6 +698,9 @@ class SelectionReservationForm(
         if s or e and not utils.whole_day(s, e):
             defaults['start_time'] = s
             defaults['end_time'] = e
+
+        if self.quota:
+            defaults['quota'] = self.quota
 
         return self.your_reservation_defaults(defaults)
 

@@ -75,9 +75,15 @@
                   start_time view/start_time;
                   end_time view/end_time;
                 ">
+                  <tal:comment replace="nothing">
+                    Pass variables to the selection-reserve form
+                  </tal:comment>
                   <input type="hidden" name="start_time" tal:attributes="value python: view.options['start'].time().isoformat()" />
                   <input type="hidden" name="end_time" tal:attributes="value python: view.options['end'].time().isoformat()"/>
+                  <input type="hidden" name="quota" tal:attributes="value python: view.options['minspots']"/>
+                  
                   <metal:block use-macro="context/@@seantis-reservation-macros/allocations-table" />
+                  
                   <input type="submit" value="Reserve selected" i18n:attributes="value" />
                 </form>
               </div>
