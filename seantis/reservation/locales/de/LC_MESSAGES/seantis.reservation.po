@@ -182,7 +182,7 @@ msgstr "CSV Format"
 
 #: ./templates/macros.pt:237
 msgid "Calendar"
-msgstr "Kalendar"
+msgstr "Kalender"
 
 #: ./interfaces.py:361
 msgid "Calendar date shown when opening the calendar."
