@@ -423,3 +423,13 @@ def upgrade_1025_to_1026(context):
     # ensure that the records exist now
     settings.get('available_threshold')
     settings.get('partly_available_threshold')
+
+
+def upgrade_1026_to_1027(context):
+
+    setup = api.portal.get_tool('portal_setup')
+    setup.runImportStepFromProfile(
+        'profile-seantis.reservation:default', 'jsregistry'
+    )
+
+    recook_js_resources(context)

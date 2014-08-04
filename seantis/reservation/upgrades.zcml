@@ -236,4 +236,13 @@
         profile="seantis.reservation:default">
     </genericsetup:upgradeStep>
 
+    <genericsetup:upgradeStep
+        title="Add new javascript file"
+        description=""
+        source="1026"
+        destination="1027"
+        handler=".upgrades.upgrade_1026_to_1027"
+        profile="seantis.reservation:default">
+    </genericsetup:upgradeStep>
+
 </configure>

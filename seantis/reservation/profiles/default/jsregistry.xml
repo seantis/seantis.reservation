@@ -9,12 +9,12 @@
         <!-- internal modules -->
         <javascript id="++resource++seantis.reservation.js/utils.js" enabled="True" insert-after="++resource++collective.js.underscore/underscore.min.js"/>
 
-        <javascript id="++resource++seantis.reservation.js/context.js" enabled="True" expression="python:object.portal_type == 'seantis.reservation.resource'" insert-after="jquery.js"/>      
+        <javascript id="++resource++seantis.reservation.js/context.js" enabled="True" expression="python:object.portal_type == 'seantis.reservation.resource'" insert-after="jquery.js"/>
 
-        <javascript id="++resource++seantis.reservation.js/locale.js" enabled="True" insert-after="jquery.js"/>   
+        <javascript id="++resource++seantis.reservation.js/locale.js" enabled="True" insert-after="jquery.js"/>
 
         <javascript id="++resource++seantis.reservation.js/overview.js" enabled="True" insert-after="jquery.js" />
-        
+
         <javascript id="++resource++seantis.reservation.js/jquery.timetable.js" enabled="True" insert-after="jquery.js" />
 
         <javascript id="++resource++seantis.reservation.js/formgroups.js" enabled="True" insert-after="++resource++plone.app.jquerytools.overlayhelpers.js"/>
@@ -31,6 +31,8 @@
 
         <javascript id="++resource++seantis.reservation.js/wizard.js" enabled="True" insert-after="++resource++seantis.reservation.js/formgroups.js"/>
 
-        <javascript id="++resource++seantis.reservation.js/your-reservations.js" enabled="True" insert-after="++resource++seantis.reservation.js/overlay.js"/>     
-        
+        <javascript id="++resource++seantis.reservation.js/your-reservations.js" enabled="True" insert-after="++resource++seantis.reservation.js/overlay.js"/>
+
+        <javascript id="++resource++seantis.reservation.js/search.js" enabled="True" insert-after="++resource++seantis.reservation.js/overlay.js" expression="python:object.portal_type == 'seantis.reservation.resource'"/>
+
 </object>

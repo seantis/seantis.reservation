@@ -226,7 +226,7 @@
     </tal:comment>
 
     <metal:define define-macro="resource-tabs" tal:define="macro python: context.unrestrictedTraverse('@@seantis-reservation-macros')">
-      <ul class="formTabs">
+      <ul class="formTabs resource-view-switch">
         <li class="formTab firstFormTab">
           <a id="fieldsetlegend-default" href="#fieldsetlegend-default"
             tal:attributes="

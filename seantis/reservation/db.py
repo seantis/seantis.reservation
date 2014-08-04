@@ -214,16 +214,16 @@ def confirm_reservations_for_session(session_id, token=None, language=None):
 
 
 @serialized
-def remove_reservation_from_session(session_id, token):
-    """ Removes the reservation with the given session_id and token. """
+def remove_reservations_from_session(session_id, token):
+    """ Removes the reservations with the given session_id and token. """
 
     assert token and session_id
 
-    query = reservations_by_session(session_id)
-    query = query.filter(Reservation.token == token)
+    reservations = reservations_by_session(session_id)
+    reservations = reservations.filter(Reservation.token == token)
+    reservations = reservations.order_by(False)
 
-    reservation = query.one()
-    Session.delete(reservation)
+    reservations.delete('fetch')
 
     # if we get here the token must be valid, we should then check if the
     # token is used in the reserved slots, because with autoapproval these

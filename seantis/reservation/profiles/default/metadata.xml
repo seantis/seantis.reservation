@@ -1,5 +1,5 @@
 <metadata>
-    <version>1026</version>
+    <version>1027</version>
     <dependencies>
         <dependency>profile-plone.app.dexterity:default</dependency>
         <dependency>profile-collective.js.jqueryui:default</dependency>

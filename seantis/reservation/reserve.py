@@ -233,7 +233,7 @@ class YourReservationsData(object):
     def remove_reservation(self, token):
         try:
             session_id = plone_session.get_session_id(self.context)
-            db.remove_reservation_from_session(session_id, token)
+            db.remove_reservations_from_session(session_id, token)
         except NoResultFound:
             pass  # act idempotent to the user
 

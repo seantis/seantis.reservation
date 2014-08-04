@@ -74,7 +74,7 @@
                   show_checkboxes python: True;
                   start_time view/start_time;
                   end_time view/end_time;
-                ">
+                " id="reserve-selection-form">
                   <tal:comment replace="nothing">
                     Pass variables to the selection-reserve form
                   </tal:comment>

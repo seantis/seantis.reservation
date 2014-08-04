@@ -89,6 +89,11 @@ seantis.formgroups.add_utility_links = function() {
     if (!timeframes_field.length)
         return;
 
+    if (timeframes_field.data('timeframes-applied') === true)
+        return;
+
+    timeframes_field.data('timeframes-applied', true);
+
     var timeframes = $.parseJSON(timeframes_field.val());
     timeframes = _.sortBy(timeframes, function(frame) {
         return frame.start;
