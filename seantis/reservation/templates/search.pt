@@ -67,7 +67,16 @@
               </div>
 
               <div class="searchresults" tal:condition="view/results">
-                <div class="resultinfo" i18n:translate="">Found the following results:</div>
+                <div class="searchresults-header">
+                  <div class="resultinfo"><tal:block content="python: len(view.results)" /> <span i18n:translate="">results</span></div>
+                  <div class="resultactions">
+                    <a id='select-no-searchresults' class="button" i18n:translate="">None</a>
+                    <a id='select-all-searchresults' class="button" i18n:translate="">All</a>
+                    <div i18n:translate="">Select: </div>
+                  </div>
+
+                  <div class="visualClear" />
+                </div>
 
                 <form action="./reserve-selection" method="post" tal:define="
                   allocations view/results;

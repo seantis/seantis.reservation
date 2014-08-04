@@ -3,6 +3,15 @@ if (!this.seantis.search) {
     this.seantis.search = {};
 }
 
+seantis.search.init_select_buttons = function() {
+    $('#select-all-searchresults').click(function() {
+        $('.searchresults input[type="checkbox"]').prop('checked', true);
+    });
+    $('#select-no-searchresults').click(function() {
+        $('.searchresults input[type="checkbox"]').prop('checked', false);
+    });
+};
+
 seantis.search.init_overlays = function() {
     var submit = $('.searchresults input[type="submit"]');
     if (submit.length >= 0) seantis.search.init_submit(submit);
@@ -110,5 +119,6 @@ seantis.search.init_submit = function(submit) {
 (function($) {
     $(document).ready(function() {
         seantis.search.init_overlays();
+        seantis.search.init_select_buttons();
     });
 })(jQuery);
