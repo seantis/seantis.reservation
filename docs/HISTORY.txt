@@ -2,8 +2,20 @@
 Changelog
 =========
 
-1.0.25 (unreleased)
--------------------
+1.1 (unreleased)
+----------------
+
+- Adds new search & reserve feature. On each resource, users may search
+  for allocations. Those allocations may be selected and reserved in compound.
+
+  This is a big new feature and 1.1 is meant to be the canary for it. There
+  are certain things which don't yet work: group reservations are kept out
+  of the search, the compound reservations don't show up everywhere yet and
+  there are rough edges in the UI.
+
+  If you are not absolutely sure you need this release we therefore recommend
+  to wait for a week or two. We'll deliver 1.1.1 which will be a more stable
+  and more widely adapted release.
 
 - Hide the timeframes selection in the allocation and search form, inside
   an icon close to the dates.
