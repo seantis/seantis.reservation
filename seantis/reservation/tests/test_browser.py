@@ -892,3 +892,95 @@ class TestBrowser(FunctionalTestCase):
 
         # three doesn't, so it won't show up
         self.assertNotIn('testfolder - three', browser.contents)
+
+    @db.serialized
+    def test_search_and_reserve(self):
+        browser = self.admin_browser
+
+        self.add_resource('resource')
+
+        dates = [
+            (datetime(2014, 8, 20, 15, 00), datetime(2014, 8, 20, 16, 00)),
+            (datetime(2014, 8, 21, 15, 00), datetime(2014, 8, 21, 16, 00)),
+            (datetime(2014, 8, 22, 15, 00), datetime(2014, 8, 22, 16, 00)),
+        ]
+
+        allocations = [['resource', s, e] for s, e in dates]
+
+        for allocation in allocations:
+            self.add_allocation(*allocation)
+
+        browser.open(self.infolder('/resource/search'))
+        browser.set_date(
+            'form.widgets.recurrence_start', datetime(2014, 8, 20)
+        )
+        browser.set_date(
+            'form.widgets.recurrence_end', datetime(2014, 8, 21)
+        )
+
+        # these values should be passed to the selection form
+        browser.getControl('Start time').value = '10:00 AM'
+        browser.getControl('End time').value = '10:00 PM'
+        browser.getControl('Spots').value = '1'
+
+        browser.getControl(name='form.buttons.search').click()
+        self.assertNotIn('No results found', browser.contents)
+        self.assertIn('Aug 20, 2014', browser.contents)
+        self.assertIn('Aug 21, 2014', browser.contents)
+        self.assertNotIn('Aug 22, 2014', browser.contents)
+
+        # all allocations in the results are available, so they are preselected
+        chks = browser.query('input[name="allocation_id"][checked="checked"]')
+        self.assertEqual(len(chks), 2)
+
+        browser.getControl('Reserve selected').click()
+
+        self.assertIn('Aug 20, 2014', browser.contents)
+        self.assertIn('Aug 21, 2014', browser.contents)
+        self.assertNotIn('Aug 22, 2014', browser.contents)
+
+        self.assertEqual(
+            browser.query('#form-widgets-start_time').val(), '10:00 AM'
+        )
+        self.assertEqual(
+            browser.query('#form-widgets-end_time').val(), '10:00 PM'
+        )
+        self.assertEqual(browser.query('#form-widgets-quota').val(), '1')
+
+        # submit an invalid reservation and ensure that everything remains
+        browser.getControl('Reserve').click()
+        self.assertIn('Aug 20, 2014', browser.contents)
+        self.assertIn('Aug 21, 2014', browser.contents)
+        self.assertNotIn('Aug 22, 2014', browser.contents)
+
+        self.assertEqual(
+            browser.query('#form-widgets-start_time').val(), '10:00 AM'
+        )
+        self.assertEqual(
+            browser.query('#form-widgets-end_time').val(), '10:00 PM'
+        )
+        self.assertEqual(browser.query('#form-widgets-quota').val(), '1')
+
+        # go ahead
+        browser.getControl('Email').value = 'info@example.org'
+        browser.getControl('Reserve').click()
+
+        # no try the search again, but include all dates
+        browser.open(self.infolder('/resource/search'))
+        browser.set_date(
+            'form.widgets.recurrence_start', datetime(2014, 8, 20)
+        )
+        browser.set_date(
+            'form.widgets.recurrence_end', datetime(2014, 8, 22)
+        )
+
+        browser.getControl(name='form.buttons.search').click()
+        self.assertNotIn('No results found', browser.contents)
+        self.assertIn('Aug 20, 2014', browser.contents)
+        self.assertIn('Aug 21, 2014', browser.contents)
+        self.assertIn('Aug 22, 2014', browser.contents)
+
+        # this time only one allocation is still available, which is reflected
+        # in the state of the checkboxes
+        chks = browser.query('input[name="allocation_id"][checked="checked"]')
+        self.assertEqual(len(chks), 1)
