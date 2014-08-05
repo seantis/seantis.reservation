@@ -64,29 +64,6 @@ def all_allocations_in_range(start, end):
     )
 
 
-def grouped_reservation_view(query):
-    """Takes a query of reserved slots joined with allocations and uses it
-    to return reservation uuid, allocation id and the start and end dates
-    within the referenced allocation.
-
-    If the above sentence does not make sense: It essentialy builds the data
-    needed for the ManageReservationsForm.
-
-    """
-    query = query.with_entities(
-        ReservedSlot.reservation_token,
-        Allocation.id,
-        func.min(ReservedSlot.start),
-        func.max(ReservedSlot.end)
-    )
-    query = query.group_by(ReservedSlot.reservation_token, Allocation.id)
-    query = query.order_by(
-        ReservedSlot.reservation_token, 'min_1', Allocation.id
-    )
-
-    return query
-
-
 def availability_by_allocations(allocations):
     """Takes any iterator with alloctions and calculates the availability.
     Counts missing mirrors as 100% free and returns a value between 0-100 in
