@@ -175,7 +175,7 @@ msgstr "Verfügbare Ansichten"
 
 #: ./search.py:65
 msgid "Available only"
-msgstr "Nur wenn Verfügbar"
+msgstr "Nur wenn verfügbar"
 
 #: ./export.py:62
 msgid "CSV Format"
