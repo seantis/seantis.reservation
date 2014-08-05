@@ -74,6 +74,10 @@ class AllocationAddForm(AllocationForm):
 
     def defaults(self):
         recurrence_start, recurrence_end = self.default_recurrence()
+        if not (self.start or self.end):
+            is_recurring = False
+        else:
+            is_recurring = self.start.date() != self.end.date()
 
         return {
             'group': u'',
@@ -86,7 +90,7 @@ class AllocationAddForm(AllocationForm):
             'partly_available': self.context.partly_available,
             'reservation_quota_limit': self.context.reservation_quota_limit,
             'whole_day': self.whole_day,
-            'recurring': self.start != self.end
+            'recurring': is_recurring,
         }
 
     def default_recurrence(self):
