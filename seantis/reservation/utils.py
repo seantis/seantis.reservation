@@ -61,8 +61,6 @@ except ImportError:
     from ordereddict import OrderedDict  # python < 2.7
     OrderedDict  # Pyflakes
 
-from seantis.reservation.sortedcollection import SortedCollection
-
 dexterity_encoder = SchemaNameEncoder()
 
 
@@ -619,14 +617,6 @@ class UUIDEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, UUID):
             return string_uuid(obj)
-        return json.JSONEncoder.default(self, obj)
-
-
-class SortedCollectionEncoder(json.JSONEncoder):
-    """Encodes SortedCollectionEncoder objects as string in JSON."""
-    def default(self, obj):
-        if isinstance(obj, SortedCollection):
-            return [o for o in obj]
         return json.JSONEncoder.default(self, obj)
 
 

@@ -1313,39 +1313,6 @@ class Scheduler(object):
 
         return query
 
-    def reserved_slots_by_range(self, reservation_token, start, end):
-        assert start and end
-
-        query = self.reserved_slots_by_reservation(reservation_token)
-        query = query.filter(start <= ReservedSlot.start)
-        query = query.filter(ReservedSlot.end <= end)
-
-        slots = []
-        for slot in query:
-            if not slot.allocation.overlaps(start, end):
-                # Might happen because start and end are not rasterized
-                continue
-
-            slots.append(slot)
-
-        return slots
-
-    def reserved_slots_by_group(self, group):
-        query = self.managed_reserved_slots()
-        query = query.filter(Allocation.group == group)
-
-        return query
-
-    def reserved_slots_by_allocation(self, allocation_id):
-        master = self.allocation_by_id(allocation_id)
-        mirrors = self.allocation_mirrors_by_master(master)
-        ids = [master.id] + [m.id for m in mirrors]
-
-        query = self.managed_reserved_slots()
-        query = query.filter(ReservedSlot.allocation_id.in_(ids))
-
-        return query
-
     def reservations_by_token(self, token):
         query = self.managed_reservations()
         query = query.filter(Reservation.token == token)
