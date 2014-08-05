@@ -1146,7 +1146,8 @@ class Scheduler(object):
         days=None,
         minspots=0,
         available_only=False,
-        whole_day='any'
+        whole_day='any',
+        groups='any'
     ):
         """ Search allocations using a number of options. The date is split
         into date/time. All allocations between start and end date within
@@ -1184,10 +1185,19 @@ class Scheduler(object):
 
             Any is the same as leaving the option out.
 
+        :include_groups:
+            'any' if all allocations should be included.
+            'yes' if only group-allocations should be included.
+            'no' if no group-allocations should be included.
+
+            See allocation.in_group to see what constitutes a group
         """
 
         assert start
         assert end
+
+        assert whole_day in ('yes', 'no', 'any')
+        assert groups in ('yes', 'no', 'any')
 
         if days:
             days_map = {
@@ -1251,6 +1261,12 @@ class Scheduler(object):
                 )
 
                 if (minspots / float(allocation.quota) * 100.0) > availability:
+                    continue
+
+            if groups != 'any':
+                if groups == 'yes' and not allocation.in_group:
+                    continue
+                if groups == 'no' and allocation.in_group:
                     continue
 
             allocations.append(allocation)
