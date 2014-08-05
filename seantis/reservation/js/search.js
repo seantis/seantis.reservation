@@ -5,10 +5,10 @@ if (!this.seantis.search) {
 
 seantis.search.init_select_buttons = function() {
     $('#select-all-searchresults').click(function() {
-        $('.searchresults input[type="checkbox"]').prop('checked', true);
+        $('.searchresults input[type="checkbox"]:not([disabled])').prop('checked', true);
     });
     $('#select-no-searchresults').click(function() {
-        $('.searchresults input[type="checkbox"]').prop('checked', false);
+        $('.searchresults input[type="checkbox"]:not([disabled])').prop('checked', false);
     });
 };
 

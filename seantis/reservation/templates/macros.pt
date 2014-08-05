@@ -273,6 +273,7 @@
               <input type="checkbox" name="allocation_id" tal:attributes="
                 value allocation/id;
                 checked python: 'unavailable' not in allocation['class'] and 'checked' or '';
+                disabled python: 'unavailable' in allocation['class'] and 'disabled' or '';
               " />
             </td>
             <td>
