@@ -1325,10 +1325,14 @@ class Scheduler(object):
         return query
 
     def reservations_by_group(self, group):
-        query = self.managed_reservations()
-        query = query.filter(Reservation.target == group)
+        tokens = self.managed_reservations().with_entities(Reservation.token)
+        tokens = tokens.filter(Reservation.target == group)
 
-        return query
+        return self.managed_reservations().filter(
+            Reservation.token.in_(
+                tokens.subquery()
+            )
+        )
 
     def reservations_by_allocation(self, allocation_id):
         master = self.allocation_by_id(allocation_id)

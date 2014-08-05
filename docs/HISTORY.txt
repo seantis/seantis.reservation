@@ -5,7 +5,8 @@ Changelog
 1.1.1 (unreleased)
 ------------------
 
-Nothing yet.
+- Reservation dates are now always shown correctly in the manage view.
+  [href]
 
 1.1 (2014-08-05)
 ----------------
@@ -21,6 +22,7 @@ Nothing yet.
   If you are not absolutely sure you need this release we therefore recommend
   to wait for a week or two. We'll deliver 1.1.1 which will be a more stable
   and more widely adapted release.
+  [href]
 
 - Hide the timeframes selection in the allocation and search form, inside
   an icon close to the dates.
