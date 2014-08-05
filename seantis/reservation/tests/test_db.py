@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from copy import copy
 from datetime import datetime, timedelta
+from mock import Mock
 from uuid import uuid1 as new_uuid
 
 from seantis.reservation import settings
@@ -1144,6 +1145,99 @@ class TestScheduler(IntegrationTestCase):
             db.confirm_reservations_for_session,
             new_uuid()
         )
+
+    @serialized
+    def test_search_allocations(self):
+        self.login_manager()
+
+        resource = self.create_resource()
+        sc = resource.scheduler()
+
+        start = datetime(2014, 8, 3, 13, 0)
+        end = datetime(2014, 8, 3, 15, 0)
+        daterange = (start, end)
+        maxrange = (datetime.min, datetime.max)
+
+        # test empty
+        self.assertEqual(len(sc.search_allocations(*daterange)), 0)
+        self.assertEqual(len(sc.search_allocations(*maxrange)), 0)
+
+        # test matching
+        sc.allocate(daterange, reservation_quota_limit=2, quota=4)
+        self.assertEqual(len(sc.search_allocations(*daterange)), 1)
+        self.assertEqual(len(sc.search_allocations(*maxrange)), 1)
+
+        # test overlapping
+        adjusted = (start - timedelta(hours=1), end - timedelta(hours=1))
+        self.assertEqual(len(sc.search_allocations(*adjusted)), 1)
+        adjusted = (start - timedelta(hours=2), end - timedelta(minutes=59))
+        self.assertEqual(len(sc.search_allocations(*adjusted)), 1)
+        adjusted = (start - timedelta(hours=2), end - timedelta(hours=2))
+        self.assertEqual(len(sc.search_allocations(*adjusted)), 0)
+
+        # test days
+        self.assertEqual(
+            len(sc.search_allocations(*daterange, days=['su'])), 1
+        )
+        self.assertEqual(
+            len(sc.search_allocations(*daterange, days=['mo'])), 0
+        )
+
+        # make sure the exposure is taken into account
+        sc.is_exposed = Mock(return_value=False)
+        self.assertEqual(len(sc.search_allocations(*daterange)), 0)
+
+        sc.is_exposed = Mock(return_value=True)
+        self.assertEqual(len(sc.search_allocations(*daterange)), 1)
+
+        # test available only
+        self.assertEqual(
+            len(sc.search_allocations(*daterange, available_only=True)), 1
+        )
+        sc.find_spot = Mock(return_value=None)
+        self.assertEqual(
+            len(sc.search_allocations(*daterange, available_only=True)), 0
+        )
+
+        # test minspots (takes reservation_quota_limit into account)
+        sc.availability = Mock(return_value=100.0)
+        self.assertEqual(len(sc.search_allocations(*daterange, minspots=1)), 1)
+        self.assertEqual(len(sc.search_allocations(*daterange, minspots=2)), 1)
+        self.assertEqual(len(sc.search_allocations(*daterange, minspots=3)), 0)
+
+        sc.availability = Mock(return_value=50.0)
+        self.assertEqual(len(sc.search_allocations(*daterange, minspots=1)), 1)
+        self.assertEqual(len(sc.search_allocations(*daterange, minspots=2)), 1)
+        self.assertEqual(len(sc.search_allocations(*daterange, minspots=3)), 0)
+
+        sc.availability = Mock(return_value=25.0)
+        self.assertEqual(len(sc.search_allocations(*daterange, minspots=1)), 1)
+        self.assertEqual(len(sc.search_allocations(*daterange, minspots=2)), 0)
+        self.assertEqual(len(sc.search_allocations(*daterange, minspots=3)), 0)
+
+        sc.availability = Mock(return_value=0.0)
+        self.assertEqual(len(sc.search_allocations(*daterange, minspots=1)), 0)
+        self.assertEqual(len(sc.search_allocations(*daterange, minspots=2)), 0)
+        self.assertEqual(len(sc.search_allocations(*daterange, minspots=3)), 0)
+
+    @serialized
+    def test_search_allocation_groups(self):
+        self.login_manager()
+
+        resource = self.create_resource()
+        sc = resource.scheduler()
+
+        s1, e1 = datetime(2014, 8, 3, 13, 0), datetime(2014, 8, 3, 15, 0)
+        s2, e2 = datetime(2014, 8, 4, 13, 0), datetime(2014, 8, 4, 15, 0)
+
+        sc.allocate([(s1, e1), (s2, e2)], grouped=True)
+
+        self.assertEqual(len(sc.search_allocations(s1, e1)), 1)
+        self.assertEqual(len(sc.search_allocations(s2, e2)), 1)
+        self.assertEqual(len(sc.search_allocations(s1, e2)), 2)
+
+        self.assertEqual(len(sc.search_allocations(s1, e2, groups='yes')), 2)
+        self.assertEqual(len(sc.search_allocations(s1, e2, groups='no')), 0)
 
     @serialized
     def test_email(self):

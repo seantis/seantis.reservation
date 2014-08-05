@@ -1219,6 +1219,8 @@ class Scheduler(object):
 
         allocations = []
 
+        known_groups = set()
+
         for allocation in query:
 
             if not self.is_exposed(allocation):
@@ -1264,9 +1266,16 @@ class Scheduler(object):
                     continue
 
             if groups != 'any':
-                if groups == 'yes' and not allocation.in_group:
+                in_group = (
+                    allocation.group in known_groups or allocation.in_group
+                )
+
+                if in_group:
+                    known_groups.add(allocation.group)
+
+                if groups == 'yes' and not in_group:
                     continue
-                if groups == 'no' and allocation.in_group:
+                if groups == 'no' and in_group:
                     continue
 
             allocations.append(allocation)
