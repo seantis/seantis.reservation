@@ -64,7 +64,7 @@ class ISearchAndReserveForm(model.Schema):
     available_only = schema.Bool(
         title=_(u"Available only"),
         required=False,
-        default=False
+        default=True
     )
 
 

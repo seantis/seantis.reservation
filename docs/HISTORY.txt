@@ -5,6 +5,9 @@ Changelog
 1.1.1 (unreleased)
 ------------------
 
+- The search now defaults to 'available allocations only'.
+  [href]
+
 - Reservation dates are now always shown correctly in the manage view.
   [href]
 
