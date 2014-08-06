@@ -2,7 +2,7 @@
 Changelog
 =========
 
-1.1.1 (unreleased)
+1.1.1 (2014-08-06)
 ------------------
 
 - Fixes a bug where reserving a heterogenous group of reservations would
