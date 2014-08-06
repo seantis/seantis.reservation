@@ -940,16 +940,24 @@ class ReservationRevocationForm(
 
     @property
     def hint(self):
-        if not (self.token or self.approved_reservations()):
+        if not self.has_reservations:
             return _(u'No such reservation')
 
         return _(
             u'Do you really want to revoke the following reservations?'
         )
 
+    @property
+    def has_reservations(self):
+        return self.approved_reservations() and True or False
+
     @button.buttonAndHandler(_(u'Revoke'))
     @extract_action_data
     def revoke(self, data):
+
+        # might happen if the user submits twice
+        if not self.has_reservations:
+            return
 
         def revoke():
             self.scheduler.revoke_reservation(

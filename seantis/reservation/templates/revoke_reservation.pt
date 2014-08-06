@@ -12,9 +12,13 @@
         <h1 class="documentFirstHeading" tal:content="view/label | nothing"></h1>
         <p tal:content="python: view.hint"></p>
 
-        <div>
-          <metal:block use-macro="context/@@reservations/macros/approved_reservations" />
-        </div>
+        <tal:block condition="view/has_reservations">
+          <div>
+            <metal:block use-macro="context/@@reservations/macros/approved_reservations" />
+          </div>
+
+          
+        </tal:block>
         <metal:block use-macro="context/@@ploneform-macros/titlelessform" />
     </tal:main-macro>
 </metal:main>
