@@ -320,11 +320,14 @@ class ReservationBaseForm(ResourceBaseForm):
         session_id = self.session_id()
 
         # only store forms defined in the formsets list
-        additional_data = dict(
-            (
-                form, additional_data[form]
-            ) for form in self.context.formsets if form in additional_data
-        )
+        if not self.context.formsets:
+            additional_data = {}
+        else:
+            additional_data = dict(
+                (
+                    form, additional_data[form]
+                ) for form in self.context.formsets if form in additional_data
+            )
 
         run_pre_reserve_script(self.context, start, end, additional_data)
 
