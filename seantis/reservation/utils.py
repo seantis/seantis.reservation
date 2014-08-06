@@ -752,14 +752,13 @@ def event_availability(context, request, scheduler, allocation):
     Either provide the scheduler or the availability.
 
     """
-    a = allocation
     translate = translator(context, request)
 
-    availability = scheduler.availability(a.start, a.end)
+    availability = scheduler.availability(allocation.start, allocation.end)
     spots = int(round(allocation.quota * availability / 100))
 
     # get the title shown on the calendar block
-    if a.partly_available:
+    if allocation.partly_available:
         text = translate(_(u'%i%% Free')) % availability
     else:
         if allocation.quota > 1:
@@ -784,7 +783,7 @@ def event_availability(context, request, scheduler, allocation):
     return (
         availability,
         text,
-        ' '.join((event_class(availability), allocation_class(a)))
+        ' '.join((event_class(availability), allocation_class(allocation)))
     )
 
 

@@ -231,7 +231,14 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
             s = datetime.combine(self.display_start, start)
             e = datetime.combine(self.display_end, end)
 
+            if self.display_end < e:
+                e = self.display_end
+
+            if self.display_start > s:
+                s = self.display_start
+
             s, e = rasterize_span(s, e, self.raster)
+
             return s, e + timedelta(microseconds=1)
         else:
             return self.display_start, self.display_end

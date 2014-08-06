@@ -5,6 +5,9 @@ Changelog
 1.1.1 (unreleased)
 ------------------
 
+- Correctly aligns the time in the search view.
+  [href]
+
 - The search now defaults to 'available allocations only'.
   [href]
 
