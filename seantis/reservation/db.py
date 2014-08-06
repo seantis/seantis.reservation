@@ -687,11 +687,13 @@ class Scheduler(object):
         return query.all()
 
     def dates_by_allocation_ids(self, ids, start_time=None, end_time=None):
-        for allocation in self.allocations_by_ids(ids).all():
-            start_time = start_time or allocation.display_start.time()
-            end_time = end_time or allocation.display_end.time()
 
-            s, e = allocation.limit_timespan(start_time, end_time)
+        for allocation in self.allocations_by_ids(ids).all():
+
+            s = start_time or allocation.display_start.time()
+            e = end_time or allocation.display_end.time()
+
+            s, e = allocation.limit_timespan(s, e)
 
             yield s, e - timedelta(microseconds=1)
 

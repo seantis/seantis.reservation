@@ -5,6 +5,10 @@ Changelog
 1.1.1 (unreleased)
 ------------------
 
+- Fixes a bug where reserving a heterogenous group of reservations would
+  sometimes lead to wrongly reserved spots.
+  [href]
+
 - The availability of partly available allocations in the search view is
   now limited to the time selected in the search.
   [href]
@@ -30,7 +34,7 @@ Changelog
   there are rough edges in the UI.
 
   If you are not absolutely sure you need this release we therefore recommend
-  to wait for a week or two. We'll deliver 1.1.1 which will be a more stable
+  to wait for a week or two. We'll deliver 1.1.+ which will be a more stable
   and more widely adapted release.
   [href]
 
