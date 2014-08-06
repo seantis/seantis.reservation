@@ -61,19 +61,6 @@ class View(BaseView, ReservationUrls, ReservationDataView):
 
         for allocation in allocations:
 
-            availability, text, allocation_class = utils.event_availability(
-                self.context, self.request, scheduler, allocation
-            )
-
-            date = ', '.join((
-                self.translate(
-                    self.short_days[allocation.display_start.weekday()]
-                ),
-                api.portal.get_localized_time(
-                    allocation.display_start, long_format=False
-                )
-            ))
-
             if start_time or end_time:
                 s = start_time or allocation.display_start.time()
                 e = end_time or allocation.display_end.time()
@@ -85,6 +72,20 @@ class View(BaseView, ReservationUrls, ReservationDataView):
                 time_text = get_time_text(
                     allocation.display_start, allocation.display_end
                 )
+                s, e = None, None
+
+            availability, text, allocation_class = utils.event_availability(
+                self.context, self.request, scheduler, allocation, s, e
+            )
+
+            date = ', '.join((
+                self.translate(
+                    self.short_days[allocation.display_start.weekday()]
+                ),
+                api.portal.get_localized_time(
+                    allocation.display_start, long_format=False
+                )
+            ))
 
             result.append({
                 'id': allocation.id,

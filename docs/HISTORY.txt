@@ -5,6 +5,10 @@ Changelog
 1.1.1 (unreleased)
 ------------------
 
+- The availability of partly available allocations in the search view is
+  now limited to the time selected in the search.
+  [href]
+
 - Correctly aligns the time in the search view.
   [href]
 

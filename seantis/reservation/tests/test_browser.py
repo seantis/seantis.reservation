@@ -894,6 +894,81 @@ class TestBrowser(FunctionalTestCase):
         self.assertNotIn('testfolder - three', browser.contents)
 
     @db.serialized
+    def test_search_specific_time(self):
+        # make sure that a search for a specific timerange on a partly
+        # available allocation only returns the availability in this timerange
+        browser = self.admin_browser
+
+        self.add_resource('resource')
+
+        daterange = (
+            datetime(2014, 8, 20, 8, 00), datetime(2014, 8, 20, 10, 00)
+        )
+
+        allocation = ['resource', daterange[0], daterange[1]]
+        self.add_allocation(*allocation, partly_available=True)
+
+        # reserve 08:00 - 09:00
+        browser.open(self.infolder('/resource/search'))
+        browser.set_date(
+            'form.widgets.recurrence_start', datetime(2014, 8, 20)
+        )
+        browser.set_date(
+            'form.widgets.recurrence_end', datetime(2014, 8, 21)
+        )
+        browser.getControl('Start time').value = '08:00 AM'
+        browser.getControl('End time').value = '09:00 AM'
+        browser.getControl('Available only').selected = True
+
+        browser.getControl(name='form.buttons.search').click()
+
+        self.assertIn('Aug 20, 2014', browser.contents)
+        self.assertIn('100%', browser.contents)
+        self.assertIn('event-available', browser.contents)
+
+        browser.getControl('Reserve selected').click()
+
+        browser.getControl('Email').value = 'test@example.org'
+        browser.getControl('Reserve').click()
+
+        # now search for 08:00 - 09:00, which should yield 0% (unavailable)
+        browser.open(self.infolder('/resource/search'))
+        browser.set_date(
+            'form.widgets.recurrence_start', datetime(2014, 8, 20)
+        )
+        browser.set_date(
+            'form.widgets.recurrence_end', datetime(2014, 8, 21)
+        )
+        browser.getControl('Start time').value = '08:00 AM'
+        browser.getControl('End time').value = '09:00 AM'
+        browser.getControl('Available only').selected = False
+
+        browser.getControl(name='form.buttons.search').click()
+
+        self.assertIn('Aug 20, 2014', browser.contents)
+        self.assertIn('0%', browser.contents)
+        self.assertNotIn('100%', browser.contents)
+        self.assertIn('event-unavailable', browser.contents)
+
+        # now try to search for 09:00 - 10:00, which should yield 100%
+        browser.open(self.infolder('/resource/search'))
+        browser.set_date(
+            'form.widgets.recurrence_start', datetime(2014, 8, 20)
+        )
+        browser.set_date(
+            'form.widgets.recurrence_end', datetime(2014, 8, 21)
+        )
+        browser.getControl('Start time').value = '09:00 AM'
+        browser.getControl('End time').value = '10:00 AM'
+        browser.getControl('Available only').selected = True
+
+        browser.getControl(name='form.buttons.search').click()
+
+        self.assertIn('Aug 20, 2014', browser.contents)
+        self.assertIn('100%', browser.contents)
+        self.assertIn('event-available', browser.contents)
+
+    @db.serialized
     def test_search_and_reserve(self):
         browser = self.admin_browser
 

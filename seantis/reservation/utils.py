@@ -745,16 +745,34 @@ def allocation_class(allocation):
         return 'approve-automatically'
 
 
-def event_availability(context, request, scheduler, allocation):
-    """Returns the availability, the text with the availability and the class
+def event_availability(
+    context, request, scheduler, allocation, start=None, end=None
+):
+    """ Returns the availability, the text with the availability and the class
     for the availability to display on the calendar view.
 
-    Either provide the scheduler or the availability.
+    If start and end are given and the allocation is partly_available
+    the availability is set to 100% if the scheduler's find_spot method
+    returns True. That is if the timespan between start and end
+    is completely reservable.
+
+    This is very involved and slow, so you probably shouldn't use that.
+    This feature tries to account for the fact that parts of allocations
+    can be reserved in search, where the user gets the impression that
+    the time he entered is the actual allocation, when that timespan might
+    only refer to a part of the allocation.
+
+    For now this will be a new features which we'll test against. In the
+    future this needs to be made much faster => TODO.
 
     """
     translate = translator(context, request)
 
-    availability = scheduler.availability(allocation.start, allocation.end)
+    if start and end and allocation.partly_available:
+        availability = scheduler.find_spot(allocation, start, end) and 100 or 0
+    else:
+        availability = scheduler.availability(allocation.start, allocation.end)
+
     spots = int(round(allocation.quota * availability / 100))
 
     # get the title shown on the calendar block
