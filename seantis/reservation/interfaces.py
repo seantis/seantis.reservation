@@ -737,7 +737,8 @@ class IReservationTargetForm(Interface):
 
     id = schema.Text(
         title=_(u'Id'),
-        required=False
+        required=False,
+        default=None
     )
 
 

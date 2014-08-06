@@ -12,7 +12,8 @@ class TestReservations(IntegrationTestCase):
 
         class Reservation(object):
 
-            def __init__(self, token, timespans, data):
+            def __init__(self, id, token, timespans, data):
+                self.id = id
                 self.data = data
                 self.token = token
                 self._timespans = timespans
@@ -21,17 +22,17 @@ class TestReservations(IntegrationTestCase):
                 return self._timespans
 
         reservations = [
-            Reservation('a', [
+            Reservation(1, 'a', [
                 (date(2014, 1, 1), date(2014, 1, 1)),
                 (date(2014, 1, 2), date(2014, 1, 2)),
                 (date(2014, 1, 3), date(2014, 1, 3)),
             ], data={'id': 1}),
-            Reservation('b', [
+            Reservation(2, 'b', [
                 (date(2015, 1, 1), date(2015, 1, 1)),
                 (date(2015, 1, 2), date(2015, 1, 2)),
             ], data={'id': 2}),
 
-            Reservation('b', [
+            Reservation(3, 'b', [
                 (date(2015, 1, 3), date(2015, 1, 3)),
             ], data={'id': 3}),
         ]

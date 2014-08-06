@@ -247,15 +247,15 @@ body .event-unavailable .fc-event-time {
 }
 
 #content .color .event-available {
-    background-color: #5bad5b !important;   
+    background-color: #5bad5b !important;
 }
 
 #content .color .event-partly-available {
-    background-color: #fdad5b !important;   
+    background-color: #fdad5b !important;
 }
 
 #content .color .event-unavailable {
-    background-color: #d65b5b !important;   
+    background-color: #d65b5b !important;
 }
 
 #content .color .event-available.occupied {
@@ -346,4 +346,15 @@ body .event-unavailable .fc-event-time {
 /* hide the above-content viewlet in the thank you page */
 .template-thank-you-for-reserving .documentDescription {
     display: none;
+}
+
+/* timespans */
+
+.timespan-dates {
+    float: left;
+    margin-right: 1em;
+}
+
+.timespan-dates.highlight {
+    color: #00a5b8;
 }

@@ -5,7 +5,8 @@ Changelog
 1.1.2 (unreleased)
 ------------------
 
-Nothing yet.
+- Adds the ability to remove parts of a reservation (timespans).
+  [href]
 
 1.1.1 (2014-08-06)
 ------------------

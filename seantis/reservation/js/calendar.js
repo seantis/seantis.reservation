@@ -152,6 +152,11 @@ var CalendarGroups = function() {
                                 }
                             });
 
+                            // hookup the timespan highlighting
+                            if (!_.isUndefined(seantis.resource)) {
+                                seantis.resource.highlight_timespan_actions();
+                            }
+
                             // hide loading gif
                             target.toggleClass('loading', false);
                         });

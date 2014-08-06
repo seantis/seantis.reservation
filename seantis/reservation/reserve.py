@@ -961,7 +961,10 @@ class ReservationRevocationForm(
 
         def revoke():
             self.scheduler.revoke_reservation(
-                data['token'], data['reason'], data['send_email']
+                token=data['token'],
+                reason=data['reason'],
+                id=data.get('id'),
+                send_email=data['send_email']
             )
             self.flash(_(u'Reservation revoked'))
 
@@ -982,10 +985,6 @@ class ReservationList(BaseView, ReservationListView, ReservationUrls):
     grok.context(IResourceBase)
 
     template = grok.PageTemplateFile('templates/reservations.pt')
-
-    @property
-    def id(self):
-        return utils.request_id_as_int(self.request.get('id'))
 
     @property
     def group(self):

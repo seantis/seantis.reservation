@@ -76,10 +76,11 @@
             <metal:use use-macro="context/@@seantis-reservation-macros/reservation-title" />
           </tal:block>
 
-          <div tal:repeat="reservation reservations" class="reservation-list">
+          <div tal:repeat="reservation reservations" class="reservation-list" tal:define="show_actions show_actions | nothing">
             <tal:block define="
                 data python: reservation.data;
-                timespans python: reservation.timespans();
+                timespans python: reservation.bound_timespans();
+                show_actions python: show_actions and reservation.status == 'approved';
               ">
                 <metal:use use-macro="context/@@seantis-reservation-macros/reservation-data" />
                 <metal:use use-macro="context/@@seantis-reservation-macros/reservation-timespans" />
@@ -197,7 +198,9 @@
     <tal:comment replace="nothing">
     Reservation timespans block. Needs the following variables:
 
-    timespans -> list of start/end tuples
+    timespans -> list of start/end/token/id tuples
+    show_actions -> True if actions should be shown
+
     </tal:comment>
 
     <metal:define define-macro="reservation-timespans" tal:define="macro python: context.unrestrictedTraverse('@@seantis-reservation-macros')">
@@ -207,11 +210,22 @@
 
           <tal:block tal:repeat="timespan python: sorted(timespans)">
               <tal:block tal:define="
-                start python: timespan[0];
-                end python: timespan[1];
-                display python: macro.utils.display_date(start, end);
+                display python: macro.utils.display_date(timespan.start, timespan.end);
               ">
-                <div tal:content="display"></div>
+                <tal:block condition="show_actions | nothing">
+                  <div class="timespan-actions">
+                    <div class="timespan-dates" tal:content="display" tal:attributes="data-timespan-id timespan/id"></div>
+                    <a tal:condition="repeat/timespan/first/id" i18n:translate=""
+                       tal:attributes="
+                           href python: './revoke-reservation?token={}&id={}'.format(timespan.token, timespan.id);
+                           data-timespan-id timespan/id
+                       ">Revoke</a>
+                    <div class="visualClear" />
+                  </div>
+                </tal:block>
+                <tal:block condition="not:show_actions">
+                  <div tal:content="display"></div>
+                </tal:block>
               </tal:block>
           </tal:block>
 

@@ -770,6 +770,41 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(reservation._target_allocations().all(), allocations)
 
     @serialized
+    def test_allocations_by_multiple_reservations(self):
+        sc = Scheduler(new_uuid())
+
+        ranges = (
+            (datetime(2013, 12, 3, 13, 0), datetime(2013, 12, 3, 15, 0)),
+            (datetime(2014, 12, 3, 13, 0), datetime(2014, 12, 3, 15, 0))
+        )
+
+        allocations = []
+        for start, end in ranges:
+            allocations.extend(
+                sc.allocate((start, end), approve_manually=True)
+            )
+
+        token = sc.reserve(reservation_email, ranges)
+        sc.approve_reservations(token)
+
+        # we now have multiple reservations pointing to multiple tokens
+        # bound together in one reservation token
+        self.assertEqual(len(sc.allocations_by_reservation(token).all()), 2)
+
+        # which we can limit by reservation id
+        reservations = sc.managed_reservations().all()
+        self.assertEqual(
+            len(
+                sc.allocations_by_reservation(token, reservations[0].id).all()
+            ), 1
+        )
+        self.assertEqual(
+            len(
+                sc.allocations_by_reservation(token, reservations[1].id).all()
+            ), 1
+        )
+
+    @serialized
     def test_quota_changes(self):
         sc = Scheduler(new_uuid())
 

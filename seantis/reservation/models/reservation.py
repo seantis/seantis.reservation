@@ -1,3 +1,4 @@
+from collections import namedtuple
 from datetime import timedelta
 
 from sqlalchemy import types
@@ -10,6 +11,15 @@ from seantis.reservation import Session
 from seantis.reservation.models import customtypes
 from seantis.reservation.models.other import OtherModels
 from seantis.reservation.models.timestamp import TimestampMixin
+
+
+Timespan = namedtuple(
+    'Timespan', ('start', 'end')
+)
+
+BoundTimespan = namedtuple(
+    'BoundTimespan', ('start', 'end', 'token', 'id')
+)
 
 
 class Reservation(TimestampMixin, ORMBase, OtherModels):
@@ -112,13 +122,21 @@ class Reservation(TimestampMixin, ORMBase, OtherModels):
             return [(self.start, self.end + timedelta(microseconds=1))]
         elif self.target_type == u'group':
             return [
-                (
+                Timespan(
                     a.display_start, a.display_end
                 )
                 for a in self._target_allocations()
             ]
         else:
             raise NotImplementedError
+
+    def bound_timespans(self):
+
+        return [
+            BoundTimespan(
+                t[0], t[1], self.token, self.id
+            ) for t in self.timespans
+        ]
 
     @property
     def title(self):

@@ -439,7 +439,24 @@ class ReservationListView(object):
     show_links = True
 
     @property
+    def group(self):
+        """ This class expects a group referring to the allocation.group to be
+        set somewhere.
+        """
+        raise NotImplementedError
+
+    @property
     def token(self):
+        """ This class expects a token to be set somewhere. """
+        raise NotImplementedError
+
+    @property
+    def id(self):
+        """ Optionally, an id can be given which is used to select a specific
+        reservation out of a number of reservations sharing the same token.
+
+        The reservation given by id must have the same token as self.token
+        """
         return None
 
     @property
@@ -512,12 +529,10 @@ class ReservationListView(object):
     def all_reservations(self):
         scheduler = self.context.scheduler()
 
-        if self.id:
-            return scheduler.reservations_by_allocation(self.id)
         if self.group:
             return scheduler.reservations_by_group(self.group)
         if self.token:
-            return scheduler.reservations_by_token(self.token)
+            return scheduler.reservations_by_token(self.token, self.id)
 
         return None
 
@@ -526,8 +541,6 @@ class ReservationListView(object):
 
         if self.token:
             return scheduler.allocations_by_reservation(self.token)
-        if self.id:
-            return [scheduler.allocation_by_id(self.id)]
         if self.group:
             return scheduler.allocations_by_group(self.group)
 

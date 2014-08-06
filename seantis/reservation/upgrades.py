@@ -433,3 +433,9 @@ def upgrade_1026_to_1027(context):
     )
 
     recook_js_resources(context)
+
+
+def upgrade_1027_to_1028(context):
+
+    upgrade_1026_to_1027(context)  # it's the same thing all over again
+    recook_css_resources(context)

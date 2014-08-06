@@ -1,13 +1,11 @@
 import json
 import transaction
 
-from datetime import timedelta
+from datetime import timedelta, datetime
 from itertools import chain
 
 from zope.component import queryUtility
 from Products.CMFCore.interfaces import IPropertiesTool
-
-from datetime import datetime
 
 from seantis.reservation import utils
 from seantis.reservation import db
@@ -137,6 +135,8 @@ class TestBrowser(FunctionalTestCase):
         ).selected = approve_manually
 
         browser.getControl('Allocate').click()
+
+        return [resource, start, end]
 
     def add_formset(self, name, fields, for_managers=False):
         browser = self.admin_browser
@@ -892,6 +892,152 @@ class TestBrowser(FunctionalTestCase):
 
         # three doesn't, so it won't show up
         self.assertNotIn('testfolder - three', browser.contents)
+
+    @db.serialized
+    def test_pending_timespans(self):
+        browser = self.admin_browser
+
+        self.add_resource('manual')
+
+        allocation = self.add_allocation(
+            'manual',
+            datetime(2014, 2, 25, 12, 00),
+            datetime(2014, 2, 25, 15, 00),
+            approve_manually=True
+        )
+
+        menu = self.allocation_menu(*allocation)
+
+        # reserve this manually approved allocation
+        browser.open(menu['reserve'])
+        browser.getControl('Email').value = 'test@example.org'
+        browser.getControl('Reserve').click()
+        browser.getControl('Submit Reservations').click()
+
+        # as long as the reservation is not approved, there's no revoke
+        # link for the dates in the reservation (because that would
+        # require a separate mail message, would confuse the user and
+        # would give the admins a way to willy-nilly change the users
+        # reservation request which is what he wants approved
+        # anyway - not some different thing)
+        browser.open(menu['manage'])
+        self.assertEqual(len(browser.query('.timespan-actions a')), 0)
+
+        # approve it
+        browser.getLink('Approve').click()
+        browser.getControl('Approve').click()
+
+        # ensure that the revoke is now being shown
+        browser.open(menu['manage'])
+        self.assertEqual(len(browser.query('.timespan-actions a')), 1)
+
+    @db.serialized
+    def test_remove_group_timespans(self):
+        browser = self.admin_browser
+
+        self.add_resource('group')
+
+        start = datetime(2014, 2, 25, 12, 00)
+        end = datetime(2014, 2, 25, 15, 00)
+
+        allocation = self.add_allocation(
+            'group', start, end,
+            recurrence_start=start.date(),
+            recurrence_end=start.date() + timedelta(days=3)
+        )
+        menu = self.allocation_menu(*allocation)
+
+        browser.open(menu['reserve'])
+        browser.getControl('Email').value = 'test@example.org'
+        browser.getControl('Reserve').click()
+        browser.getControl('Submit Reservations').click()
+
+        browser.open(menu['manage'])
+
+        # with this group reservation we should see three dates with one
+        # revoke link only.
+        self.assertEqual(len(browser.query('.timespan-actions a')), 1)
+        self.assertEqual(len(browser.query('.timespan-dates')), 4)
+
+        # clicking one will remove all dates
+        browser.getLink('Revoke', index=1).click()
+        self.assertEqual(len(browser.query('.limitedList > div')), 4)
+
+        browser.getControl('Revoke').click()
+
+        browser.open(menu['manage'])
+        self.assertEqual(len(browser.query('.timespan-dates')), 0)
+
+    @db.serialized
+    def test_remove_timespans(self):
+        browser = self.admin_browser
+
+        self.add_resource('timespans')
+
+        # create two allocations
+        first = self.add_allocation(
+            'timespans',
+            datetime(2014, 2, 25, 12, 00),
+            datetime(2014, 2, 25, 15, 00),
+        )
+        second = self.add_allocation(
+            'timespans',
+            datetime(2014, 2, 25, 16, 00),
+            datetime(2014, 2, 25, 18, 00),
+        )
+
+        # reserve both in one go
+        browser.open(self.infolder('/timespans/search'))
+
+        browser.set_date('recurrence_start', datetime(2014, 2, 25))
+        browser.set_date('recurrence_end', datetime(2014, 2, 25))
+
+        browser.getControl(name='form.buttons.search').click()
+        browser.getControl('Reserve selected').click()
+        browser.getControl('Email').value = 'test@example.org'
+        browser.getControl('Reserve').click()
+        browser.getControl('Submit Reservations').click()
+
+        # while we're at it, make sure both manage views have the same dates
+        manage_first = self.allocation_menu(*first)['manage']
+        manage_second = self.allocation_menu(*second)['manage']
+
+        browser.open(manage_first)
+        self.assertIn('Feb 25, 2014 12:00 PM - 03:00 PM', browser.contents)
+        self.assertIn('Feb 25, 2014 04:00 PM - 06:00 PM', browser.contents)
+
+        browser.open(manage_second)
+        self.assertIn('Feb 25, 2014 12:00 PM - 03:00 PM', browser.contents)
+        self.assertIn('Feb 25, 2014 04:00 PM - 06:00 PM', browser.contents)
+
+        # revoke the last date
+        browser.getLink('Revoke', index=2).click()
+
+        self.assertNotIn('12:00 PM - 03:00 PM', browser.contents)
+        self.assertIn('04:00 PM - 06:00 PM', browser.contents)
+
+        browser.getControl('Revoke').click()
+
+        # ensure the date is gone
+        browser.open(manage_first)
+        self.assertIn('12:00 PM - 03:00 PM', browser.contents)
+        self.assertNotIn('04:00 PM - 06:00 PM', browser.contents)
+
+        # the second allocation now has no link to any reservations
+        browser.open(manage_second)
+        self.assertNotIn('12:00 PM - 03:00 PM', browser.contents)
+        self.assertNotIn('04:00 PM - 06:00 PM', browser.contents)
+
+        # remove the second date, ensuring that the whole reservation is gone
+        browser.open(manage_first)
+        browser.getLink('Revoke', index=1).click()
+        self.assertIn('12:00 PM - 03:00 PM', browser.contents)
+
+        browser.getControl('Revoke').click()
+
+        browser.open(manage_first)
+        self.assertNotIn('12:00 PM - 03:00 PM', browser.contents)
+        self.assertNotIn('04:00 PM - 06:00 PM', browser.contents)
 
     @db.serialized
     def test_search_specific_time(self):

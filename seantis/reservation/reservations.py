@@ -1,5 +1,5 @@
 from itertools import groupby
-from seantis.reservation import utils
+from seantis.reservation.models.reservation import BoundTimespan
 
 
 class CombinedReservations(object):
@@ -11,6 +11,9 @@ class CombinedReservations(object):
         self.combined_timespans = timespans
 
     def timespans(self):
+        return [(t[0], t[1]) for t in self.combined_timespans]
+
+    def bound_timespans(self):
         return self.combined_timespans
 
     def __getattr__(self, key):
@@ -40,7 +43,7 @@ def combine_reservations(reservations):
     reservation {
         token     => '0xabc',
         data      => x: 1
-        timespans => [(01.01, 02.01), (02.01, 03.01)]
+        timespans => [(01.01, 02.01, 0xabc, 01), (02.01, 03.01, 0xabc, 02)]
     }
 
     It's really all about grouping reservations in a way that makes the
@@ -53,9 +56,15 @@ def combine_reservations(reservations):
     for token, reservations in groupby(reservations, key=by_token):
         reservations = tuple(r for r in reservations)
 
+        timespans = []
+        for reservation in reservations:
+            for start, end in reservation.timespans():
+                timespans.append(
+                    BoundTimespan(
+                        start, end, reservation.token, reservation.id
+                    )
+                )
+
         yield CombinedReservations(
-            first_reservation=reservations[0],
-            timespans=[t for t in utils.pairs(
-                utils.flatten(r.timespans() for r in reservations)
-            )]
+            first_reservation=reservations[0], timespans=timespans
         )

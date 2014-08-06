@@ -35,4 +35,6 @@
 
         <javascript id="++resource++seantis.reservation.js/search.js" enabled="True" insert-after="++resource++seantis.reservation.js/overlay.js" expression="python:object.portal_type == 'seantis.reservation.resource'"/>
 
+        <javascript id="++resource++seantis.reservation.js/resource.js" enabled="True" insert-after="++resource++seantis.reservation.js/overlay.js" expression="python:object.portal_type == 'seantis.reservation.resource'"/>
+
 </object>

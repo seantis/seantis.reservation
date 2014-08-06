@@ -16,8 +16,6 @@
           <div>
             <metal:block use-macro="context/@@reservations/macros/approved_reservations" />
           </div>
-
-          
         </tal:block>
         <metal:block use-macro="context/@@ploneform-macros/titlelessform" />
     </tal:main-macro>

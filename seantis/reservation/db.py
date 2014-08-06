@@ -659,17 +659,41 @@ class Scheduler(object):
 
         return query
 
-    def allocations_by_reservation(self, reservation_token):
+    def allocations_by_reservation(self, token, id=None):
         """ Returns the allocations for the reservation if it was *approved*,
         pending reservations return nothing. If you need to get the allocation
         a pending reservation might be targeting, use _target_allocations
         in model.reservation.
 
         """
+
+        # TODO -> this is much too joiny, it was easier when we assumed
+        # that there would be one reservation per token, now that there
+        # is more than one reservation per token we should denormalize
+        # this a little by adding the reservation_id to the reserved slot
+
+        groups = self.managed_reservations()
+        groups = groups.with_entities(Reservation.target)
+        groups = groups.filter(Reservation.token == token)
+
+        if id is not None:
+            groups = groups.filter(Reservation.id == id)
+
+        allocations = self.managed_allocations()
+        allocations = allocations.with_entities(Allocation.id)
+        allocations = allocations.filter(Allocation.group.in_(
+            groups.subquery()
+        ))
+
         query = self.managed_allocations()
         query = query.join(ReservedSlot)
         query = query.filter(
-            ReservedSlot.reservation_token == reservation_token
+            ReservedSlot.reservation_token == token
+        )
+        query = query.filter(
+            ReservedSlot.allocation_id.in_(
+                allocations.subquery()
+            )
         )
         return query
 
@@ -1053,23 +1077,23 @@ class Scheduler(object):
         notify(ReservationsDeniedEvent(reservations, self.language))
 
     @serialized
-    def revoke_reservation(self, token, reason, send_email=True):
+    def revoke_reservation(self, token, reason, id=None, send_email=True):
         """ Revoke a reservation and inform the user of that."""
 
         reason = reason or u''
 
         # sending the email first is no problem as it won't work if
         # an exception triggers later in the request
-        reservations = self.reservations_by_token(token).all()
+        reservations = self.reservations_by_token(token, id).all()
 
         notify(ReservationsRevokedEvent(
             reservations, self.language, reason, send_email
         ))
 
-        self.remove_reservation(token)
+        self.remove_reservation(token, id)
 
     @serialized
-    def remove_reservation(self, token):
+    def remove_reservation(self, token, id=None):
         """ Removes all reserved slots of the given reservation token.
 
         Note that removing a reservation does not let the reservee know that
@@ -1078,14 +1102,17 @@ class Scheduler(object):
         If you want to let the reservee know what happened,
         use revoke_reservation.
 
+        The id is optional. If given, only the reservation with the given
+        token AND id is removed.
+
         """
 
-        slots = self.reserved_slots_by_reservation(token)
+        slots = self.reserved_slots_by_reservation(token, id)
 
         for slot in slots:
             Session.delete(slot)
 
-        self.reservations_by_token(token).delete()
+        self.reservations_by_token(token, id).delete()
 
     @serialized
     def update_reservations_data(self, token, data):
@@ -1303,21 +1330,32 @@ class Scheduler(object):
 
         return targets
 
-    def reserved_slots_by_reservation(self, reservation_token):
-        """Returns all reserved slots of the given reservation."""
+    def reserved_slots_by_reservation(self, token, id=None):
+        """ Returns all reserved slots of the given reservation.
+        The id is optional and may be used only return the slots from a
+        specific reservation matching token and id.
+        """
 
-        assert reservation_token
+        assert token
 
         query = self.managed_reserved_slots()
-        query = query.filter(
-            ReservedSlot.reservation_token == reservation_token
-        )
+        query = query.filter(ReservedSlot.reservation_token == token)
 
-        return query
+        if id is None:
+            return query
+        else:
+            ids = self.allocations_by_reservation(token, id)
+            ids = ids.with_entities(Allocation.id)
+            return query.filter(
+                ReservedSlot.allocation_id.in_(ids.subquery())
+            )
 
-    def reservations_by_token(self, token):
+    def reservations_by_token(self, token, id=None):
         query = self.managed_reservations()
         query = query.filter(Reservation.token == token)
+
+        if id:
+            query = query.filter(Reservation.id == id)
 
         try:
             query.first()
