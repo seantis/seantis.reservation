@@ -90,7 +90,7 @@
           </div>
         </div>
         <tal:block define="quota python: last_reservation.quota">
-          <div class="reservation-quota" 
+          <div class="reservation-quota"
             tal:attributes="data-reservation-quota quota"
             tal:condition="python: quota > 1"
           >
@@ -103,7 +103,7 @@
     </metal:define>
 
     <tal:comment replace="nothing">
-    Reservation links block (approve, decline, revoke, print). 
+    Reservation links block (approve, decline, revoke, print).
     Needs the following following variables:
 
     context -> the resource the reservation belongs to
@@ -272,13 +272,13 @@
     show_checkboxes -> true if a column with checkboxes should be added
                        (default is False)
     start_time, end_time -> time to which the allocations should be limited
-                            if possible 
+                            if possible
                             (default is None, see allocation.limit_timespan)
     </tal:comment>
 
     <metal:define define-macro="allocations-table" tal:define="macro python: context.unrestrictedTraverse('@@seantis-reservation-macros')">
       <table class="allocations-table" tal:condition="allocations" tal:define="start start_time | nothing; end end_time | nothing">
-        <tal:block repeat="allocation python: macro.found_allocations(allocations, start, end)">
+        <tal:block repeat="allocation python: macro.build_allocations_table(allocations, start, end)">
           <tr tal:attributes="class python: allocation['is_first_of_date'] and 'new-day' or ''">
             <td>
               <div class="result-day" tal:content="allocation/date" tal:condition="allocation/is_first_of_date" />
@@ -291,7 +291,7 @@
               " />
             </td>
             <td>
-              <div 
+              <div
                 tal:attributes="
                   class python: 'result-time {}'.format(allocation['class']);
                   data-id allocation/id;
@@ -305,5 +305,62 @@
         </tal:block>
       </table>
     </metal:define>
+
+    <tal:comment replace="nothing">
+    Renders the not yet submitted reservations (your reservations).
+    Expects the following:
+
+    reservations -> a list of reservations from the database, ordered by token
+    show_links   -> True if links to resources should be shown.
+    show_actions -> True if the removal link should be shown.
+    </tal:comment>
+    <metal:define
+      define-macro="your-reservations"
+      tal:define="macro python: context.unrestrictedTraverse('@@seantis-reservation-macros')">
+
+      <tal:block define="your_reservations python: macro.build_your_reservations(reservations)"
+                 condition="your_reservations">
+        <ul class="dense">
+          <li tal:repeat="reservation your_reservations">
+            <div class="limitedList">
+
+              <div class="your-reservation-header" tal:condition="repeat/reservation/first/token">
+
+                <div class="your-reservation-title">
+                  <a tal:condition="show_links"
+                     tal:attributes="href reservation/url"
+                     tal:content="structure reservation/title"
+                  />
+
+                  <span tal:condition="not:show_links"
+                    tal:content="structure reservation/title"
+                  />
+                </div>
+
+                <div tal:condition="show_actions">
+                  |
+                  <a tal:attributes="href reservation/remove-url"
+                     class="remove-url">
+                    <span i18n:translate="">Remove</span>
+                  </a>
+                </div>
+                <div class="visualClear"/>
+              </div>
+
+              <div tal:content="structure reservation/time"></div>
+
+              <div tal:condition="reservation/quota"
+                   tal:content="structure reservation/quota"
+                   class="your-reservation-quota"
+              />
+            </div>
+
+          </li>
+
+        </ul>
+
+      </tal:block>
+    </metal:define>
+
   </body>
 </html>

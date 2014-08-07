@@ -10,25 +10,19 @@
 <metal:main fill-slot="main">
 <tal:main-macro metal:define-macro="main">
 
-<div class="your-reservations-view" tal:define="reservations view/reservation_data">
+<div class="your-reservations-view" tal:define="reservations view/reservations">
     <h1 i18n:translate="">Your reservations</h1>
     
     <div class="field error" tal:condition="python: not reservations and not view.widgets.errors">
       <div class="error" i18n:translate="">No reservations to confirm.</div>
     </div>
 
-    <tal:block condition="reservations">
-      <ul>
-        <li tal:repeat="reservation reservations">
-          <div class="limitedList">
-            <span tal:content="structure reservation/title"></span><br/>
-            <span tal:content="structure reservation/time"></span>
-            <span class="your-reservation-quota" tal:condition="reservation/quota" tal:content="structure reservation/quota"></span>
-          </div>
-        </li>
-      </ul>
+    <tal:block define="
+      show_actions python: False; 
+      show_links python: False; 
+    ">
+      <metal:use use-macro="context/@@seantis-reservation-macros/your-reservations" />
     </tal:block>
-    
 
     <metal:block use-macro="context/@@ploneform-macros/titlelessform" />
 </div>

@@ -4,25 +4,24 @@ from logging import getLogger
 log = getLogger('seantis.reservation')
 
 from copy import copy
-from datetime import time
 from DateTime import DateTime
-from isodate import parse_time
+from datetime import time
 from five import grok
-
+from isodate import parse_time
 from plone.dexterity.interfaces import IDexterityFTI
-from zope.component import queryUtility
-from zope.interface import Interface
-from zope.security import checkPermission
-
-from z3c.form import field
 from z3c.form import button
-from z3c.form.browser.radio import RadioFieldWidget
+from z3c.form import field
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
+from z3c.form.browser.radio import RadioFieldWidget
 from zExceptions import NotFound
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
+from zope.component import queryUtility
+from zope.interface import Interface
 from zope.schema import Choice, List, Set
+from zope.security import checkPermission
 
-from seantis.reservation.throttle import throttled
+from seantis.reservation import _
+from seantis.reservation import db
 from seantis.reservation.interfaces import (
     IResourceBase,
     IReservation,
@@ -33,23 +32,20 @@ from seantis.reservation.interfaces import (
     IReservationTargetEmailForm,
     ISeantisReservationSpecific
 )
-
-from seantis.reservation.base import BaseView, BaseViewlet
-from seantis.reservation.error import DirtyReadOnlySession
-from seantis.reservation.restricted_eval import run_pre_reserve_script
-from seantis.reservation import _
-from seantis.reservation import db
-from seantis.reservation import utils
 from seantis.reservation import plone_session
+from seantis.reservation import utils
+from seantis.reservation.base import BaseView, BaseViewlet
+from seantis.reservation.error import DirtyReadOnlySession, NoResultFound
 from seantis.reservation.form import (
     ResourceBaseForm,
     AllocationGroupView,
     ReservationListView,
     extract_action_data
 )
-
+from seantis.reservation.models import Reservation
 from seantis.reservation.overview import OverviewletManager
-from seantis.reservation.error import NoResultFound
+from seantis.reservation.restricted_eval import run_pre_reserve_script
+from seantis.reservation.throttle import throttled
 
 
 class ReservationUrls(object):
@@ -209,7 +205,13 @@ class YourReservationsData(object):
     def reservations(self):
         """ Returns all reservations in the user's session """
         session_id = plone_session.get_session_id(self.context)
-        return db.reservations_by_session(session_id).all()
+
+        reservations = db.reservations_by_session(session_id)
+        reservations = reservations.order_by(
+            Reservation.created, Reservation.token
+        )
+
+        return reservations.all()
 
     def resources(self):
         """ Returns a list of resources contained in the reservations. The
@@ -237,44 +239,6 @@ class YourReservationsData(object):
             db.remove_reservations_from_session(session_id, token)
         except NoResultFound:
             pass  # act idempotent to the user
-
-    def reservation_data(self):
-        """ Prepares data to be shown in the my reservation's table """
-        reservations = []
-
-        for reservation in self.reservations():
-            resource = utils.get_resource_by_uuid(reservation.resource)
-
-            if resource is None:
-                log.warn('Invalid UUID %s' % str(reservation.resource))
-                continue
-
-            resource = resource.getObject()
-
-            data = {}
-
-            data['title'] = utils.get_resource_title(resource)
-
-            timespans = []
-            for start, end in reservation.timespans():
-                timespans.append(utils.display_date(start, end))
-
-            data['time'] = '<ul class="dense"><li>{}</li></ul>'.format(
-                '</li><li>'.join(timespans)
-            )
-            data['quota'] = utils.get_reservation_quota_statement(
-                reservation.quota
-            ) if reservation.quota > 1 else u''
-
-            data['url'] = resource.absolute_url()
-            data['remove-url'] = ''.join((
-                resource.absolute_url(),
-                '/your-reservations?remove=',
-                reservation.token.hex
-            ))
-            reservations.append(data)
-
-        return reservations
 
     def redirect_to_your_reservations(self):
         self.request.response.redirect(

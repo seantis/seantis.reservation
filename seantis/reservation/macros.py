@@ -1,3 +1,6 @@
+from logging import getLogger
+log = getLogger('seantis.reservation')
+
 from five import grok
 from plone import api
 from zope.interface import Interface
@@ -35,7 +38,53 @@ class View(BaseView, ReservationUrls, ReservationDataView):
     def utils(self):
         return utils
 
-    def found_allocations(self, allocations, start_time=None, end_time=None):
+    def build_your_reservations(
+        self, reservations
+    ):
+        """ Prepares the given reservations to be shown in the
+        your-reservations macro.
+
+        """
+        result = []
+
+        for reservation in reservations:
+            resource = utils.get_resource_by_uuid(reservation.resource)
+
+            if resource is None:
+                log.warn('Invalid UUID %s' % str(reservation.resource))
+                continue
+
+            resource = resource.getObject()
+
+            data = {}
+
+            data['token'] = reservation.token
+            data['title'] = utils.get_resource_title(resource)
+
+            timespans = []
+            for start, end in reservation.timespans():
+                timespans.append(utils.display_date(start, end))
+
+            data['time'] = '<ul class="dense"><li>{}</li></ul>'.format(
+                '</li><li>'.join(timespans)
+            )
+            data['quota'] = utils.get_reservation_quota_statement(
+                reservation.quota
+            ) if reservation.quota > 1 else u''
+
+            data['url'] = resource.absolute_url()
+            data['remove-url'] = ''.join((
+                resource.absolute_url(),
+                '/your-reservations?remove=',
+                reservation.token.hex
+            ))
+            result.append(data)
+
+        return result
+
+    def build_allocations_table(
+        self, allocations, start_time=None, end_time=None
+    ):
         """ Prepares the given allocations for the found-allocations table.
         Only works on IResourceBase contexts.
         """

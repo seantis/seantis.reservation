@@ -9,18 +9,15 @@
 
 <h2 i18n:translate="">Your reservations</h2>
 
-<ul>
-	<li tal:repeat="reservation viewlet/reservation_data">
-    <div class="limitedList">
-  		<a tal:attributes="href reservation/url" tal:content="structure reservation/title"></a>
-      <a class="remove-url" tal:attributes="href reservation/remove-url"><span i18n:translate="">Remove</span></a>
-  		<span tal:content="structure reservation/time"></span>
-      <span class="your-reservation-quota" tal:condition="reservation/quota" tal:content="structure reservation/quota"></span>
-    </div>
-	</li>
-</ul>
+<tal:block define="
+  show_actions python: True; 
+  show_links python:True; 
+  reservations viewlet/reservations
+">
+  <metal:use use-macro="context/@@seantis-reservation-macros/your-reservations" />
+</tal:block>
 
-<div>
+<div class="confirm-reservations">
 	<a tal:attributes="href viewlet/finish_url" i18n:translate="" class="button your_reservations_link" style="display: inline-block;">Confirm Reservations</a>
 </div>
 
