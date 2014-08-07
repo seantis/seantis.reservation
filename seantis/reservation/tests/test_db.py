@@ -101,6 +101,42 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(len(remaining), 2)
 
     @serialized
+    def test_change_email(self):
+        sc = Scheduler(new_uuid())
+
+        # reserve multiple allocations
+        dates = (
+            (datetime(2014, 8, 7, 11, 0), datetime(2014, 8, 7, 12, 0)),
+            (datetime(2014, 8, 8, 11, 0), datetime(2014, 8, 8, 12, 0))
+        )
+
+        sc.allocate(dates)
+        token = sc.reserve(u'original@example.org', dates)
+
+        self.assertEqual(
+            [r.email for r in sc.reservations_by_token(token)],
+            [u'original@example.org'] * 2
+        )
+
+        # change the email and ensure that all reservation records are changed
+        sc.change_email(token, u'newmail@example.org')
+
+        self.assertEqual(
+            [r.email for r in sc.reservations_by_token(token)],
+            [u'newmail@example.org'] * 2
+        )
+
+        # approve the reservation and change again
+        sc.approve_reservations(token)
+
+        sc.change_email(token, u'another@example.org')
+
+        self.assertEqual(
+            [r.email for r in sc.reservations_by_token(token)],
+            [u'another@example.org'] * 2
+        )
+
+    @serialized
     def test_group_reserve(self):
         sc = Scheduler(new_uuid())
 

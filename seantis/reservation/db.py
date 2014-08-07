@@ -1115,6 +1115,11 @@ class Scheduler(object):
         self.reservations_by_token(token, id).delete()
 
     @serialized
+    def change_email(self, token, new_email):
+        for reservation in self.reservations_by_token(token).all():
+            reservation.email = new_email
+
+    @serialized
     def update_reservations_data(self, token, data):
 
         for reservation in self.reservations_by_token(token).all():

@@ -742,6 +742,14 @@ class IReservationTargetForm(Interface):
     )
 
 
+class IReservationTargetEmailForm(IReservationTargetForm):
+
+    email = Email(
+        title=_(u'Email'),
+        required=True
+    )
+
+
 class IGroupReservation(Interface):
     """ A reservation of an allocation group. """
 

@@ -30,6 +30,7 @@ from seantis.reservation.interfaces import (
     ISelectionReservation,
     IRevokeReservation,
     IReservationTargetForm,
+    IReservationTargetEmailForm,
     ISeantisReservationSpecific
 )
 
@@ -1019,9 +1020,14 @@ class ReservationDataEditForm(ReservationTargetForm, ReservationSchemata):
     grok.context(IResourceBase)
     grok.layer(ISeantisReservationSpecific)
 
+    fields = field.Fields(IReservationTargetEmailForm)
+
     context_buttons = ('save', )
     standalone_buttons = ('cancel', )
     extracted_errors = []
+
+    label = _(u'Edit Formdata')
+    default_fieldset_label = _(u'Reservation')
 
     template = ViewPageTemplateFile('templates/form.pt')
 
@@ -1029,12 +1035,18 @@ class ReservationDataEditForm(ReservationTargetForm, ReservationSchemata):
     def broken_data(self):
         return self.broken
 
-    @property
-    def label(self):
-        if self.context.formsets:
-            return _(u'Edit Formdata')
-        else:
-            return _(u'No Formdata to edit')
+    @utils.cached_property
+    def reservation(self):
+        if not self.token:
+            return None
+        try:
+            return self.scheduler.reservations_by_token(self.token).first()
+        except DirtyReadOnlySession:
+            return None
+
+    @utils.cached_property
+    def reservation_data(self):
+        return (self.reservation and self.reservation.data or {})
 
     def separate_broken_data(self):
         """ Goes through the reservation data and returns the the reservation
@@ -1046,21 +1058,19 @@ class ReservationDataEditForm(ReservationTargetForm, ReservationSchemata):
         written.
 
         """
-        reservation_data = self.get_reservation_data()
-
         def init_form(data, form):
             if form in data:
                 return data
 
-            data[form] = copy(reservation_data[form])
+            data[form] = copy(self.reservation_data[form])
             data[form]['values'] = []
 
             return data
 
         working, broken = {}, {}
 
-        for form in reservation_data:
-            for value in reservation_data[form]['values']:
+        for form in self.reservation_data:
+            for value in self.reservation_data[form]['values']:
                 id = '.'.join((form, value['key']))
 
                 if self.get_field(id) and self.get_field(id):
@@ -1070,24 +1080,13 @@ class ReservationDataEditForm(ReservationTargetForm, ReservationSchemata):
 
         return working, broken
 
-    def get_reservation_data(self):
-        if not self.token and self.id:
-            return {}
-
-        if not hasattr(self, 'reservation_data'):
-            try:
-                reservations = self.scheduler.reservations_by_token(self.token)
-                self.reservation_data = reservations.first().data
-            except DirtyReadOnlySession:
-                self.reservation_data = {}
-
-        return self.reservation_data
-
     def defaults(self):
         defaults = super(ReservationDataEditForm, self).defaults()
 
-        if not self.context.formsets:
+        if not self.reservation:
             return defaults
+
+        defaults['email'] = self.reservation.email
 
         self.working, self.broken = self.separate_broken_data()
 
@@ -1139,6 +1138,9 @@ class ReservationDataEditForm(ReservationTargetForm, ReservationSchemata):
             self.additional_data = working
 
         def save():
+            if self.reservation.email != data['email']:
+                self.scheduler.change_email(self.token, data['email'])
+
             self.scheduler.update_reservations_data(
                 self.token, self.additional_data
             )

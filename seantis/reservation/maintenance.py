@@ -53,7 +53,7 @@ def clear_clockservers():
 
 def register_once_per_connection(method, site, period):
     """ Registers the given method with a clockserver while making sure
-    that the method is only registered once for each seantis.reservaiton db
+    that the method is only registered once for each seantis.reservation db
     connection defined via the ISessionUtility.
 
         method => relative to the site root, starts with '/'

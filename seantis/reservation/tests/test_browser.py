@@ -689,6 +689,43 @@ class TestBrowser(FunctionalTestCase):
         browser.open(menu['manage'])
         self.assertTrue('no comment' in browser.contents)
 
+    def test_edit_email(self):
+        browser = self.admin_browser
+
+        self.add_resource('email')
+
+        start = datetime(2013, 6, 27, 13, 37)
+        end = datetime(2013, 6, 27, 17, 15)
+
+        allocation = self.add_allocation('email', start, end)
+        menu = self.allocation_menu(*allocation)
+
+        browser.open(menu['reserve'])
+        browser.getControl('Email').value = 'test@example.com'
+        browser.getControl('Reserve').click()
+        browser.getControl('Submit Reservations').click()
+
+        # this can be verified on the manage-page
+        browser.open(menu['manage'])
+        self.assertTrue('test@example.com' in browser.contents)
+
+        # the manager can at this point change the values
+        browser.getLink('Edit Formdata').click()
+
+        self.assertIn('test@example.com', browser.contents)
+
+        browser.getControl('Email').value = 'invalid'
+        browser.getControl('Save').click()
+
+        self.assertIn('Invalid', browser.contents)
+
+        browser.getControl('Email').value = 'asdf@asdf.com'
+        browser.getControl('Save').click()
+
+        browser.open(menu['manage'])
+        self.assertIn('asdf@asdf.com', browser.contents)
+        self.assertNotIn('test@example.com', browser.contents)
+
     def test_broken_formsets(self):
 
         browser = self.admin_browser
