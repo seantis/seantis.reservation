@@ -5,6 +5,10 @@ Changelog
 1.1.2 (unreleased)
 ------------------
 
+- Disable the reservation button if no selection is made in the search
+  view.
+  [href]
+
 - Adds the ability to change the email address of a reservation.
   [href]
 

@@ -4,12 +4,31 @@ if (!this.seantis.search) {
 }
 
 seantis.search.init_select_buttons = function() {
+    var available_checkboxes = $(
+        '.searchresults input[type="checkbox"]:not([disabled])'
+    );
+
     $('#select-all-searchresults').click(function() {
-        $('.searchresults input[type="checkbox"]:not([disabled])').prop('checked', true);
+        available_checkboxes.prop('checked', true);
+        seantis.search.adjust_button_state_to_selection();
     });
     $('#select-no-searchresults').click(function() {
-        $('.searchresults input[type="checkbox"]:not([disabled])').prop('checked', false);
+        available_checkboxes.prop('checked', false);
+        seantis.search.adjust_button_state_to_selection();
     });
+    available_checkboxes.change(function() {
+        seantis.search.adjust_button_state_to_selection();
+    });
+};
+
+seantis.search.adjust_button_state_to_selection = function() {
+    var submit_button = $('#reserve-selection-form input[type="submit"]');
+
+    if ($('.searchresults input[type="checkbox"]').is(':checked')) {
+        submit_button.prop('disabled', false);
+    } else {
+        submit_button.prop('disabled', true);
+    }
 };
 
 seantis.search.init_overlays = function() {
