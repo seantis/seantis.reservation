@@ -91,6 +91,7 @@ class SearchForm(BaseForm, AutoExtensibleForm, YourReservationsViewlet):
     schema = ISearchAndReserveForm
 
     enable_form_tabbing = False
+    enable_unload_protection = False
 
     results = None
     searched = False
