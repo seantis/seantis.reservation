@@ -5,27 +5,11 @@ from Products.CMFCore.utils import getToolByName
 
 session_key = lambda name: '%s:reservation:%s' % (getSite().id, name)
 
-# users need to get a predictable uuid valid for each plone site
-# ideally, a plone site would provide us with a uuid as a namespace
-# from which to generate further uuids, but it doesn't, so we need
-# to do that ourselves. The root namespace is used to get a plone site
-# specific uuid which is then used as a namespace for the users.
-root_namespace = uuid.UUID('7ad36f77-a10c-4b62-857c-a9a4ff7222a0')
 
-
-def generate_session_id(context):
+def new_session_id():
     """ Generates a new session id. """
 
-    membership = getToolByName(context, 'portal_membership')
-
-    # anonymous users get random uuids
-    if membership.isAnonymousUser():
-        return uuid.uuid4()
-
-    # logged in users get ids which are predictable for each plone site
-    namespace = uuid.uuid5(root_namespace, str(getSite().id))
-    return uuid.uuid5(namespace,
-                      str(membership.getAuthenticatedMember().getId()))
+    return uuid.uuid4()
 
 
 def get_session(context, key):
@@ -54,12 +38,20 @@ def get_session_id(context):
     """Returns the current session id (models/reservation/session_id), creating
     it first if necessary.
 
+    The session_id is used in the database and it is bound to the browser.
+    The same user on different browsers will have different session ids.
+
+    So the seantis.reservation session data is strictly bound to the browser.
+    It used to be different, but nobody was using this feature and without
+    it we are more secure and we allow for users to share their login (which
+    in organizations is not that uncommon)
+
     """
     skey = session_key('session_id')
     session_id = get_session(context, skey)
 
     if session_id is None:
-        session_id = generate_session_id(context)
+        session_id = new_session_id()
         set_session(context, skey, session_id)
 
     return session_id
