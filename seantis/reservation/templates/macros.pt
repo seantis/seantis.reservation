@@ -288,6 +288,7 @@
                 value allocation/id;
                 checked python: 'unavailable' not in allocation['class'] and 'checked' or '';
                 disabled python: 'unavailable' in allocation['class'] and 'disabled' or '';
+                data-group allocation/group;
               " />
             </td>
             <td>
@@ -295,10 +296,20 @@
                 tal:attributes="
                   class python: 'result-time {}'.format(allocation['class']);
                   data-id allocation/id;
+                  data-group allocation/group;
                 "
               >
                 <span tal:content="allocation/time" />
                 <span tal:content="allocation/text" />
+              </div>
+            </td>
+            <td class="result-hint">
+              <div tal:attributes="
+                data-group allocation/group;
+                class python: allocation['is_extra_result'] and 'is-extra-result' or '';" 
+                title="This allocation falls outside your search, but it is included because it belongs to a group that is part of your search and groups must be reserved together. Members of this group are highlighted when hovering." 
+                i18n:attributes="title">
+                &nbsp;
               </div>
             </td>
           </tr>

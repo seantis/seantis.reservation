@@ -5,6 +5,9 @@ Changelog
 1.1.2 (unreleased)
 ------------------
 
+- Correctly deals with group-allocations in the search view.
+  [href]
+
 - Disable the reservation button if no selection is made in the search
   view.
   [href]

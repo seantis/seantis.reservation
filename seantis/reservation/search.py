@@ -143,10 +143,6 @@ class SearchForm(BaseForm, AutoExtensibleForm, YourReservationsViewlet):
         options['start'] = start
         options['end'] = end
 
-        # do not include groups for now, until we can adequately make
-        # the including of groups transparent to the user
-        options['groups'] = 'no'
-
         return options
 
     def handle_search(self):

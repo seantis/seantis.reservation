@@ -358,3 +358,26 @@ body .event-unavailable .fc-event-time {
 .timespan-dates.highlight {
     color: #00a5b8;
 }
+
+/* search */
+.result-time {
+    cursor: pointer;
+}
+
+.result-hint {
+    width: 16px;
+    height: 16px;
+}
+
+.is-extra-result {
+    background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA6UlEQVQ4T2NkwAQ6QKFkIHYFYnGo9AsgvRuI5wDxNWQtjEgcNiC7D4gzgJgZi8Egob9APBWIS4D4N0gAZgBI8xaorTj0ogjvBPL8gPgXzICZQE4aFp0w+f9Y5KYBxbJBCnSB+AIQM5FoAMg7eiADJgNxDg5343MBSMtEkAJQqGqSacAVkAGfgZiHTAM+gwz4AsTclBhAiReuglwASjyFxEQ+FjU9IAO0gfgiEGNLffhi4Q8oCcAUTABy8klMBz1A9aUwA1iBHFBSdiPSKzuA6nyB+A/VMhOyxbDsDHKNElTiLpDeBcQY2RkAFSEyCXfgzpMAAAAASUVORK5CYII=');
+    background-repeat: no-repeat;
+    position: relative;
+    top: 1px;
+    cursor: help;
+}
+
+body.show-tooltip #miniTip_c {
+    color: #444;
+    padding: 1em;
+}

@@ -3,6 +3,22 @@ if (!this.seantis.search) {
     this.seantis.search = {};
 }
 
+seantis.search.init_tips = function() {
+    // the show-tooltip class on the body signals the base.css that another
+    // style for minitip should be used (miniTip is a global singleton)
+    $('.is-extra-result').miniTip({
+        anchor: 'e',
+        fadeIn: 100,
+        fadeOut: 100,
+        show: function() {
+            $('body').addClass('show-tooltip');
+        },
+        hide: function() {
+            $('body').removeClass('show-tooltip');
+        }
+    });
+};
+
 seantis.search.init_select_buttons = function() {
     var available_checkboxes = $(
         '.searchresults input[type="checkbox"]:not([disabled])'
@@ -12,13 +28,50 @@ seantis.search.init_select_buttons = function() {
         available_checkboxes.prop('checked', true);
         seantis.search.adjust_button_state_to_selection();
     });
+
     $('#select-no-searchresults').click(function() {
         available_checkboxes.prop('checked', false);
         seantis.search.adjust_button_state_to_selection();
     });
+
     available_checkboxes.change(function() {
         seantis.search.adjust_button_state_to_selection();
+
+        seantis.search.select_group(
+            $(this).data('group'), $(this).is(':checked')
+        );
     });
+
+    $('.searchresults .result-time').click(function() {
+        var group = $(this).data('group');
+        var checkboxes = $(
+            '.searchresults input[type="checkbox"][data-group="' + group + '"'
+        );
+
+        if (checkboxes.length > 0) {
+            $(checkboxes[0]).click();
+        }
+    });
+};
+
+seantis.search.init_highlighting = function() {
+    var targets = $(
+        [
+            '.searchresults input[type="checkbox"]',
+            '.searchresults .result-time',
+            '.searchresults .is-extra-result'
+        ].join(', ')
+    );
+
+    targets.hover(function() {
+        seantis.search.highlight_group($(this).data('group'));
+    });
+};
+
+seantis.search.highlight_group = function(group) {
+    $('.searchresults .result-time[data-group="'+ group  + '"').toggleClass(
+        'groupSelection'
+    );
 };
 
 seantis.search.adjust_button_state_to_selection = function() {
@@ -29,6 +82,13 @@ seantis.search.adjust_button_state_to_selection = function() {
     } else {
         submit_button.prop('disabled', true);
     }
+};
+
+seantis.search.select_group = function(group, select) {
+    var checkboxes = $(
+        '.searchresults input[type="checkbox"][data-group="' + group + '"'
+    );
+    checkboxes.prop('checked', select);
 };
 
 seantis.search.init_overlays = function() {
@@ -139,5 +199,18 @@ seantis.search.init_submit = function(submit) {
     $(document).ready(function() {
         seantis.search.init_overlays();
         seantis.search.init_select_buttons();
+        seantis.search.init_highlighting();
+        seantis.search.init_tips();
+
+        // deselect all groups with extra results by default
+        // would be better to do on the server, but it is much easier here
+        var groups = [];
+        _.each($('.searchresults .is-extra-result'), function(extra) {
+            var group = $(extra).data('group');
+            if (groups.indexOf(group) === -1) {
+                seantis.search.select_group(group, false);
+                groups.push(group);
+            }
+        });
     });
 })(jQuery);

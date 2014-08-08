@@ -138,11 +138,15 @@ class View(BaseView, ReservationUrls, ReservationDataView):
 
             result.append({
                 'id': allocation.id,
+                'group': allocation.group,
                 'date': date,
                 'time': time_text,
                 'class': utils.event_class(availability),
                 'is_first_of_date': prev_date != date,
                 'text': ', '.join(text.split('\n')),
+                'is_extra_result': getattr(
+                    allocation, 'is_extra_result', False
+                )
             })
 
             prev_date = date

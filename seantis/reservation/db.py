@@ -8,7 +8,7 @@ from itertools import groupby
 
 from zope.event import notify
 
-from sqlalchemy.sql import and_, or_
+from sqlalchemy.sql import and_, or_, not_
 from sqlalchemy.orm import joinedload, exc
 from sqlalchemy import func, null
 
@@ -1158,7 +1158,8 @@ class Scheduler(object):
         minspots=0,
         available_only=False,
         whole_day='any',
-        groups='any'
+        groups='any',
+        strict=False
     ):
         """ Search allocations using a number of options. The date is split
         into date/time. All allocations between start and end date within
@@ -1167,6 +1168,17 @@ class Scheduler(object):
         For example, start=01.01.2012 12:00 end=31.01.2012 14:00 will include
         all allocaitons in January 2012 which OVERLAP the given times. So an
         allocation starting at 11:00 and ending at 12:00 will be included!
+
+        WARNING allocations not matching the start/end date may be included
+        if they belong to a group from which a member *is* included!
+
+        If that behavior is not wanted set 'strict' to True
+        or set 'include_groups' to 'no' (though you won't get any groups then).
+
+        Allocations which are included in this way will return True in the
+        following expression:
+
+        getattr(allocation, 'is_extra_result', False)
 
         :start:
             Include allocations starting on or after this date.
@@ -1202,6 +1214,10 @@ class Scheduler(object):
             'no' if no group-allocations should be included.
 
             See allocation.in_group to see what constitutes a group
+
+        :strict:
+            Set to True if you don't want groups included as a whole if a
+            groupmember is found. See comment above.
         """
 
         assert start
@@ -1231,8 +1247,9 @@ class Scheduler(object):
         allocations = []
 
         known_groups = set()
+        known_ids = set()
 
-        for allocation in query:
+        for allocation in query.all():
 
             if not self.is_exposed(allocation):
                 continue
@@ -1276,20 +1293,34 @@ class Scheduler(object):
                 if (minspots / float(allocation.quota) * 100.0) > availability:
                     continue
 
+            # keep track of allocations in groups as those need to be added
+            # to the result, even though they don't match the search
+            in_group = (
+                allocation.group in known_groups or allocation.in_group
+            )
+
+            if in_group:
+                known_groups.add(allocation.group)
+                known_ids.add(allocation.id)
+
             if groups != 'any':
-                in_group = (
-                    allocation.group in known_groups or allocation.in_group
-                )
-
-                if in_group:
-                    known_groups.add(allocation.group)
-
                 if groups == 'yes' and not in_group:
                     continue
                 if groups == 'no' and in_group:
                     continue
 
             allocations.append(allocation)
+
+        if not strict and groups != 'no' and known_ids and known_groups:
+            query = self.managed_allocations()
+            query = query.filter(not_(Allocation.id.in_(known_ids)))
+            query = query.filter(Allocation.group.in_(known_groups))
+
+            for allocation in query.all():
+                allocation.is_extra_result = True
+                allocations.append(allocation)
+
+            allocations.sort(key=lambda a: a._start)
 
         return allocations
 

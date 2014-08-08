@@ -1303,8 +1303,12 @@ class TestScheduler(IntegrationTestCase):
 
         sc.allocate([(s1, e1), (s2, e2)], grouped=True)
 
-        self.assertEqual(len(sc.search_allocations(s1, e1)), 1)
-        self.assertEqual(len(sc.search_allocations(s2, e2)), 1)
+        self.assertEqual(len(sc.search_allocations(s1, e1, strict=True)), 1)
+        self.assertEqual(len(sc.search_allocations(s2, e2, strict=True)), 1)
+
+        self.assertEqual(len(sc.search_allocations(s1, e1, strict=False)), 2)
+        self.assertEqual(len(sc.search_allocations(s2, e2, strict=False)), 2)
+
         self.assertEqual(len(sc.search_allocations(s1, e2)), 2)
 
         self.assertEqual(len(sc.search_allocations(s1, e2, groups='yes')), 2)
