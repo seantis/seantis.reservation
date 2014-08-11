@@ -1105,7 +1105,7 @@ class ReservationDataEditForm(ReservationTargetForm, ReservationSchemata):
             if self.reservation.email != data['email']:
                 self.scheduler.change_email(self.token, data['email'])
 
-            self.scheduler.update_reservations_data(
+            self.scheduler.change_reservation_data(
                 self.token, self.additional_data
             )
             self.flash(_(u'Formdata updated'))

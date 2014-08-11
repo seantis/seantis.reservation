@@ -3,6 +3,7 @@ from copy import copy
 from datetime import datetime, timedelta
 from mock import Mock
 from uuid import uuid1 as new_uuid
+from sqlalchemy.orm.exc import MultipleResultsFound
 
 from seantis.reservation import settings
 from seantis.reservation.tests import IntegrationTestCase
@@ -13,7 +14,8 @@ from seantis.reservation.error import (
     ReservationTooLong,
     InvalidReservationError,
     InvalidAllocationError,
-    NoReservationsToConfirm
+    NoReservationsToConfirm,
+    TimerangeTooLong
 )
 
 from seantis.reservation import utils
@@ -135,6 +137,211 @@ class TestScheduler(IntegrationTestCase):
             [r.email for r in sc.reservations_by_token(token)],
             [u'another@example.org'] * 2
         )
+
+    @serialized
+    def test_change_reservation_assertions(self):
+        sc = Scheduler(new_uuid())
+
+        dates = (datetime(2014, 8, 7, 8, 0), datetime(2014, 8, 7, 17, 0))
+
+        sc.allocate(dates, partly_available=False)
+        token = sc.reserve(u'original@example.org', dates)
+        reservation = sc.reservations_by_token(token).one()
+
+        # will fail with an assertion because the reservation was not approved
+        try:
+            sc.change_reservation_timespan(token, reservation.id, *dates)
+        except AssertionError, e:
+            self.assertIn('must be approved', e.message)
+        else:
+            assert False, "no exception thrown"
+
+        sc.approve_reservations(token)
+
+        # fail with an assertion as the allocation is not partly available
+        try:
+            sc.change_reservation_timespan(
+                token, reservation.id, datetime.now(), datetime.now()
+            )
+        except AssertionError, e:
+            self.assertIn('must be partly available', e.message)
+        else:
+            assert False, "no exception thrown"
+
+        # let's try it again with a group allocation (which should also fail)
+        dates = (
+            (datetime(2014, 8, 10, 11, 0), datetime(2014, 8, 10, 12, 0)),
+            (datetime(2014, 8, 11, 11, 0), datetime(2014, 8, 11, 12, 0))
+        )
+
+        sc.allocate(dates, partly_available=True, grouped=True)
+        token = sc.reserve(u'original@example.org', dates)
+        reservation = sc.reservations_by_token(token).one()
+
+        sc.approve_reservations(token)
+
+        with self.assertRaises(MultipleResultsFound):
+            sc.change_reservation_timespan(
+                token, reservation.id, datetime.now(), datetime.now()
+            )
+
+        # fail if the dates are outside the allocation
+        dates = (datetime(2014, 3, 7, 8, 0), datetime(2014, 3, 7, 17, 0))
+
+        sc.allocate(dates, partly_available=True)
+        token = sc.reserve(u'original@example.org', dates)
+        reservation = sc.reservations_by_token(token).one()
+        sc.approve_reservations(token)
+
+        # will fail with an assertion because the reservation was not approved
+        with self.assertRaises(TimerangeTooLong):
+            sc.change_reservation_timespan(
+                token, reservation.id,
+                datetime(2014, 3, 7, 7, 0), datetime(2014, 3, 7, 17, 0)
+            )
+
+        with self.assertRaises(TimerangeTooLong):
+            sc.change_reservation_timespan(
+                token, reservation.id,
+                datetime(2014, 3, 7, 8, 0), datetime(2014, 3, 7, 17, 1)
+            )
+
+    @serialized
+    def test_change_reservation(self):
+        sc = Scheduler(new_uuid())
+        dates = (datetime(2014, 8, 7, 8, 0), datetime(2014, 8, 7, 10, 0))
+
+        sc.allocate(dates, partly_available=True)
+
+        data = {
+            'foo': 'bar'
+        }
+        token = sc.reserve(u'original@example.org', (
+            datetime(2014, 8, 7, 8, 0), datetime(2014, 8, 7, 9)
+        ), data=data)
+
+        reservation = sc.reservations_by_token(token).one()
+        original_id = reservation.id
+
+        sc.approve_reservations(token)
+
+        # make sure that no changes are made in these cases
+        self.assertFalse(
+            sc.change_reservation_timespan(
+                token, reservation.id,
+                datetime(2014, 8, 7, 8, 0),
+                datetime(2014, 8, 7, 9)
+            )
+        )
+        self.assertFalse(
+            sc.change_reservation_timespan(
+                token, reservation.id,
+                datetime(2014, 8, 7, 8, 0),
+                datetime(2014, 8, 7, 9) - timedelta(microseconds=1)
+            )
+        )
+
+        # make sure the change is propagated
+        sc.change_reservation_timespan(
+            token, reservation.id,
+            datetime(2014, 8, 7, 8, 0),
+            datetime(2014, 8, 7, 10)
+        )
+
+        reservation = sc.reservations_by_token(token).one()
+
+        self.assertEqual(
+            reservation.start,
+            datetime(2014, 8, 7, 8, 0)
+        )
+        self.assertEqual(
+            reservation.end,
+            datetime(2014, 8, 7, 10) - timedelta(microseconds=1)
+        )
+
+        # the data must stay the same
+        self.assertEqual(reservation.data, data)
+        self.assertEqual(reservation.email, u'original@example.org')
+        self.assertEqual(reservation.id, original_id)
+        self.assertEqual(reservation.token, token)
+
+        sc.change_reservation_timespan(
+            token, reservation.id,
+            datetime(2014, 8, 7, 9, 0),
+            datetime(2014, 8, 7, 10, 0)
+        )
+
+        sc.approve_reservations(
+            sc.reserve(u'original@example.org', (
+                datetime(2014, 8, 7, 8, 0), datetime(2014, 8, 7, 9)
+            ))
+        )
+
+        with self.assertRaises(AlreadyReservedError):
+            sc.change_reservation_timespan(
+                token, reservation.id,
+                datetime(2014, 8, 7, 8, 0),
+                datetime(2014, 8, 7, 10, 0)
+            )
+
+    @serialized
+    def test_change_reservation_quota(self):
+        sc = Scheduler(new_uuid())
+        dates = (
+            datetime(2014, 8, 7, 8, 0), datetime(2014, 8, 7, 10, 0)
+        )
+
+        sc.allocate(dates, partly_available=True, quota=2)
+
+        # have three reservations, one occupying the whole allocation,
+        # two others occupying one half each (1 + .5 +.5 = 2 (quota))
+        tokens = [
+            sc.reserve(u'original@example.org', (
+                datetime(2014, 8, 7, 8, 0), datetime(2014, 8, 7, 10, 0)
+            )),
+            sc.reserve(u'original@example.org', (
+                datetime(2014, 8, 7, 8, 0), datetime(2014, 8, 7, 9, 0)
+            )),
+            sc.reserve(u'original@example.org', (
+                datetime(2014, 8, 7, 9, 0), datetime(2014, 8, 7, 10, 0)
+            ))
+        ]
+
+        for token in tokens:
+            sc.approve_reservations(token)
+
+        reservation = sc.reservations_by_token(tokens[2]).one()
+
+        # with 100% occupancy we can't change one of the small reservations
+        with self.assertRaises(AlreadyReservedError):
+            sc.change_reservation_timespan(
+                tokens[2], reservation.id,
+                datetime(2014, 8, 7, 8, 0),
+                datetime(2014, 8, 7, 10, 0)
+            )
+
+        # ensure that the failed removal didn't affect the reservations
+        # (a rollback should have occured)
+        for token in tokens:
+            self.assertEqual(
+                sc.reservations_by_token(token).one().token, token
+            )
+
+        # removing the big reservation allows us to scale the other two
+        sc.remove_reservation(tokens[0])
+
+        self.assertTrue(sc.change_reservation_timespan(
+            tokens[2], reservation.id,
+            datetime(2014, 8, 7, 8, 0),
+            datetime(2014, 8, 7, 10, 0)
+        ))
+
+        reservation = sc.reservations_by_token(tokens[1]).one()
+        self.assertTrue(sc.change_reservation_timespan(
+            tokens[1], reservation.id,
+            datetime(2014, 8, 7, 8, 0),
+            datetime(2014, 8, 7, 10, 0)
+        ))
 
     @serialized
     def test_group_reserve(self):

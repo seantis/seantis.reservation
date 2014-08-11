@@ -89,6 +89,10 @@ class NoReservationsToConfirm(ReservationError):
     pass
 
 
+class TimerangeTooLong(ReservationError):
+    pass
+
+
 errormap = {
 
     OverlappingAllocationError:
@@ -146,6 +150,8 @@ errormap = {
     _(u'The resulting allocation would be invalid.'),
 
     NoReservationsToConfirm:
-    _(u'No reservations to confirm.')
+    _(u'No reservations to confirm.'),
 
+    TimerangeTooLong:
+    _(u'The given timerange is longer than the existing allocation.')
 }

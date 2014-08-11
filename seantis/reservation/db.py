@@ -24,20 +24,21 @@ from seantis.reservation.models import (
     Allocation, ReservedSlot, Reservation
 )
 from seantis.reservation.error import (
-    OverlappingAllocationError,
-    AffectedReservationError,
     AffectedPendingReservationError,
+    AffectedReservationError,
     AlreadyReservedError,
-    NotReservableError,
-    ReservationTooLong,
-    ReservationParametersInvalid,
-    InvalidReservationToken,
-    InvalidReservationError,
-    QuotaOverLimit,
-    InvalidQuota,
-    QuotaImpossible,
     InvalidAllocationError,
-    NoReservationsToConfirm
+    InvalidQuota,
+    InvalidReservationError,
+    InvalidReservationToken,
+    NoReservationsToConfirm,
+    NotReservableError,
+    OverlappingAllocationError,
+    QuotaImpossible,
+    QuotaOverLimit,
+    ReservationParametersInvalid,
+    ReservationTooLong,
+    TimerangeTooLong,
 )
 
 from seantis.plonetools.schemafields import validate_email
@@ -1112,7 +1113,7 @@ class Scheduler(object):
         for slot in slots:
             Session.delete(slot)
 
-        self.reservations_by_token(token, id).delete()
+        self.reservations_by_token(token, id).delete('fetch')
 
     @serialized
     def change_email(self, token, new_email):
@@ -1120,10 +1121,84 @@ class Scheduler(object):
             reservation.email = new_email
 
     @serialized
-    def update_reservations_data(self, token, data):
+    def change_reservation_data(self, token, data):
 
         for reservation in self.reservations_by_token(token).all():
             reservation.data = data
+
+    @serialized
+    def change_reservation_timespan(self, token, id, new_start, new_end):
+        """ Allows to change the timespan of a reservation under certain
+        conditions:
+
+        - The new timespan must be reservable inside the existing allocation.
+          (So you cannot use this method to reserve another allocation)
+        - The referenced allocation must not be in a group.
+        - The referenced allocation must be partly available.
+        - The referenced reservation must be approved
+
+        There is really only one usecase that this function works for:
+
+        The user wants to change the timespan of a reservation in a meeting
+        room kind of setup where you have lots of partly-available
+        allocations.
+
+        Returns True if a change was made.
+
+        """
+
+        # check for the reservation first as the allocation won't exist
+        # if the reservation has not been approved yet
+        assert new_start and new_end
+
+        existing_reservation = self.reservations_by_token(token, id).one()
+
+        assert existing_reservation.status == 'approved', """
+            Reservation must be approved.
+        """
+
+        # if there's nothing to change, do not change
+        if existing_reservation.start == new_start:
+            if existing_reservation.end == new_end:
+                return False
+            if existing_reservation.end == new_end - timedelta(microseconds=1):
+                return False
+
+        # will return raise a MultipleResultsFound exception if this is a group
+        allocation = self.allocations_by_reservation(token, id).one()
+
+        assert allocation.partly_available, """
+            Allocation must be partly available.
+        """
+
+        if not allocation.contains(new_start, new_end):
+            raise TimerangeTooLong()
+
+        reservation_arguments = dict(
+            email=existing_reservation.email,
+            dates=(new_start, new_end),
+            data=existing_reservation.data,
+            quota=existing_reservation.quota
+        )
+
+        Session.begin_nested()
+
+        try:
+            self.remove_reservation(token, id)
+
+            new_token = self.reserve(**reservation_arguments)
+            new_reservation = self.reservations_by_token(new_token).one()
+            new_reservation.id = id
+            new_reservation.token = token
+
+            self._approve_reservation_record(new_reservation)
+        except:
+            Session.rollback()
+            raise
+        else:
+            Session.commit()
+
+        return True
 
     def find_spot(self, master_allocation, start, end):
         """ Returns the first free allocation spot amongst the master and the
