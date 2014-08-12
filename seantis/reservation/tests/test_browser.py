@@ -1242,3 +1242,50 @@ class TestBrowser(FunctionalTestCase):
         # in the state of the checkboxes
         chks = browser.query('input[name="allocation_id"][checked="checked"]')
         self.assertEqual(len(chks), 1)
+
+    @db.serialized
+    def test_change_time(self):
+        browser = self.admin_browser
+
+        self.add_resource('resource')
+
+        allocations = [
+            self.add_allocation(
+                'resource',
+                datetime(2014, 8, 20, 15, 00),
+                datetime(2014, 8, 20, 16, 00),
+                partly_available=True
+            ),
+            self.add_allocation(
+                'resource',
+                datetime(2014, 8, 21, 15, 00),
+                datetime(2014, 8, 21, 16, 00),
+                partly_available=False
+            ),
+        ]
+
+        # reserve both allocations at once to see them in the same manage view
+        browser.open(self.infolder('/resource/search'))
+        browser.set_date(
+            'form.widgets.recurrence_start', datetime(2014, 8, 20)
+        )
+        browser.set_date(
+            'form.widgets.recurrence_end', datetime(2014, 8, 21)
+        )
+        browser.getControl(name='form.buttons.search').click()
+        browser.getControl('Reserve selected').click()
+        browser.getControl('Email').value = 'test@example.org'
+        browser.getControl('Reserve').click()
+        browser.getControl('Submit Reservations').click()
+
+        # two revoke links + one change link == 3
+        browser.open(self.allocation_menu(*allocations[0])['manage'])
+        self.assertEqual(browser.query('.timespan-actions a').length, 3)
+        self.assertIn('Aug 20, 2014 03:00 PM - 04:00 PM', browser.contents)
+
+        browser.getLink('Change').click()
+        browser.getControl('Start').value = '03:30 PM'
+        browser.getControl('Save').click()
+
+        browser.open(self.allocation_menu(*allocations[0])['manage'])
+        self.assertIn('Aug 20, 2014 03:30 PM - 04:00 PM', browser.contents)

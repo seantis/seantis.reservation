@@ -142,6 +142,10 @@ class TestScheduler(IntegrationTestCase):
     def test_change_reservation_assertions(self):
         sc = Scheduler(new_uuid())
 
+        reservation_changed = self.subscribe(
+            events.ReservationTimeChangedEvent
+        )
+
         dates = (datetime(2014, 8, 7, 8, 0), datetime(2014, 8, 7, 17, 0))
 
         sc.allocate(dates, partly_available=False)
@@ -157,6 +161,7 @@ class TestScheduler(IntegrationTestCase):
             assert False, "no exception thrown"
 
         self.assertEqual(sc.change_reservation_time_candidates().count(), 0)
+        self.assertFalse(reservation_changed.was_fired())
 
         sc.approve_reservations(token)
 
@@ -171,6 +176,7 @@ class TestScheduler(IntegrationTestCase):
             assert False, "no exception thrown"
 
         self.assertEqual(sc.change_reservation_time_candidates().count(), 0)
+        self.assertFalse(reservation_changed.was_fired())
 
         # let's try it again with a group allocation (which should also fail)
         dates = (
@@ -190,6 +196,7 @@ class TestScheduler(IntegrationTestCase):
             )
 
         self.assertEqual(sc.change_reservation_time_candidates().count(), 0)
+        self.assertFalse(reservation_changed.was_fired())
 
         # fail if the dates are outside the allocation
         dates = (datetime(2014, 3, 7, 8, 0), datetime(2014, 3, 7, 17, 0))
@@ -200,6 +207,7 @@ class TestScheduler(IntegrationTestCase):
         sc.approve_reservations(token)
 
         self.assertEqual(sc.change_reservation_time_candidates().count(), 1)
+        self.assertFalse(reservation_changed.was_fired())
 
         # make sure that the timerange given fits inside the allocation
         with self.assertRaises(TimerangeTooLong):
@@ -216,7 +224,14 @@ class TestScheduler(IntegrationTestCase):
 
     @serialized
     def test_change_reservation(self):
-        sc = Scheduler(new_uuid())
+        self.login_manager()
+        resource = self.create_resource()
+        sc = resource.scheduler()
+
+        reservation_changed = self.subscribe(
+            events.ReservationTimeChangedEvent
+        )
+
         dates = (datetime(2014, 8, 7, 8, 0), datetime(2014, 8, 7, 10, 0))
 
         sc.allocate(dates, partly_available=True)
@@ -232,6 +247,7 @@ class TestScheduler(IntegrationTestCase):
         original_id = reservation.id
 
         sc.approve_reservations(token)
+        self.mailhost.messages = []
 
         self.assertEqual(sc.change_reservation_time_candidates().count(), 1)
 
@@ -251,11 +267,24 @@ class TestScheduler(IntegrationTestCase):
             )
         )
 
+        self.assertFalse(reservation_changed.was_fired())
+        self.assertEqual(self.mailhost.messages, [])
+
         # make sure the change is propagated
         sc.change_reservation_time(
             token, reservation.id,
             datetime(2014, 8, 7, 8, 0),
-            datetime(2014, 8, 7, 10)
+            datetime(2014, 8, 7, 10),
+            send_email=True,
+            reason=u'Because'
+        )
+
+        self.assertTrue(reservation_changed.was_fired())
+        self.assertIn(
+            'Old time:\n07.08.2014 08:00 - 09:00', self.mailhost.messages[0]
+        )
+        self.assertIn(
+            'New time:\n07.08.2014 08:00 - 10:00', self.mailhost.messages[0]
         )
 
         reservation = sc.reservations_by_token(token).one()

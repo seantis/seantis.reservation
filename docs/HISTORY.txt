@@ -5,6 +5,9 @@ Changelog
 1.1.2 (unreleased)
 ------------------
 
+- Adds the ability to change the times of certain reservations.
+  [href]
+
 - Correctly deals with group-allocations in the search view.
   [href]
 
