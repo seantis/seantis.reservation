@@ -2,7 +2,7 @@
 Changelog
 =========
 
-1.1.2 (unreleased)
+1.1.2 (2014-08-12)
 ------------------
 
 - Adds the ability to change the times of certain reservations.
