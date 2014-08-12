@@ -633,8 +633,11 @@ class Scheduler(object):
         return query
 
     def allocations_by_group(self, group, masters_only=True):
+        return self.allocations_by_groups([group], masters_only=masters_only)
+
+    def allocations_by_groups(self, groups, masters_only=True):
         query = self.managed_allocations()
-        query = query.filter(Allocation.group == group)
+        query = query.filter(Allocation.group.in_(groups))
 
         if masters_only:
             query = query.filter(Allocation.resource == self.uuid)
@@ -824,13 +827,15 @@ class Scheduler(object):
             change.group = group or master.group
 
     @serialized
-    def remove_allocation(self, id=None, group=None):
+    def remove_allocation(self, id=None, groups=None):
         if id:
             master = self.allocation_by_id(id)
             allocations = [master]
             allocations.extend(self.allocation_mirrors_by_master(master))
-        elif group:
-            allocations = self.allocations_by_group(group, masters_only=False)
+        elif groups:
+            allocations = self.allocations_by_groups(
+                groups, masters_only=False
+            )
         else:
             raise NotImplementedError
 

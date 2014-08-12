@@ -285,7 +285,7 @@ class AllocationRemoveForm(AllocationForm, AllocationGroupView):
         scheduler = self.scheduler
 
         def delete():
-            scheduler.remove_allocation(id=data['id'], group=data['group'])
+            scheduler.remove_allocation(id=data['id'], groups=[data['group']])
             self.flash(_(u'Allocation removed'))
 
         utils.handle_action(action=delete, success=self.redirect_to_context)
