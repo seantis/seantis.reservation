@@ -6,7 +6,7 @@ if (!this.seantis.search) {
 seantis.search.init_tips = function() {
     // the show-tooltip class on the body signals the base.css that another
     // style for minitip should be used (miniTip is a global singleton)
-    $('.is-extra-result').miniTip({
+    $('.is-extra-result, .minitip').miniTip({
         anchor: 'e',
         fadeIn: 100,
         fadeOut: 100,

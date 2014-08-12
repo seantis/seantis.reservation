@@ -581,6 +581,11 @@ template_revoke_variables = template_variables + _(
     u'%(reason)s - reason for revocation<br>'
 )
 
+template_time_changed_variables = template_revoke_variables + _(
+    u'%(old_time)s - old start/end time<br>',
+    u'%(new_time)s - new start/end time<br>'
+)
+
 reservations_template_variables = _(
     u'May contain the following template variable:<br>'
     u'%(reservations)s - list of reservations'
@@ -680,6 +685,20 @@ class IEmailTemplate(form.Schema):
         default=templates['reservation_revoked'].get_body('en')
     )
 
+    reservation_time_changed_subject = schema.TextLine(
+        title=_(u'Email Subject for Changed Reservations'),
+        description=_(u'Sent to <b>users</b> when the time of a reservation '
+                      u'is changed. May contain the template variables '
+                      u'listed below.'),
+        default=templates['reservation_time_changed'].get_subject('en')
+    )
+
+    reservation_time_changed_content = schema.Text(
+        title=_(u'Email Text for Changed Reservations'),
+        description=template_time_changed_variables,
+        default=templates['reservation_time_changed'].get_body('en')
+    )
+
 
 def get_default_language(adapter):
     return utils.get_current_site_language()
@@ -747,6 +766,37 @@ class IReservationTargetEmailForm(IReservationTargetForm):
     email = Email(
         title=_(u'Email'),
         required=True
+    )
+
+
+class IReservationEditTimeForm(IReservationTargetForm):
+
+    start_time = schema.Time(
+        title=_(u'Start'),
+        required=True
+    )
+
+    end_time = schema.Time(
+        title=_(u'End'),
+        required=True
+    )
+
+    send_email = schema.Bool(
+        title=_(u"Send Email"),
+        description=_(
+            u"Send an email to the reservee informing him of the change"
+        ),
+        default=True
+    )
+
+    reason = schema.Text(
+        title=_(u'Reason'),
+        description=_(
+            u"Optional reason for the change. Sent to the reservee. "
+            u"e.g. 'Your reservation has to be adjusted because the meeting "
+            "room has been flooded.'"
+        ),
+        required=False
     )
 
 
@@ -881,3 +931,15 @@ class IReservationsConfirmedEvent(Interface):
     """
     reservations = Attribute("The list of reservations the user confirmed")
     language = Attribute("language of the site or current request")
+
+
+class IReservationTimeChangedEvent(Interface):
+    """ Event triggered when a reservation's start/end time is changed. See
+    seantis.reservation.db.Scheduler.change_reservation_time.
+
+    """
+    reservation = Attribute("The reservation after the change")
+    old_time = Attribute("A tuple of start/end representing the old time")
+    new_time = Attribute("A tuple of start/end representing the new time")
+    send_email = Attribute("True if the reservee should be informed")
+    reason = Attribute("Optional reason for the change")

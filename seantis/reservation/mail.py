@@ -22,13 +22,16 @@ from seantis.reservation import settings
 from seantis.reservation import utils
 from seantis.reservation.base import BaseViewlet
 from seantis.reservation.form import ReservationDataView
-from seantis.reservation.interfaces import IEmailTemplate
-from seantis.reservation.interfaces import IReservationsApprovedEvent
-from seantis.reservation.interfaces import IReservationsConfirmedEvent
-from seantis.reservation.interfaces import IReservationsDeniedEvent
-from seantis.reservation.interfaces import IReservationsRevokedEvent
-from seantis.reservation.interfaces import ISeantisReservationSpecific
-from seantis.reservation.interfaces import OverviewletManager
+from seantis.reservation.interfaces import (
+    IEmailTemplate,
+    IReservationTimeChangedEvent,
+    IReservationsApprovedEvent,
+    IReservationsConfirmedEvent,
+    IReservationsDeniedEvent,
+    IReservationsRevokedEvent,
+    ISeantisReservationSpecific,
+    OverviewletManager,
+)
 from seantis.reservation.mail_templates import templates
 from seantis.reservation.reservations import (
     combine_reservations, CombinedReservations
@@ -89,7 +92,22 @@ def on_reservations_revoked(event):
 
     send_reservation_mail(
         event.reservations, 'reservation_revoked', event.language,
-        to_managers=False, revocation_reason=event.reason
+        to_managers=False, reason=event.reason
+    )
+
+
+@grok.subscribe(IReservationTimeChangedEvent)
+def on_reservation_time_changed(event):
+    if not settings.get('send_email_to_reservees'):
+        return
+
+    if not event.send_email:
+        return
+
+    send_reservation_mail(
+        [event.reservation], 'reservation_time_changed',
+        event.language, to_managers=False, reason=event.reason,
+        old_time=event.old_time, new_time=event.new_time
     )
 
 
@@ -257,8 +275,10 @@ def send_reservations_confirmed(reservations, language):
             send_mail(resource, mail)
 
 
-def send_reservation_mail(reservations, email_type, language,
-                          to_managers=False, revocation_reason=u''):
+def send_reservation_mail(
+    reservations, email_type, language, to_managers=False,
+        reason=u'', old_time=None, new_time=None
+):
 
     if isinstance(reservations, CombinedReservations):
         reservation = reservations
@@ -298,7 +318,9 @@ def send_reservation_mail(reservations, email_type, language,
             recipient=recipient,
             subject=subject,
             body=body,
-            revocation_reason=revocation_reason
+            reason=reason,
+            old_time=old_time,
+            new_time=new_time
         )
 
         if may_send_mail(resource, mail, intended_for_admin=to_managers):
@@ -316,7 +338,9 @@ class ReservationMail(ReservationDataView, ReservationUrls):
     subject = u''
     body = u''
     reservations = u''
-    revocation_reason = u''
+    reason = u''
+    old_time = None
+    new_time = None
 
     def __init__(self, resource, reservation, **kwargs):
         for k, v in kwargs.items():
@@ -394,7 +418,15 @@ class ReservationMail(ReservationDataView, ReservationUrls):
 
         # revocation reason
         if is_needed('reason'):
-            p['reason'] = self.revocation_reason
+            p['reason'] = self.reason
+
+        # old time
+        if is_needed('old_time'):
+            p['old_time'] = utils.display_date(*self.old_time)
+
+        # new time
+        if is_needed('new_time'):
+            p['new_time'] = utils.display_date(*self.new_time)
 
         self.parameters = p
 

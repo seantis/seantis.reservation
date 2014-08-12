@@ -1,0 +1,13 @@
+Reservation for %(resource)s changed
+====================================
+We changed the time of your reservation for %(resource)s as follows:
+
+Old time:
+%(old_time)s
+
+New time:
+%(new_time)s
+
+%(reason)s
+
+Please let us know if you have any questions.

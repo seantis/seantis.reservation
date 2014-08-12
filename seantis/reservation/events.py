@@ -8,7 +8,8 @@ from seantis.reservation.interfaces import (
     IReservationsApprovedEvent,
     IReservationsDeniedEvent,
     IReservationsRevokedEvent,
-    IReservationsConfirmedEvent
+    IReservationsConfirmedEvent,
+    IReservationTimeChangedEvent
 )
 
 
@@ -50,6 +51,20 @@ class ReservationsRevokedEvent(ReservationsBaseEvent):
         super(ReservationsRevokedEvent, self).__init__(reservations, language)
         self.reason = reason
         self.send_email = send_email
+
+
+class ReservationTimeChangedEvent(ReservationsBaseEvent):
+    implements(IReservationTimeChangedEvent)
+
+    def __init__(
+        self, reservation, language, old_time, new_time, reason, send_email
+    ):
+        self.reservation = reservation
+        self.send_email = send_email
+        self.reason = reason
+        self.old_time = old_time
+        self.new_time = new_time
+        self.language = language
 
 
 class ReservationsConfirmedEvent(object):

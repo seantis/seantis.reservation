@@ -263,4 +263,13 @@
         profile="seantis.reservation:default">
     </genericsetup:upgradeStep>
 
+    <genericsetup:upgradeStep
+        title="Add new email template"
+        description=""
+        source="1029"
+        destination="1030"
+        handler=".upgrades.upgrade_1029_to_1030"
+        profile="seantis.reservation:default">
+    </genericsetup:upgradeStep>
+
 </configure>

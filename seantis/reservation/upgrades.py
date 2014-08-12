@@ -68,6 +68,30 @@ def recook_css_resources(context):
     getToolByName(context, 'portal_css').cookResources()
 
 
+def add_new_email_template(context, new_template):
+    # go through all email templates
+
+    from seantis.reservation.mail_templates import templates
+    template = templates[new_template]
+
+    brains = utils.portal_type_in_site('seantis.reservation.emailtemplate')
+
+    for tpl in (b.getObject() for b in brains):
+
+        # and add the new email template in the correct language if available
+        if template.is_translated(tpl.language):
+            lang = tpl.language
+        else:
+            lang = 'en'
+
+        setattr(
+            tpl, '{}_subject'.format(new_template), template.get_subject(lang)
+        )
+        setattr(
+            tpl, '{}_content'.format(new_template), template.get_body(lang)
+        )
+
+
 def remove_dead_resources(context):
     registries = [
         getToolByName(context, 'portal_javascripts'),
@@ -251,23 +275,7 @@ def upgrade_1010_to_1011(context):
 
 
 def upgrade_1011_to_1012(context):
-
-    # go through all email templates
-    from seantis.reservation.mail_templates import templates
-    template = templates['reservation_made']
-
-    brains = utils.portal_type_in_site('seantis.reservation.emailtemplate')
-
-    for tpl in (b.getObject() for b in brains):
-
-        # and add the new email template in the correct language if available
-        if template.is_translated(tpl.language):
-            lang = tpl.language
-        else:
-            lang = 'en'
-
-        tpl.reservation_made_subject = template.get_subject(lang)
-        tpl.reservation_made_content = template.get_body(lang)
+    add_new_email_template(context, 'reservation_made')
 
 
 def upgrade_1012_to_1013(context):
@@ -445,3 +453,8 @@ def upgrade_1028_to_1029(context):
 
     recook_css_resources(context)
     recook_js_resources(context)
+
+
+def upgrade_1029_to_1030(context):
+
+    add_new_email_template(context, 'reservation_time_changed')

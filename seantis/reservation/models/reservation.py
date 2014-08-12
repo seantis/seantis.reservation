@@ -95,6 +95,16 @@ class Reservation(TimestampMixin, ORMBase, OtherModels):
         Index('target_status_ix', 'status', 'target', 'id'),
     )
 
+    @property
+    def display_start(self):
+        """Does nothing but to form a nice pair to display_end."""
+        return self.start
+
+    @property
+    def display_end(self):
+        """Returns the end plus one microsecond (nicer display)."""
+        return self.end + timedelta(microseconds=1)
+
     def _target_allocations(self):
         """ Returns the allocations this reservation is targeting. This should
         NOT be confused with db.allocations_by_reservation. The method in

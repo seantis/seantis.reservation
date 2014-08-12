@@ -5,10 +5,11 @@ log = getLogger('seantis.reservation')
 
 from copy import copy
 from DateTime import DateTime
-from datetime import time
+from datetime import time, datetime
 from five import grok
 from isodate import parse_time
 from plone.dexterity.interfaces import IDexterityFTI
+from sqlalchemy.orm.exc import MultipleResultsFound
 from z3c.form import button
 from z3c.form import field
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
@@ -23,24 +24,25 @@ from zope.security import checkPermission
 from seantis.reservation import _
 from seantis.reservation import db
 from seantis.reservation.interfaces import (
-    IResourceBase,
-    IReservation,
     IGroupReservation,
-    ISelectionReservation,
-    IRevokeReservation,
-    IReservationTargetForm,
+    IReservation,
+    IReservationEditTimeForm,
     IReservationTargetEmailForm,
-    ISeantisReservationSpecific
+    IReservationTargetForm,
+    IResourceBase,
+    IRevokeReservation,
+    ISeantisReservationSpecific,
+    ISelectionReservation,
 )
 from seantis.reservation import plone_session
 from seantis.reservation import utils
 from seantis.reservation.base import BaseView, BaseViewlet
 from seantis.reservation.error import DirtyReadOnlySession, NoResultFound
 from seantis.reservation.form import (
-    ResourceBaseForm,
     AllocationGroupView,
+    extract_action_data,
     ReservationListView,
-    extract_action_data
+    ResourceBaseForm,
 )
 from seantis.reservation.models import Reservation
 from seantis.reservation.overview import OverviewletManager
@@ -972,6 +974,99 @@ class ReservationList(BaseView, ReservationListView, ReservationUrls):
     def body_classes(self):
         if utils.is_uuid(self.reservation):
             return ['single-reservation-view']
+
+
+class ReservationEditTimeForm(ReservationTargetForm):
+
+    permission = 'seantis.reservation.EditReservations'
+
+    grok.name('change-reservation')
+    grok.require(permission)
+    grok.layer(ISeantisReservationSpecific)
+
+    destructive_buttons = ('save', )
+    standalone_buttons = ('cancel', )
+
+    fields = field.Fields(IReservationEditTimeForm).select(
+        'token', 'id', 'start_time', 'end_time', 'send_email', 'reason'
+    )
+
+    @property
+    def label(self):
+        if self.reservation:
+            return _(u'Change reservation')
+        else:
+            return _(u'This reservation cannot be changed')
+
+    @utils.cached_property
+    def reservation(self):
+        if not (self.token and self.id):
+            return None
+
+        try:
+            reservation = self.scheduler.reservations_by_token(
+                self.token, self.id
+            ).one()
+        except MultipleResultsFound:
+            return None
+
+        if reservation.target_type != 'allocation':
+            return None
+
+        allocation = self.scheduler.allocations_by_reservation(
+            self.token, self.id
+        ).one()
+
+        if not allocation.partly_available:
+            return None
+
+        return reservation
+
+    def defaults(self):
+        parent = super(ReservationEditTimeForm, self).defaults()
+
+        if self.reservation:
+            parent.update({
+                'start_time': self.reservation.display_start.time(),
+                'end_time': self.reservation.display_end.time()
+            })
+
+        return parent
+
+    @button.buttonAndHandler(_(u'Save'))
+    @extract_action_data
+    def save(self, data):
+
+        # might happen if the user submits twice
+        if not self.reservation:
+            return
+
+        def change():
+            start = datetime.combine(
+                self.reservation.start.date(), data['start_time']
+            )
+            end = datetime.combine(
+                self.reservation.end.date(), data['end_time']
+            )
+
+            changed = self.scheduler.change_reservation_time(
+                token=data['token'],
+                id=data['id'],
+                new_start=start,
+                new_end=end,
+                send_email=data['send_email'],
+                reason=data['reason']
+            )
+            if changed:
+                self.flash(_(u'Reservation changed.'))
+            else:
+                self.flash(_(u'There was nothing to change.'))
+
+        utils.handle_action(action=change, success=self.redirect_to_context)
+
+    @button.buttonAndHandler(_(u'Cancel'))
+    def cancel(self, action):
+        self.redirect_to_context()
 
 
 class ReservationDataEditForm(ReservationTargetForm, ReservationSchemata):

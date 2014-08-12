@@ -150,23 +150,27 @@ class TestScheduler(IntegrationTestCase):
 
         # will fail with an assertion because the reservation was not approved
         try:
-            sc.change_reservation_timespan(token, reservation.id, *dates)
+            sc.change_reservation_time(token, reservation.id, *dates)
         except AssertionError, e:
             self.assertIn('must be approved', e.message)
         else:
             assert False, "no exception thrown"
 
+        self.assertEqual(sc.change_reservation_time_candidates().count(), 0)
+
         sc.approve_reservations(token)
 
         # fail with an assertion as the allocation is not partly available
         try:
-            sc.change_reservation_timespan(
+            sc.change_reservation_time(
                 token, reservation.id, datetime.now(), datetime.now()
             )
         except AssertionError, e:
             self.assertIn('must be partly available', e.message)
         else:
             assert False, "no exception thrown"
+
+        self.assertEqual(sc.change_reservation_time_candidates().count(), 0)
 
         # let's try it again with a group allocation (which should also fail)
         dates = (
@@ -181,9 +185,11 @@ class TestScheduler(IntegrationTestCase):
         sc.approve_reservations(token)
 
         with self.assertRaises(MultipleResultsFound):
-            sc.change_reservation_timespan(
+            sc.change_reservation_time(
                 token, reservation.id, datetime.now(), datetime.now()
             )
+
+        self.assertEqual(sc.change_reservation_time_candidates().count(), 0)
 
         # fail if the dates are outside the allocation
         dates = (datetime(2014, 3, 7, 8, 0), datetime(2014, 3, 7, 17, 0))
@@ -193,15 +199,17 @@ class TestScheduler(IntegrationTestCase):
         reservation = sc.reservations_by_token(token).one()
         sc.approve_reservations(token)
 
-        # will fail with an assertion because the reservation was not approved
+        self.assertEqual(sc.change_reservation_time_candidates().count(), 1)
+
+        # make sure that the timerange given fits inside the allocation
         with self.assertRaises(TimerangeTooLong):
-            sc.change_reservation_timespan(
+            sc.change_reservation_time(
                 token, reservation.id,
                 datetime(2014, 3, 7, 7, 0), datetime(2014, 3, 7, 17, 0)
             )
 
         with self.assertRaises(TimerangeTooLong):
-            sc.change_reservation_timespan(
+            sc.change_reservation_time(
                 token, reservation.id,
                 datetime(2014, 3, 7, 8, 0), datetime(2014, 3, 7, 17, 1)
             )
@@ -225,16 +233,18 @@ class TestScheduler(IntegrationTestCase):
 
         sc.approve_reservations(token)
 
+        self.assertEqual(sc.change_reservation_time_candidates().count(), 1)
+
         # make sure that no changes are made in these cases
         self.assertFalse(
-            sc.change_reservation_timespan(
+            sc.change_reservation_time(
                 token, reservation.id,
                 datetime(2014, 8, 7, 8, 0),
                 datetime(2014, 8, 7, 9)
             )
         )
         self.assertFalse(
-            sc.change_reservation_timespan(
+            sc.change_reservation_time(
                 token, reservation.id,
                 datetime(2014, 8, 7, 8, 0),
                 datetime(2014, 8, 7, 9) - timedelta(microseconds=1)
@@ -242,7 +252,7 @@ class TestScheduler(IntegrationTestCase):
         )
 
         # make sure the change is propagated
-        sc.change_reservation_timespan(
+        sc.change_reservation_time(
             token, reservation.id,
             datetime(2014, 8, 7, 8, 0),
             datetime(2014, 8, 7, 10)
@@ -265,7 +275,7 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(reservation.id, original_id)
         self.assertEqual(reservation.token, token)
 
-        sc.change_reservation_timespan(
+        sc.change_reservation_time(
             token, reservation.id,
             datetime(2014, 8, 7, 9, 0),
             datetime(2014, 8, 7, 10, 0)
@@ -278,7 +288,7 @@ class TestScheduler(IntegrationTestCase):
         )
 
         with self.assertRaises(AlreadyReservedError):
-            sc.change_reservation_timespan(
+            sc.change_reservation_time(
                 token, reservation.id,
                 datetime(2014, 8, 7, 8, 0),
                 datetime(2014, 8, 7, 10, 0)
@@ -307,14 +317,18 @@ class TestScheduler(IntegrationTestCase):
             ))
         ]
 
+        self.assertEqual(sc.change_reservation_time_candidates().count(), 0)
+
         for token in tokens:
             sc.approve_reservations(token)
+
+        self.assertEqual(sc.change_reservation_time_candidates().count(), 3)
 
         reservation = sc.reservations_by_token(tokens[2]).one()
 
         # with 100% occupancy we can't change one of the small reservations
         with self.assertRaises(AlreadyReservedError):
-            sc.change_reservation_timespan(
+            sc.change_reservation_time(
                 tokens[2], reservation.id,
                 datetime(2014, 8, 7, 8, 0),
                 datetime(2014, 8, 7, 10, 0)
@@ -330,14 +344,14 @@ class TestScheduler(IntegrationTestCase):
         # removing the big reservation allows us to scale the other two
         sc.remove_reservation(tokens[0])
 
-        self.assertTrue(sc.change_reservation_timespan(
+        self.assertTrue(sc.change_reservation_time(
             tokens[2], reservation.id,
             datetime(2014, 8, 7, 8, 0),
             datetime(2014, 8, 7, 10, 0)
         ))
 
         reservation = sc.reservations_by_token(tokens[1]).one()
-        self.assertTrue(sc.change_reservation_timespan(
+        self.assertTrue(sc.change_reservation_time(
             tokens[1], reservation.id,
             datetime(2014, 8, 7, 8, 0),
             datetime(2014, 8, 7, 10, 0)

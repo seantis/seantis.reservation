@@ -17,7 +17,8 @@ from seantis.reservation.events import (
     ReservationsApprovedEvent,
     ReservationsDeniedEvent,
     ReservationsRevokedEvent,
-    ReservationsConfirmedEvent
+    ReservationsConfirmedEvent,
+    ReservationTimeChangedEvent
 )
 
 from seantis.reservation.models import (
@@ -1127,7 +1128,32 @@ class Scheduler(object):
             reservation.data = data
 
     @serialized
-    def change_reservation_timespan(self, token, id, new_start, new_end):
+    def change_reservation_time_candidates(self, tokens=None):
+        """ Returns the reservations that fullfill the restrictions
+        imposed by change_reservation_time.
+
+        Pass a list of reservaiton tokens to further limit the results.
+
+        """
+
+        query = self.managed_reservations()
+        query = query.filter(Reservation.status == 'approved')
+        query = query.filter(Reservation.target_type == 'allocation')
+
+        groups = self.managed_allocations().with_entities(Allocation.group)
+        groups = groups.filter(Allocation.partly_available == True)
+
+        query = query.filter(Reservation.target.in_(groups.subquery()))
+
+        if tokens:
+            query = query.filter(Reservation.token.in_(tokens))
+
+        return query
+
+    @serialized
+    def change_reservation_time(
+        self, token, id, new_start, new_end, send_email=True, reason=None
+    ):
         """ Allows to change the timespan of a reservation under certain
         conditions:
 
@@ -1144,6 +1170,12 @@ class Scheduler(object):
         allocations.
 
         Returns True if a change was made.
+
+        Just like revoke_reservation, this function raises an event which
+        includes a send_email flag and a reason which may be used to inform
+        the user of the changes to his reservation.
+
+        see seantis.reservation.interfaces.IReservationTimeChangedEvent
 
         """
 
@@ -1181,6 +1213,9 @@ class Scheduler(object):
             quota=existing_reservation.quota
         )
 
+        old_start = existing_reservation.display_start
+        old_end = existing_reservation.display_end
+
         Session.begin_nested()
 
         try:
@@ -1192,6 +1227,15 @@ class Scheduler(object):
             new_reservation.token = token
 
             self._approve_reservation_record(new_reservation)
+
+            notify(ReservationTimeChangedEvent(
+                reservation=new_reservation,
+                language=self.language,
+                old_time=(old_start, old_end),
+                new_time=(new_start, new_end),
+                send_email=send_email,
+                reason=reason or u'',
+            ))
         except:
             Session.rollback()
             raise

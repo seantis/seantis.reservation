@@ -1,0 +1,13 @@
+Reservation für %(resource)s wurde angepasst
+============================================
+Wir möchten Sie informieren dass sich die Uhrzeit der Reservation für %(resource)s wie folgt geändert hat:
+
+Alte Zeit:
+%(old_time)s
+
+Neue Zeit:
+%(new_time)s
+
+%(reason)s
+
+Bei allfälligen Fragen bitten wir Sie sich bei uns zu melden.

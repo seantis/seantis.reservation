@@ -215,16 +215,26 @@
                 <tal:block condition="show_actions | nothing">
                   <div class="timespan-actions">
                     <div class="timespan-dates" tal:content="display" tal:attributes="data-timespan-id timespan/id"></div>
-                    <a tal:condition="repeat/timespan/first/id" i18n:translate=""
-                       tal:attributes="
-                           href python: './revoke-reservation?token={}&id={}'.format(timespan.token, timespan.id);
-                           data-timespan-id timespan/id
-                       ">Revoke</a>
+                    <tal:block condition="repeat/timespan/first/id" define="show_change python: macro.is_changeable_timespan(timespans, timespan)">
+                      <a tal:condition="repeat/timespan/first/id" i18n:translate=""
+                         tal:attributes="
+                             href python: './revoke-reservation?token={}&id={}'.format(timespan.token, timespan.id);
+                             data-timespan-id timespan/id
+                         ">Revoke</a>
+                      <tal:block condition="show_change">
+                        /
+                        <a tal:condition="show_change" i18n:translate=""
+                         tal:attributes="
+                             href python: './change-reservation?token={}&id={}'.format(timespan.token, timespan.id);
+                             data-timespan-id timespan/id
+                         ">Change</a>
+                      </tal:block>
+                    </tal:block>
                     <div class="visualClear" />
                   </div>
                 </tal:block>
                 <tal:block condition="not:show_actions">
-                  <div tal:content="display"></div>
+                  <div class="timespan-dates" tal:content="display" tal:attributes="data-timespan-id timespan/id"></div>
                 </tal:block>
               </tal:block>
           </tal:block>

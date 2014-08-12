@@ -9,6 +9,7 @@ from seantis.reservation import _
 from seantis.reservation import utils
 from seantis.reservation.base import BaseView
 from seantis.reservation.form import ReservationDataView
+from seantis.reservation.models import Reservation
 from seantis.reservation.reserve import ReservationUrls
 
 
@@ -37,6 +38,29 @@ class View(BaseView, ReservationUrls, ReservationDataView):
     @property
     def utils(self):
         return utils
+
+    def is_changeable_timespan(self, timespans, timespan):
+        """ Returns True if the given bound timespan, a tuple including
+        (start, end, token, id), may be changed by the time edit form.
+
+        The list of timespans is passed as well because this information
+        is around in in the reservation-timespans macro (where this is used)
+        and because that allows for a much faster lookup.
+
+        """
+        if not hasattr(self, '_reservation_ids'):
+            scheduler = self.context.scheduler()
+            tokens = set(t.token for t in timespans)
+
+            reservations = scheduler.change_reservation_time_candidates(tokens)
+            reservations = reservations.with_entities(Reservation.id).all()
+
+            if reservations:
+                self._reservation_ids = set(r[0] for r in reservations)
+            else:
+                self._reservation_ids = set()
+
+        return timespan.id in self._reservation_ids
 
     def build_your_reservations(
         self, reservations
