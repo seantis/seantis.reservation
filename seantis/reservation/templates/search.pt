@@ -90,10 +90,13 @@
                   <input type="hidden" name="start_time" tal:attributes="value python: view.options['start'].time().isoformat()" />
                   <input type="hidden" name="end_time" tal:attributes="value python: view.options['end'].time().isoformat()"/>
                   <input type="hidden" name="quota" tal:attributes="value python: view.options['minspots']"/>
-                  
+
                   <metal:block use-macro="context/@@seantis-reservation-macros/allocations-table" />
-                  
+
                   <input type="submit" value="Reserve selected" i18n:attributes="value" />
+                  <a class="button destructive" i18n:translate="" tal:condition="view/enable_removal" tal:attributes="href view/removal_url">
+                    Delete selected
+                  </a>
                 </form>
               </div>
             </tal:block>

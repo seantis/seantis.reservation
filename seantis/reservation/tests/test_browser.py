@@ -1289,3 +1289,112 @@ class TestBrowser(FunctionalTestCase):
 
         browser.open(self.allocation_menu(*allocations[0])['manage'])
         self.assertIn('Aug 20, 2014 03:30 PM - 04:00 PM', browser.contents)
+
+    @db.serialized
+    def test_remove_link_admin_only(self):
+        browser = self.admin_browser
+
+        self.add_resource('resource')
+
+        self.add_allocation(
+            'resource',
+            datetime(2014, 8, 20, 15, 00),
+            datetime(2014, 8, 20, 16, 00)
+        ),
+        self.add_allocation(
+            'resource',
+            datetime(2014, 8, 21, 15, 00),
+            datetime(2014, 8, 21, 16, 00)
+        )
+
+        browser.open(self.infolder('/resource/search'))
+        browser.set_date('recurrence_start', datetime(2014, 8, 20))
+        browser.set_date('recurrence_end', datetime(2014, 8, 21))
+        browser.getControl(name='form.buttons.search').click()
+        self.assertIn('Delete selected', browser.contents)
+
+        anonymous = self.new_browser()
+        anonymous.open(self.infolder('/resource/search'))
+        anonymous.set_date('recurrence_start', datetime(2014, 8, 20))
+        anonymous.set_date('recurrence_end', datetime(2014, 8, 21))
+        anonymous.getControl(name='form.buttons.search').click()
+        self.assertNotIn('Delete selected', anonymous.contents)
+
+    @db.serialized
+    def test_remove_multiple_allocations(self):
+        browser = self.admin_browser
+
+        self.add_resource('resource')
+
+        self.add_allocation(
+            'resource',
+            datetime(2014, 8, 20, 15, 00),
+            datetime(2014, 8, 20, 16, 00)
+        )
+        self.add_allocation(
+            'resource',
+            datetime(2014, 8, 21, 15, 00),
+            datetime(2014, 8, 21, 16, 00)
+        )
+
+        browser.open(self.infolder('/resource/search'))
+        browser.set_date('recurrence_start', datetime(2014, 8, 20))
+        browser.set_date('recurrence_end', datetime(2014, 8, 21))
+        browser.getControl(name='form.buttons.search').click()
+
+        self.assertIn('Aug 20, 2014', browser.contents)
+        self.assertIn('Aug 21, 2014', browser.contents)
+
+        browser.getLink('Delete selected').click()
+
+        self.assertIn('Aug 20, 2014', browser.contents)
+        self.assertIn('Aug 21, 2014', browser.contents)
+
+        browser.getControl('Delete').click()
+
+        browser.open(self.infolder('/resource/search'))
+        browser.set_date('recurrence_start', datetime(2014, 8, 20))
+        browser.set_date('recurrence_end', datetime(2014, 8, 21))
+        browser.getControl(name='form.buttons.search').click()
+
+        self.assertNotIn('Aug 20, 2014', browser.contents)
+        self.assertNotIn('Aug 21, 2014', browser.contents)
+
+    @db.serialized
+    def test_remove_multiple_reserved_allocations(self):
+        browser = self.admin_browser
+
+        self.add_resource('resource')
+
+        self.add_allocation(
+            'resource',
+            datetime(2014, 8, 20, 15, 00),
+            datetime(2014, 8, 20, 16, 00),
+            quota=2
+        )
+        self.add_allocation(
+            'resource',
+            datetime(2014, 8, 21, 15, 00),
+            datetime(2014, 8, 21, 16, 00),
+            quota=2
+        )
+
+        browser.open(self.infolder('/resource/search'))
+        browser.set_date('recurrence_start', datetime(2014, 8, 20))
+        browser.set_date('recurrence_end', datetime(2014, 8, 21))
+        browser.getControl(name='form.buttons.search').click()
+
+        browser.getControl('Reserve selected').click()
+        browser.getControl('Email').value = 'test@example.org'
+        browser.getControl('Reserve').click()
+        browser.getControl('Submit Reservations').click()
+
+        browser.open(self.infolder('/resource/search'))
+        browser.set_date('recurrence_start', datetime(2014, 8, 20))
+        browser.set_date('recurrence_end', datetime(2014, 8, 21))
+        browser.getControl(name='form.buttons.search').click()
+
+        browser.getLink('Delete selected').click()
+        browser.getControl('Delete').click()
+
+        self.assertIn('An existing reservation', browser.contents)

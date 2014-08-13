@@ -270,34 +270,45 @@ class AllocationRemoveForm(AllocationForm, AllocationGroupView):
     fields = field.Fields(IAllocation).select('id', 'group')
     template = ViewPageTemplateFile('templates/remove_allocation.pt')
 
-    label = _(u'Remove allocations')
+    label = _(u'Delete allocations')
 
     hidden_fields = ['id', 'group']
     ignore_requirements = True
 
+    @property
+    def allocation_groups(self):
+
+        if not self.group:
+            return []
+
+        return self.group.split(',')
+
     @button.buttonAndHandler(_(u'Delete'))
     @extract_action_data
-    def delete(self, data):
+    def remove(self, data):
 
         assert bool(data['id']) != bool(data['group']), \
             "Either id or group, not both"
 
         scheduler = self.scheduler
+        groups = self.allocation_groups
 
-        def delete():
-            scheduler.remove_allocation(id=data['id'], groups=[data['group']])
-            self.flash(_(u'Allocation removed'))
+        def remove():
+            scheduler.remove_allocation(id=data['id'], groups=groups)
+            if data['id']:
+                self.flash(_(u'Allocation deleted'))
+            else:
+                self.flash(_(u'Allocations deleted'))
 
-        utils.handle_action(action=delete, success=self.redirect_to_context)
+        utils.handle_action(action=remove, success=self.redirect_to_context)
 
     @button.buttonAndHandler(_(u'Cancel'))
     def cancel(self, action):
         self.redirect_to_context()
 
     def defaults(self):
-        id, group = self.id, self.group
 
-        if group:
+        if self.group:
             return dict(group=self.group, id=None)
         else:
             return dict(id=self.id, group=None)

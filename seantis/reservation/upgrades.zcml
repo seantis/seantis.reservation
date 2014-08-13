@@ -272,4 +272,13 @@
         profile="seantis.reservation:default">
     </genericsetup:upgradeStep>
 
+    <genericsetup:upgradeStep
+        title="Update css and javascript"
+        description=""
+        source="1030"
+        destination="1031"
+        handler=".upgrades.upgrade_1030_to_1031"
+        profile="seantis.reservation:default">
+    </genericsetup:upgradeStep>
+
 </configure>

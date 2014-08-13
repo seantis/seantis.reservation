@@ -12,7 +12,7 @@
         <h1 class="documentFirstHeading" tal:content="view/label | nothing" />
 
         <p tal:condition="python: len(view.allocations()) > 0" i18n:translate="">
-        Do you really want to remove the following allocations?
+        Do you really want to delete the following allocations?
         </p>
 
         <p tal:condition="python: len(view.allocations()) == 0" i18n:translate="">

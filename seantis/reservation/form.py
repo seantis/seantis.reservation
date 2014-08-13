@@ -293,11 +293,16 @@ class ResourceBaseForm(GroupForm, form.Form):
     @property
     def group(self):
         if 'group' in self.request:
-            return unicode(self.request['group'].decode('utf-8'))
+            group = self.request['group']
         elif self.widgets and 'group' in self.widgets:
-            return unicode(self.widgets['group'].value)
+            group = self.widgets['group'].value
+        else:
+            group = None
 
-        return u''
+        if isinstance(group, basestring):
+            return unicode(group.decode('utf-8'))
+        else:
+            return group and ','.join(group) or u''
 
     def flash(self, message, type='info'):
         utils.flash(self.context, message, type)
@@ -358,7 +363,9 @@ class AllocationGroupView(object):
     @utils.memoize
     def allocations(self):
         if self.group:
-            query = self.context.scheduler().allocations_by_group(self.group)
+            query = self.context.scheduler().allocations_by_groups(
+                self.group.split(',')
+            )
             query = query.order_by(Allocation._start)
             return query.all()
         elif self.id:

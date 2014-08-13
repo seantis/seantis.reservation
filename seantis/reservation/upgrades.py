@@ -458,3 +458,9 @@ def upgrade_1028_to_1029(context):
 def upgrade_1029_to_1030(context):
 
     add_new_email_template(context, 'reservation_time_changed')
+
+
+def upgrade_1030_to_1031(context):
+
+    recook_css_resources(context)
+    recook_js_resources(context)

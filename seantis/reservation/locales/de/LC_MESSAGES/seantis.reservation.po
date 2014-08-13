@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-08-12 09:20+0000\n"
+"POT-Creation-Date: 2014-08-13 08:13+0000\n"
 "PO-Revision-Date: 2012-09-06 11:33+0100\n"
 "Last-Translator: Fabian Reinhard <fabian.reinhard@seantis.ch>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -108,13 +108,17 @@ msgstr "Einteilung"
 msgid "Allocation added"
 msgstr "Einteilung hinzugefügt"
 
-#: ./allocate.py:289
-msgid "Allocation removed"
-msgstr "Einteilung entfernt"
+#: ./allocate.py:299
+msgid "Allocation deleted"
+msgstr "Einteilung gelöscht"
 
 #: ./allocate.py:252
 msgid "Allocation saved"
 msgstr "Einteilung gespeichert"
+
+#: ./allocate.py:301
+msgid "Allocations deleted"
+msgstr "Einteilungen gelöscht"
 
 #: ./interfaces.py:475
 msgid "Allocations may end every 5 minutes if the allocation is not partly available. If it is partly available the start time may be every x minute where x equals the given raster. The minimum length of an allocation is also either 5 minutes or whatever the value of the raster is."
@@ -178,7 +182,7 @@ msgstr "Verfügbar-Schwellenwert (%)"
 msgid "Available Views"
 msgstr "Verfügbare Ansichten"
 
-#: ./search.py:65
+#: ./search.py:66
 msgid "Available only"
 msgstr "Nur wenn verfügbar"
 
@@ -258,7 +262,7 @@ msgid "Day"
 msgstr "Tag"
 
 #: ./interfaces.py:512
-#: ./search.py:54
+#: ./search.py:55
 msgid "Days"
 msgstr "Tage"
 
@@ -274,11 +278,19 @@ msgstr "Standard Einteilungswerte"
 msgid "Defines the minimum length of any given reservation as well as the alignment of the start / end of the allocation. E.g. a raster of 30 minutes means that the allocation can only start at xx:00 and xx:30 respectively"
 msgstr "Definiert die Mindestlänge der Reservationen für diese Einteilung, sowie die automatische Anpassung der Start- bzw. Endzeit. Ein Raster von 30 Minuten bedeuted beispielsweise, dass die Einteilung nur um xx:00 Uhr und xx:30 Uhr beginnen kann."
 
-#: ./allocate.py:278
+#: ./allocate.py:286
 #: ./mail.py:607
 #: ./timeframe.py:201
 msgid "Delete"
 msgstr "Löschen"
+
+#: ./allocate.py:273
+msgid "Delete allocations"
+msgstr "Einteilungen löschen"
+
+#: ./templates/search.pt:97
+msgid "Delete selected"
+msgstr "Auswahl löschen"
 
 #: ./reserve.py:871
 #: ./templates/macros.pt:130
@@ -305,13 +317,13 @@ msgstr "Managern keine E-Mails senden"
 msgid "Do you really want to approve the following reservations?"
 msgstr "Möchten Sie die folgende Reservation wirklich zulassen?"
 
+#: ./templates/remove_allocation.pt:14
+msgid "Do you really want to delete the following allocations?"
+msgstr "Möchten Sie die folgenden Einteilungen wirklich löschen?"
+
 #: ./reserve.py:869
 msgid "Do you really want to deny the following reservations?"
 msgstr "Möchten Sie die folgende Reservation wirklich ablehnen?"
-
-#: ./templates/remove_allocation.pt:14
-msgid "Do you really want to remove the following allocations?"
-msgstr "Möchten Sie die folgenden Einteilungen wirklich löschen?"
 
 #: ./reserve.py:913
 msgid "Do you really want to revoke the following reservations?"
@@ -427,7 +439,7 @@ msgstr "Email Text für Abgesagte Reservationen"
 msgid "End"
 msgstr "Ende"
 
-#: ./search.py:32
+#: ./search.py:33
 msgid "End date"
 msgstr "Bis-Datum"
 
@@ -435,7 +447,7 @@ msgstr "Bis-Datum"
 msgid "End date before start date"
 msgstr "Ende vor Start"
 
-#: ./search.py:48
+#: ./search.py:49
 msgid "End time"
 msgstr "Bis Uhrzeit"
 
@@ -799,10 +811,6 @@ msgstr "Wiederholungen"
 msgid "Remove"
 msgstr "Entfernen"
 
-#: ./allocate.py:273
-msgid "Remove allocations"
-msgstr "Einteilungen entfernen"
-
 #: ./reserve.py:1089
 msgid "Reservation"
 msgstr "Reservation"
@@ -926,7 +934,7 @@ msgstr "Seantis Reservation Kontrollzentrum"
 msgid "Seantis Reservation Settings"
 msgstr "Seantis Reservation Einstellungen"
 
-#: ./search.py:111
+#: ./search.py:112
 msgid "Search"
 msgstr "Suchen"
 
@@ -1022,7 +1030,7 @@ msgstr "Wird dem Benutzer angezeigt wenn die Reservation abgeschlossen wurde. Di
 msgid "Specific Date"
 msgstr "Bestimmtes Datum"
 
-#: ./search.py:60
+#: ./search.py:61
 msgid "Spots"
 msgstr "Plätze"
 
@@ -1031,11 +1039,11 @@ msgstr "Plätze"
 msgid "Start"
 msgstr "Start"
 
-#: ./search.py:27
+#: ./search.py:28
 msgid "Start date"
 msgstr "Von-Datum"
 
-#: ./search.py:43
+#: ./search.py:44
 msgid "Start time"
 msgstr "Ab Uhrzeit"
 
@@ -1156,11 +1164,11 @@ msgstr "Die resultierende Einteilung wäre Ungültig."
 msgid "The selected view must be one of the available views."
 msgstr "Die ausgewählte Ansicht muss eine verfügbare Ansicht sein."
 
-#: ./form.py:591
+#: ./form.py:598
 msgid "There are ${nb} reservations being entered for this resource."
 msgstr "${nb} Reservationen werden gerade eingegeben."
 
-#: ./form.py:587
+#: ./form.py:594
 msgid "There is one reservation being entered for this resource."
 msgstr "Eine Reservation wird gerade eingegeben."
 
@@ -1205,7 +1213,7 @@ msgid "Timeframe overlaps with '${overlap}' in the current folder"
 msgstr "Die Belegungsperiod überschneidet sich mit '${overlap}' in diesem Ordner"
 
 #: ./interfaces.py:459
-#: ./search.py:21
+#: ./search.py:22
 #: ./templates/timeframes.pt:4
 msgid "Timeframes"
 msgstr "Belegungsperioden"
@@ -1294,7 +1302,7 @@ msgid "Whole Day"
 msgstr "Ganztägig"
 
 #: ./macros.py:120
-#: ./search.py:37
+#: ./search.py:38
 msgid "Whole day"
 msgstr "Ganztägig"
 

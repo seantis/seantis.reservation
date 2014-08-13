@@ -113,6 +113,10 @@ var reservation_overlay_init = null;
     };
 
     reservation_overlay_init = function(elements, options) {
+        if (_.isUndefined(options)) {
+            options = {config:{}};
+        }
+
         // bind events (ensuring that there's only one handler at a time)
         // -> because there can only be one overlay at any given time
         (function(formload_success, formload_failure) {

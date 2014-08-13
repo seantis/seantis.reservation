@@ -27,15 +27,18 @@ seantis.search.init_select_buttons = function() {
     $('#select-all-searchresults').click(function() {
         available_checkboxes.prop('checked', true);
         seantis.search.adjust_button_state_to_selection();
+        seantis.search.update_remove_link();
     });
 
     $('#select-no-searchresults').click(function() {
         available_checkboxes.prop('checked', false);
         seantis.search.adjust_button_state_to_selection();
+        seantis.search.update_remove_link();
     });
 
     available_checkboxes.change(function() {
         seantis.search.adjust_button_state_to_selection();
+        seantis.search.update_remove_link();
 
         seantis.search.select_group(
             $(this).data('group'), $(this).is(':checked')
@@ -74,6 +77,36 @@ seantis.search.highlight_group = function(group) {
     );
 };
 
+seantis.search.update_remove_link = function() {
+    "use strict";
+
+    var button = $('.searchresults a.button.destructive');
+
+    if (button.length === 0) {
+        return;
+    }
+
+    var groups = _.uniq(_.map(
+        $('.searchresults input[type="checkbox"]:checked'),
+        function(checkbox) {
+            return $(checkbox).data('group');
+        }
+    ));
+
+    if (groups.length === 0) {
+        button.addClass('disabled');
+    } else {
+        button.removeClass('disabled');
+
+        var link = './remove-allocation?group=' + groups.join('&group=');
+        button.prop('href', link);
+    }
+
+    button.replaceWith(button.clone());
+    button.removeAttr('rel');
+    reservation_overlay_init($('.searchresults a.button.destructive'));
+};
+
 seantis.search.adjust_button_state_to_selection = function() {
     var submit_button = $('#reserve-selection-form input[type="submit"]');
 
@@ -94,6 +127,13 @@ seantis.search.select_group = function(group, select) {
 seantis.search.init_overlays = function() {
     var submit = $('.searchresults input[type="submit"]');
     if (submit.length >= 0) seantis.search.init_submit(submit);
+
+    var remove = $('.searchresults a.button.destructive');
+    if (remove.length >= 0) seantis.search.init_remove(remove);
+};
+
+seantis.search.init_remove = function(remove) {
+    reservation_overlay_init(remove);
 };
 
 seantis.search.init_submit = function(submit) {
@@ -201,6 +241,7 @@ seantis.search.init_submit = function(submit) {
         seantis.search.init_select_buttons();
         seantis.search.init_highlighting();
         seantis.search.init_tips();
+        seantis.search.update_remove_link();
 
         // deselect all groups with extra results by default
         // would be better to do on the server, but it is much easier here

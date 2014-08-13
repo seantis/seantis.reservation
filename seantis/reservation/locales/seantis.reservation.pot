@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-08-12 09:20+0000\n"
+"POT-Creation-Date: 2014-08-13 08:13+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -111,12 +111,16 @@ msgstr ""
 msgid "Allocation added"
 msgstr ""
 
-#: ./allocate.py:289
-msgid "Allocation removed"
+#: ./allocate.py:299
+msgid "Allocation deleted"
 msgstr ""
 
 #: ./allocate.py:252
 msgid "Allocation saved"
+msgstr ""
+
+#: ./allocate.py:301
+msgid "Allocations deleted"
 msgstr ""
 
 #: ./interfaces.py:475
@@ -181,7 +185,7 @@ msgstr ""
 msgid "Available Views"
 msgstr ""
 
-#: ./search.py:65
+#: ./search.py:66
 msgid "Available only"
 msgstr ""
 
@@ -261,7 +265,7 @@ msgid "Day"
 msgstr ""
 
 #: ./interfaces.py:512
-#: ./search.py:54
+#: ./search.py:55
 msgid "Days"
 msgstr ""
 
@@ -277,10 +281,18 @@ msgstr ""
 msgid "Defines the minimum length of any given reservation as well as the alignment of the start / end of the allocation. E.g. a raster of 30 minutes means that the allocation can only start at xx:00 and xx:30 respectively"
 msgstr ""
 
-#: ./allocate.py:278
+#: ./allocate.py:286
 #: ./mail.py:607
 #: ./timeframe.py:201
 msgid "Delete"
+msgstr ""
+
+#: ./allocate.py:273
+msgid "Delete allocations"
+msgstr ""
+
+#: ./templates/search.pt:97
+msgid "Delete selected"
 msgstr ""
 
 #: ./reserve.py:871
@@ -308,12 +320,12 @@ msgstr ""
 msgid "Do you really want to approve the following reservations?"
 msgstr ""
 
-#: ./reserve.py:869
-msgid "Do you really want to deny the following reservations?"
+#: ./templates/remove_allocation.pt:14
+msgid "Do you really want to delete the following allocations?"
 msgstr ""
 
-#: ./templates/remove_allocation.pt:14
-msgid "Do you really want to remove the following allocations?"
+#: ./reserve.py:869
+msgid "Do you really want to deny the following reservations?"
 msgstr ""
 
 #: ./reserve.py:913
@@ -430,7 +442,7 @@ msgstr ""
 msgid "End"
 msgstr ""
 
-#: ./search.py:32
+#: ./search.py:33
 msgid "End date"
 msgstr ""
 
@@ -438,7 +450,7 @@ msgstr ""
 msgid "End date before start date"
 msgstr ""
 
-#: ./search.py:48
+#: ./search.py:49
 msgid "End time"
 msgstr ""
 
@@ -802,10 +814,6 @@ msgstr ""
 msgid "Remove"
 msgstr ""
 
-#: ./allocate.py:273
-msgid "Remove allocations"
-msgstr ""
-
 #: ./reserve.py:1089
 msgid "Reservation"
 msgstr ""
@@ -929,7 +937,7 @@ msgstr ""
 msgid "Seantis Reservation Settings"
 msgstr ""
 
-#: ./search.py:111
+#: ./search.py:112
 msgid "Search"
 msgstr ""
 
@@ -1025,7 +1033,7 @@ msgstr ""
 msgid "Specific Date"
 msgstr ""
 
-#: ./search.py:60
+#: ./search.py:61
 msgid "Spots"
 msgstr ""
 
@@ -1034,11 +1042,11 @@ msgstr ""
 msgid "Start"
 msgstr ""
 
-#: ./search.py:27
+#: ./search.py:28
 msgid "Start date"
 msgstr ""
 
-#: ./search.py:43
+#: ./search.py:44
 msgid "Start time"
 msgstr ""
 
@@ -1159,11 +1167,11 @@ msgstr ""
 msgid "The selected view must be one of the available views."
 msgstr ""
 
-#: ./form.py:591
+#: ./form.py:598
 msgid "There are ${nb} reservations being entered for this resource."
 msgstr ""
 
-#: ./form.py:587
+#: ./form.py:594
 msgid "There is one reservation being entered for this resource."
 msgstr ""
 
@@ -1208,7 +1216,7 @@ msgid "Timeframe overlaps with '${overlap}' in the current folder"
 msgstr ""
 
 #: ./interfaces.py:459
-#: ./search.py:21
+#: ./search.py:22
 #: ./templates/timeframes.pt:4
 msgid "Timeframes"
 msgstr ""
@@ -1297,7 +1305,7 @@ msgid "Whole Day"
 msgstr ""
 
 #: ./macros.py:120
-#: ./search.py:37
+#: ./search.py:38
 msgid "Whole day"
 msgstr ""
 

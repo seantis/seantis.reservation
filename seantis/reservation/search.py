@@ -5,6 +5,7 @@ from plone.directives import form
 from plone.supermodel import model
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from zope import schema
+from zope.security import checkPermission
 
 from seantis.reservation import _
 from seantis.reservation.utils import cached_property
@@ -109,6 +110,16 @@ class SearchForm(BaseForm, AutoExtensibleForm, YourReservationsViewlet):
     @property
     def available_actions(self):
         yield dict(name='search', title=_(u'Search'), css_class='context')
+
+    @property
+    def enable_removal(self):
+        return checkPermission('cmf.ModifyPortalContent', self.context)
+
+    @property
+    def removal_url(self):
+        return './remove-allocation?group={}'.format(
+            '&group='.join(set(r.group.hex for r in self.results))
+        )
 
     @cached_property
     def options(self):
