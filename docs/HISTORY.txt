@@ -5,6 +5,9 @@ Changelog
 1.1.3 (unreleased)
 ------------------
 
+- Changes search view to be way more ajaxy, giving the impression of a speedup.
+  [href]
+
 - Adds the ability to delete allocations found when searching. Fixes #161.
   [href]
 

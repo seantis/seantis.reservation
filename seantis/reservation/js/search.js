@@ -171,7 +171,7 @@ seantis.search.init_submit = function(submit) {
 
     submit.click(function(e) {
         $.post('./reserve-selection', $('#reserve-selection-form').serialize(),
-            function(data, status, xhr) {
+            function(data) {
 
                 // Create a link outside the DOM and point to an address
                 // which is public, but doesn't ask too much from the server.
@@ -235,23 +235,64 @@ seantis.search.init_submit = function(submit) {
     });
 };
 
+seantis.search.init_ajax_search = function() {
+    var button = $('.searchbox #form-buttons-search');
+    if (button.length === 0) return;
+    if (button.data('hooked') === true) return;
+
+    button.click(function(e) {
+        seantis.search.run_search();
+        button.removeClass('submitting');
+        e.preventDefault();
+    });
+
+    button.data('hooked', true);
+};
+
+seantis.search.run_search = function() {
+    var formdata = $('.searchbox form').serialize();
+
+    // make sure the form is treated as submitted by the backend
+    formdata += '&form.buttons.search=';
+    formdata += $('.searchbox input[type="submit"]').val();
+
+    $('.loading').show();
+    $('.resultbox').hide();
+
+    $.post('./search', formdata, function(data) {
+        $('.loading').hide();
+        var resultbox = $('.resultbox');
+        resultbox.replaceWith($(data).find('.resultbox'));
+        resultbox.remove();
+        _.defer(seantis.search.init);
+    });
+};
+
+seantis.search.init = function() {
+    seantis.search.init_overlays();
+    seantis.search.init_select_buttons();
+    seantis.search.init_highlighting();
+    seantis.search.init_tips();
+    seantis.search.update_remove_link();
+    seantis.search.init_ajax_search();
+
+    // deselect all groups with extra results by default
+    // would be better to do on the server, but it is much easier here
+    var groups = [];
+    _.each($('.searchresults .is-extra-result'), function(extra) {
+        var group = $(extra).data('group');
+        if (groups.indexOf(group) === -1) {
+            seantis.search.select_group(group, false);
+            groups.push(group);
+        }
+    });
+};
+
 (function($) {
     $(document).ready(function() {
-        seantis.search.init_overlays();
-        seantis.search.init_select_buttons();
-        seantis.search.init_highlighting();
-        seantis.search.init_tips();
-        seantis.search.update_remove_link();
-
-        // deselect all groups with extra results by default
-        // would be better to do on the server, but it is much easier here
-        var groups = [];
-        _.each($('.searchresults .is-extra-result'), function(extra) {
-            var group = $(extra).data('group');
-            if (groups.indexOf(group) === -1) {
-                seantis.search.select_group(group, false);
-                groups.push(group);
-            }
-        });
+        seantis.search.init();
+    });
+    $(document).on('reservations-changed', function() {
+        $('.searchbox input[type="submit"]').click();
     });
 })(jQuery);

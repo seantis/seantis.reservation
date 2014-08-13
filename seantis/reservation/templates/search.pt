@@ -48,58 +48,61 @@
               <metal:block use-macro="context/@@ploneform-macros/titlelessform" />
             </div>
 
-            <tal:comment replace="nothing">
-              No search has been done yet, show information.
-            </tal:comment>
-            <div tal:condition="not:view/searched" class="searchhelp">
-              <ol>
-                <li i18n:translate="">Use the search form to see what's available.</li>
-                <li i18n:translate="">Choose what you want to reserve.</li>
-              </ol>
-            </div>
-
-            <tal:comment replace="nothing">
-              A search has been done, show results.
-            </tal:comment>
-            <tal:block condition="view/searched">
-              <div class="searchresults" tal:condition="not:view/results">
-                <div class="noresults resultinfo" tal:condition="not: view/results" i18n:translate="">No results found.</div>
+            <div class="loading" style="margin-left: 25%; display: none;"/>
+            <div class="resultbox">
+              <tal:comment replace="nothing">
+                No search has been done yet, show information.
+              </tal:comment>
+              <div tal:condition="not:view/searched" class="searchhelp">
+                <ol>
+                  <li i18n:translate="">Use the search form to see what's available.</li>
+                  <li i18n:translate="">Choose what you want to reserve.</li>
+                </ol>
               </div>
 
-              <div class="searchresults" tal:condition="view/results">
-                <div class="searchresults-header">
-                  <div class="resultinfo"><tal:block content="python: len(view.results)" /> <span i18n:translate="">results</span></div>
-                  <div class="resultactions">
-                    <a id='select-no-searchresults' class="button" i18n:translate="">None</a>
-                    <a id='select-all-searchresults' class="button" i18n:translate="">All</a>
-                    <div i18n:translate="">Select: </div>
-                  </div>
-
-                  <div class="visualClear" />
+              <tal:comment replace="nothing">
+                A search has been done, show results.
+              </tal:comment>
+              <tal:block condition="view/searched">
+                <div class="searchresults" tal:condition="not:view/results">
+                  <div class="noresults resultinfo" tal:condition="not: view/results" i18n:translate="">No results found.</div>
                 </div>
 
-                <form action="./reserve-selection" method="post" tal:define="
-                  allocations view/results;
-                  show_checkboxes python: True;
-                  start_time view/start_time;
-                  end_time view/end_time;
-                " id="reserve-selection-form">
-                  <tal:comment replace="nothing">
-                    Pass variables to the selection-reserve form
-                  </tal:comment>
-                  <input type="hidden" name="start_time" tal:attributes="value python: view.options['start'].time().isoformat()" />
-                  <input type="hidden" name="end_time" tal:attributes="value python: view.options['end'].time().isoformat()"/>
-                  <input type="hidden" name="quota" tal:attributes="value python: view.options['minspots']"/>
+                <div class="searchresults" tal:condition="view/results">
+                  <div class="searchresults-header">
+                    <div class="resultinfo"><tal:block content="python: len(view.results)" /> <span i18n:translate="">results</span></div>
+                    <div class="resultactions">
+                      <a id='select-no-searchresults' class="button" i18n:translate="">None</a>
+                      <a id='select-all-searchresults' class="button" i18n:translate="">All</a>
+                      <div i18n:translate="">Select: </div>
+                    </div>
 
-                  <metal:block use-macro="context/@@seantis-reservation-macros/allocations-table" />
+                    <div class="visualClear" />
+                  </div>
 
-                  <input type="submit" value="Reserve selected" i18n:attributes="value" />
-                  <a class="button destructive" i18n:translate="" tal:condition="view/enable_removal" tal:attributes="href view/removal_url">
-                    Delete selected
-                  </a>
-                </form>
-              </div>
-            </tal:block>
+                  <form action="./reserve-selection" method="post" tal:define="
+                    allocations view/results;
+                    show_checkboxes python: True;
+                    start_time view/start_time;
+                    end_time view/end_time;
+                  " id="reserve-selection-form">
+                    <tal:comment replace="nothing">
+                      Pass variables to the selection-reserve form
+                    </tal:comment>
+                    <input type="hidden" name="start_time" tal:attributes="value python: view.options['start'].time().isoformat()" />
+                    <input type="hidden" name="end_time" tal:attributes="value python: view.options['end'].time().isoformat()"/>
+                    <input type="hidden" name="quota" tal:attributes="value python: view.options['minspots']"/>
+
+                    <metal:block use-macro="context/@@seantis-reservation-macros/allocations-table" />
+
+                    <input type="submit" value="Reserve selected" i18n:attributes="value" />
+                    <a class="button destructive" i18n:translate="" tal:condition="view/enable_removal" tal:attributes="href view/removal_url">
+                      Delete selected
+                    </a>
+                  </form>
+                </div>
+              </tal:block>
+            </div>
           </div>
         </div>
     </tal:main-macro>
