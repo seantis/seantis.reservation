@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, time
 from uuid import uuid1 as uuid
 
 from sqlalchemy.exc import IntegrityError
@@ -80,3 +80,71 @@ class TestAllocation(IntegrationTestCase):
         allocation.end = datetime(2013, 1, 1, 0, 0)
 
         self.assertRaises(AssertionError, lambda: allocation.whole_day)
+
+    def test_limit_timespan(self):
+
+        # if not partly availabe the limit is always the same
+        allocation = Allocation(
+            raster=15, resource=uuid(), partly_available=False
+        )
+
+        allocation.start = datetime(2014, 1, 1, 8, 0)
+        allocation.end = datetime(2014, 1, 1, 9, 0)
+
+        self.assertEqual(allocation.limit_timespan(
+            time(8, 0), time(9, 0)
+        ), (allocation.display_start, allocation.display_end))
+
+        self.assertEqual(allocation.limit_timespan(
+            time(7, 0), time(10, 0)
+        ), (allocation.display_start, allocation.display_end))
+
+        # if partly available, more complex things happen
+        allocation = Allocation(
+            raster=15, resource=uuid(), partly_available=True
+        )
+
+        allocation.start = datetime(2014, 1, 1, 8, 0)
+        allocation.end = datetime(2014, 1, 1, 9, 0)
+
+        self.assertEqual(allocation.limit_timespan(
+            time(8, 0), time(9, 0)
+        ), (allocation.display_start, allocation.display_end))
+
+        self.assertEqual(allocation.limit_timespan(
+            time(8, 30), time(10, 0)
+        ), (datetime(2014, 1, 1, 8, 30), datetime(2014, 1, 1, 9, 0)))
+
+        self.assertEqual(allocation.limit_timespan(
+            time(8, 30), time(8, 40)
+        ), (datetime(2014, 1, 1, 8, 30), datetime(2014, 1, 1, 8, 45)))
+
+        self.assertEqual(allocation.limit_timespan(
+            time(8, 30), time(0, 0)
+        ), (datetime(2014, 1, 1, 8, 30), datetime(2014, 1, 1, 9, 0)))
+
+        # no problems should arise if whole-day allocations are used
+        allocation.start = datetime(2014, 1, 1, 0, 0)
+        allocation.end = datetime(2014, 1, 2, 0, 0)
+
+        self.assertTrue(allocation.whole_day)
+
+        self.assertEqual(allocation.limit_timespan(
+            time(0, 0), time(23, 59)
+        ), (allocation.display_start, allocation.display_end))
+
+        self.assertEqual(allocation.limit_timespan(
+            time(0, 0), time(0, 0)
+        ), (datetime(2014, 1, 1, 0, 0), datetime(2014, 1, 1, 0, 0)))
+
+        self.assertEqual(allocation.limit_timespan(
+            time(8, 30), time(10, 0)
+        ), (datetime(2014, 1, 1, 8, 30), datetime(2014, 1, 1, 10, 0)))
+
+        self.assertEqual(allocation.limit_timespan(
+            time(8, 30), time(8, 40)
+        ), (datetime(2014, 1, 1, 8, 30), datetime(2014, 1, 1, 8, 45)))
+
+        self.assertEqual(allocation.limit_timespan(
+            time(8, 30), time(0, 0)
+        ), (datetime(2014, 1, 1, 8, 30), datetime(2014, 1, 2, 0, 0)))

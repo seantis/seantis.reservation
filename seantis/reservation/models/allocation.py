@@ -1,4 +1,4 @@
-from datetime import timedelta, datetime, time
+from datetime import timedelta, time
 from itertools import groupby
 
 from sqlalchemy import types
@@ -221,15 +221,14 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
           the allocation itself.
 
         The resulting times are combined with the allocations start/end date
-        to form a datetime.
+        to form a datetime. (time in, datetime out -> maybe not the best idea)
 
         """
         if self.partly_available:
             assert isinstance(start, time)
             assert isinstance(end, time)
 
-            s = datetime.combine(self.display_start, start)
-            e = datetime.combine(self.display_end, end)
+            s, e = utils.get_date_range(self.start.date(), start, end)
 
             if self.display_end < e:
                 e = self.display_end
