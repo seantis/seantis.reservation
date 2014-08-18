@@ -174,7 +174,6 @@ class Allocation(TimestampMixin, ORMBase, OtherModels):
         allocation.
 
         """
-
         start = start or self.start
         start = start < self.start and self.start or start
 

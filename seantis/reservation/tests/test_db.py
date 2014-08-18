@@ -1565,6 +1565,37 @@ class TestScheduler(IntegrationTestCase):
         self.assertEqual(len(sc.search_allocations(s1, e2, groups='no')), 0)
 
     @serialized
+    def test_search_whole_day_regression(self):
+        # https://github.com/seantis/seantis.reservation/issues/162
+        self.login_manager()
+
+        resource = self.create_resource()
+        sc = resource.scheduler()
+
+        s, e = datetime(2014, 8, 18, 0, 0), datetime(2014, 8, 18, 0, 0)
+
+        sc.allocate((s, e), whole_day=True, partly_available=True)
+        sc.approve_reservations(
+            sc.reserve(
+                reservation_email, (
+                    datetime(2014, 8, 18, 10, 0), datetime(2014, 8, 18, 11, 0)
+                )
+            )
+        )
+
+        # the error only manifests itself if the search is limited to a time
+        # before the first reserved slot
+        self.assertEqual(
+            len(
+                sc.search_allocations(
+                    datetime(2014, 8, 18, 8, 0),
+                    datetime(2014, 8, 18, 9, 0),
+                    available_only=True
+                )
+            ), 1
+        )
+
+    @serialized
     def test_email(self):
         self.login_manager()
 

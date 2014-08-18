@@ -1378,14 +1378,14 @@ class Scheduler(object):
             if not self.is_exposed(allocation):
                 continue
 
-            s = datetime.combine(allocation.display_start.date(), start.time())
-            e = datetime.combine(allocation.display_end.date(), end.time())
+            s = datetime.combine(allocation.start.date(), start.time())
+            e = datetime.combine(allocation.end.date(), end.time())
 
             if not allocation.overlaps(s, e):
                 continue
 
             if days:
-                if allocation.display_start.weekday() not in days:
+                if allocation.start.weekday() not in days:
                     continue
 
             if whole_day != 'any':
