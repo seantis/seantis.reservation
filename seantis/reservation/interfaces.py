@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import re
+
 from dateutil import rrule
 
 from five import grok
@@ -582,7 +584,7 @@ template_revoke_variables = template_variables + _(
 )
 
 template_time_changed_variables = template_revoke_variables + _(
-    u'%(old_time)s - old start/end time<br>',
+    u'%(old_time)s - old start/end time<br>'
     u'%(new_time)s - new start/end time<br>'
 )
 
@@ -698,6 +700,38 @@ class IEmailTemplate(form.Schema):
         description=template_time_changed_variables,
         default=templates['reservation_time_changed'].get_body('en')
     )
+
+    @invariant
+    def validate_templates(email):
+        # go through the *_content attributes
+        content_attributes = (
+            (k, v) for k, v in IEmailTemplate._v_attrs.items()
+            if k.endswith('_content')
+        )
+
+        # gather all the %(xxx)s tags
+        form_tags = re.compile(r'%\(([a-z_]+)\)')
+
+        # try to fill those with dummy variables
+        for key, attr in content_attributes:
+            tags = form_tags.findall(attr.getDoc())
+            test_data = zip(tags, (str(i) for i in xrange(0, len(tags))))
+
+            try:
+                getattr(email, key) % dict(test_data)
+
+            # if anything fails, it would also in the email sending process
+            # which is the last thing we want to fail
+            except KeyError, e:
+                raise Invalid(
+                    _(
+                        u"Invalid template variable '${name}' in '${field}'",
+                        mapping={
+                            'name': e.message,
+                            'field': attr.title
+                        }
+                    )
+                )
 
 
 def get_default_language(adapter):

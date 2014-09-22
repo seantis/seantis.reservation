@@ -5,6 +5,9 @@ Changelog
 1.1.5 (unreleased)
 ------------------
 
+- Adds email template validation. Closes #156.
+  [href]
+
 - Fixes export error when using a unicode character in the resource title.
   Closes #165.
   [href]
