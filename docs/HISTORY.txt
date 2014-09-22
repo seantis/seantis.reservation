@@ -5,6 +5,10 @@ Changelog
 1.1.5 (unreleased)
 ------------------
 
+- Fixes export error when using a unicode character in the resource title.
+  Closes #165.
+  [href]
+
 - Spell email as 'E-Mail' in German - always. Fixes #166.
   [href]
 

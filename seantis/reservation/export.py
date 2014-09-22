@@ -329,7 +329,7 @@ class ExportView(BaseView, form.ResourceParameterView):
         RESPONSE = self.request.RESPONSE
         RESPONSE.setHeader(
             "Content-disposition",
-            codecs.utf_8_encode('filename="{}"'.format(self.filename))[0]
+            'filename="{}"'.format(codecs.utf_8_encode(self.filename)[0])
         )
         RESPONSE.setHeader(
             "Content-Type", "{};charset=utf-8".format(self.content_type)
