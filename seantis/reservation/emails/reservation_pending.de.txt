@@ -5,7 +5,7 @@ Eine neue Reservation für %(resource)s wurde erfasst:
 Termine:
 %(dates)s
 
-Email:
+E-Mail:
 %(reservation_mail)s
 
 Kontingent:

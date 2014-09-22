@@ -6,4 +6,4 @@ Wir haben folgende Reservationen erhalten:
 
 Ihre Reservationen wurden automatisch angenommen und sind gültig. Sollte sich an einer Reservation etwas ändern, werden Sie über E-Mail informiert.
 
-Reservationen, die mit einem Stern (*) gekennzeichnet sind, werden überprüft und entweder angenommen oder abgelehnt. Sie werden dazu per Email informiert.
+Reservationen, die mit einem Stern (*) gekennzeichnet sind, werden überprüft und entweder angenommen oder abgelehnt. Sie werden dazu per E-Mail informiert.
