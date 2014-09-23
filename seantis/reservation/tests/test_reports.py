@@ -71,8 +71,8 @@ class TestReports(IntegrationTestCase):
         resource = self.create_resource()
         sc = resource.scheduler()
 
-        today = (datetime(2013, 9, 25, 8), datetime(2013, 9, 25, 10))
-        tomorrow = (datetime(2013, 9, 26, 8), datetime(2013, 9, 26, 10))
+        today = (datetime(2013, 9, 29, 8), datetime(2013, 9, 29, 10))
+        tomorrow = (datetime(2013, 9, 30, 8), datetime(2013, 9, 30, 10))
 
         sc.allocate(today, quota=2)
         sc.allocate(tomorrow, quota=1)
@@ -87,14 +87,14 @@ class TestReports(IntegrationTestCase):
         self.assertEqual(len(report), 2)
 
         # one resource for each day
-        self.assertEqual(len(report[25]), 1)
-        self.assertEqual(len(report[26]), 1)
+        self.assertEqual(len(report[29]), 1)
+        self.assertEqual(len(report[30]), 1)
 
         # two reservations on the first day
-        self.assertEqual(len(report[25][resource.uuid()]['approved']), 2)
+        self.assertEqual(len(report[29][resource.uuid()]['approved']), 2)
 
         # on reservation on the second day
-        self.assertEqual(len(report[26][resource.uuid()]['approved']), 1)
+        self.assertEqual(len(report[30][resource.uuid()]['approved']), 1)
 
     @mock.patch('seantis.reservation.utils.utcnow')
     def test_latest_reservations_human_date(self, utcnow):

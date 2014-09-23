@@ -172,8 +172,10 @@ def monthly_report(year, month, resources, reservations='*'):
             }
 
     # gather the reservations with as much bulk loading as possible
-    period_start = date(year, month, 1)
-    period_end = date(year, month, last_day)
+    period_start = datetime(year, month, 1)
+    period_end = datetime(year, month, last_day) + timedelta(
+        days=1, microseconds=-1
+    )
 
     # get a list of relevant allocations in the given period
     query = Session.query(Allocation)

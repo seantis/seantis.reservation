@@ -5,6 +5,9 @@ Changelog
 1.1.5 (unreleased)
 ------------------
 
+- Fixes last day not being included in the monthlry report. Closes #163.
+  [href]
+
 - Adds email template validation. Closes #156.
   [href]
 
