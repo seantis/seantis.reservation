@@ -281,4 +281,13 @@
         profile="seantis.reservation:default">
     </genericsetup:upgradeStep>
 
+    <genericsetup:upgradeStep
+        title="Fix action permissions of the resource type"
+        description=""
+        source="1031"
+        destination="1032"
+        handler=".upgrades.upgrade_1031_to_1032"
+        profile="seantis.reservation:default">
+    </genericsetup:upgradeStep>
+
 </configure>

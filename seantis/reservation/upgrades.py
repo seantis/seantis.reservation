@@ -464,3 +464,10 @@ def upgrade_1030_to_1031(context):
 
     recook_css_resources(context)
     recook_js_resources(context)
+
+
+def upgrade_1031_to_1032(context):
+    setup = getToolByName(context, 'portal_setup')
+    setup.runImportStepFromProfile(
+        'profile-seantis.reservation:default', 'typeinfo'
+    )
