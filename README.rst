@@ -101,7 +101,7 @@ Install required packages
     sudo apt-get install git-core
     sudo apt-get install libxml2 libxml2-dev
     sudo apt-get install libxslt1.1 libxslt1-dev
-    sudo apt-get install python2.7 python2.7-dev
+    sudo apt-get install python2.7 python2.7-dev python-virtualenv
 
 Install Postgresql
 ------------------
@@ -164,6 +164,12 @@ Download the boostrap script ::
 Again, alternatively with curl ::
 
     curl https://raw.githubusercontent.com/seantis/seantis.reservation/master/buildout/bootstrap.py > bootstrap.py
+
+Create a virtual environment ::
+
+    mkdir reservations
+    cd reservations
+    virtualenv -p python2.7 .
 
 Bootstrap your environment ::
 
