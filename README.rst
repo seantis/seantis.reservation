@@ -159,11 +159,11 @@ the database name will be assumed to be 'demo' as well.
 
 Download the boostrap script ::
 
-    wget http://downloads.buildout.org/1/bootstrap.py
+    wget https://raw.githubusercontent.com/seantis/seantis.reservation/master/buildout/bootstrap.py
 
 Again, alternatively with curl ::
 
-    curl http://downloads.buildout.org/1/bootstrap.py > bootstrap.py
+    curl https://raw.githubusercontent.com/seantis/seantis.reservation/master/buildout/bootstrap.py > bootstrap.py
 
 Bootstrap your environment ::
 
