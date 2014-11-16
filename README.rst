@@ -71,7 +71,7 @@ without javascript then this is not the droid you are looking for.
 Showcases
 ---------
 
-* [St. Thomas Adventure Tours](http://stthomasadventuretours.com/booking/Booking/kayak-and-snorkel-adventure)
+* `St. Thomas Adventure Tours <http://stthomasadventuretours.com/booking/Booking/kayak-and-snorkel-adventure>`_
 
 Limitations
 -----------
