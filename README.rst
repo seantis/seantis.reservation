@@ -68,6 +68,11 @@ Note that we also rely heavily on javascript as the calendar shown for
 reservations is rendered through javascript. If your requirement is to run
 without javascript then this is not the droid you are looking for.
 
+Showcases
+---------
+
+* [St. Thomas Adventure Tours](http://stthomasadventuretours.com/booking/Booking/kayak-and-snorkel-adventure)
+
 Limitations
 -----------
 
