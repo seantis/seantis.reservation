@@ -19,14 +19,13 @@ from plone.dexterity.interfaces import IDexterityFTI
 from Products.CMFCore.utils import getToolByName
 from zope.component import getUtility
 
-from seantis.reservation import Session
 from seantis.reservation import utils
 from seantis.reservation import settings
-from seantis.reservation.models import Reservation, ReservedSlot
-from seantis.reservation.models import customtypes
+from libres.db.models import Reservation, ReservedSlot
+from libres.db.models.types import GUID
 from seantis.reservation.session import (
-    ISessionUtility,
-    serialized
+    ILibresUtility,
+    Session
 )
 
 
@@ -34,7 +33,8 @@ def db_upgrade(fn):
 
     @wraps(fn)
     def wrapper(context):
-        util = getUtility(ISessionUtility)
+        # LIBRES this should be done by libres itself
+        util = getUtility(ILibresUtility)
         dsn = util.get_dsn(utils.getSite())
 
         engine = create_engine(dsn, isolation_level='SERIALIZABLE')
@@ -126,7 +126,7 @@ def upgrade_to_1001(operations, metadata):
     reservations_table = Table('reservations', metadata, autoload=True)
     if 'session_id' not in reservations_table.columns:
         operations.add_column(
-            'reservations', Column('session_id', customtypes.GUID())
+            'reservations', Column('session_id', GUID())
         )
 
 
@@ -321,7 +321,9 @@ def upgrade_1016_to_1017(context):
     fti.behaviors = behaviors
 
 
-@serialized
+# LIBRES the old upgrades need to be removed and a check needs to be added
+# that makes sure the old max version was installed before.. otherwise we
+# have to keep these things working which is going to be close to impossible
 def upgrade_1017_to_1018(context):
 
     # seantis.reservation before 1.0.12 left behind reserved slots when

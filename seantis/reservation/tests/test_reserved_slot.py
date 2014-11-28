@@ -4,8 +4,8 @@ from uuid import uuid1 as uuid
 
 from seantis.reservation.error import IntegrityError
 from seantis.reservation.tests import IntegrationTestCase
-from seantis.reservation.models import Allocation
-from seantis.reservation.models import ReservedSlot
+from libres.db.models import Allocation
+from libres.db.models import ReservedSlot
 from seantis.reservation import Session
 from seantis.reservation.session import serialized
 

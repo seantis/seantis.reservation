@@ -44,7 +44,7 @@ from seantis.reservation.form import (
     ReservationListView,
     ResourceBaseForm,
 )
-from seantis.reservation.models import Reservation
+from libres.db.models import Reservation
 from seantis.reservation.overview import OverviewletManager
 from seantis.reservation.restricted_eval import run_pre_reserve_script
 from seantis.reservation.throttle import throttled
@@ -208,7 +208,7 @@ class YourReservationsData(object):
         """ Returns all reservations in the user's session """
         session_id = plone_session.get_session_id(self.context)
 
-        reservations = db.reservations_by_session(session_id)
+        reservations = db().reservations_by_session(session_id)
         reservations = reservations.order_by(
             Reservation.created, Reservation.token
         )
@@ -225,11 +225,11 @@ class YourReservationsData(object):
     @property
     def has_reservations(self):
         session_id = plone_session.get_session_id(self.context)
-        return bool(db.reservations_by_session(session_id).first())
+        return bool(db().reservations_by_session(session_id).first())
 
     def confirm_reservations(self, token=None):
         # Remove session_id from all reservations in the current session.
-        db.confirm_reservations_for_session(
+        db().confirm_reservations_for_session(
             plone_session.get_session_id(self.context),
             token,
             utils.get_current_language(self.context, self.request)
@@ -238,7 +238,7 @@ class YourReservationsData(object):
     def remove_reservation(self, token):
         try:
             session_id = plone_session.get_session_id(self.context)
-            db.remove_reservations_from_session(session_id, token)
+            db().remove_reservations_from_session(session_id, token)
         except NoResultFound:
             pass  # act idempotent to the user
 

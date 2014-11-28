@@ -46,6 +46,8 @@ class Resource(Container):
         uuid = utils.string_uuid(self.uuid())
         is_exposed = exposure.for_allocations(self, [uuid])
 
+        assert False, "FIXME: the exposure may be scheduler specific!"
+
         return db.Scheduler(
             self.uuid(), is_exposed=is_exposed, language=language
         )

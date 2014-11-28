@@ -8,7 +8,7 @@ from zope.interface import Interface
 
 from plone.dexterity.utils import createContentInContainer
 
-from seantis.reservation.models import Allocation
+from libres.db.models import Allocation
 from seantis.reservation.session import serialized, Session
 from seantis.reservation.error import (
     OverlappingAllocationError,

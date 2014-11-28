@@ -12,10 +12,9 @@ from zope.interface import Interface
 
 from ZServer.ClockServer import ClockServer
 
-from seantis.reservation import db
 from seantis.reservation.base import BaseView
 from seantis.reservation.interfaces import IResourceViewedEvent
-from seantis.reservation.session import ISessionUtility
+from seantis.reservation.session import ILibresUtility
 
 _connections = set()  # seantis.reservation database connections
 _clockservers = dict()  # list of registered Zope Clockservers
@@ -54,7 +53,7 @@ def clear_clockservers():
 def register_once_per_connection(method, site, period):
     """ Registers the given method with a clockserver while making sure
     that the method is only registered once for each seantis.reservation db
-    connection defined via the ISessionUtility.
+    connection defined via the ILibresUtility.
 
         method => relative to the site root, starts with '/'
                   e.g /remove-expired-sessions
@@ -70,7 +69,7 @@ def register_once_per_connection(method, site, period):
 
     assert method.startswith('/')
 
-    connection = getUtility(ISessionUtility).get_dsn(site)
+    connection = getUtility(ILibresUtility).get_dsn(site)
 
     if connection in _connections:
         return False
@@ -147,7 +146,9 @@ class RemoveExpiredSessions(BaseView):
     grok.context(Interface)
 
     def render(self):
-        removed = db.remove_expired_reservation_sessions()
+        # LIBRES it might make sense to have some scheduler-less access here.
+        scheduler = getUtility(ILibresUtility).scheduler('maintenance', 'UTC')
+        removed = scheduler.queries.remove_expired_reservation_sessions()
 
         # don't give out the session ids to the public, log instead
         log.info('removed the following reservation sessions: %s' % removed)

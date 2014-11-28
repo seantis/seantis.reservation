@@ -15,7 +15,7 @@ from seantis.plonetools.browser import BaseForm as SharedBaseForm
 from seantis.reservation import _
 from seantis.reservation import utils
 from seantis.reservation.reservations import combine_reservations
-from seantis.reservation.models import Allocation, Reservation
+from libres.db.models import Allocation, Reservation
 from seantis.reservation.interfaces import (
     IResourceBase,
     ISeantisReservationSpecific

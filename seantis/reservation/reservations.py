@@ -1,5 +1,5 @@
 from itertools import groupby
-from seantis.reservation.models.reservation import BoundTimespan
+from libres.db.models.reservation import BoundTimespan
 
 
 class CombinedReservations(object):
