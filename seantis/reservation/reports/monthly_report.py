@@ -12,7 +12,7 @@ from seantis.reservation import _
 from seantis.reservation import Session
 from seantis.reservation import db
 from seantis.reservation import utils
-from seantis.reservation.models import Allocation, Reservation
+from libres.db.models import Allocation, Reservation
 from seantis.reservation.reports import GeneralReportParametersMixin
 from seantis.reservation.interfaces import ISeantisReservationSpecific
 

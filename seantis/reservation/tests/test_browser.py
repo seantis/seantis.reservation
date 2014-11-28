@@ -8,7 +8,8 @@ from zope.component import queryUtility
 from Products.CMFCore.interfaces import IPropertiesTool
 
 from seantis.reservation import utils
-from seantis.reservation import db
+from seantis.reservation.session import db
+from seantis.reservation.session import serialized
 from seantis.reservation.tests import FunctionalTestCase
 
 
@@ -779,7 +780,7 @@ class TestBrowser(FunctionalTestCase):
         self.assertFalse('<span>Eins</span>' in browser.contents)
         self.assertFalse('<span>Zwei</span>' in browser.contents)
 
-    @db.serialized
+    @serialized
     def test_resource_removal(self):
 
         browser = self.admin_browser
@@ -873,7 +874,7 @@ class TestBrowser(FunctionalTestCase):
         self.assertEqual(keeper.managed_reservations().count(), 1)
         self.assertEqual(keeper.managed_reserved_slots().count(), 1)
 
-    @db.serialized
+    @serialized
     def test_export_selection(self):
         browser = self.admin_browser
 
@@ -893,7 +894,7 @@ class TestBrowser(FunctionalTestCase):
         self.assertIn('year=all', browser.url)
         self.assertIn('month=all', browser.url)
 
-    @db.serialized
+    @serialized
     def test_thank_you_page(self):
         browser = self.admin_browser
 
@@ -930,7 +931,7 @@ class TestBrowser(FunctionalTestCase):
         # three doesn't, so it won't show up
         self.assertNotIn('testfolder - three', browser.contents)
 
-    @db.serialized
+    @serialized
     def test_pending_timespans(self):
         browser = self.admin_browser
 
@@ -968,7 +969,7 @@ class TestBrowser(FunctionalTestCase):
         browser.open(menu['manage'])
         self.assertEqual(len(browser.query('.timespan-actions a')), 1)
 
-    @db.serialized
+    @serialized
     def test_remove_group_timespans(self):
         browser = self.admin_browser
 
@@ -1005,7 +1006,7 @@ class TestBrowser(FunctionalTestCase):
         browser.open(menu['manage'])
         self.assertEqual(len(browser.query('.timespan-dates')), 0)
 
-    @db.serialized
+    @serialized
     def test_remove_timespans(self):
         browser = self.admin_browser
 
@@ -1076,7 +1077,7 @@ class TestBrowser(FunctionalTestCase):
         self.assertNotIn('12:00 PM - 03:00 PM', browser.contents)
         self.assertNotIn('04:00 PM - 06:00 PM', browser.contents)
 
-    @db.serialized
+    @serialized
     def test_search_specific_time(self):
         # make sure that a search for a specific timerange on a partly
         # available allocation only returns the availability in this timerange
@@ -1151,7 +1152,7 @@ class TestBrowser(FunctionalTestCase):
         self.assertIn('100%', browser.contents)
         self.assertIn('event-available', browser.contents)
 
-    @db.serialized
+    @serialized
     def test_search_and_reserve(self):
         browser = self.admin_browser
 
@@ -1243,7 +1244,7 @@ class TestBrowser(FunctionalTestCase):
         chks = browser.query('input[name="allocation_id"][checked="checked"]')
         self.assertEqual(len(chks), 1)
 
-    @db.serialized
+    @serialized
     def test_change_time(self):
         browser = self.admin_browser
 
@@ -1290,7 +1291,7 @@ class TestBrowser(FunctionalTestCase):
         browser.open(self.allocation_menu(*allocations[0])['manage'])
         self.assertIn('Aug 20, 2014 03:30 PM - 04:00 PM', browser.contents)
 
-    @db.serialized
+    @serialized
     def test_remove_link_admin_only(self):
         browser = self.admin_browser
 
@@ -1320,7 +1321,7 @@ class TestBrowser(FunctionalTestCase):
         anonymous.getControl(name='form.buttons.search').click()
         self.assertNotIn('Delete selected', anonymous.contents)
 
-    @db.serialized
+    @serialized
     def test_remove_multiple_allocations(self):
         browser = self.admin_browser
 
@@ -1360,7 +1361,7 @@ class TestBrowser(FunctionalTestCase):
         self.assertNotIn('Aug 20, 2014', browser.contents)
         self.assertNotIn('Aug 21, 2014', browser.contents)
 
-    @db.serialized
+    @serialized
     def test_remove_multiple_reserved_allocations(self):
         browser = self.admin_browser
 

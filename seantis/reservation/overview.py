@@ -98,7 +98,7 @@ class Overview(BaseView, CalendarRequest):
 
         is_exposed = exposure.for_allocations(self.context, uuids)
 
-        days = db.availability_by_day(start, end, uuids, is_exposed)
+        days = db().availability_by_day(start, end, uuids, is_exposed)
         for day, result in days.items():
 
             event_start = datetime(day.year, day.month, day.day, 0, 0)

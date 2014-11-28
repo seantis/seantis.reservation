@@ -9,7 +9,7 @@ from seantis.reservation import _
 from seantis.reservation import Session
 from seantis.reservation import utils
 from seantis.reservation.form import ReservationDataView
-from seantis.reservation.models import Reservation
+from libres.db.models import Reservation
 
 
 class Translator(object):

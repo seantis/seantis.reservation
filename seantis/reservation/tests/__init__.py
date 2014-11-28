@@ -1,3 +1,4 @@
+import libres
 import unittest2 as unittest
 
 from sqlalchemy import create_engine
@@ -21,7 +22,7 @@ from collective.betterbrowser import new_browser
 
 from seantis.reservation import setuphandlers
 from seantis.reservation.utils import getSite
-from seantis.reservation.session import ISessionUtility
+from seantis.reservation.session import ILibresUtility
 
 from seantis.reservation.testing import SQL_INTEGRATION_TESTING
 from seantis.reservation.testing import SQL_FUNCTIONAL_TESTING
@@ -93,14 +94,11 @@ class TestCase(unittest.TestCase):
             aq_base(self._original_MailHost), provided=IMailHost
         )
 
-        util = getUtility(ISessionUtility)
-        util.sessionstore.readonly.rollback()
-        util.sessionstore.serial.rollback()
-
         maintenance.clear_clockservers()
 
         # since the testbrowser may create different records we need
         # to clear the database by hand each time
+        util = getUtility(ILibresUtility)
         outlaw = create_engine(util._dsn_cache['plone'])
         outlaw.execute('DELETE FROM reservations')
         outlaw.execute('DELETE FROM reserved_slots')
@@ -109,7 +107,8 @@ class TestCase(unittest.TestCase):
 
         self.logout()
 
-        util._reset_sessions()
+        libres.registry = libres.context.setup_registry()
+        util._reset()
 
     def request(self):
         return self.layer['request']

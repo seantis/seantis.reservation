@@ -1,8 +1,7 @@
-from seantis.reservation import ORMBase
-from seantis.reservation import Session
-from seantis.reservation.session import serialized
+from zope.component import getUtility
+from seantis.reservation.session import ILibresUtility
 
 
-@serialized
 def dbsetup(context):
-    ORMBase.metadata.create_all(Session.bind)
+    scheduler = getUtility(ILibresUtility).scheduler('maintenance', 'UTC')
+    scheduler.setup_database()

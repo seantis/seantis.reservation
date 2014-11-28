@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 
 from seantis.reservation import Session
 from seantis.reservation.tests import IntegrationTestCase
-from seantis.reservation.models import Allocation
+from libres.db.models import Allocation
 from seantis.reservation.session import serialized
 
 

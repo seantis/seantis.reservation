@@ -11,7 +11,7 @@ from seantis.reservation import db
 from seantis.reservation import _
 from seantis.reservation import utils
 from seantis.reservation.reservations import combine_reservations
-from seantis.reservation.models import Reservation
+from libres.db.models import Reservation
 from seantis.reservation.base import BaseView
 from seantis.reservation.reports import GeneralReportParametersMixin
 
