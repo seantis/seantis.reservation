@@ -68,6 +68,11 @@ Note that we also rely heavily on javascript as the calendar shown for
 reservations is rendered through javascript. If your requirement is to run
 without javascript then this is not the droid you are looking for.
 
+Showcases
+---------
+
+* `St. Thomas Adventure Tours <http://stthomasadventuretours.com/booking/Booking/kayak-and-snorkel-adventure>`_
+
 Limitations
 -----------
 
@@ -101,7 +106,7 @@ Install required packages
     sudo apt-get install git-core
     sudo apt-get install libxml2 libxml2-dev
     sudo apt-get install libxslt1.1 libxslt1-dev
-    sudo apt-get install python2.7 python2.7-dev
+    sudo apt-get install python2.7 python2.7-dev python-virtualenv
 
 Install Postgresql
 ------------------
@@ -159,11 +164,17 @@ the database name will be assumed to be 'demo' as well.
 
 Download the boostrap script ::
 
-    wget http://downloads.buildout.org/1/bootstrap.py
+    wget https://raw.githubusercontent.com/seantis/seantis.reservation/master/buildout/bootstrap.py
 
 Again, alternatively with curl ::
 
-    curl http://downloads.buildout.org/1/bootstrap.py > bootstrap.py
+    curl https://raw.githubusercontent.com/seantis/seantis.reservation/master/buildout/bootstrap.py > bootstrap.py
+
+Create a virtual environment ::
+
+    mkdir reservations
+    cd reservations
+    virtualenv -p python2.7 .
 
 Bootstrap your environment ::
 
