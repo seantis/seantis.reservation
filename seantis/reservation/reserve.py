@@ -363,7 +363,7 @@ class ReservationForm(
 
             if allocation:
 
-                if allocation.reservation_quota_limit == 1:
+                if allocation.quota_limit == 1:
                     hidden.append('quota')
 
                 if allocation.whole_day:
@@ -560,7 +560,7 @@ class GroupReservationForm(
                 self.group
             ).first()
 
-            if allocation.reservation_quota_limit == 1:
+            if allocation.quota_limit == 1:
                 hidden.append('quota')
 
         except DirtyReadOnlySession:
