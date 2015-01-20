@@ -7,7 +7,6 @@ from zope.interface import Interface
 from sqlalchemy import desc
 
 from seantis.reservation import Session
-from seantis.reservation import db
 from seantis.reservation import _
 from seantis.reservation import utils
 from seantis.reservation.reservations import combine_reservations
@@ -139,11 +138,6 @@ class LatestReservationsReportView(BaseView, GeneralReportParametersMixin):
 
 
 def latest_reservations(resources, daterange, reservations='*'):
-    schedulers = {}
-
-    for uuid in resources.keys():
-        schedulers[uuid] = db.Scheduler(uuid)
-
     query = Session.query(Reservation)
     query = query.filter(Reservation.resource.in_(resources.keys()))
     query = query.filter(Reservation.created > daterange[0])
