@@ -85,9 +85,9 @@ class LibresUtility(grok.GlobalUtility):
     implements(ILibresUtility)
 
     def __init__(self):
-        self._reset()
+        self.reset()
 
-    def _reset(self):
+    def reset(self):
         self._dsn_cache = {}
         self._dsn_cache_lock = threading.Lock()
 
@@ -104,22 +104,31 @@ class LibresUtility(grok.GlobalUtility):
             }
         )
 
-    def get_site_context(self, site):
+    def uuid_generator_factory(self, context):
+        def uuid_generator(name):
+            # since the name in seantis.reservation is always
+            # the uuid of a resource, we don't need to generate
+            # another one based on it
+            return name
+        return uuid_generator
+
+    @property
+    def context(self):
+        site = api.portal.get()
         context_id = 'seantis.reservation' + '.'.join(site.getPhysicalPath())
 
         if not libres.registry.is_existing_context(context_id):
             context = libres.registry.register_context(context_id)
             context.set_service('session_provider', self.session_provider)
             context.set_setting('dsn', self.get_dsn(site))
+            context.set_service('uuid_generator', self.uuid_generator_factory)
         else:
             context = libres.registry.get_context(context_id)
 
         return context
 
     def scheduler(self, name, timezone):
-        return libres.new_scheduler(
-            self.get_site_context(api.portal.get()), name, timezone
-        )
+        return libres.new_scheduler(self.context, name, timezone)
 
     def get_dsn(self, site):
         """ Returns the DSN for the given site. Will look for those dsns

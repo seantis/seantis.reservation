@@ -140,7 +140,7 @@ class AllocationAddForm(AllocationForm):
                 partly_available=data['partly_available'],
                 grouped=not data['separately'],
                 approve_manually=data['approve_manually'],
-                reservation_quota_limit=data['reservation_quota_limit'],
+                quota_limit=data['reservation_quota_limit'],
                 whole_day=data['whole_day']
 
             )

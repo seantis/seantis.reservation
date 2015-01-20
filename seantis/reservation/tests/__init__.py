@@ -108,7 +108,7 @@ class TestCase(unittest.TestCase):
         self.logout()
 
         libres.registry = libres.context.setup_registry()
-        util._reset()
+        util.reset()
 
     def request(self):
         return self.layer['request']

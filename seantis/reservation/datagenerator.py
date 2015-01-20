@@ -9,12 +9,12 @@ from zope.interface import Interface
 from plone.dexterity.utils import createContentInContainer
 
 from libres.db.models import Allocation
+from libres.modules.rasterizer import VALID_RASTER
 from seantis.reservation.session import serialized, Session
 from seantis.reservation.error import (
     OverlappingAllocationError,
     ReservationError
 )
-from seantis.reservation.raster import VALID_RASTER_VALUES
 from seantis.reservation.base import BaseView
 
 import transaction
@@ -172,7 +172,7 @@ class DataGeneratorView(BaseView):
             transaction.commit()
 
     def random_raster(self):
-        return random.choice(VALID_RASTER_VALUES)
+        return random.choice(VALID_RASTER)
 
     def random_timespans(self, resource, day):
 

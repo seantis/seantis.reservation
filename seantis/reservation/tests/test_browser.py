@@ -1031,6 +1031,7 @@ class TestBrowser(FunctionalTestCase):
         browser.set_date('recurrence_end', datetime(2014, 2, 25))
 
         browser.getControl(name='form.buttons.search').click()
+        browser.show()
         browser.getControl('Reserve selected').click()
         browser.getControl('Email').value = 'test@example.org'
         browser.getControl('Reserve').click()
