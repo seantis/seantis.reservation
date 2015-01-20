@@ -8,7 +8,7 @@ install:
     - cp database.cfg.example database.cfg
     - mkdir -p buildout-cache/eggs
     - mkdir -p buildout-cache/downloads
-    - python bootstrap.py -c travis.cfg
+    - python bootstrap.py -c travis.cfg --setuptools-version=7.0 --version=2.2.5
     - bin/buildout -N -t 3 -c travis.cfg
 
 before_script:
