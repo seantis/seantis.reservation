@@ -96,33 +96,29 @@ class LibresUtility(grok.GlobalUtility):
         except utils.ConfigurationError:
             raise utils.ConfigurationError('No database configuration found.')
 
-    def session_provider(self):
+    def session_provider(self, context):
         return libres.context.session.SessionProvider(
-            libres.registry.get('settings.dsn'),
+            context.get_setting('dsn'),
             session_config={
                 'extension': ZopeTransactionExtension()
             }
         )
 
-    def configure(self, site):
+    def get_site_context(self, site):
         context_id = 'seantis.reservation' + '.'.join(site.getPhysicalPath())
 
         if not libres.registry.is_existing_context(context_id):
-            # LIBRES this could be done more succinct, *is* this the context?
-            context = libres.context.accessor.ContextAccessor(
-                context_id, autocreate=True
-            )
-
-            # LIBRES the settings should be set like this:
-            # context.set_setting('dsn', value)
+            context = libres.registry.register_context(context_id)
             context.set_service('session_provider', self.session_provider)
-            context.set_config('settings.dsn', self.get_dsn(site))
+            context.set_setting('dsn', self.get_dsn(site))
+        else:
+            context = libres.registry.get_context(context_id)
 
-        return context_id
+        return context
 
     def scheduler(self, name, timezone):
         return libres.new_scheduler(
-            self.configure(api.portal.get()), name, timezone
+            self.get_site_context(api.portal.get()), name, timezone
         )
 
     def get_dsn(self, site):
