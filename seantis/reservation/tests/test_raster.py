@@ -1,11 +1,13 @@
 from datetime import datetime
 
-from seantis.reservation.tests import IntegrationTestCase
+from libres.modules.rasterizer import (
+    VALID_RASTER,
+    rasterize_start,
+    rasterize_end,
+    iterate_span
+)
 
-from seantis.reservation.raster import rasterize_start
-from seantis.reservation.raster import rasterize_end
-from seantis.reservation.raster import iterate_span
-from seantis.reservation.raster import VALID_RASTER_VALUES
+from seantis.reservation.tests import IntegrationTestCase
 
 
 class TestRaster(IntegrationTestCase):
@@ -37,6 +39,6 @@ class TestRaster(IntegrationTestCase):
         start = datetime(2011, 1, 1, 0)
         end = datetime(2011, 1, 2, 0)
 
-        for raster in VALID_RASTER_VALUES:
+        for raster in VALID_RASTER:
             results = list(iterate_span(start, end, raster))
             self.assertEqual(len(results), 24 * 60 / raster)

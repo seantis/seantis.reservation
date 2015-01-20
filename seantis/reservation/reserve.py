@@ -231,8 +231,7 @@ class YourReservationsData(object):
         # Remove session_id from all reservations in the current session.
         db().confirm_reservations_for_session(
             plone_session.get_session_id(self.context),
-            token,
-            utils.get_current_language(self.context, self.request)
+            token
         )
 
     def remove_reservation(self, token):
@@ -463,13 +462,13 @@ class ReservationForm(
             return
 
         if data.get('day') is None:
-            data['day'] = allocation.display_start.date()
+            data['day'] = allocation.display_start().date()
 
         if data.get('start_time') is None:
-            data['start_time'] = allocation.display_start.time()
+            data['start_time'] = allocation.display_start().time()
 
         if data.get('end_time') is None:
-            data['end_time'] = allocation.display_end.time()
+            data['end_time'] = allocation.display_end().time()
 
     @button.buttonAndHandler(_(u'Reserve'))
     @extract_action_data
@@ -683,7 +682,7 @@ class SelectionReservationForm(
         approve_manually = self.scheduler.manual_approval_required(self.ids)
 
         def reserve():
-            dates = list(self.scheduler.dates_by_allocation_ids(
+            dates = list(self.scheduler.allocation_dates_by_ids(
                 self.ids, data['start_time'], data['end_time']
             ))
             self.run_reserve(
@@ -1027,8 +1026,8 @@ class ReservationEditTimeForm(ReservationTargetForm):
 
         if self.reservation:
             parent.update({
-                'start_time': self.reservation.display_start.time(),
-                'end_time': self.reservation.display_end.time()
+                'start_time': self.reservation.display_start().time(),
+                'end_time': self.reservation.display_end().time()
             })
 
         return parent

@@ -15,20 +15,28 @@ from plone.dexterity.content import Container
 from plone.uuid.interfaces import IUUID
 from plone.app.linkintegrity.interfaces import ILinkIntegrityInfo
 from plone.memoize import view
+from zope.component import getUtility
 from zope.event import notify
 from zope.interface import implements, Interface
 from zope.lifecycleevent.interfaces import IObjectRemovedEvent
 
+from seantis.reservation import _
+from seantis.reservation import db
 from seantis.reservation import exposure
 from seantis.reservation import utils
-from seantis.reservation import db
-from seantis.reservation import _
 from seantis.reservation.base import BaseView
 from seantis.reservation.events import ResourceViewedEvent
 from seantis.reservation.timeframe import timeframes_by_context
 from seantis.reservation.form import AllocationGroupView, ResourceParameterView
 from seantis.reservation.interfaces import IResourceBase
 from seantis.reservation.interfaces import IOverview
+from seantis.reservation.session import ILibresUtility
+
+
+class LibresExposure(object):
+
+    def __init__(self, fn):
+        self.is_allocation_exposed = fn
 
 
 class Resource(Container):
@@ -44,13 +52,14 @@ class Resource(Container):
 
     def scheduler(self, language=None):
         uuid = utils.string_uuid(self.uuid())
-        is_exposed = exposure.for_allocations(self, [uuid])
 
-        assert False, "FIXME: the exposure may be scheduler specific!"
-
-        return db.Scheduler(
-            self.uuid(), is_exposed=is_exposed, language=language
+        libres_util = getUtility(ILibresUtility)
+        libres_util.context.set_service(
+            'exposure',
+            lambda ctx: LibresExposure(exposure.for_allocations(self, [uuid]))
         )
+
+        return libres_util.scheduler(uuid, self.timezone)
 
     def timeframes(self):
         return timeframes_by_context(self)
@@ -64,7 +73,7 @@ class Resource(Container):
 
         dthandler = lambda obj: \
             obj.isoformat() if isinstance(obj, date) else None
-        return unicode(json.dumps(results, default=dthandler))
+        return json.dumps(results, default=dthandler).decode('utf-8')
 
     def resource_title(self):
         return utils.get_resource_title(self)
@@ -383,8 +392,8 @@ class Slots(BaseView, CalendarRequest):
 
         items = utils.EventUrls(self.context, self.request, exposure)
 
-        start = utils.utctimestamp(allocation.display_start)
-        end = utils.utctimestamp(allocation.display_end)
+        start = utils.utctimestamp(allocation.display_start())
+        end = utils.utctimestamp(allocation.display_end())
 
         items.move_url('edit-allocation', dict(id=allocation.id))
 
@@ -467,7 +476,7 @@ class Slots(BaseView, CalendarRequest):
             if not is_exposed(alloc):
                 continue
 
-            start, end = alloc.display_start, alloc.display_end
+            start, end = alloc.display_start(), alloc.display_end()
 
             # get the urls
             urls = self.urls(alloc)

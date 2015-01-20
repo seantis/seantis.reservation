@@ -16,7 +16,8 @@ from libres.db.models import Allocation
 
 def add_something(resource=None):
     resource = resource or uuid()
-    allocation = Allocation(raster=15, resource=resource, mirror_of=resource)
+    allocation = Allocation(
+        raster=15, resource=resource, mirror_of=resource)
     allocation.start = datetime(2011, 1, 1, 15)
     allocation.end = datetime(2011, 1, 1, 15, 59)
     allocation.group = uuid()

@@ -135,15 +135,15 @@ class View(BaseView, ReservationUrls, ReservationDataView):
         for allocation in allocations:
 
             if start_time or end_time:
-                s = start_time or allocation.display_start.time()
-                e = end_time or allocation.display_end.time()
+                s = start_time or allocation.display_start().time()
+                e = end_time or allocation.display_end().time()
 
                 s, e = allocation.limit_timespan(s, e)
 
                 time_text = get_time_text(s, e)
             else:
                 time_text = get_time_text(
-                    allocation.display_start, allocation.display_end
+                    allocation.display_start(), allocation.display_end()
                 )
                 s, e = None, None
 
@@ -153,10 +153,10 @@ class View(BaseView, ReservationUrls, ReservationDataView):
 
             date = ', '.join((
                 self.translate(
-                    self.short_days[allocation.display_start.weekday()]
+                    self.short_days[allocation.display_start().weekday()]
                 ),
                 api.portal.get_localized_time(
-                    allocation.display_start, long_format=False
+                    allocation.display_start(), long_format=False
                 )
             ))
 

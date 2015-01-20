@@ -70,7 +70,7 @@ def for_views(context, request):
 
     """
 
-    #gets an instance of the view
+    # gets an instance of the view
     get_view = lambda name: getMultiAdapter((context, request), name=name)
 
     def is_exposed(viewname):

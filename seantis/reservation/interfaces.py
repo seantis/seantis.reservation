@@ -15,15 +15,15 @@ from plone.app.z3cform.wysiwyg import WysiwygFieldWidget
 from plone.directives import form
 from plone.dexterity.interfaces import IDexterityFTI
 from plone.dexterity.utils import schemaNameToPortalType as getname
+from plone.event.utils import default_timezone
 
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from z3c.form.browser.radio import RadioFieldWidget
 from z3c.form import widget
 
+from libres.modules.rasterizer import VALID_RASTER
 from seantis.plonetools.schemafields import Email
-
 from seantis.reservation import _, utils
-from seantis.reservation.raster import VALID_RASTER_VALUES
 from seantis.reservation.mail_templates import templates
 from seantis.reservation.utils import _languagelist
 
@@ -279,7 +279,7 @@ class IResourceAllocationDefaults(form.Schema):
             u'raster of 30 minutes means that the allocation can only start '
             u'at xx:00 and xx:30 respectively'
         ),
-        values=VALID_RASTER_VALUES,
+        values=VALID_RASTER,
         default=15
     )
 
@@ -313,6 +313,12 @@ class IResourceBase(IResourceAllocationDefaults):
     description = schema.Text(
         title=_(u'Description'),
         required=False
+    )
+
+    timezone = schema.Choice(
+        title=_(u'Timezone'),
+        required=True,
+        vocabulary='plone.app.vocabularies.Timezones'
     )
 
     first_hour = schema.Int(
@@ -436,6 +442,11 @@ class IResourceBase(IResourceAllocationDefaults):
             raise Invalid(
                 _(u'The selected view must be one of the available views.')
             )
+
+
+@form.default_value(field=IResourceBase['timezone'])
+def get_default_timezone(data):
+    return default_timezone()
 
 
 class IResource(IResourceBase):
