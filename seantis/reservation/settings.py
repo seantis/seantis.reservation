@@ -1,6 +1,8 @@
 import logging
 logger = logging.getLogger('seantis.reservation')
 
+import pytz
+
 from zope import schema
 from zope.interface import Interface, Invalid, invariant
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
@@ -17,13 +19,14 @@ from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 from seantis.plonetools.schemafields import validate_email
 
 from seantis.reservation import _
+from seantis.reservation.interfaces import common_timezones
 from seantis.reservation.restricted_eval import validate_expression
 
 
 def valid_expression(expression):
     try:
         validate_expression(expression, mode='exec')
-    except Exception, e:
+    except Exception as e:
         raise Invalid(str(e))
     return True
 
@@ -118,6 +121,16 @@ class ISeantisReservationSettings(Interface):
         default=1
     )
 
+    timezone = schema.Choice(
+        title=_(u'Timezone'),
+        description=_(
+            u'Timezone in which the resources of this plone site reside. '
+        ),
+        vocabulary=common_timezones,
+        default='UTC',
+        required=True
+    )
+
     @invariant
     def isValidThreshold(Allocation):
 
@@ -164,6 +177,10 @@ def get(name):
 def set(name, value):
     prefix = ISeantisReservationSettings.__identifier__
     return api.portal.set_registry_record('.'.join((prefix, name)), value)
+
+
+def timezone():
+    return pytz.timezone(get('timezone'))
 
 
 class SeantisReservationSettingsPanelForm(RegistryEditForm):

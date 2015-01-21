@@ -23,6 +23,7 @@ from zope.lifecycleevent.interfaces import IObjectRemovedEvent
 from seantis.reservation import _
 from seantis.reservation import db
 from seantis.reservation import exposure
+from seantis.reservation import settings
 from seantis.reservation import utils
 from seantis.reservation.base import BaseView
 from seantis.reservation.events import ResourceViewedEvent
@@ -59,7 +60,7 @@ class Resource(Container):
             lambda ctx: LibresExposure(exposure.for_allocations(self, [uuid]))
         )
 
-        return libres_util.scheduler(uuid, self.timezone)
+        return libres_util.scheduler(uuid, settings.get('timezone'))
 
     def timeframes(self):
         return timeframes_by_context(self)

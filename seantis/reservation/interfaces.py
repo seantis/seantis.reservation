@@ -322,12 +322,6 @@ class IResourceBase(IResourceAllocationDefaults):
         required=False
     )
 
-    timezone = schema.Choice(
-        title=_(u'Timezone'),
-        required=True,
-        vocabulary=common_timezones
-    )
-
     first_hour = schema.Int(
         title=_(u'First hour of the day'),
         description=_(
@@ -449,11 +443,6 @@ class IResourceBase(IResourceAllocationDefaults):
             raise Invalid(
                 _(u'The selected view must be one of the available views.')
             )
-
-
-@form.default_value(field=IResourceBase['timezone'])
-def get_default_timezone(data):
-    return default_timezone()
 
 
 class IResource(IResourceBase):
