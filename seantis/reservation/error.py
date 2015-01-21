@@ -2,25 +2,36 @@ from sqlalchemy.exc import IntegrityError
 from psycopg2.extensions import TransactionRollbackError
 from sqlalchemy.orm.exc import NoResultFound
 
+from libres.modules.errors import (
+    ModifiedReadOnlySession,
+    DirtyReadOnlySession,
+    InvalidAllocationError,
+    ReservationTooLong,
+    ReservationParametersInvalid,
+    AlreadyReservedError,
+    QuotaOverLimit,
+    QuotaImpossible,
+    InvalidQuota,
+    InvalidReservationError,
+    NotReservableError,
+    NoReservationsToConfirm,
+    InvalidReservationToken,
+    OverlappingAllocationError,
+    AffectedReservationError,
+    AffectedPendingReservationError,
+    TimerangeTooLong
+)
+
 from seantis.reservation import _
+
+
+# pyflakes
+ModifiedReadOnlySession
+DirtyReadOnlySession
 
 
 class ReservationError(Exception):
     pass
-
-
-class OverlappingAllocationError(ReservationError):
-
-    def __init__(self, start, end, existing):
-        self.start = start
-        self.end = end
-        self.existing = existing
-
-
-class AffectedReservationError(ReservationError):
-
-    def __init__(self, existing):
-        self.existing = existing
 
 
 class CustomReservationError(ReservationError):
@@ -29,67 +40,7 @@ class CustomReservationError(ReservationError):
         self.msg = msg
 
 
-class AffectedPendingReservationError(AffectedReservationError):
-    pass
-
-
-class AlreadyReservedError(ReservationError):
-    pass
-
-
-class DirtyReadOnlySession(ReservationError):
-    pass
-
-
-class ModifiedReadOnlySession(ReservationError):
-    pass
-
-
-class NotReservableError(ReservationError):
-    pass
-
-
-class ReservationTooLong(ReservationError):
-    pass
-
-
 class ThrottleBlock(ReservationError):
-    pass
-
-
-class ReservationParametersInvalid(ReservationError):
-    pass
-
-
-class InvalidReservationToken(ReservationError):
-    pass
-
-
-class InvalidReservationError(ReservationError):
-    pass
-
-
-class QuotaOverLimit(ReservationError):
-    pass
-
-
-class InvalidQuota(ReservationError):
-    pass
-
-
-class QuotaImpossible(ReservationError):
-    pass
-
-
-class InvalidAllocationError(ReservationError):
-    pass
-
-
-class NoReservationsToConfirm(ReservationError):
-    pass
-
-
-class TimerangeTooLong(ReservationError):
     pass
 
 
