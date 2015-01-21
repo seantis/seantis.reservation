@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import pytz
 import re
 
 from dateutil import rrule
@@ -67,6 +68,12 @@ calendar_dates = SimpleVocabulary(
         SimpleTerm(value='current', title=_(u'Always show the current date')),
         SimpleTerm(value='specific', title=_(u'Always show a specific date'))
     ]
+)
+
+# plone.app.vocabularies should have that, but it won't work on travis
+# -> no harm loading our own...
+common_timezones = SimpleVocabulary(
+    [SimpleTerm(value=tz, title=tz) for tz in pytz.common_timezones]
 )
 
 
@@ -318,7 +325,7 @@ class IResourceBase(IResourceAllocationDefaults):
     timezone = schema.Choice(
         title=_(u'Timezone'),
         required=True,
-        vocabulary='plone.app.vocabularies.Timezones'
+        vocabulary=common_timezones
     )
 
     first_hour = schema.Int(
