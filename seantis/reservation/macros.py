@@ -2,7 +2,6 @@ from logging import getLogger
 log = getLogger('seantis.reservation')
 
 from five import grok
-from plone import api
 from zope.interface import Interface
 
 from seantis.reservation import _
@@ -124,8 +123,8 @@ class View(BaseView, ReservationUrls, ReservationDataView):
                 return whole_day_text
             else:
                 return ' - '.join((
-                    api.portal.get_localized_time(start, time_only=True),
-                    api.portal.get_localized_time(end, time_only=True),
+                    utils.localize_date(start, time_only=True),
+                    utils.localize_date(end, time_only=True),
                 ))
 
         prev_date = None
@@ -155,7 +154,7 @@ class View(BaseView, ReservationUrls, ReservationDataView):
                 self.translate(
                     self.short_days[allocation.display_start().weekday()]
                 ),
-                api.portal.get_localized_time(
+                utils.localize_date(
                     allocation.display_start(), long_format=False
                 )
             ))

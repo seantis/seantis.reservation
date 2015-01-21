@@ -5,7 +5,6 @@ from datetime import date, timedelta, datetime
 
 from five import grok
 from zope.interface import Interface
-from plone import api
 from plone.memoize import view
 
 from seantis.reservation import _
@@ -126,7 +125,7 @@ class MonthlyReportView(
 
         return ', '.join((
             weekday,
-            api.portal.get_localized_time(daydate, long_format=False)
+            utils.localize_date(daydate, long_format=False)
         ))
 
     def has_reservations(self, resource):
@@ -219,8 +218,8 @@ def monthly_report(year, month, resources, reservations='*'):
         used_days[day] = True
 
         end += timedelta(microseconds=1)
-        start = api.portal.get_localized_time(start, time_only=True)
-        end = api.portal.get_localized_time(end, time_only=True)
+        start = utils.localize_date(start, time_only=True)
+        end = utils.localize_date(end, time_only=True)
 
         context = resources[utils.string_uuid(reservation.resource)]
 

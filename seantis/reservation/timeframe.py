@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from five import grok
-from plone import api
 from plone.directives import dexterity
 from plone.dexterity.content import Item
 from plone.memoize import view
@@ -23,11 +22,11 @@ class Timeframe(Item):
     @property
     def timestr(self):
         return ' - '.join((
-            api.portal.get_localized_time(
+            utils.localize_date(
                 datetime(self.start.year, self.start.month, self.start.day),
                 long_format=False
             ),
-            api.portal.get_localized_time(
+            utils.localize_date(
                 datetime(self.end.year, self.end.month, self.end.day),
                 long_format=False
             )
