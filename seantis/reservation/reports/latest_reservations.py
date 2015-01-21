@@ -138,7 +138,7 @@ class LatestReservationsReportView(BaseView, GeneralReportParametersMixin):
 
 
 def latest_reservations(resources, daterange, reservations='*'):
-    query = Session.query(Reservation)
+    query = Session().query(Reservation)
     query = query.filter(Reservation.resource.in_(resources.keys()))
     query = query.filter(Reservation.created > daterange[0])
     query = query.filter(Reservation.created <= daterange[1])
