@@ -769,7 +769,7 @@ def event_availability(
     translate = translator(context, request)
 
     if start and end and allocation.partly_available:
-        availability = scheduler.find_spot(allocation, start, end) and 100 or 0
+        availability = allocation.find_spot(start, end) and 100 or 0
     else:
         availability = scheduler.availability(allocation.start, allocation.end)
 
