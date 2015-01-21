@@ -131,7 +131,7 @@ def fetch_records(resources, year, month):
     if not resources.keys():
         return []
 
-    query = Session.query(Reservation)
+    query = Session().query(Reservation)
     query = query.filter(Reservation.resource.in_(resources.keys()))
 
     if year != 'all':
@@ -171,7 +171,7 @@ def additional_headers(reservations):
                 # A set could be used here, but then a separate step for
                 # sorting would be needed
                 key = fieldkey(form, field)
-                if not key in headers:
+                if key not in headers:
                     headers.append(key)
 
     return headers
