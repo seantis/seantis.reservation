@@ -23,16 +23,18 @@ from collective.betterbrowser import new_browser
 from seantis.reservation import setuphandlers
 from seantis.reservation.utils import getSite
 from seantis.reservation.session import ILibresUtility
-
 from seantis.reservation.testing import SQL_INTEGRATION_TESTING
 from seantis.reservation.testing import SQL_FUNCTIONAL_TESTING
-
 from seantis.reservation import maintenance
 
 from Products.CMFCore.utils import getToolByName
 
 
-class TestCase(unittest.TestCase):
+class TestCase(unittest.TestCase, libres.context.session.Serializable):
+
+    @property
+    def context(self):
+        return getUtility(ILibresUtility).context
 
     def setUp(self):
 

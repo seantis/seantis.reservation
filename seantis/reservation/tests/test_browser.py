@@ -7,9 +7,10 @@ from itertools import chain
 from zope.component import queryUtility
 from Products.CMFCore.interfaces import IPropertiesTool
 
+from libres.context.session import serialized
+
 from seantis.reservation import utils
 from seantis.reservation.session import db
-from seantis.reservation.session import serialized
 from seantis.reservation.tests import FunctionalTestCase
 
 
@@ -806,8 +807,8 @@ class TestBrowser(FunctionalTestCase):
         token = keeper.reserve(u'test@example.com', dates)
         keeper.approve_reservations(token)
 
-        transaction.commit()  # delete_confirmation will rollback
-                              # dropping all SQL statements
+        # delete_confirmation will rollback, dropping all SQL statements
+        transaction.commit()
 
         self.assertEqual(keeper.managed_allocations().count(), 1)
         self.assertEqual(keeper.managed_reservations().count(), 1)
@@ -829,8 +830,8 @@ class TestBrowser(FunctionalTestCase):
             token = scheduler.reserve(u'test@example.com', dates)
             scheduler.approve_reservations(token)
 
-            transaction.commit()  # delete_confirmation will rollback
-                                  # dropping all SQL statements
+            # delete_confirmation will rollback, dropping all SQL statements
+            transaction.commit()
 
             self.assertEqual(scheduler.managed_allocations().count(), 1)
             self.assertEqual(scheduler.managed_reservations().count(), 1)
