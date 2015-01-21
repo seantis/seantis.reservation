@@ -1282,6 +1282,7 @@ class TestBrowser(FunctionalTestCase):
 
         # two revoke links + one change link == 3
         browser.open(self.allocation_menu(*allocations[0])['manage'])
+
         self.assertEqual(browser.query('.timespan-actions a').length, 3)
         self.assertIn('Aug 20, 2014 03:00 PM - 04:00 PM', browser.contents)
 

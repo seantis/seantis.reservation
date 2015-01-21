@@ -690,7 +690,7 @@ def as_human_readable_string(value):
                 value.minute
             )
         else:
-            return api.portal.get_localized_time(value, long_format=True)
+            return localize_date(value, long_format=True)
 
     if isinstance(value, date):
         if value.year < 1900:
@@ -701,7 +701,7 @@ def as_human_readable_string(value):
             )
         else:
             dt = datetime(value.year, value.month, value.day)
-            return api.portal.get_localized_time(dt, long_format=False)
+            return localize_date(dt, long_format=False)
 
     if isinstance(value, RichTextValue):
         return value.output
@@ -1173,6 +1173,20 @@ def align_range_to_day(start, end):
     return align_date_to_day(start, 'down'), align_date_to_day(end, 'up')
 
 
+def localize_date(
+    datetime, long_format=False, time_only=False, local_tz=False
+):
+    """ Like plone.api.get_localized_time, but with the ability to ignore
+    the timezone (which is considered by get_localized_time if present).
+
+    """
+
+    if not local_tz:
+        datetime = datetime.replace(tzinfo=None)
+
+    return api.portal.get_localized_time(datetime, long_format, time_only)
+
+
 def display_date(start, end):
     """ Formates the date range given for display. """
 
@@ -1181,24 +1195,24 @@ def display_date(start, end):
 
     if (start, end) == align_range_to_day(start, end):
         if start.date() == end.date():
-            return api.portal.get_localized_time(start, long_format=False)
+            return localize_date(start, long_format=False)
         else:
             return ' - '.join((
-                api.portal.get_localized_time(start, long_format=False),
-                api.portal.get_localized_time(end, long_format=False)
+                localize_date(start, long_format=False),
+                localize_date(end, long_format=False)
             ))
 
     end += timedelta(microseconds=1)
 
     if start.date() == end.date():
         return ' - '.join((
-            api.portal.get_localized_time(start, long_format=True),
-            api.portal.get_localized_time(end, time_only=True)
+            localize_date(start, long_format=True),
+            localize_date(end, time_only=True)
         ))
     else:
         return ' - '.join((
-            api.portal.get_localized_time(start, long_format=True),
-            api.portal.get_localized_time(end, long_format=True)
+            localize_date(start, long_format=True),
+            localize_date(end, long_format=True)
         ))
 
 

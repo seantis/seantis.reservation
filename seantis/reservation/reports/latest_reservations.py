@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 
 from five import grok
-from plone import api
 from zope.interface import Interface
 
 from sqlalchemy import desc
@@ -24,11 +23,7 @@ def human_date(date):
         now.year, now.month, now.day
     ).replace(tzinfo=now.tzinfo)
 
-    # remove the timezone before getting the localized time - or plone.api
-    # will adjust it.. it's really weird
-    time = api.portal.get_localized_time(
-        date.replace(tzinfo=None), time_only=True
-    )
+    time = utils.localize_date(date, time_only=True)
 
     if date >= this_morning:
         return _(u'Today, at ${time}', mapping={'time': time})
@@ -92,12 +87,12 @@ class LatestReservationsReportView(BaseView, GeneralReportParametersMixin):
 
         if until.date() == utils.utcnow().date():
             return ' - '.join((
-                api.portal.get_localized_time(since, long_format=False),
+                utils.localize_date(since, long_format=False),
                 self.translate(_(u'Today'))
             ))
         return ' - '.join((
-            api.portal.get_localized_time(since, long_format=False),
-            api.portal.get_localized_time(until, long_format=False)
+            utils.localize_date(since, long_format=False),
+            utils.localize_date(until, long_format=False)
         ))
 
     def build_url(self, start, end):
