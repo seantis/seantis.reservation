@@ -3,9 +3,10 @@ from datetime import datetime
 
 from Acquisition import aq_base
 
+from libres.context.session import serialized
+
 from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation import utils
-from seantis.reservation.session import serialized
 from seantis.reservation import exports
 from seantis.reservation.export import ExportView, prepare_record
 

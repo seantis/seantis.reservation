@@ -1,7 +1,8 @@
 from plone.app.testing import TEST_USER_ID
 
+from libres.context.session import serialized
+
 from seantis.reservation import settings
-from seantis.reservation.session import serialized
 from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation.mail import (
     get_managers_by_context, get_manager_emails

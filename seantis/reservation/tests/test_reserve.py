@@ -1,8 +1,9 @@
 from datetime import datetime
 from zExceptions import NotFound
 
+from libres.context.session import serialized
+
 from seantis.reservation.reserve import YourReservations, ReservationForm
-from seantis.reservation.session import serialized
 from seantis.reservation import plone_session
 from seantis.reservation.tests import IntegrationTestCase
 

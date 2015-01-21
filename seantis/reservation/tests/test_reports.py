@@ -4,7 +4,9 @@ import pytz
 from datetime import datetime, timedelta
 
 from zope import i18n
-from seantis.reservation.session import serialized
+
+from libres.context.session import serialized
+
 from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation.reports import GeneralReportParametersMixin
 from seantis.reservation.reports.monthly_report import monthly_report
