@@ -58,6 +58,7 @@ class TestReports(IntegrationTestCase):
         mixin.__name__ = 'test'  # build_url expects this, usually set by grok
         self.assertEqual(mixin.build_url(extras), expected)
 
+    @serialized
     def test_monthly_report_empty(self):
         self.login_admin()
 
