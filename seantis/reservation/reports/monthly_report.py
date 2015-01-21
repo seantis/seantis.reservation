@@ -10,7 +10,7 @@ from plone.memoize import view
 
 from seantis.reservation import _
 from seantis.reservation import Session
-from seantis.reservation import db
+from seantis.reservation import settings
 from seantis.reservation import utils
 from libres.db.models import Allocation, Reservation
 from seantis.reservation.reports import GeneralReportParametersMixin
@@ -139,11 +139,13 @@ class MonthlyReportView(
 
 def monthly_report(year, month, resources, reservations='*'):
 
-    schedulers, titles = dict(), dict()
+    titles = dict()
 
     for uuid in resources.keys():
-        schedulers[uuid] = db.Scheduler(uuid)
         titles[uuid] = utils.get_resource_title(resources[uuid])
+
+    # timezone of the report
+    timezone = settings.timezone()
 
     # this order is used for every day in the month
     ordered_uuids = [i[0] for i in sorted(titles.items(), key=lambda i: i[1])]
@@ -172,13 +174,12 @@ def monthly_report(year, month, resources, reservations='*'):
             }
 
     # gather the reservations with as much bulk loading as possible
-    period_start = datetime(year, month, 1)
-    period_end = datetime(year, month, last_day) + timedelta(
-        days=1, microseconds=-1
-    )
+    period_start = datetime(year, month, 1, tzinfo=timezone)
+    period_end = datetime(year, month, last_day, tzinfo=timezone)
+    period_end += timedelta(days=1, microseconds=-1)
 
     # get a list of relevant allocations in the given period
-    query = Session.query(Allocation)
+    query = Session().query(Allocation)
     query = query.filter(period_start <= Allocation._start)
     query = query.filter(Allocation._start <= period_end)
     query = query.filter(Allocation.resource == Allocation.mirror_of)
@@ -196,7 +197,7 @@ def monthly_report(year, month, resources, reservations='*'):
         groups.setdefault(allocation.group, list()).append(allocation)
 
     # using the groups get the relevant reservations
-    query = Session.query(Reservation)
+    query = Session().query(Reservation)
     query = query.filter(Reservation.target.in_(groups.keys()))
 
     if reservations != '*':
