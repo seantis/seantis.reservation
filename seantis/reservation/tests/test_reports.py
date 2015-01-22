@@ -157,8 +157,7 @@ class TestReports(IntegrationTestCase):
         )
 
     @serialized
-    @mock.patch('seantis.reservation.utils.utcnow')
-    def test_latest_reservations(self, utcnow):
+    def test_latest_reservations(self):
 
         self.login_admin()
 
@@ -182,5 +181,6 @@ class TestReports(IntegrationTestCase):
         self.assertEqual(len(report), 2)
 
         daterange = (now - timedelta(days=31), now - timedelta(seconds=60))
+
         report = latest_reservations({resource.uuid(): resource}, daterange)
         self.assertEqual(len(report), 0)
