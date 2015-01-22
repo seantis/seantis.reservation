@@ -612,6 +612,29 @@ def get_reservation_quota_statement(quota):
         return _(u'<b>1</b> reservation')
 
 
+def json_loads_object_hook(dictionary):
+    for key, value in dictionary.items():
+        if isinstance(value, basestring):
+            dictionary[key] = userformdata_decode(value)
+        elif isinstance(value, (list, tuple)):
+            dictionary[key] = map(userformdata_decode, value)
+    return dictionary
+
+
+def json_loads(value):
+    if value is not None:
+        return json.loads(value, object_hook=json_loads_object_hook)
+    else:
+        return {}
+
+
+def json_dumps(value):
+    if value is not None:
+        return json.dumps(value, cls=UserFormDataEncoder)
+    else:
+        return ''
+
+
 class UUIDEncoder(json.JSONEncoder):
     """Encodes UUID objects as string in JSON."""
     def default(self, obj):
@@ -653,13 +676,13 @@ def userformdata_decode(string):
         return string
 
     if string.startswith(u'__date__@'):
-        return isodate.parse_date(string[9:19])
+        return isodate.parse_date(string[9:])
 
     if string.startswith(u'__datetime__@'):
-        return isodate.parse_datetime(string[13:32])
+        return isodate.parse_datetime(string[13:])
 
     if string.startswith(u'__time__@'):
-        return isodate.parse_time(string[9:18])
+        return isodate.parse_time(string[9:])
 
     if string.startswith(u'__richtext__@'):
         data = json.loads(base64.b64decode(string[13:]))

@@ -101,6 +101,10 @@ class LibresUtility(grok.GlobalUtility):
             context.get_setting('dsn'),
             session_config={
                 'extension': ZopeTransactionExtension()
+            },
+            engine_config={
+                'json_serializer': utils.json_dumps,
+                'json_deserializer': utils.json_loads
             }
         )
 

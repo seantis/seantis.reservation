@@ -5,6 +5,7 @@ from Acquisition import aq_base
 
 from libres.context.session import serialized
 
+from pytz import timezone
 from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation import utils
 from seantis.reservation import exports
@@ -20,16 +21,15 @@ class TestExports(IntegrationTestCase):
         resource = self.create_resource()
         sc = resource.scheduler()
 
-        start = datetime(2012, 2, 1, 12, 0)
-        end = datetime(2012, 2, 1, 16, 0)
-        some_date = datetime(2014, 1, 30, 13, 37)
+        start = datetime(2012, 2, 1, 12, 0, tzinfo=timezone('UTC'))
+        end = datetime(2012, 2, 1, 16, 0, tzinfo=timezone('UTC'))
+        some_date = datetime(2014, 1, 30, 13, 37, tzinfo=timezone('UTC'))
         dates = (start, end)
 
-        reservation_email = u'test@example.com'
         sc.allocate(dates, approve_manually=False, quota=2)[0]
 
         token1 = sc.reserve(
-            reservation_email, dates,
+            u'a@example.com', dates,
             data=utils.mock_data_dictionary(
                 {
                     'stop': u'hammertime!',
@@ -40,7 +40,7 @@ class TestExports(IntegrationTestCase):
         )
 
         token2 = sc.reserve(
-            reservation_email, dates,
+            u'b@example.com', dates,
             data=utils.mock_data_dictionary(
                 {
                     'never': u'gonna',
