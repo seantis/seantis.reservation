@@ -21,7 +21,6 @@ from zope.interface import implements, Interface
 from zope.lifecycleevent.interfaces import IObjectRemovedEvent
 
 from seantis.reservation import _
-from seantis.reservation import db
 from seantis.reservation import exposure
 from seantis.reservation import settings
 from seantis.reservation import utils
@@ -106,7 +105,7 @@ def on_removed_resource(resource, event):
             return
 
     log.info('extinguising resource {}'.format(resource.uuid()))
-    db.extinguish_resource(resource.uuid())
+    resource.scheduler().extinguish_managed_records()
 
 
 class YourReservationsViewlet(object):
