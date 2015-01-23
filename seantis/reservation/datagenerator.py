@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import random
 
 from datetime import datetime, timedelta
@@ -85,7 +87,7 @@ class DataGeneratorView(BaseView):
         end = end or (start + timedelta(days=365))
 
         days = []
-        for day in xrange(0, (end - start).days, 1):
+        for day in range(0, (end - start).days, 1):
             days.append(start + timedelta(days=day))
 
         scheduler = resource.scheduler()
@@ -96,7 +98,7 @@ class DataGeneratorView(BaseView):
 
                 quota = random.randrange(1, 1000)
 
-                print 'a @', timespan[0], timespan[1]
+                print('a @', timespan[0], timespan[1])
 
                 try:
                     scheduler.allocate(
@@ -159,9 +161,9 @@ class DataGeneratorView(BaseView):
             if not allocation.approve_manually:
                 limit = allocation.quota
 
-            for i in xrange(0, random.randrange(0, limit + 1)):
+            for i in range(0, random.randrange(0, limit + 1)):
                 try:
-                    print 'r @', start, end
+                    print('r @', start, end)
                     token = scheduler.reserve(email, dates=(start, end))
                     if not allocation.approve_manually:
                         scheduler.approve_reservations(token)
@@ -213,4 +215,4 @@ class DataGeneratorView(BaseView):
 
         if self.may_run and self.request.get('generate_data'):
             self.generate_allocations(start=self.start, end=self.end)
-            print "done!"
+            print("done!")

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import six
+
 from logging import getLogger
 log = getLogger('seantis.reservation')
 
@@ -267,8 +269,8 @@ class ReservationBaseForm(ResourceBaseForm):
 
         for form in data:
             if form in self.context.formsets:
-                for field in data[form]['values']:
-                    defaults["%s.%s" % (form, field['key'])] = field['value']
+                for f in data[form]['values']:
+                    defaults["%s.%s" % (form, f['key'])] = f['value']
 
         return defaults
 
@@ -419,7 +421,7 @@ class ReservationForm(
         if not value:
             return None
 
-        if not isinstance(value, basestring):
+        if not isinstance(value, six.string_types):
             return value
 
         dt = DateTime(value)
@@ -451,9 +453,9 @@ class ReservationForm(
         # the extracted fields may contain field values which need to be
         # injected so the defaults are filled - otherwise no value is updated
         # on the disabled field
-        for field in ('day', 'start_time', 'end_time'):
-            if extracted.get(field) is not None:
-                data[field] = extracted[field]
+        for f in ('day', 'start_time', 'end_time'):
+            if extracted.get(f) is not None:
+                data[f] = extracted[f]
 
         # if the extracted data was not of any help the id of the allocation
         # is our last resort.
@@ -518,15 +520,15 @@ class ReservationForm(
 
         """
 
-        for field in fields.values():
+        for f in fields.values():
 
-            field_type = type(field.field)
+            field_type = type(f.field)
 
             if field_type is List or field_type is Set:
-                field.widgetFactory = CheckBoxFieldWidget
+                f.widgetFactory = CheckBoxFieldWidget
 
             elif field_type is Choice:
-                field.widgetFactory = RadioFieldWidget
+                f.widgetFactory = RadioFieldWidget
 
 
 class GroupReservationForm(
@@ -655,7 +657,7 @@ class SelectionReservationForm(
         if not ids:
             return tuple()
 
-        if isinstance(ids, basestring):
+        if isinstance(ids, six.string_types):
             ids = ids.split(',')
 
         return ids
@@ -958,7 +960,7 @@ class ReservationList(BaseView, ReservationListView, ReservationUrls):
     @property
     def group(self):
         if 'group' in self.request:
-            return unicode(self.request['group'].decode('utf-8'))
+            return six.text_type(self.request['group'].decode('utf-8'))
         else:
             return u''
 
@@ -1160,7 +1162,7 @@ class ReservationDataEditForm(ReservationTargetForm, ReservationSchemata):
         for form in data:
 
             for value in data[form]['values']:
-                if isinstance(value['value'], basestring):
+                if isinstance(value['value'], six.string_types):
                     decoded = utils.userformdata_decode(value['value'])
                     fieldvalue = decoded or value['value']
                 else:
@@ -1176,15 +1178,15 @@ class ReservationDataEditForm(ReservationTargetForm, ReservationSchemata):
 
     def customize_fields(self, fields):
 
-        for field in fields.values():
+        for f in fields.values():
 
-            field_type = type(field.field)
+            field_type = type(f.field)
 
             if field_type is List or field_type is Set:
-                field.widgetFactory = CheckBoxFieldWidget
+                f.widgetFactory = CheckBoxFieldWidget
 
             elif field_type is Choice:
-                field.widgetFactory = RadioFieldWidget
+                f.widgetFactory = RadioFieldWidget
 
     @button.buttonAndHandler(_(u'Save'))
     @extract_action_data

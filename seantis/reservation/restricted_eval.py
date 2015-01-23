@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import functools
+import six
 import sys
 
 from logging import getLogger
@@ -7,7 +9,27 @@ log = getLogger('seantis.reservation')
 
 from datetime import date, datetime, timedelta
 
-from byteplay import *
+from byteplay import (
+    Code, Opcode,
+    POP_TOP, ROT_TWO, ROT_THREE, ROT_FOUR, DUP_TOP, DUP_TOPX,
+    POP_BLOCK, SETUP_LOOP, BUILD_LIST, BUILD_MAP, BUILD_TUPLE,
+    LOAD_CONST, RETURN_VALUE, STORE_SUBSCR, STORE_MAP,
+    UNARY_POSITIVE, UNARY_NEGATIVE, UNARY_NOT,
+    UNARY_INVERT, BINARY_POWER, BINARY_MULTIPLY,
+    BINARY_DIVIDE, BINARY_FLOOR_DIVIDE, BINARY_TRUE_DIVIDE,
+    BINARY_MODULO, BINARY_ADD, BINARY_SUBTRACT, BINARY_SUBSCR,
+    BINARY_LSHIFT, BINARY_RSHIFT, BINARY_AND, BINARY_XOR,
+    BINARY_OR, INPLACE_ADD, INPLACE_SUBTRACT, INPLACE_MULTIPLY,
+    INPLACE_DIVIDE, INPLACE_POWER,
+    INPLACE_LSHIFT, INPLACE_RSHIFT, INPLACE_AND,
+    INPLACE_XOR, INPLACE_OR, LOAD_NAME, CALL_FUNCTION, COMPARE_OP, LOAD_ATTR,
+    STORE_NAME, GET_ITER, FOR_ITER, LIST_APPEND, DELETE_NAME,
+    JUMP_FORWARD, POP_JUMP_IF_TRUE, JUMP_ABSOLUTE,
+    JUMP_IF_TRUE_OR_POP, JUMP_IF_FALSE_OR_POP,
+    MAKE_FUNCTION, SLICE_0, SLICE_1, SLICE_2, SLICE_3,
+    POP_JUMP_IF_FALSE,
+    SETUP_EXCEPT, END_FINALLY
+)
 
 import seantis.reservation
 
@@ -74,7 +96,7 @@ def evaluate_expression(expression, globals_=None, locals_=None, mode='eval'):
             'abs': abs,
             'min': min,
             'max': max,
-            'reduce': reduce,
+            'reduce': functools.reduce,
             'filter': filter,
             'round': round,
             'len': len,
@@ -102,7 +124,8 @@ def run_pre_reserve_script(context, start, end, data, locals_=None):
     user interface, because it's meant for developers, not users.
     """
     script = seantis.reservation.settings.get('pre_reservation_script')
-    script = isinstance(script, basestring) and unicode(script) or u''
+    script = isinstance(script, six.string_types) \
+        and six.text_type(script) or u''
     script = script.strip()
 
     if not script:

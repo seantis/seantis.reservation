@@ -1,3 +1,5 @@
+import six
+
 from datetime import datetime
 from functools import wraps
 
@@ -299,8 +301,8 @@ class ResourceBaseForm(GroupForm, form.Form):
         else:
             group = None
 
-        if isinstance(group, basestring):
-            return unicode(group.decode('utf-8'))
+        if isinstance(group, six.string_types):
+            return six.text_type(group.decode('utf-8'))
         else:
             return group and ','.join(group) or u''
 

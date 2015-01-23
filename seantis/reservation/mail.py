@@ -3,6 +3,8 @@ from itertools import groupby
 import logging
 log = logging.getLogger('seantis.reservation')
 
+import six
+
 from five import grok
 
 from email.MIMEText import MIMEText
@@ -392,7 +394,9 @@ class ReservationMail(ReservationDataView, ReservationUrls):
                 for value in sorted_values:
                     lines.append(
                         '\t' + value['desc'] + ': ' +
-                        unicode(self.display_reservation_data(value['value']))
+                        six.text_type(
+                            self.display_reservation_data(value['value'])
+                        )
                     )
 
             p['data'] = '\n'.join(lines)
@@ -459,8 +463,10 @@ def create_email(sender, recipient, subject, body):
 
     # We must always pass Unicode strings to Header, otherwise it will
     # use RFC 2047 encoding even on plain ASCII strings.
-    sender_name = str(Header(unicode(sender_name), header_charset))
-    recipient_name = str(Header(unicode(recipient_name), header_charset))
+    sender_name = str(Header(six.text_type(sender_name), header_charset))
+    recipient_name = str(
+        Header(six.text_type(recipient_name), header_charset)
+    )
 
     # Make sure email addresses do not contain non-ASCII characters
     sender_addr = sender_addr.encode('ascii')
@@ -470,7 +476,7 @@ def create_email(sender, recipient, subject, body):
     msg = MIMEText(body.encode(body_charset), 'plain', body_charset)
     msg['From'] = formataddr((sender_name, sender_addr))
     msg['To'] = formataddr((recipient_name, recipient_addr))
-    msg['Subject'] = Header(unicode(subject), header_charset)
+    msg['Subject'] = Header(six.text_type(subject), header_charset)
 
     return msg
 

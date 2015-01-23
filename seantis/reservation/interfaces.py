@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import pytz
 import re
+import six
 
 from dateutil import rrule
 
@@ -197,7 +198,7 @@ class OverviewletManager(grok.ViewletManager):
             return {}
 
         rmap = self.view.resource_map()
-        assert not isinstance(rmap, basestring)
+        assert not isinstance(rmap, six.string_types)
 
         def transform_uuid(target):
             if utils.is_uuid(target):
@@ -300,13 +301,6 @@ class IResourceAllocationDefaults(form.Schema):
             raise Invalid(
                 _(u'Reservation quota limit must zero or a positive number')
             )
-
-    ######### deprecated #########
-    approve = schema.Bool(
-        title=_(u'DEPRECATED: Approve reservation requests'), default=True
-    )
-    # approve has been moved to approve_manually and will be removed in
-    # a future release. approve_manually is equivalent.
 
 
 class IResourceBase(IResourceAllocationDefaults):
@@ -721,14 +715,14 @@ class IEmailTemplate(form.Schema):
         # try to fill those with dummy variables
         for key, attr in content_attributes:
             tags = form_tags.findall(attr.getDoc())
-            test_data = zip(tags, (str(i) for i in xrange(0, len(tags))))
+            test_data = zip(tags, (str(i) for i in range(0, len(tags))))
 
             try:
                 getattr(email, key) % dict(test_data)
 
             # if anything fails, it would also in the email sending process
             # which is the last thing we want to fail
-            except KeyError, e:
+            except KeyError as e:
                 raise Invalid(
                     _(
                         u"Invalid template variable '${name}' in '${field}'",
