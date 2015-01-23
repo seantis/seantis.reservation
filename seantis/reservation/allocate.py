@@ -1,3 +1,5 @@
+import six
+
 from dateutil import rrule
 
 from five import grok
@@ -240,7 +242,7 @@ class AllocationEditForm(AllocationForm):
             data['id'],
             start,
             end,
-            unicode(data['group'] or u''),
+            six.text_type(data['group'] or u''),
             data['quota'],
             data['approve_manually'],
             data['reservation_quota_limit'],

@@ -21,7 +21,7 @@ def get_session(context, key):
 
     session = session_manager.getSessionData()
 
-    if not key in session.keys():
+    if key not in session.keys():
         return None
 
     return session[key]

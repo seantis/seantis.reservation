@@ -1,5 +1,7 @@
-import logging
 import codecs
+import logging
+import six
+
 from os import path
 
 logger = logging.getLogger('seantis.reservation')
@@ -66,7 +68,7 @@ class MailTemplate(object):
 
             body.append(line)
 
-        return unicode(subject), unicode('\n'.join(body))
+        return six.text_type(subject), six.text_type('\n'.join(body))
 
 keys = [
     'reservation_approved',

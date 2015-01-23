@@ -1,11 +1,14 @@
-import re
-import time
-import json
+from __future__ import print_function
+
+import base64
 import collections
 import functools
 import isodate
-import base64
+import json
+import re
+import six
 import sys
+import time
 
 from copy import deepcopy
 from datetime import datetime, timedelta, date, time as datetime_time
@@ -81,7 +84,7 @@ def profile(fn):
         start = time.time()
 
         result = fn(*args, **kwargs)
-        print fn.__name__, 'took', (time.time() - start) * 1000, 'ms'
+        print(fn.__name__, 'took', (time.time() - start) * 1000, 'ms')
 
         return result
 
@@ -497,7 +500,7 @@ def handle_action(action=None, success=None, message_handler=None):
 
         return result
 
-    except Exception, e:
+    except Exception as e:
         e = hasattr(e, 'orig') and e.orig or e
         handle_exception(e, sys.exc_info(), message_handler)
 
@@ -513,7 +516,7 @@ def handle_exception(ex, exception_info, message_handler=None):
     msg = error.errormap.get(type(ex))
 
     if not msg:
-        raise exception_info[1], None, exception_info[2]
+        six.reraise(*exception_info)
 
     if message_handler:
         message_handler(msg)
@@ -529,8 +532,8 @@ def is_uuid(obj):
     """Returns true if the given obj is a uuid. The obj may be a string
     or of type UUID. If it's a string, the uuid is checked with a regex.
     """
-    if isinstance(obj, basestring):
-        return re.match(_uuid_regex, unicode(obj))
+    if isinstance(obj, six.string_types):
+        return re.match(_uuid_regex, six.text_type(obj))
 
     return isinstance(obj, UUID)
 
@@ -540,7 +543,7 @@ def string_uuid(obj):
     with hyphens, objects which are IUUIDAware or objects which have a UID
     attribute. (The latter works for catalog brains). """
 
-    if isinstance(obj, basestring):
+    if isinstance(obj, six.string_types):
         obj = str(obj)
     elif hasattr(obj, 'UID'):
         if callable(obj.UID):
@@ -563,7 +566,7 @@ def real_uuid(obj):
 # TODO cache this incrementally
 def generate_uuids(uuid, quota):
     mirror = lambda n: new_uuid_mirror(uuid, str(n))
-    return [mirror(n) for n in xrange(1, quota)]
+    return [mirror(n) for n in range(1, quota)]
 
 
 def uuid_query(uuid):
@@ -615,7 +618,7 @@ def get_reservation_quota_statement(quota):
 
 def json_loads_object_hook(dictionary):
     for key, value in dictionary.items():
-        if isinstance(value, basestring):
+        if isinstance(value, six.string_types):
             dictionary[key] = userformdata_decode(value)
         elif isinstance(value, (list, tuple)):
             dictionary[key] = map(userformdata_decode, value)
@@ -673,7 +676,7 @@ class UserFormDataEncoder(json.JSONEncoder):
 
 
 def userformdata_decode(string):
-    if not isinstance(string, basestring):
+    if not isinstance(string, six.string_types):
         return string
 
     if string.startswith(u'__date__@'):
@@ -698,7 +701,7 @@ def userformdata_decode(string):
 
 
 def as_human_readable_string(value):
-    if isinstance(value, basestring):
+    if isinstance(value, six.string_types):
         return value
 
     if isinstance(value, datetime):
@@ -837,7 +840,7 @@ def flatten(l):
     """
     for el in l:
         if isinstance(el, collections.Iterable) and \
-                not isinstance(el, basestring):
+                not isinstance(el, six.string_types):
             for sub in flatten(el):
                 yield sub
         else:
@@ -965,11 +968,11 @@ def urlparam(base, url, params):
     if not base.endswith('/'):
         base += '/'
 
-    urlquote = lambda fragment: quote(unicode(fragment).encode('utf-8'))
+    urlquote = lambda fragment: quote(six.text_type(fragment).encode('utf-8'))
     querypair = lambda pair: pair[0] + '=' + urlquote(pair[1])
 
     query = '?' + '&'.join(map(querypair, params.items()))
-    return ''.join(reduce(urljoin, (base, url, query)))
+    return ''.join(functools.reduce(urljoin, (base, url, query)))
 
 
 class EventUrls(object):
@@ -1019,7 +1022,7 @@ class EventUrls(object):
         group = self.translate(group)
         name = self.translate(name)
 
-        if not group in self.menu:
+        if group not in self.menu:
             self.menu[group] = []
             self.order.append(group)
 
