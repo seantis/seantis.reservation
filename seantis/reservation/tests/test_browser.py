@@ -4,13 +4,13 @@ import transaction
 from datetime import timedelta, datetime
 from itertools import chain
 
-from zope.component import queryUtility
+from zope.component import queryUtility, getUtility
 from Products.CMFCore.interfaces import IPropertiesTool
 
 from libres.context.session import serialized
 
 from seantis.reservation import utils
-from seantis.reservation.session import db
+from seantis.reservation.session import ILibresUtility
 from seantis.reservation.tests import FunctionalTestCase
 
 
@@ -793,7 +793,7 @@ class TestBrowser(FunctionalTestCase):
         browser.open(self.infolder('/keeper/@@uuid'))
         uuid = unicode(browser.contents)
 
-        keeper = db.Scheduler(uuid)
+        keeper = getUtility(ILibresUtility).scheduler(uuid, 'UTC')
 
         self.assertEqual(keeper.managed_allocations().count(), 0)
         self.assertEqual(keeper.managed_reservations().count(), 0)
@@ -819,7 +819,7 @@ class TestBrowser(FunctionalTestCase):
             browser.open(self.infolder('/removal/@@uuid'))
             uuid = unicode(browser.contents)
 
-            scheduler = db.Scheduler(uuid)
+            scheduler = getUtility(ILibresUtility).scheduler(uuid, 'UTC')
 
             self.assertEqual(scheduler.managed_allocations().count(), 0)
             self.assertEqual(scheduler.managed_reservations().count(), 0)
