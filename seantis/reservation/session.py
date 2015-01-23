@@ -15,9 +15,9 @@ from zope.sqlalchemy import ZopeTransactionExtension
 from seantis.reservation.events import (
     ReservationsApprovedEvent,
     ReservationsDeniedEvent,
-    # ReservationsRevokedEvent,
+    ReservationsRevokedEvent,
     ReservationsConfirmedEvent,
-    # ReservationTimeChangedEvent
+    ReservationTimeChangedEvent
 )
 
 
@@ -87,6 +87,56 @@ def serialized(fn):
 #
 #
 #
+
+
+class CustomScheduler(libres.db.scheduler.Scheduler):
+    """ Builds on the Libres scheduler to include functions that don't fit
+    the scope of Libres.
+
+    """
+
+    @libres.context.session.serialized
+    def revoke_reservation(self, token, reason, id=None, send_email=True):
+        """ Revoke a reservation and inform the user of that."""
+
+        reason = reason or u''
+
+        # sending the email first is no problem as it won't work if
+        # an exception triggers later in the request
+
+        reservations = self.reservations_by_token(token, id).all()
+        notify(ReservationsRevokedEvent(
+            reservations, utils.get_current_site_language(), reason, send_email
+        ))
+
+        self.remove_reservation(token, id)
+
+    @libres.context.session.serialized
+    def change_reservation_time(
+        self, token, id, new_start, new_end, send_email=True, reason=None
+    ):
+        from libres.modules import events
+
+        def trigger_email(context_name, reservation, old_time, new_time):
+            notify(ReservationTimeChangedEvent(
+                reservation=reservation,
+                language=utils.get_current_site_language(),
+                old_time=old_time,
+                new_time=new_time,
+                send_email=send_email,
+                reason=reason or u'',
+            ))
+
+        if send_email:
+            events.on_reservation_time_changed.append(trigger_email)
+
+        try:
+            super(CustomScheduler, self).change_reservation_time(
+                token, id, new_start, new_end
+            )
+        finally:
+            if send_email:
+                events.on_reservation_time_changed.remove(trigger_email)
 
 
 class LibresUtility(grok.GlobalUtility):
@@ -178,7 +228,7 @@ class LibresUtility(grok.GlobalUtility):
         return context
 
     def scheduler(self, name, timezone):
-        return libres.new_scheduler(self.context, name, timezone)
+        return CustomScheduler(self.context, name, timezone)
 
     def get_dsn(self, site):
         """ Returns the DSN for the given site. Will look for those dsns
