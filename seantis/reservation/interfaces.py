@@ -935,14 +935,6 @@ class IReservationsBaseEvent(Interface):
     )
 
 
-class IReservationsMadeEvent(IReservationsBaseEvent):
-    """ Event triggered when a reservation is made (autoapproved or
-        added to the pending reservation list). A reservation may
-        consist of multiple reservation records with the same token.
-
-    """
-
-
 class IReservationsApprovedEvent(IReservationsBaseEvent):
     """ Event triggered when a reservation is approved. """
 

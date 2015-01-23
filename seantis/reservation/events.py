@@ -4,7 +4,6 @@ from seantis.reservation.reservations import combine_reservations
 from seantis.reservation.interfaces import (
     IResourceViewedEvent,
     IReservationsBaseEvent,
-    IReservationsMadeEvent,
     IReservationsApprovedEvent,
     IReservationsDeniedEvent,
     IReservationsRevokedEvent,
@@ -30,10 +29,6 @@ class ReservationsBaseEvent(object):
         combined = tuple(combine_reservations(reservations))
         assert len(combined) == 1
         self.reservation = combined[0]
-
-
-class ReservationsMadeEvent(ReservationsBaseEvent):
-    implements(IReservationsMadeEvent)
 
 
 class ReservationsApprovedEvent(ReservationsBaseEvent):

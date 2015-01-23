@@ -7,9 +7,18 @@ from plone import api
 from seantis.reservation import utils
 from sqlalchemy import create_engine
 from zope.component import getUtility
+from zope.event import notify
 from zope.interface import implements
 from zope.interface import Interface
 from zope.sqlalchemy import ZopeTransactionExtension
+
+from seantis.reservation.events import (
+    ReservationsApprovedEvent,
+    ReservationsDeniedEvent,
+    # ReservationsRevokedEvent,
+    ReservationsConfirmedEvent,
+    # ReservationTimeChangedEvent
+)
 
 
 def get_postgres_version(dsn):
@@ -86,6 +95,43 @@ class LibresUtility(grok.GlobalUtility):
 
     def __init__(self):
         self.reset()
+        self.setup_event_translation()
+
+    def setup_event_translation(self):
+        """ Libres events are different from the old seantis.reservation
+        events. To ease the migration to libres, these events are translated
+        here, where possible.
+
+        """
+        from libres.modules import events
+
+        translated_events = (
+            'on_reservations_approved',
+            'on_reservations_denied',
+            'on_reservations_confirmed'
+        )
+
+        for event in translated_events:
+            libres_event = getattr(events, event)
+            translation = getattr(self, event)
+
+            if translation not in libres_event:
+                libres_event.append(translation)
+
+    def on_reservations_approved(self, context_name, reservations):
+        notify(ReservationsApprovedEvent(
+            reservations, utils.get_current_site_language()
+        ))
+
+    def on_reservations_denied(self, context_name, reservations):
+        notify(ReservationsDeniedEvent(
+            reservations, utils.get_current_site_language()
+        ))
+
+    def on_reservations_confirmed(self, context_name, reservations):
+        notify(ReservationsConfirmedEvent(
+            reservations, utils.get_current_site_language()
+        ))
 
     def reset(self):
         self._dsn_cache = {}
