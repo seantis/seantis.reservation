@@ -2,6 +2,7 @@ from logging import getLogger
 log = getLogger('seantis.reservation')
 
 import json
+import libres
 import pytz
 
 from datetime import datetime, date
@@ -39,6 +40,16 @@ class LibresExposure(object):
         self.is_allocation_exposed = fn
 
 
+def get_queries(resources):
+    libres_util = getUtility(ILibresUtility)
+    libres_util.context.set_service(
+        'exposure',
+        lambda ctx: LibresExposure(exposure.for_allocations(resources))
+    )
+
+    return libres.db.queries.Queries(libres_util.context)
+
+
 class Resource(Container):
 
     # Do not use @property here as it messes with the acquisition context.
@@ -56,7 +67,7 @@ class Resource(Container):
         libres_util = getUtility(ILibresUtility)
         libres_util.context.set_service(
             'exposure',
-            lambda ctx: LibresExposure(exposure.for_allocations(self, [uuid]))
+            lambda ctx: LibresExposure(exposure.for_allocations([uuid]))
         )
 
         return libres_util.scheduler(uuid, settings.get('timezone'))
@@ -345,13 +356,10 @@ class CalendarRequest(object):
         if not all((start, end)):
             return None, None
 
-        # use utc to get the correct range (as reported by fullcalendar)
-        start = datetime.fromtimestamp(float(start), pytz.utc)
-        end = datetime.fromtimestamp(float(end), pytz.utc)
-
-        # but remove it again because times in seantis.reservation are still
-        # timezone naive, unfortunately.
-        return start.replace(tzinfo=None), end.replace(tzinfo=None)
+        return (
+            datetime.fromtimestamp(float(start), pytz.utc),
+            datetime.fromtimestamp(float(end), pytz.utc)
+        )
 
     def render(self, **kwargs):
         start, end = self.range
@@ -467,7 +475,7 @@ class Slots(BaseView, CalendarRequest):
         scheduler = resource.scheduler()
         translate = utils.translator(self.context, self.request)
 
-        is_exposed = exposure.for_allocations(resource, [resource])
+        is_exposed = exposure.for_allocations([resource])
 
         # get an event for each exposed allocation
         events = []

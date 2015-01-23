@@ -4,10 +4,8 @@ from datetime import timedelta, datetime
 from five import grok
 from zope.interface import Interface
 
-from seantis.reservation.resource import CalendarRequest
+from seantis.reservation.resource import CalendarRequest, get_queries
 from seantis.reservation import utils
-from seantis.reservation import db
-from seantis.reservation import exposure
 from seantis.reservation.base import BaseView, BaseViewlet
 from seantis.reservation.interfaces import IOverview, OverviewletManager
 
@@ -85,20 +83,19 @@ class Overview(BaseView, CalendarRequest):
         result = CalendarRequest.render(self)
         return result
 
-    def events(self):
+    def events(self, daterange=None, uuids=None):
         """ Returns the events for the overview. """
 
-        start, end = self.range
+        start, end = daterange or self.range
         if not all((start, end)):
             return []
 
         events = []
 
-        uuids = self.uuids()
+        uuids = uuids or self.uuids()
+        queries = get_queries(uuids)
+        days = queries.availability_by_day(start, end, uuids)
 
-        is_exposed = exposure.for_allocations(self.context, uuids)
-
-        days = db().availability_by_day(start, end, uuids, is_exposed)
         for day, result in days.items():
 
             event_start = datetime(day.year, day.month, day.day, 0, 0)

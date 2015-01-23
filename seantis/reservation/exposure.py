@@ -8,7 +8,7 @@ from seantis.reservation.utils import string_uuid, real_uuid
 from seantis.reservation.timeframe import timeframes_by_context
 
 
-def for_allocations(context, resources):
+def for_allocations(resources):
     """Returns a function which takes an allocation and returns true if the
     allocation can be exposed.
 
