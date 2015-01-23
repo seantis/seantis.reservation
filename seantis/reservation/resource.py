@@ -400,8 +400,10 @@ class Slots(BaseView, CalendarRequest):
 
         items = utils.EventUrls(self.context, self.request, exposure)
 
-        start = utils.utctimestamp(allocation.display_start())
-        end = utils.utctimestamp(allocation.display_end())
+        start = utils.utctimestamp(
+            allocation.display_start(settings.timezone()))
+        end = utils.utctimestamp(
+            allocation.display_end(settings.timezone()))
 
         items.move_url('edit-allocation', dict(id=allocation.id))
 
@@ -484,7 +486,8 @@ class Slots(BaseView, CalendarRequest):
             if not is_exposed(alloc):
                 continue
 
-            start, end = alloc.display_start(), alloc.display_end()
+            start = alloc.display_start(settings.timezone())
+            end = alloc.display_end(settings.timezone())
 
             # get the urls
             urls = self.urls(alloc)

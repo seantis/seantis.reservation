@@ -5,6 +5,7 @@ from five import grok
 from zope.interface import Interface
 
 from seantis.reservation import _
+from seantis.reservation import settings
 from seantis.reservation import utils
 from seantis.reservation.base import BaseView
 from seantis.reservation.form import ReservationDataView
@@ -131,18 +132,20 @@ class View(BaseView, ReservationUrls, ReservationDataView):
 
         result = []
 
+        tz = settings.timezone()
+
         for allocation in allocations:
 
             if start_time or end_time:
-                s = start_time or allocation.display_start().time()
-                e = end_time or allocation.display_end().time()
+                s = start_time or allocation.display_start(tz).time()
+                e = end_time or allocation.display_end(tz).time()
 
                 s, e = allocation.limit_timespan(s, e)
 
                 time_text = get_time_text(s, e)
             else:
                 time_text = get_time_text(
-                    allocation.display_start(), allocation.display_end()
+                    allocation.display_start(tz), allocation.display_end(tz)
                 )
                 s, e = None, None
 
@@ -152,10 +155,10 @@ class View(BaseView, ReservationUrls, ReservationDataView):
 
             date = ', '.join((
                 self.translate(
-                    self.short_days[allocation.display_start().weekday()]
+                    self.short_days[allocation.display_start(tz).weekday()]
                 ),
                 utils.localize_date(
-                    allocation.display_start(), long_format=False
+                    allocation.display_start(tz), long_format=False
                 )
             ))
 

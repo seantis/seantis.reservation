@@ -35,6 +35,7 @@ from seantis.reservation.interfaces import (
     ISelectionReservation,
 )
 from seantis.reservation import plone_session
+from seantis.reservation import settings
 from seantis.reservation import utils
 from seantis.reservation.base import BaseView, BaseViewlet
 from seantis.reservation.error import DirtyReadOnlySession, NoResultFound
@@ -461,14 +462,16 @@ class ReservationForm(
         except DirtyReadOnlySession:
             return
 
+        tz = settings.timezone()
+
         if data.get('day') is None:
-            data['day'] = allocation.display_start().date()
+            data['day'] = allocation.display_start(tz).date()
 
         if data.get('start_time') is None:
-            data['start_time'] = allocation.display_start().time()
+            data['start_time'] = allocation.display_start(tz).time()
 
         if data.get('end_time') is None:
-            data['end_time'] = allocation.display_end().time()
+            data['end_time'] = allocation.display_end(tz).time()
 
     @button.buttonAndHandler(_(u'Reserve'))
     @extract_action_data
@@ -1025,9 +1028,11 @@ class ReservationEditTimeForm(ReservationTargetForm):
         parent = super(ReservationEditTimeForm, self).defaults()
 
         if self.reservation:
+            tz = settings.timezone()
+
             parent.update({
-                'start_time': self.reservation.display_start().time(),
-                'end_time': self.reservation.display_end().time()
+                'start_time': self.reservation.display_start(tz).time(),
+                'end_time': self.reservation.display_end(tz).time()
             })
 
         return parent
