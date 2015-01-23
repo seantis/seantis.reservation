@@ -207,8 +207,8 @@ class AllocationEditForm(AllocationForm):
 
         start, end = self.start, self.end
         if not all((start, end)):
-            start = allocation.display_start
-            end = allocation.display_end
+            start = allocation.display_start()
+            end = allocation.display_end()
 
         return {
             'id': self.id,
@@ -218,7 +218,7 @@ class AllocationEditForm(AllocationForm):
             'quota': allocation.quota,
             'approve_manually': allocation.approve_manually,
             'whole_day': allocation.whole_day,
-            'reservation_quota_limit': allocation.reservation_quota_limit
+            'reservation_quota_limit': allocation.quota_limit
         }
 
     @button.buttonAndHandler(_(u'Edit'))

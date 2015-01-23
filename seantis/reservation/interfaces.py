@@ -16,7 +16,6 @@ from plone.app.z3cform.wysiwyg import WysiwygFieldWidget
 from plone.directives import form
 from plone.dexterity.interfaces import IDexterityFTI
 from plone.dexterity.utils import schemaNameToPortalType as getname
-from plone.event.utils import default_timezone
 
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from z3c.form.browser.radio import RadioFieldWidget
