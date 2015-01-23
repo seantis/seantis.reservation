@@ -11,6 +11,7 @@ from seantis.reservation import _
 from seantis.reservation import Session
 from seantis.reservation import settings
 from seantis.reservation import utils
+from libres import modules
 from libres.db.models import Allocation, Reservation
 from seantis.reservation.reports import GeneralReportParametersMixin
 from seantis.reservation.interfaces import ISeantisReservationSpecific
@@ -211,6 +212,7 @@ def monthly_report(year, month, resources, reservations='*'):
         return json.dumps([dict(start=start, end=end)])
 
     used_days = dict([(i, False) for i in range(1, 32)])
+    timezone = settings.timezone()
 
     def add_reservation(start, end, reservation):
         day = start.day
@@ -218,6 +220,10 @@ def monthly_report(year, month, resources, reservations='*'):
         used_days[day] = True
 
         end += timedelta(microseconds=1)
+
+        start = modules.calendar.to_timezone(start, timezone=timezone)
+        end = modules.calendar.to_timezone(end, timezone=timezone)
+
         start = utils.localize_date(start, time_only=True)
         end = utils.localize_date(end, time_only=True)
 

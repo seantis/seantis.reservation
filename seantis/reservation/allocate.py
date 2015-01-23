@@ -8,6 +8,7 @@ from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from z3c.form.browser.radio import RadioFieldWidget
 
 from seantis.reservation import _
+from seantis.reservation import settings
 from seantis.reservation import utils
 from seantis.reservation.interfaces import (
     IAllocation,
@@ -207,8 +208,12 @@ class AllocationEditForm(AllocationForm):
 
         start, end = self.start, self.end
         if not all((start, end)):
-            start = allocation.display_start()
-            end = allocation.display_end()
+            start = allocation.display_start(
+                timezone=settings.timezone()
+            )
+            end = allocation.display_end(
+                timezone=settings.timezone()
+            )
 
         return {
             'id': self.id,
