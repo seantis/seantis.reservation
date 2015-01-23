@@ -75,15 +75,6 @@ def Session():
 def db():
     scheduler = getUtility(ILibresUtility).scheduler('maintenance', 'UTC')
     return scheduler.queries
-
-
-# This we'll get rid of:
-def serialized(fn):
-    def wrapper(*args, **kwargs):
-        return fn(*args, **kwargs)
-
-    return wrapper
-
 #
 #
 #
