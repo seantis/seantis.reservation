@@ -1,28 +1,26 @@
 from __future__ import print_function
 
+import transaction
 import random
 
-from datetime import datetime, timedelta
-
 from App.config import getConfiguration
+from datetime import datetime, timedelta
 from five import grok
-from zope.interface import Interface
-
-from plone.dexterity.utils import createContentInContainer
-
+from libres.context.session import Serializable, serialized
 from libres.db.models import Allocation
 from libres.modules.rasterizer import VALID_RASTER
-from seantis.reservation.session import serialized, Session
+from plone.dexterity.utils import createContentInContainer
+from seantis.reservation.base import BaseView
 from seantis.reservation.error import (
     OverlappingAllocationError,
     ReservationError
 )
-from seantis.reservation.base import BaseView
+from seantis.reservation.session import Session, ILibresUtility
+from zope.component import getUtility
+from zope.interface import Interface
 
-import transaction
 
-
-class DataGeneratorView(BaseView):
+class DataGeneratorView(BaseView, Serializable):
 
     permission = 'cmf.ManagePortal'
     grok.require(permission)
@@ -31,6 +29,10 @@ class DataGeneratorView(BaseView):
     grok.name('generate')
 
     template = grok.PageTemplateFile('templates/datagenerator.pt')
+
+    @property
+    def context(self):
+        return getUtility(ILibresUtility).context
 
     @property
     def may_run(self):
