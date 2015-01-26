@@ -16,6 +16,7 @@ tests_require = [
     'collective.betterbrowser[pyquery]',
     'collective.testcaselayer',
     'plone.app.testing',
+    'testing.postgresql'
 ]
 
 
