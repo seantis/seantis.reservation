@@ -191,35 +191,21 @@ If everything went well you may now start your instance ::
 Running Tests
 -------------
 
-The tests are run against a Postgres Database. This should be a database
-used for this purpose only. Therefore you should first create said database ::
+The tests are run against a Postgres Database. Seantis Reservation uses
+`testing.postgresql <https://pypi.python.org/pypi/testing.postgresql/>`_, which
+will automatically setup a temporary database using the local postgres server.
 
-    sudo -u postgres psql -c "CREATE USER test WITH PASSWORD 'test'"
+That means that a Postgres server version 9.1+ should be installed for the
+tests to work. If that's the case, you can run the tests as follows:
 
-Create the test database ::
+Run the development buildout ::
 
-    sudo -u postgres psql -c "CREATE DATABASE test ENCODING 'UTF8' TEMPLATE template0"
+  python bootstrap.py
+  bin/buildout -c develop.cfg 
 
-Grant the required privileges to the test user ::
+Then run the tests ::
 
-    sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE test to test"
-
-To get the test script you should run the development buildout ::
-
-    bin/buildout -c develop.cfg
-
-After that you need to tell the test script which database to use ::
-
-    cd src/seantis.reservation/seantis/reservation
-    cp test_database.py.example test_database.py
-
-You tell it by editing test_database.py and adding a testdsn like this ::
-
-    testdsn = "postgresql+psycopg2://test:test@localhost:5432/test"
-
-You may then run the tests as follows ::
-
-    bin/test -s seantis.reservation
+  bin/test -s seantis.reservation
 
 Creating a Reservation Plone Site
 ---------------------------------

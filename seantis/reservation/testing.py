@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 from App.config import getConfiguration, setConfiguration
 from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import PLONE_FIXTURE
@@ -7,14 +9,8 @@ from plone.app.testing import applyProfile
 from plone.app.testing import quickInstallProduct
 from plone.testing import z2
 from Testing import ZopeTestCase
+from testing.postgresql import Postgresql
 from zope.configuration import xmlconfig
-
-try:
-    from seantis.reservation import test_database
-except ImportError:
-    from seantis.reservation.utils import ConfigurationError
-    msg = 'No test database configured in seantis.reservation.test_database.'
-    raise ConfigurationError(msg)
 
 
 class SqlLayer(PloneSandboxLayer):
@@ -25,19 +21,20 @@ class SqlLayer(PloneSandboxLayer):
         def set(self, key, value):
             self[key] = value
 
-    @property
-    def dsn(self):
-        if not self.get('dsn'):
-            self['dsn'] = test_database.testdsn
+    def start_postgres(self):
+        self.postgres = Postgresql()
+        return self.postgres.url().replace(
+            'postgresql://', 'postgresql+psycopg2://')
 
-        return self['dsn']
+    def stop_postgres(self):
+        self.postgres.stop()
 
-    def init_config(self):
+    def init_config(self, dsn):
         config = getConfiguration()
         if not hasattr(config, 'product_config'):
             config.product_config = {}
 
-        config.product_config['seantis.reservation'] = dict(dsn=self.dsn)
+        config.product_config['seantis.reservation'] = dict(dsn=dsn)
 
         setConfiguration(config)
 
@@ -47,7 +44,7 @@ class SqlLayer(PloneSandboxLayer):
         app.REQUEST['SESSION'] = self.Session()
         ZopeTestCase.utils.setupCoreSessions(app)
 
-        self.init_config()
+        self.init_config(dsn=self.start_postgres())
 
         import seantis.reservation
         xmlconfig.file(
@@ -65,6 +62,7 @@ class SqlLayer(PloneSandboxLayer):
 
     def tearDownZope(self, app):
         z2.uninstallProduct(app, 'seantis.reservation')
+        self.stop_postgres()
 
 SQL_FIXTURE = SqlLayer()
 

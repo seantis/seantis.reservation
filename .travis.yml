@@ -14,10 +14,6 @@ install:
     - python bootstrap.py -c travis.cfg --setuptools-version=7.0 --version=2.2.5
     - bin/buildout -N -t 3 -c travis.cfg
 
-before_script:
-    - psql -c 'create database reservations;' -U postgres
-    - echo 'testdsn = "postgresql+psycopg2://postgres@127.0.0.1:5432/reservations"' > seantis/reservation/test_database.py
-
 script: bin/coverage run bin/test -s seantis.reservation
 
 after_success:
