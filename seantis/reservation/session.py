@@ -108,7 +108,7 @@ class CustomScheduler(libres.db.scheduler.Scheduler):
     ):
         from libres.modules import events
 
-        def trigger_email(context_name, reservation, old_time, new_time):
+        def trigger_email(context, reservation, old_time, new_time):
             notify(ReservationTimeChangedEvent(
                 reservation=reservation,
                 language=utils.get_current_site_language(),
@@ -159,17 +159,17 @@ class LibresUtility(grok.GlobalUtility):
             if translation not in libres_event:
                 libres_event.append(translation)
 
-    def on_reservations_approved(self, context_name, reservations):
+    def on_reservations_approved(self, context, reservations):
         notify(ReservationsApprovedEvent(
             reservations, utils.get_current_site_language()
         ))
 
-    def on_reservations_denied(self, context_name, reservations):
+    def on_reservations_denied(self, context, reservations):
         notify(ReservationsDeniedEvent(
             reservations, utils.get_current_site_language()
         ))
 
-    def on_reservations_confirmed(self, context_name, reservations):
+    def on_reservations_confirmed(self, context, reservations, session_id):
         notify(ReservationsConfirmedEvent(
             reservations, utils.get_current_site_language()
         ))
