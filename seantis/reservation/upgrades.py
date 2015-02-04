@@ -473,3 +473,51 @@ def upgrade_1031_to_1032(context):
     setup.runImportStepFromProfile(
         'profile-seantis.reservation:default', 'typeinfo'
     )
+
+
+@db_upgrade
+def upgrade_1032_to_1033(operations, metadata):
+    from libres.db.models.types import JSON, UTCDateTime
+
+    # if the quota limit has been renamed, the migration already went
+    # through on this database (sites may share databases)
+    allocations_table = Table('allocations', metadata, autoload=True)
+
+    if 'quota_limit' in allocations_table.columns:
+        return
+
+    # add user-data json field to allocations
+    operations.add_column(
+        'allocations',
+        Column('data', JSON(), nullable=True))
+
+    # add timezone to allocations (required)
+    operations.add_column(
+        'allocations',
+        Column('timezone', types.String()))
+
+    # add timezone to reservations (*not* required)
+    operations.add_column(
+        'reservations',
+        Column('timezone', types.String(), nullable=True))
+
+    # change type to
+    try:
+        operations.get_bind().execute("SET timezone='UTC'")
+
+        for table in ('allocations', 'reserved_slots', 'reservations'):
+            for column in ('created', 'modified'):
+                operations.alter_column(
+                    table, column, type_=UTCDateTime(timezone=False))
+    finally:
+        operations.get_bind().execute("RESET timezone")
+
+    operations.execute(
+        "UPDATE allocations SET timezone = 'UTC'")
+    operations.execute(
+        "UPDATE reservations SET timezone = 'UTC' WHERE start IS NOT NULL")
+
+    # rename reservation_quota_limit to quota_limit
+    operations.alter_column(
+        'allocations', 'reservation_quota_limit',
+        new_column_name='quota_limit')

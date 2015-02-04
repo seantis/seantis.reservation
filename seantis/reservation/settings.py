@@ -19,7 +19,6 @@ from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 from seantis.plonetools.schemafields import validate_email
 
 from seantis.reservation import _
-from seantis.reservation.interfaces import common_timezones
 from seantis.reservation.restricted_eval import validate_expression
 
 
@@ -121,16 +120,6 @@ class ISeantisReservationSettings(Interface):
         default=1
     )
 
-    timezone = schema.Choice(
-        title=_(u'Timezone'),
-        description=_(
-            u'Timezone in which the resources of this plone site reside. '
-        ),
-        vocabulary=common_timezones,
-        default='UTC',
-        required=True
-    )
-
     @invariant
     def isValidThreshold(Allocation):
 
@@ -180,7 +169,7 @@ def set(name, value):
 
 
 def timezone():
-    return pytz.timezone(get('timezone'))
+    return pytz.timezone('UTC')
 
 
 class SeantisReservationSettingsPanelForm(RegistryEditForm):

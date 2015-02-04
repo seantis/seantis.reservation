@@ -627,6 +627,7 @@ def json_loads_object_hook(dictionary):
 
 def json_loads(value):
     if value is not None:
+        import pdb; pdb.set_trace()
         return json.loads(value, object_hook=json_loads_object_hook)
     else:
         return {}
