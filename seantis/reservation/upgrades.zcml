@@ -290,4 +290,13 @@
         profile="seantis.reservation:default">
     </genericsetup:upgradeStep>
 
+    <genericsetup:upgradeStep
+        title="Migrate to Libres"
+        description=""
+        source="1032"
+        destination="1033"
+        handler=".upgrades.upgrade_1032_to_1033"
+        profile="seantis.reservation:default">
+    </genericsetup:upgradeStep>
+
 </configure>
