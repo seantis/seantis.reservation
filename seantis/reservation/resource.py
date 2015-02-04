@@ -70,7 +70,7 @@ class Resource(Container):
             lambda ctx: LibresExposure(exposure.for_allocations([uuid]))
         )
 
-        return libres_util.scheduler(uuid, settings.timezone())
+        return libres_util.scheduler(uuid, settings.timezone().zone)
 
     def timeframes(self):
         return timeframes_by_context(self)
