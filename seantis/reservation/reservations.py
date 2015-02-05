@@ -1,5 +1,10 @@
+from collections import namedtuple
 from itertools import groupby
-from libres.db.models.reservation import BoundTimespan
+
+
+BoundTimespan = namedtuple(
+    'BoundTimespan', ('start', 'end', 'token', 'id')
+)
 
 
 class CombinedReservations(object):
