@@ -141,11 +141,10 @@ class AllocationAddForm(AllocationForm):
                 raster=data['raster'],
                 quota=data['quota'],
                 partly_available=data['partly_available'],
-                grouped=not data['separately'],
+                grouped=data['recurring'] and not data['separately'],
                 approve_manually=data['approve_manually'],
                 quota_limit=data['reservation_quota_limit'],
                 whole_day=data['whole_day']
-
             )
             self.flash(_(u'Allocation added'))
 
