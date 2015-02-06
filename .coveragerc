@@ -6,3 +6,4 @@ omit =
     eggs/*
     */test*
     */distutils/__init__.py
+    src/*
