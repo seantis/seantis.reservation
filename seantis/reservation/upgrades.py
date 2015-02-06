@@ -22,7 +22,7 @@ from zope.component import getUtility
 from seantis.reservation import utils
 from seantis.reservation import settings
 from libres.db.models import Reservation, ReservedSlot
-from libres.db.models.types import GUID
+from libres.db.models.types import UUID
 from seantis.reservation.session import (
     ILibresUtility,
     Session
@@ -126,7 +126,7 @@ def upgrade_to_1001(operations, metadata):
     reservations_table = Table('reservations', metadata, autoload=True)
     if 'session_id' not in reservations_table.columns:
         operations.add_column(
-            'reservations', Column('session_id', GUID())
+            'reservations', Column('session_id', UUID())
         )
 
 

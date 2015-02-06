@@ -137,6 +137,9 @@ class TestBrowser(FunctionalTestCase):
         ).selected = approve_manually
 
         browser.getControl('Allocate').click()
+        assert 'There were some errors' not in browser.contents, """
+            Failed to add allocation
+        """
 
         return [resource, start, end]
 
