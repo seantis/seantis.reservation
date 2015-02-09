@@ -109,7 +109,7 @@ class TestCase(unittest.TestCase, libres.context.session.Serializable):
 
         self.logout()
 
-        libres.registry = libres.context.setup_registry()
+        libres.registry = libres.context.registry.create_default_registry()
         util.reset()
 
     def request(self):
