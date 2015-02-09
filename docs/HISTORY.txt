@@ -2,10 +2,11 @@
 Changelog
 =========
 
-1.1.6 (unreleased)
+1.2.0 (unreleased)
 ------------------
 
-Nothing yet.
+- Moves the core to a new, plone-independent Python Module (Libres). 
+  [href]
 
 1.1.5 (2014-09-23)
 ------------------
