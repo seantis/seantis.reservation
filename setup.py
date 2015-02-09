@@ -3,7 +3,7 @@ import os
 
 name = "seantis.reservation"
 description = "Plone addon to reserve stuff in a calendar."
-version = '1.1.6'
+version = '1.2.0'
 
 zug_require = [
     'ftw.contentmenu',
