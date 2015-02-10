@@ -2,7 +2,7 @@
 Changelog
 =========
 
-1.2.0 (unreleased)
+1.2.0 (2015-02-10)
 ------------------
 
 *Warning*: The seantis.reservation release 1.2.0 changed a lot internally,
