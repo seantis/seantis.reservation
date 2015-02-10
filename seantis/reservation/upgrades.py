@@ -1,32 +1,24 @@
 import logging
-log = logging.getLogger('seantis.reservation')
-
-from functools import wraps
 
 from alembic.migration import MigrationContext
 from alembic.operations import Operations
-
-from sqlalchemy import types
+from functools import wraps
+from plone import api
+from plone.dexterity.interfaces import IDexterityFTI
+from plone.registry.interfaces import IRegistry
+from Products.CMFCore.utils import getToolByName
+from seantis.reservation import settings
+from seantis.reservation import utils
+from seantis.reservation.session import ILibresUtility
 from sqlalchemy import create_engine
 from sqlalchemy import MetaData
 from sqlalchemy import Table
-from sqlalchemy import not_
+from sqlalchemy import types
 from sqlalchemy.schema import Column
-
-from plone import api
-from plone.registry.interfaces import IRegistry
-from plone.dexterity.interfaces import IDexterityFTI
-from Products.CMFCore.utils import getToolByName
 from zope.component import getUtility
 
-from seantis.reservation import utils
-from seantis.reservation import settings
-from libres.db.models import Reservation, ReservedSlot
-from libres.db.models.types import UUID
-from seantis.reservation.session import (
-    ILibresUtility,
-    Session
-)
+
+log = logging.getLogger('seantis.reservation')
 
 
 def db_upgrade(fn):
@@ -117,241 +109,85 @@ def remove_dead_resources(context):
                     registry.unregisterResource(resource.getId())
 
 
+def disable_upgrade():
+    assert False, """ Unfortunately, you can't upgrade to this
+    seantis.reservation release. Please install seantis.reservation 1.1.5 first
+    and run its upgrade steps, before you install seantis.reservation 1.2.0.
+    """
+
+
 @db_upgrade
 def upgrade_to_1001(operations, metadata):
-
-    # Check whether column exists already (happens when several plone sites
-    # share the same SQL DB and this upgrade step is run in each one)
-
-    reservations_table = Table('reservations', metadata, autoload=True)
-    if 'session_id' not in reservations_table.columns:
-        operations.add_column(
-            'reservations', Column('session_id', UUID())
-        )
+    disable_upgrade()
 
 
 @db_upgrade
 def upgrade_1001_to_1002(operations, metadata):
-
-    reservations_table = Table('reservations', metadata, autoload=True)
-    if 'quota' not in reservations_table.columns:
-        operations.add_column(
-            'reservations', Column(
-                'quota', types.Integer(), nullable=False, server_default='1'
-            )
-        )
+    disable_upgrade()
 
 
 @db_upgrade
 def upgrade_1002_to_1003(operations, metadata):
-
-    allocations_table = Table('allocations', metadata, autoload=True)
-    if 'reservation_quota_limit' not in allocations_table.columns:
-        operations.add_column(
-            'allocations', Column(
-                'reservation_quota_limit',
-                types.Integer(), nullable=False, server_default='0'
-            )
-        )
+    disable_upgrade()
 
 
 def upgrade_1003_to_1004(context):
-
-    # 1004 untangles the dependency hell that was default <- sunburst <- izug.
-    # Now, sunburst and izug.basetheme both have their own profiles.
-
-    # Since the default profile therefore has only the bare essential styles
-    # it needs to be decided on upgrade which theme was used, the old css
-    # files need to be removed and the theme profile needs to be applied.
-
-    # acquire the current theme
-    skins = getToolByName(context, 'portal_skins')
-    theme = skins.getDefaultSkin()
-
-    # find the right profile to use
-    profilemap = {
-        'iZug Base Theme': 'izug_basetheme',
-        'Sunburst Theme': 'sunburst'
-    }
-
-    if theme not in profilemap:
-        log.info("Theme %s is not supported by seantis.reservation" % theme)
-        profile = 'default'
-    else:
-        profile = profilemap[theme]
-
-    # remove all existing reservation stylesheets
-    css_registry = getToolByName(context, 'portal_css')
-    stylesheets = css_registry.getResourcesDict()
-    ids = [i for i in stylesheets if 'resource++seantis.reservation.css' in i]
-
-    map(css_registry.unregisterResource, ids)
-
-    # reapply the chosen profile
-
-    setup = getToolByName(context, 'portal_setup')
-    setup.runAllImportStepsFromProfile(
-        'profile-seantis.reservation:%s' % profile
-    )
+    disable_upgrade()
 
 
 def upgrade_1004_to_1005(context):
-
-    setup = getToolByName(context, 'portal_setup')
-    setup.runImportStepFromProfile(
-        'profile-seantis.reservation:default', 'typeinfo'
-    )
+    disable_upgrade()
 
 
 def upgrade_1005_to_1006(context):
-
-    # remove the old custom fullcalendar settings
-    js_registry = getToolByName(context, 'portal_javascripts')
-
-    old_definitions = [
-        '++resource++seantis.reservation.js/fullcalendar.js',
-        '++resource++collective.js.fullcalendar/fullcalendar.min.js',
-        '++resource++collective.js.fullcalendar/fullcalendar.gcal.js'
-    ]
-    map(js_registry.unregisterResource, old_definitions)
-
-    js_registry.cookResources()
-
-    # reapply the fullcalendar profile
-    setup = getToolByName(context, 'portal_setup')
-
-    setup.runAllImportStepsFromProfile(
-        'profile-collective.js.fullcalendar:default'
-    )
-
-    recook_css_resources(context)
+    disable_upgrade()
 
 
 @db_upgrade
 def upgrade_1007_to_1008(operations, metadata):
-
-    allocations_table = Table('allocations', metadata, autoload=True)
-    if 'waitinglist_spots' in allocations_table.columns:
-        operations.drop_column('allocations', 'waitinglist_spots')
+    disable_upgrade()
 
 
 @db_upgrade
 def upgrade_1008_to_1009(operations, metadata):
-
-    allocations_table = Table('allocations', metadata, autoload=True)
-    if 'approve_manually' not in allocations_table.columns:
-        operations.alter_column(
-            table_name='allocations',
-            column_name='approve',
-            new_column_name='approve_manually',
-            server_default='FALSE'
-        )
+    disable_upgrade()
 
 
 def upgrade_1009_to_1010(context):
-
-    site = utils.getSite()
-    all_resources = utils.portal_type_in_context(
-        site, 'seantis.reservation.resource', depth=100
-    )
-
-    for brain in all_resources:
-        resource = brain.getObject()
-        resource.approve_manually = resource.approve
+    disable_upgrade()
 
 
 def upgrade_1010_to_1011(context):
-
-    # rename fullcalendar.css to base.css
-    css_registry = getToolByName(context, 'portal_css')
-    css_registry.unregisterResource(
-        '++resource++seantis.reservation.css/fullcalendar.css'
-    )
-
-    setup = getToolByName(context, 'portal_setup')
-    setup.runImportStepFromProfile(
-        'profile-seantis.reservation:default', 'cssregistry'
-    )
+    disable_upgrade()
 
 
 def upgrade_1011_to_1012(context):
-    add_new_email_template(context, 'reservation_made')
+    disable_upgrade()
 
 
 def upgrade_1012_to_1013(context):
-    # rerun javascript step to import URI.js
-    setup = getToolByName(context, 'portal_setup')
-    setup.runImportStepFromProfile(
-        'profile-seantis.reservation:default', 'jsregistry'
-    )
+    disable_upgrade()
 
 
 def upgrade_1013_to_1014(context):
-    # rerun javascript step to fix URI.js compression
-    setup = getToolByName(context, 'portal_setup')
-    setup.runImportStepFromProfile(
-        'profile-seantis.reservation:default', 'jsregistry'
-    )
+    disable_upgrade()
 
 
 def upgrade_1014_to_1015(context):
-    # rerun javascript step to fix URI.js compression
-    setup = getToolByName(context, 'portal_setup')
-    setup.runImportStepFromProfile(
-        'profile-seantis.reservation:default', 'rolemap'
-    )
+    disable_upgrade()
 
 
 @db_upgrade
 def upgrade_1015_to_1016(operations, metadata):
-    operations.alter_column('allocations', 'mirror_of', nullable=False)
+    disable_upgrade()
 
 
 def upgrade_1016_to_1017(context):
-    fti = getUtility(IDexterityFTI, name='seantis.reservation.resource')
-
-    # keep the behaviors, only change the actions
-    behaviors = fti.behaviors
-
-    setup = getToolByName(context, 'portal_setup')
-    setup.runImportStepFromProfile(
-        'profile-seantis.reservation:default', 'typeinfo'
-    )
-
-    fti.behaviors = behaviors
+    disable_upgrade()
 
 
-# LIBRES the old upgrades need to be removed and a check needs to be added
-# that makes sure the old max version was installed before.. otherwise we
-# have to keep these things working which is going to be close to impossible
 def upgrade_1017_to_1018(context):
-
-    # seantis.reservation before 1.0.12 left behind reserved slots when
-    # removing reservations of expired sessions. These need to be cleaned for
-    # the allocation usage to be right.
-
-    # all slots need a connected reservation
-    all_reservations = Session.query(Reservation)
-
-    # orphan slots are therefore all slots..
-    orphan_slots = Session.query(ReservedSlot)
-
-    # ..with tokens not found in the reservations table
-    orphan_slots = orphan_slots.filter(
-        not_(
-            ReservedSlot.reservation_token.in_(
-                all_reservations.with_entities(Reservation.token).subquery()
-            )
-        )
-    )
-
-    log.info(
-        'Removing {} reserved slots  with no linked reservations'.format(
-            orphan_slots.count()
-        )
-    )
-
-    orphan_slots.delete('fetch')
+    disable_upgrade()
 
 
 def upgrade_1018_to_1019(context):

@@ -6,6 +6,16 @@ Plone addon to reserve stuff in a calendar.
 Not a replacement for Outlook or Google Calendar, but a system to manage 
 reservations on the backend and to provide them on the frontend.
 
+Update to 1.2.0
+---------------
+
+*Warning*: The seantis.reservation release 1.2.0 changed a lot internally,
+which is why you can't directly upgrade from seantis.reservation releases
+prior to 1.0.12 (September 27th, 2013) to the 1.2.0.
+
+If you do have such an old release, install seantis.reservation 1.1.5 first,
+run all upgrade steps, and then install 1.2.0.
+
 Introduction
 ------------
 
