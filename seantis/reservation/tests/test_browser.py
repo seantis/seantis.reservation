@@ -1,3 +1,4 @@
+import six
 import json
 import transaction
 
@@ -609,6 +610,44 @@ class TestBrowser(FunctionalTestCase):
         self.assertTrue('Revoke' in browser.contents)
         self.assertFalse('Approve' in browser.contents)
 
+    def test_reservation_denial(self):
+
+        browser = self.new_browser()
+        browser.login_admin()
+
+        start = datetime(2013, 6, 21, 13, 0)
+        end = datetime(2013, 6, 21, 17, 0)
+
+        self.add_resource('denial')
+
+        allocation = ('denial', start, end)
+        self.add_allocation(*allocation, approve_manually=True)
+        menu = self.allocation_menu(*allocation)
+        browser.open(menu['reserve'])
+
+        browser.getControl('Email').value = 'test@example.com'
+        browser.getControl('Reserve').click()
+        browser.getControl('Submit Reservations').click()
+
+        browser.open(menu['manage'])
+
+        self.assertTrue('Approve' in browser.contents)
+        self.assertTrue('Deny' in browser.contents)
+
+        browser.getLink('Deny').click()
+        self.assertTrue('Concerned Dates' in browser.contents)
+
+        # the datetime in the browsers cannot be swayed, it always is english
+        self.assertTrue('Jun 21, 2013 01:00 PM - 05:00 PM' in browser.contents)
+
+        browser.getControl('Deny').click()
+        self.assertTrue('Reservation denied' in browser.contents)
+
+        browser.open(menu['manage'])
+        self.assertFalse('Revoke' in browser.contents)
+        self.assertFalse('Approve' in browser.contents)
+        self.assertFalse('Deny' in browser.contents)
+
     def test_reserve_group(self):
 
         browser = self.admin_browser
@@ -794,7 +833,7 @@ class TestBrowser(FunctionalTestCase):
 
         self.add_resource('keeper')
         browser.open(self.infolder('/keeper/@@uuid'))
-        uuid = unicode(browser.contents)
+        uuid = six.text_type(browser.contents)
 
         keeper = getUtility(ILibresUtility).scheduler(uuid, 'UTC')
 
@@ -820,7 +859,7 @@ class TestBrowser(FunctionalTestCase):
         def run_test():
             self.add_resource('removal')
             browser.open(self.infolder('/removal/@@uuid'))
-            uuid = unicode(browser.contents)
+            uuid = six.text_type(browser.contents)
 
             scheduler = getUtility(ILibresUtility).scheduler(uuid, 'UTC')
 
