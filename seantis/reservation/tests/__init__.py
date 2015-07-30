@@ -30,7 +30,7 @@ from seantis.reservation import maintenance
 from Products.CMFCore.utils import getToolByName
 
 
-class TestCase(unittest.TestCase, libres.context.session.Serializable):
+class TestCase(unittest.TestCase):
 
     @property
     def context(self):

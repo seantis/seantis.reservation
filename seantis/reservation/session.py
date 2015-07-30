@@ -69,7 +69,7 @@ def Session():
 
     # LIBRES there should be a more obvious way to do this
     scheduler = getUtility(ILibresUtility).scheduler('maintenance', 'UTC')
-    return scheduler.session()
+    return scheduler.session
 
 
 def db():
