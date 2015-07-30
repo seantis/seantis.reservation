@@ -1,5 +1,4 @@
 from datetime import datetime
-from libres.context.session import serialized
 from pytz import timezone
 from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation.overview import Overview
@@ -7,7 +6,6 @@ from seantis.reservation.overview import Overview
 
 class TestOverview(IntegrationTestCase):
 
-    @serialized
     def test_overview(self):
         self.login_manager()
 

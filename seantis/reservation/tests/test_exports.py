@@ -3,8 +3,6 @@ from datetime import datetime
 
 from Acquisition import aq_base
 
-from libres.context.session import serialized
-
 from pytz import timezone
 from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation import utils
@@ -14,7 +12,6 @@ from seantis.reservation.export import ExportView, prepare_record
 
 class TestExports(IntegrationTestCase):
 
-    @serialized
     def test_reservations_export(self):
         self.login_manager()
 
@@ -95,7 +92,6 @@ class TestExports(IntegrationTestCase):
             )
             getattr(dataset, format)
 
-    @serialized
     def test_reservations_export_date_filter(self):
         self.login_manager()
 
@@ -137,7 +133,6 @@ class TestExports(IntegrationTestCase):
         )
         self.assertEqual(len(dataset), 0)
 
-    @serialized
     def test_reservations_export_title(self):
         self.login_manager()
 

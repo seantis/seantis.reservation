@@ -86,7 +86,6 @@ class CustomScheduler(libres.db.scheduler.Scheduler):
 
     """
 
-    @libres.context.session.serialized
     def revoke_reservation(self, token, reason, id=None, send_email=True):
         """ Revoke a reservation and inform the user of that."""
 
@@ -102,7 +101,6 @@ class CustomScheduler(libres.db.scheduler.Scheduler):
 
         self.remove_reservation(token, id)
 
-    @libres.context.session.serialized
     def change_reservation_time(
         self, token, id, new_start, new_end, send_email=True, reason=None
     ):

@@ -5,8 +5,6 @@ from datetime import datetime, timedelta
 
 from zope import i18n
 
-from libres.context.session import serialized
-
 from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation.reports import GeneralReportParametersMixin
 from seantis.reservation.reports.monthly_report import monthly_report
@@ -58,7 +56,6 @@ class TestReports(IntegrationTestCase):
         mixin.__name__ = 'test'  # build_url expects this, usually set by grok
         self.assertEqual(mixin.build_url(extras), expected)
 
-    @serialized
     def test_monthly_report_empty(self):
         self.login_admin()
 
@@ -67,7 +64,6 @@ class TestReports(IntegrationTestCase):
 
         self.assertEqual(len(report), 0)
 
-    @serialized
     def test_monthly_report_reservations(self):
         self.login_admin()
 
@@ -156,7 +152,6 @@ class TestReports(IntegrationTestCase):
             u'Today, at 21:00'
         )
 
-    @serialized
     def test_latest_reservations(self):
 
         self.login_admin()

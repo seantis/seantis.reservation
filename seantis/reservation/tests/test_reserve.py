@@ -1,8 +1,6 @@
 from datetime import datetime
 from zExceptions import NotFound
 
-from libres.context.session import serialized
-
 from seantis.reservation.reserve import YourReservations, ReservationForm
 from seantis.reservation import plone_session
 from seantis.reservation.tests import IntegrationTestCase
@@ -10,7 +8,6 @@ from seantis.reservation.tests import IntegrationTestCase
 
 class TestReservationForm(IntegrationTestCase):
 
-    @serialized
     def test_reservation_data(self):
         self.login_manager()
 
@@ -34,7 +31,6 @@ class TestReservationForm(IntegrationTestCase):
         view = YourReservations(resource, request)
         self.assertEqual(1, len(view.reservations()))
 
-    @serialized
     def test_allocation_property(self):
         self.login_manager()
 

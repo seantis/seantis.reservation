@@ -1,7 +1,5 @@
 from plone.app.testing import TEST_USER_ID
 
-from libres.context.session import serialized
-
 from seantis.reservation import settings
 from seantis.reservation.tests import IntegrationTestCase
 from seantis.reservation.mail import (
@@ -11,7 +9,6 @@ from seantis.reservation.mail import (
 
 class MailTestCase(IntegrationTestCase):
 
-    @serialized
     def test_manager_discovery(self):
         self.login_manager()
 

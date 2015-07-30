@@ -6,7 +6,6 @@ import random
 from App.config import getConfiguration
 from datetime import datetime, timedelta
 from five import grok
-from libres.context.session import Serializable, serialized
 from libres.db.models import Allocation
 from libres.modules.rasterizer import VALID_RASTER
 from plone.dexterity.utils import createContentInContainer
@@ -20,7 +19,7 @@ from zope.component import getUtility
 from zope.interface import Interface
 
 
-class DataGeneratorView(BaseView, Serializable):
+class DataGeneratorView(BaseView):
 
     permission = 'cmf.ManagePortal'
     grok.require(permission)
@@ -79,7 +78,6 @@ class DataGeneratorView(BaseView, Serializable):
         resource.last_hour = self.last_hour
         return resource
 
-    @serialized
     def generate_allocations(self, resource=None, start=None, end=None):
 
         today = datetime.today()
@@ -123,7 +121,6 @@ class DataGeneratorView(BaseView, Serializable):
         if self.with_reservations:
             self.generate_reservations(resource, start, end)
 
-    @serialized
     def generate_reservations(self, resource, start, end):
         query = Session.query(Allocation)
         query = query.filter(Allocation._start >= start)
