@@ -39,7 +39,8 @@ from plone.app.textfield.value import RichTextValue
 from OFS.interfaces import IApplication
 from Products.CMFPlone.interfaces import IPloneSiteRoot
 
-from libres.modules import calendar
+import sedate
+
 from seantis.reservation import error
 from seantis.reservation import _
 
@@ -1219,8 +1220,8 @@ def display_date(start, end):
 
     timezone = settings().timezone()
 
-    start = calendar.to_timezone(start, timezone)
-    end = calendar.to_timezone(end, timezone)
+    start = sedate.to_timezone(start, timezone)
+    end = sedate.to_timezone(end, timezone)
 
     if end.microsecond != 999999:
         end -= timedelta(microseconds=1)

@@ -1,4 +1,5 @@
 import json
+import sedate
 
 from calendar import Calendar
 from datetime import date, timedelta, datetime
@@ -221,8 +222,8 @@ def monthly_report(year, month, resources, reservations='*'):
 
         end += timedelta(microseconds=1)
 
-        start = modules.calendar.to_timezone(start, timezone=timezone)
-        end = modules.calendar.to_timezone(end, timezone=timezone)
+        start = sedate.to_timezone(start, timezone=timezone)
+        end = sedate.to_timezone(end, timezone=timezone)
 
         start = utils.localize_date(start, time_only=True)
         end = utils.localize_date(end, time_only=True)
