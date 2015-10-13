@@ -1,73 +1,114 @@
 /* @group seantis.reservation */
+$reservation-available-color: #393;
+$reservation-partly-available-color: #f93;
+$reservation-unavailable-color: #c33;
+$reservation-white-color: #fff;
 
 /* @group fullcalendar */
 .pb-ajax, #content {
-    .fc-event-title {
-        font-size: 1.1em;
-    }
+  .fc-event-title {
+    font-size: 1.1em;
+  }
+
+  .fc-event-time {
+    display: block;
+    font-size: 1.1em;
+  }
+
+  .fc-view-agendaWeek .fc-event {
+    margin-left: 2px;
+  }
+
+  .fc-event-time,
+  .fc-event-title {
+    display: block;
+    padding: 1px 0 0 2px;
+  }
+
+  .event-available {
+    background-color: $reservation-available-color !important;
+    border-color: $reservation-available-color  !important;
+
     .fc-event-time {
-        font-size: 1.1em;
-        display: block;
+      background-color: $reservation-available-color !important;
     }
-    .fc-view-agendaWeek .fc-event {
-        margin-left: 2px;
+  }
+
+  .event-partly-available {
+    background-color: $reservation-partly-available-color !important;
+    border-color: $reservation-partly-available-color  !important;
+
+    .fc-event-time {
+      background-color: $reservation-partly-available-color !important;
     }
-    .fc-event-time,
-    .fc-event-title {
-        padding: 1px 0 0 2px;
-        display: block;
+  }
+
+  .event-unavailable {
+    background-color: $reservation-unavailable-color !important;
+    border-color: $reservation-unavailable-color  !important;
+
+    .fc-event-time {
+      background-color: $reservation-unavailable-color !important;
+    }
+  }
+
+  #seantis-overview-calendar {
+    background-color: $lightgray;
+    padding: 1.5em;
+
+    th,
+    td {
+      border: 1px solid $lightgray !important;
+    }
+
+    th.fc-day-header {
+      background-color: $lightgray2 !important;
+      padding: .2em 0;
+    }
+
+    td.fc-day {
+      background-color: $reservation-white-color;
+
+      &.groupSelection {
+        background-color: $lightgray2;
+      }
+    }
+
+    .event-available,
+    .event-partly-available,
+    .event-unavailable {
+      background-color: $reservation-white-color !important;
+      border-color: $reservation-white-color;
+
+      &.groupSelection {
+        background-color: $lightgray2 !important;
+      }
+    }
+
+    .fc-day {
+      > div {
+        border-top: 4px solid $reservation-white-color;
+      }
     }
 
     .event-available {
-        background-color: $reservation-available-color !important;
-        border-color: $reservation-available-color  !important;
-
-        .fc-event-time {
-            background-color: $reservation-available-color !important;
-        }
+      > div {
+        border-top-color: $reservation-available-color;
+      }
     }
 
     .event-partly-available {
-        background-color: $reservation-partly-available-color !important;
-        border-color: $reservation-partly-available-color  !important;
-
-        .fc-event-time {
-            background-color: $reservation-partly-available-color !important;
-        }
+      > div {
+        border-top-color: $reservation-partly-available-color;
+      }
     }
 
     .event-unavailable {
-        background-color: $reservation-unavailable-color !important;
-        border-color: $reservation-unavailable-color  !important;
-
-        .fc-event-time {
-            background-color: $reservation-unavailable-color !important;
-        }
+      > div {
+        border-top-color: $reservation-unavailable-color;
+      }
     }
-
-    #seantis-overview-calendar .event-available,
-    #seantis-overview-calendar .event-available .fc-event-skin,
-    #seantis-overview-calendar .event-available .fc-event-head {
-        background-color: $reservation-available-color !important;
-    }
-
-    #seantis-overview-calendar .event-partly-available,
-    #seantis-overview-calendar .event-partly-available .fc-event-skin,
-    #seantis-overview-calendar .event-partly-available .fc-event-head {
-        background-color: $reservation-partly-available-color !important;
-    }
-
-    #seantis-overview-calendar .event-unavailable,
-    #seantis-overview-calendar .event-unavailable .fc-event-skin,
-    #seantis-overview-calendar .event-unavailable .fc-event-head {
-        background-color: $reservation-unavailable-color !important;
-    }
-
-    #seantis-overview-calendar {
-        td.groupSelection {
-            color: white;
-        }
-    }
+  }
 }
 /* @end */
 
@@ -150,7 +191,7 @@ div.your-reservations, div.your-reservations-view {
 
     .your-reservation-title {
         float: left !important;
-        margin: 0 .3em .25em 0;  
+        margin: 0 .3em .25em 0;
     }
 
     .your-reservation-title {
@@ -310,8 +351,8 @@ div.your-reservations, div.your-reservations-view {
     }
 
     .resource-listing-entry.groupSelection {
-        @include boxshadow(none !important);
-        background-color: $lightgray !important;
+        // @include boxshadow(none !important);
+        // background-color: $lightgray !important;
     }
 }
 /* @end */

@@ -11,6 +11,9 @@ Changelog
 - Move styles from plonetheme.onegov to this package.
   [lknoepfel]
 
+- Visual redesign of the overview calender.
+  [msom]
+
 1.2.0 (2015-02-10)
 ------------------
 
