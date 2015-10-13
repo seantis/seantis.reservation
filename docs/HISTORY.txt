@@ -8,6 +8,9 @@ Changelog
 - Integrates latest libres release which switches to serialized-only queries.
   [href]
 
+- Move styles from plonetheme.onegov to this package.
+  [lknoepfel]
+
 1.2.0 (2015-02-10)
 ------------------
 
@@ -18,7 +21,7 @@ prior to 1.0.12 (September 27th, 2013) to the 1.2.0.
 If you do have such an old release, install seantis.reservation 1.1.5 first,
 run all upgrade steps, and then install 1.2.0.
 
-- Moves the core to a new, plone-independent Python Module (Libres). 
+- Moves the core to a new, plone-independent Python Module (Libres).
   [href]
 
 1.1.5 (2014-09-23)
