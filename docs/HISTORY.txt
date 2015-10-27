@@ -2,7 +2,7 @@
 Changelog
 =========
 
-1.3.0 (unreleased)
+1.3.0 (2015-10-27)
 ------------------
 
 - Integrates latest libres release which switches to serialized-only queries.
