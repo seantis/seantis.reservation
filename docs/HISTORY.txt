@@ -2,22 +2,21 @@
 Changelog
 =========
 
-1.3.1 (unreleased)
+1.4.0 (2015-12-02)
 ------------------
-
-Nothing yet.
-
-1.3.0 (2015-10-27)
-------------------
-
-- Integrates latest libres release which switches to serialized-only queries.
-  [href]
 
 - Move styles from plonetheme.onegov to this package.
   [lknoepfel]
 
 - Visual redesign of the overview calender.
   [msom]
+
+
+1.3.0 (2015-10-27)
+------------------
+
+- Integrates latest libres release which switches to serialized-only queries.
+  [href]
 
 1.2.0 (2015-02-10)
 ------------------
