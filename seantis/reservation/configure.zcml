@@ -8,6 +8,7 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:i18n="http://namespaces.zope.org/i18n"
     xmlns:inflator="http://namespaces.zope.org/inflator"
+    xmlns:theme="http://namespaces.zope.org/plonetheme.onegov"
     i18n_domain="plone"
     >
 
@@ -22,6 +23,11 @@ http://groups.google.com/group/zope-core-dev/browse_thread/thread/6c10ebc1602701
 <i18n:registerTranslations directory="locales" />
 
 <includeDependencies package="." />
+
+<configure zcml:condition="installed plonetheme.onegov">
+    <include package="plonetheme.onegov" />
+    <theme:add_scss path="scss/reservation.scss" />
+</configure>
 
 <!-- Permissions -->
 <permission
