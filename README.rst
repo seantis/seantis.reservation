@@ -81,7 +81,7 @@ without javascript then this is not the droid you are looking for.
 Showcases
 ---------
 
-* `St. Thomas Adventure Tours <http://stthomasadventuretours.com>`_
+* `St. Thomas Adventure Tours <http://www.stthomasadventuretours.com/booking>`_
 
 Limitations
 -----------
