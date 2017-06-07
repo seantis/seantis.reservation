@@ -299,4 +299,13 @@
         profile="seantis.reservation:default">
     </genericsetup:upgradeStep>
 
+    <genericsetup:upgradeStep
+        title="Adds polymorphic types to Libres"
+        description=""
+        source="1033"
+        destination="1034"
+        handler=".upgrades.upgrade_1033_to_1034"
+        profile="seantis.reservation:default">
+    </genericsetup:upgradeStep>
+
 </configure>

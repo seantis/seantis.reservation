@@ -357,3 +357,18 @@ def upgrade_1032_to_1033(operations, metadata):
     operations.alter_column(
         'allocations', 'reservation_quota_limit',
         new_column_name='quota_limit')
+
+
+@db_upgrade
+def upgrade_1033_to_1034(operations, metadata):
+    if 'type' not in Table('allocations', metadata, autoload=True).columns:
+        operations.add_column(
+            'allocations',
+            Column('type', types.Text(), nullable=True)
+        )
+
+    if 'type' not in Table('reservations', metadata, autoload=True).columns:
+        operations.add_column(
+            'reservations',
+            Column('type', types.Text(), nullable=True)
+        )
