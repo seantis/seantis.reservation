@@ -420,6 +420,6 @@ people in the waitinglist is shown on the allcation itself.
    :target: http://travis-ci.org/seantis/seantis.reservation
 .. |Test Coverage| image:: https://coveralls.io/repos/seantis/seantis.reservation/badge.png?branch=master
    :target: https://coveralls.io/r/seantis/seantis.reservation?branch=master
-.. |PyPI Release| image:: https://pypip.in/v/seantis.reservation/badge.png
+.. |PyPI Release| image:: https://img.shields.io/pypi/v/seantis.reservation.svg
     :target: https://crate.io/packages/seantis.reservation
     :alt: Latest PyPI version
